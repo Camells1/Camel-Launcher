@@ -207,7 +207,7 @@ function registerIpc() {
     const account = authManager.getSavedAccount();
     if (!account) throw new Error('Not signed in.');
     const profile = await skins.getProfile(account.accessToken);
-    return { skins: profile.skins || [], capes: profile.capes || [] };
+    return { uuid: account.uuid, skins: profile.skins || [], capes: profile.capes || [] };
   });
 
   ipcMain.handle('skin:upload', async (_e, variant) => {

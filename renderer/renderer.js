@@ -528,23 +528,38 @@ async function loadRecentActivity() {
 
 // ---- Skins ----
 let skinCurrentVariant = 'classic';
+let skinRawUrl = null; // the flat texture URL Mojang wants back when resubmitting (e.g. on a variant switch)
+let skinUuid = null;
 
 function skinVariantOf(skins) {
   const active = (skins || []).find((s) => s.state === 'ACTIVE');
   return (active && active.variant && active.variant.toLowerCase()) || 'classic';
 }
 
+// Mojang's skin URL is the raw, unfolded 64x64 texture sheet - not something
+// a player recognizes as "their skin". Crafatar (already used for the account
+// avatar elsewhere in this app) renders an actual assembled character from
+// the same UUID, so show that instead. Cache-busted since crafatar caches
+// renders per UUID and won't otherwise notice a skin change right away.
+function renderSkinPreview() {
+  if (!skinUuid) return;
+  skinPreviewImg.src = `https://crafatar.com/renders/body/${skinUuid}?overlay&size=400&t=${Date.now()}`;
+  skinPreviewImg.classList.remove('hidden');
+  skinEmpty.classList.add('hidden');
+}
+
 async function loadSkin() {
   skinError.textContent = '';
   try {
-    const { skins: skinList } = await window.mc.getSkin();
+    const { uuid, skins: skinList } = await window.mc.getSkin();
+    skinUuid = uuid;
     const active = (skinList || []).find((s) => s.state === 'ACTIVE');
     if (active) {
-      skinPreviewImg.src = active.url;
-      skinPreviewImg.classList.remove('hidden');
-      skinEmpty.classList.add('hidden');
+      skinRawUrl = active.url;
       skinCurrentVariant = skinVariantOf(skinList);
+      renderSkinPreview();
     } else {
+      skinRawUrl = null;
       skinPreviewImg.classList.add('hidden');
       skinEmpty.classList.remove('hidden');
     }
@@ -557,13 +572,14 @@ async function loadSkin() {
 skinVariantTabs.querySelectorAll('.seg-btn').forEach((btn) => {
   btn.addEventListener('click', async () => {
     const variant = btn.dataset.variant;
-    if (variant === skinCurrentVariant) return;
+    if (variant === skinCurrentVariant || !skinRawUrl) return;
     skinVariantTabs.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b === btn));
     try {
-      const { skins: skinList } = await window.mc.setSkinFromUrl(skinPreviewImg.src, variant);
+      const { skins: skinList } = await window.mc.setSkinFromUrl(skinRawUrl, variant);
       skinCurrentVariant = variant;
       const active = (skinList || []).find((s) => s.state === 'ACTIVE');
-      if (active) skinPreviewImg.src = active.url;
+      if (active) skinRawUrl = active.url;
+      renderSkinPreview();
       toast('Model updated.', 'success');
     } catch (err) {
       toast(err.message || String(err), 'error');
@@ -580,9 +596,8 @@ skinUploadBtn.addEventListener('click', async () => {
     if (result.canceled) return;
     const active = (result.skins || []).find((s) => s.state === 'ACTIVE');
     if (active) {
-      skinPreviewImg.src = active.url;
-      skinPreviewImg.classList.remove('hidden');
-      skinEmpty.classList.add('hidden');
+      skinRawUrl = active.url;
+      renderSkinPreview();
     }
     toast('Skin updated.', 'success');
   } catch (err) {
