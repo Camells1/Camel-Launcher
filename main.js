@@ -9,6 +9,7 @@ const { AuthManager } = require('./src/auth');
 const { InstanceManager } = require('./src/instances');
 const { GameLauncher } = require('./src/launcher');
 const modrinth = require('./src/modrinth');
+const { initAutoUpdater } = require('./src/updater');
 
 const STARTER_MODS = [
   { slug: 'fabric-api', title: 'Fabric API' },
@@ -229,6 +230,7 @@ app.whenReady().then(() => {
 
   registerIpc();
   createWindow();
+  initAutoUpdater(mainWindow);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

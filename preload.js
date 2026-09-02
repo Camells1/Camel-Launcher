@@ -30,4 +30,8 @@ contextBridge.exposeInMainWorld('mc', {
   onExit: (cb) => ipcRenderer.on('game:exit', (_e, payload) => cb(payload)),
 
   openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
+
+  checkForUpdates: () => ipcRenderer.invoke('update:check'),
+  onUpdateStatus: (cb) => ipcRenderer.on('update:status', (_e, payload) => cb(payload)),
+  onUpdateProgress: (cb) => ipcRenderer.on('update:progress', (_e, payload) => cb(payload)),
 });

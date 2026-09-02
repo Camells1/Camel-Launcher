@@ -2,26 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:;" />
   <title>Camel Launcher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- ================= LOGIN ================= -->
   <div id="login-screen" class="screen">
-    <svg class="desert-backdrop" viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="650" cy="90" r="130" class="sun-glow" />
-      <circle cx="650" cy="90" r="68" class="sun-core" />
-      <path d="M0,250 C100,215 200,270 300,235 C400,200 500,255 600,225 C700,198 750,225 800,215 L800,400 L0,400 Z" class="dune dune-far" />
-      <path d="M0,295 C120,258 220,315 340,285 C460,258 560,305 680,275 C740,262 770,285 800,278 L800,400 L0,400 Z" class="dune dune-mid" />
-      <g class="camel-walk">
-        <use href="#camel-shape" x="500" y="230" width="70" height="42" />
-      </g>
-      <path d="M0,335 C150,308 250,355 380,328 C500,305 600,345 700,322 C750,310 780,326 800,322 L800,400 L0,400 Z" class="dune dune-near" />
-      <g id="elephant-walk" class="elephant-walk hidden">
-        <use href="#elephant-shape" x="480" y="270" width="80" height="48" />
-      </g>
+    <svg class="desert-backdrop" viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
-        <g id="camel-shape">
+        <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#120e2b" />
+          <stop offset="20%"  stop-color="#2b1839" />
+          <stop offset="41%"  stop-color="#632c3c" />
+          <stop offset="60%"  stop-color="#a04429" />
+          <stop offset="77%"  stop-color="#d4762d" />
+          <stop offset="91%"  stop-color="#efa54c" />
+          <stop offset="100%" stop-color="#f9cd83" />
+        </linearGradient>
+        <radialGradient id="sun-halo" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stop-color="#ffe4ad" stop-opacity="0.80" />
+          <stop offset="38%"  stop-color="#ffab4d" stop-opacity="0.30" />
+          <stop offset="100%" stop-color="#ff8f2e" stop-opacity="0" />
+        </radialGradient>
+        <linearGradient id="dune-far-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#8a4a24" />
+          <stop offset="100%" stop-color="#5d2f18" />
+        </linearGradient>
+        <linearGradient id="dune-mid-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5b2f18" />
+          <stop offset="100%" stop-color="#381c0e" />
+        </linearGradient>
+        <linearGradient id="dune-near-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2a1509" />
+          <stop offset="100%" stop-color="#150b05" />
+        </linearGradient>
+
+        <g id="palm-shape">
+          <path d="M9 44 Q10 26 12 12" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" />
+          <path d="M12 12 Q2 8 -2 15"  stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" />
+          <path d="M12 12 Q22 7 27 14" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" />
+          <path d="M12 12 Q6 2 -1 2"   stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" />
+          <path d="M12 12 Q19 1 26 3"  stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" />
+          <circle cx="12" cy="12" r="2.2" fill="currentColor" />
+        </g>
+
+        <g id="camel-shape" fill="currentColor">
           <rect x="18" y="42" width="5" height="16" rx="2"/>
           <rect x="30" y="42" width="5" height="16" rx="2"/>
           <rect x="58" y="42" width="5" height="16" rx="2"/>
@@ -35,7 +64,7 @@
           <ellipse cx="80" cy="4" rx="2.2" ry="3" transform="rotate(-20 80 4)"/>
           <path d="M19 40 q-6 4 -3 12" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
         </g>
-        <g id="elephant-shape">
+        <g id="elephant-shape" fill="currentColor">
           <rect x="20" y="42" width="7" height="17" rx="2"/>
           <rect x="34" y="42" width="7" height="17" rx="2"/>
           <rect x="58" y="42" width="7" height="17" rx="2"/>
@@ -47,19 +76,88 @@
           <path d="M24 40 q-6 4 -3 12" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
         </g>
       </defs>
+
+      <rect class="sky" x="0" y="0" width="800" height="400" fill="url(#sky-grad)" />
+
+      <g class="stars">
+        <rect x="52"  y="26"  width="2" height="2" style="--d:0s"    />
+        <rect x="118" y="58"  width="2" height="2" style="--d:1.3s"  />
+        <rect x="186" y="18"  width="2" height="2" style="--d:2.6s"  />
+        <rect x="243" y="72"  width="2" height="2" style="--d:0.7s"  />
+        <rect x="310" y="34"  width="2" height="2" style="--d:3.4s"  />
+        <rect x="376" y="12"  width="2" height="2" style="--d:1.9s"  />
+        <rect x="421" y="63"  width="2" height="2" style="--d:2.2s"  />
+        <rect x="487" y="28"  width="2" height="2" style="--d:0.4s"  />
+        <rect x="94"  y="96"  width="2" height="2" style="--d:2.9s"  />
+        <rect x="271" y="104" width="2" height="2" style="--d:1.1s"  />
+        <rect x="553" y="46"  width="2" height="2" style="--d:3.1s"  />
+        <rect x="713" y="22"  width="2" height="2" style="--d:1.6s"  />
+        <rect x="760" y="66"  width="2" height="2" style="--d:2.4s"  />
+        <rect x="614" y="14"  width="2" height="2" style="--d:0.9s"  />
+        <rect x="160" y="130" width="2" height="2" style="--d:3.7s"  />
+        <rect x="32"  y="150" width="2" height="2" style="--d:2.0s"  />
+      </g>
+
+      <circle class="sun-halo" cx="628" cy="176" r="200" fill="url(#sun-halo)" />
+      <circle class="sun-core" cx="628" cy="176" r="52" />
+      <g class="sun-bands">
+        <rect x="556" y="196" width="144" height="4" />
+        <rect x="548" y="210" width="160" height="3" />
+        <rect x="564" y="222" width="128" height="2" />
+      </g>
+
+      <path class="dune dune-far" d="M0,250 C100,215 200,270 300,235 C400,200 500,255 600,225 C700,198 750,225 800,215 L800,400 L0,400 Z" fill="url(#dune-far-grad)" />
+
+      <g class="oasis">
+        <ellipse class="oasis-water" cx="150" cy="289" rx="56" ry="8" />
+        <use href="#palm-shape" x="96"  y="238" width="30" height="52" />
+        <use href="#palm-shape" x="124" y="228" width="36" height="62" />
+        <use href="#palm-shape" x="164" y="242" width="26" height="46" />
+      </g>
+
+      <path class="dune dune-mid" d="M0,295 C120,258 220,315 340,285 C460,258 560,305 680,275 C740,262 770,285 800,278 L800,400 L0,400 Z" fill="url(#dune-mid-grad)" />
+
+      <g class="camel-walk">
+        <g class="camel-bob">
+          <use href="#camel-shape" x="500" y="230" width="70" height="42" />
+        </g>
+      </g>
+
+      <path class="dune dune-near" d="M0,335 C150,308 250,355 380,328 C500,305 600,345 700,322 C750,310 780,326 800,322 L800,400 L0,400 Z" fill="url(#dune-near-grad)" />
+
+      <g id="elephant-walk" class="elephant-walk hidden">
+        <use href="#elephant-shape" x="480" y="270" width="80" height="48" />
+      </g>
     </svg>
+
+    <div class="heat-haze" aria-hidden="true"></div>
+
     <p id="elephant-caption" class="elephant-caption hidden">🐘 Easter egg: an elephant only wanders by 1 in 100 times.</p>
-    <div class="login-card">
-      <svg class="camel-hero camel-pixel-slot" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"></svg>
-      <h1>Camel Launcher</h1>
+
+    <div class="login-card panel">
+      <div class="login-brand">
+        <svg class="camel-hero camel-pixel-slot" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"></svg>
+        <h1 class="display">Camel<br />Launcher</h1>
+      </div>
+      <div class="rule"></div>
       <p class="subtitle">Sign in with the Microsoft account that owns Minecraft.</p>
-      <button id="login-btn" class="btn primary large">Sign in with Microsoft</button>
+      <button id="login-btn" class="btn primary large block">
+        <svg class="ms-logo btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="9" height="9"/><rect x="11" y="0" width="9" height="9"/><rect x="0" y="11" width="9" height="9"/><rect x="11" y="11" width="9" height="9"/></svg>
+        <span class="btn-label">Sign in with Microsoft</span>
+      </button>
       <p id="login-error" class="error-text"></p>
+      <p class="login-foot">Fabric · Modrinth · built for the group</p>
     </div>
   </div>
 
+  <!-- ================= APP ================= -->
   <div id="app-screen" class="screen hidden">
+    <div class="app-atmosphere" aria-hidden="true"></div>
+
     <nav class="icon-rail">
+      <div class="rail-brand" title="Camel Launcher">
+        <svg class="camel-mark camel-pixel-slot" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
       <button class="rail-btn active" id="rail-home" title="Home">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5" /><path d="M6 10.5V20h5v-5h2v5h5V10.5" /></svg>
       </button>
@@ -75,20 +173,25 @@
     </nav>
 
     <main class="main-area">
+      <!-- ---------- HOME ---------- -->
       <section id="page-home" class="page active">
         <div class="page-header">
-          <div>
-            <svg class="camel-icon camel-pixel-slot" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"></svg>
-            <h2 class="inline-title">Camel Launcher</h2>
+          <div class="page-heading">
+            <p class="eyebrow">The caravan</p>
+            <h2 class="display">Your Instances</h2>
+            <p class="muted page-sub">Each instance is its own Minecraft version and mod list. Make one per modpack, or one per friend group.</p>
           </div>
-          <button id="new-instance-btn" class="btn primary">+ New Instance</button>
+          <button id="new-instance-btn" class="btn primary">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Instance
+          </button>
         </div>
-        <p class="muted">Each instance is its own Minecraft version + mod list. Make one per modpack, or one per friend group.</p>
         <div class="instance-grid" id="instance-grid"></div>
       </section>
 
+      <!-- ---------- INSTANCE ---------- -->
       <section id="page-instance" class="page">
-        <div class="instance-header">
+        <div class="instance-header panel">
           <div class="instance-icon-lg" id="instance-icon-lg"></div>
           <div class="instance-header-info">
             <h2 id="instance-title">Instance</h2>
@@ -98,6 +201,8 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>
           </button>
           <button id="instance-play-btn" class="btn primary large">
+            <svg class="btn-icon play-glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>
+            <svg class="btn-icon stop-glyph hidden" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
             <span class="btn-label">Play</span>
             <svg class="spinner hidden" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="5"/></svg>
           </button>
@@ -115,17 +220,25 @@
         <div id="itab-content" class="itab active">
           <div id="installed-mode">
             <div class="toolbar">
-              <button id="browse-content-btn" class="btn primary small">Browse content</button>
+              <button id="browse-content-btn" class="btn primary small">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+                Browse content
+              </button>
               <button id="update-all-btn" class="btn secondary small">Update all</button>
               <span class="toolbar-spacer"></span>
-              <input id="installed-filter" type="text" placeholder="Filter installed content..." />
+              <div class="search-field">
+                <svg class="search-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+                <input id="installed-filter" type="text" placeholder="Filter installed content..." />
+              </div>
             </div>
-            <table class="content-table">
-              <thead>
-                <tr><th>Project</th><th>Version</th><th class="ct-actions-head">Actions</th></tr>
-              </thead>
-              <tbody id="installed-tbody"></tbody>
-            </table>
+            <div class="table-wrap">
+              <table class="content-table">
+                <thead>
+                  <tr><th>Project</th><th>Version</th><th class="ct-actions-head">Actions</th></tr>
+                </thead>
+                <tbody id="installed-tbody"></tbody>
+              </table>
+            </div>
             <p id="installed-empty" class="muted empty-note hidden">No content installed yet — click "Browse content" to add some.</p>
           </div>
 
@@ -133,13 +246,17 @@
             <div class="toolbar">
               <button id="back-to-installed-btn" class="btn secondary small">&larr; Back to installed</button>
               <span class="toolbar-spacer"></span>
-              <input id="mod-search" type="text" placeholder="Search all of Modrinth..." />
+              <div class="search-field wide">
+                <svg class="search-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+                <input id="mod-search" type="text" placeholder="Search all of Modrinth..." />
+              </div>
             </div>
+            <p class="eyebrow starter-label">Quick add</p>
             <div class="starter-row" id="starter-row"></div>
             <div id="search-results" class="mod-grid"></div>
             <div class="load-more-row">
               <button id="load-more-btn" class="btn secondary hidden">Load more mods</button>
-              <span id="results-count" class="muted"></span>
+              <span id="results-count" class="muted small"></span>
             </div>
           </div>
         </div>
@@ -149,48 +266,75 @@
         </div>
       </section>
 
+      <!-- ---------- SETTINGS ---------- -->
       <section id="page-settings" class="page">
-        <h2>Settings</h2>
-        <p class="muted">Applies to every instance.</p>
-        <label class="field">
-          Min memory (MB)
-          <input id="setting-minmem" type="number" step="256" />
-        </label>
-        <label class="field">
-          Max memory (MB)
-          <input id="setting-maxmem" type="number" step="256" />
-        </label>
-        <label class="field">
-          Custom Java path (optional)
-          <input id="setting-java" type="text" placeholder="Auto-detected" />
-        </label>
-        <button id="save-settings-btn" class="btn primary">Save settings</button>
-        <p id="settings-saved" class="hint hidden">Saved.</p>
+        <div class="page-heading">
+          <p class="eyebrow">Configuration</p>
+          <h2 class="display">Settings</h2>
+          <p class="muted page-sub">Applies to every instance.</p>
+        </div>
+        <div class="settings-panel panel">
+          <p class="panel-title">Java &amp; Memory</p>
+          <div class="field-row">
+            <label class="field">
+              <span class="field-label">Min memory (MB)</span>
+              <input id="setting-minmem" type="number" step="256" />
+            </label>
+            <label class="field">
+              <span class="field-label">Max memory (MB)</span>
+              <input id="setting-maxmem" type="number" step="256" />
+            </label>
+          </div>
+          <label class="field wide">
+            <span class="field-label">Custom Java path (optional)</span>
+            <input id="setting-java" type="text" placeholder="Auto-detected" />
+          </label>
+          <div class="settings-actions">
+            <button id="save-settings-btn" class="btn primary">Save settings</button>
+            <p id="settings-saved" class="hint hidden">Saved.</p>
+          </div>
+        </div>
       </section>
     </main>
 
     <aside class="right-sidebar">
       <div class="sidebar-label">Playing as</div>
-      <div class="account-card">
-        <img id="account-avatar" class="account-avatar" />
+      <div class="account-card panel">
+        <div class="avatar-slot">
+          <img id="account-avatar" class="account-avatar" alt="" />
+        </div>
         <div class="account-info">
           <div id="account-name" class="account-name">Player</div>
           <div class="muted account-sub">Minecraft account</div>
         </div>
       </div>
-      <button id="logout-btn" class="link-btn">Sign out</button>
+
+      <div class="sidebar-label">Session</div>
+      <div class="status-card panel">
+        <span id="status-dot" class="status-dot"></span>
+        <span id="session-status" class="status-text">Idle</span>
+      </div>
+
+      <div class="rail-spacer"></div>
+
+      <div class="sidebar-foot">
+        <svg class="camel-mark sm camel-pixel-slot" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"></svg>
+        <button id="logout-btn" class="link-btn">Sign out</button>
+      </div>
     </aside>
   </div>
 
+  <!-- ================= NEW INSTANCE MODAL ================= -->
   <div id="modal-overlay" class="modal-overlay hidden">
-    <div class="modal">
-      <h3>New Instance</h3>
-      <label class="field">
-        Name
+    <div class="modal panel">
+      <h3 class="display">New Instance</h3>
+      <div class="rule"></div>
+      <label class="field wide">
+        <span class="field-label">Name</span>
         <input id="modal-name" type="text" placeholder="My Modpack" />
       </label>
-      <label class="field">
-        Minecraft version
+      <label class="field wide">
+        <span class="field-label">Minecraft version</span>
         <input id="modal-version" type="text" placeholder="1.21.1" value="1.21.1" />
       </label>
       <p class="muted small">Fabric will be installed automatically for this version.</p>
@@ -202,6 +346,22 @@
     </div>
   </div>
 
+  <!-- ================= CONFIRM DIALOG ================= -->
+  <div id="confirm-overlay" class="modal-overlay hidden">
+    <div class="modal panel narrow">
+      <h3 id="confirm-title" class="display">Are you sure?</h3>
+      <div class="rule"></div>
+      <p id="confirm-body" class="muted confirm-body"></p>
+      <div class="modal-actions">
+        <button id="confirm-cancel-btn" class="btn secondary">Cancel</button>
+        <button id="confirm-ok-btn" class="btn danger">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-stack" class="toast-stack" aria-live="polite"></div>
+
   <script src="renderer.js"></script>
+  <script src="updater.js"></script>
 </body>
 </html>

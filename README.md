@@ -41,6 +41,88 @@ certificate, Windows SmartScreen will likely show an "unrecognized publisher"
 warning the first time anyone runs it — click **More info → Run anyway**.
 That's normal for small/indie apps, not a sign anything's wrong.
 
+## Auto-updates
+
+Camel Launcher can update itself. About five seconds after the window opens, it
+quietly asks an *update feed* whether a newer version exists. If one does, it
+downloads it in the background — a small progress bar with a percentage appears
+in the bottom-right corner — and when the download finishes it shows
+**"Update ready — restarting..."**, closes, installs silently, and reopens on the
+new version. No installer to click through.
+
+### Right now this does nothing, and that's on purpose
+
+There is no update server yet, so `package.json` points at an obvious
+placeholder:
+
+```json
+"publish": [
+  { "provider": "generic", "url": "https://example.com/camel-launcher-updates/" }
+]
+```
+
+**`https://example.com/camel-launcher-updates/` is not a real URL** — nothing is
+hosted there and nothing ever will be. Until you replace it, every update check
+fails. That is handled: the failure is logged to the main-process console and
+**nothing is shown in the UI**. The launcher behaves exactly as it did before.
+
+(In a `npm start` dev run the check is skipped entirely — `electron-updater`
+only runs in a packaged app.)
+
+### Turning it on for real
+
+1. **Find somewhere to host files.** Any plain static file host over HTTPS
+   works — a GitHub Releases page, an S3 bucket, Cloudflare R2, Netlify, or a
+   web server you own. There's no server-side code involved; the updater only
+   does plain HTTP GETs for the static files you upload in step 5.
+2. **Point the app at it.** Replace the placeholder `url` in `package.json` →
+   `build` → `publish` with your own (keep the trailing slash):
+
+   ```json
+   "publish": [
+     { "provider": "generic", "url": "https://updates.yoursite.net/camel-launcher/" }
+   ]
+   ```
+
+   If you'd rather use GitHub Releases, swap the whole block for
+   `{ "provider": "github", "owner": "your-github-username", "repo": "CustomMCLauncher" }`
+   and attach the build output to a public release instead — everything else
+   below works the same.
+3. **Bump the version** in `package.json` (`"version": "1.0.1"`, etc). The
+   updater only acts when the hosted version is *newer* than the installed one,
+   so shipping an update always means bumping this first.
+4. **Build:** `npm run dist`.
+5. **Upload these three files from `dist/` to that URL:**
+   - `latest.yml` — the update manifest (version number + checksum). Generated
+     automatically by `npm run dist`; this is the file the app fetches to decide
+     whether an update exists.
+   - `Camel Launcher Setup <version>.exe` — the installer that gets downloaded.
+   - `Camel Launcher Setup <version>.exe.blockmap` — lets the updater download
+     only the changed chunks instead of the whole 110 MB installer.
+
+   Keep older installers up there too if you like; only `latest.yml` decides
+   what's current.
+6. That's it. Anyone running an older *installed* copy picks it up the next time
+   they open the launcher.
+
+### Things worth knowing
+
+- **Only the installer build auto-updates.** `Camel Launcher <version>.exe` (the
+  portable one) has nowhere to install itself to, so it silently skips updates.
+  Friends who want auto-updates should use `Camel Launcher Setup <version>.exe`.
+- **The NSIS settings matter.** `perMachine: false` keeps the app installed in
+  the user profile, which is what lets the silent update install run without a
+  UAC admin prompt. If you ever switch it to `true`, auto-updates will start
+  popping an admin prompt (or fail). `oneClick: false` is fine — the updater
+  passes `/S` (silent) and `--force-run` (reopen afterwards) explicitly.
+- **Testing before you go live:** point a packaged build at a local static
+  server without editing `package.json` by setting an env var, e.g.
+  `set CAMEL_UPDATE_FEED_URL=http://localhost:8080/` before launching. Serve the
+  `dist/` folder from that port and it will behave exactly like real hosting.
+- **Where the code lives:** `src/updater.js` (main process: checks, downloads,
+  relaunches) and `renderer/updater.js` (the progress overlay, which builds its
+  own DOM and styles so it doesn't depend on the rest of the UI).
+
 ## First run
 
 1. Click **Sign in with Microsoft** and log in with the account that owns Minecraft.
