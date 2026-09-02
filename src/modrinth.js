@@ -13,25 +13,36 @@ async function apiGet(pathAndQuery) {
   return res.json();
 }
 
-// Mods only exist for a specific loader (Fabric here); resource packs and
-// shaders are loader-agnostic on Modrinth's side (shaders are tagged with
-// their own "iris"/"optifine" category rather than a real loader facet), so
-// only mod searches/version-lookups should filter by loader.
+// Mods only exist for a specific loader, so mod searches and mod version
+// lookups are filtered by whichever loader the instance actually uses.
+// Resource packs and shaders are loader-agnostic on Modrinth's side (shaders
+// are tagged with their own "iris"/"optifine" category rather than a real
+// loader facet), so `usesLoader: false` keeps that facet off those searches.
 const PROJECT_TYPES = {
-  mod: { type: 'mod', loader: 'fabric' },
-  resourcepack: { type: 'resourcepack', loader: null },
-  shader: { type: 'shader', loader: null },
+  mod: { type: 'mod', usesLoader: true },
+  resourcepack: { type: 'resourcepack', usesLoader: false },
+  shader: { type: 'shader', usesLoader: false },
+  modpack: { type: 'modpack', usesLoader: false },
 };
+
+/** The loader facet to apply, or null when this project type ignores loaders. */
+function loaderFacetFor(projectType, loader) {
+  const kind = PROJECT_TYPES[projectType] || PROJECT_TYPES.mod;
+  return kind.usesLoader && loader ? loader : null;
+}
 
 /**
  * Searches (or browses, if query is empty) Modrinth for a given project type
- * (mod/resourcepack/shader) compatible with a specific Minecraft version.
+ * (mod/resourcepack/shader/modpack) compatible with a specific Minecraft
+ * version. Pass mcVersion = null to browse across every game version.
  * Supports paging via offset.
  */
-async function searchMods(query, mcVersion, { limit = 30, offset = 0, projectType = 'mod' } = {}) {
+async function searchMods(query, mcVersion, { limit = 30, offset = 0, projectType = 'mod', loader = null } = {}) {
   const kind = PROJECT_TYPES[projectType] || PROJECT_TYPES.mod;
-  const facets = [[`project_type:${kind.type}`], [`versions:${mcVersion}`]];
-  if (kind.loader) facets.push([`categories:${kind.loader}`]);
+  const facets = [[`project_type:${kind.type}`]];
+  if (mcVersion) facets.push([`versions:${mcVersion}`]);
+  const loaderFacet = loaderFacetFor(projectType, loader);
+  if (loaderFacet) facets.push([`categories:${loaderFacet}`]);
   const params = new URLSearchParams({
     query: query || '',
     facets: JSON.stringify(facets),
@@ -54,6 +65,10 @@ async function searchMods(query, mcVersion, { limit = 30, offset = 0, projectTyp
       downloads: hit.downloads,
       author: hit.author,
       projectType: hit.project_type,
+      // Modpack cards show which loader + game versions a pack targets, the
+      // way Modrinth's own browse list does.
+      gameVersions: hit.versions || [],
+      categories: hit.categories || [],
     })),
   };
 }
@@ -72,11 +87,24 @@ async function getProject(idOrSlug) {
   };
 }
 
+/**
+ * Looks up many projects in one request. Used after a modpack install to
+ * backfill titles and icons for the mods the pack pinned, without firing one
+ * request per mod.
+ */
+async function getProjects(ids) {
+  const unique = [...new Set(ids)].filter(Boolean);
+  if (!unique.length) return [];
+  const params = new URLSearchParams({ ids: JSON.stringify(unique) });
+  const list = await apiGet(`/projects?${params.toString()}`);
+  return list.map((p) => ({ id: p.id, slug: p.slug, title: p.title, iconUrl: p.icon_url, projectType: p.project_type }));
+}
+
 /** Finds the best matching version file for a project + Minecraft version. */
-async function getBestVersionFile(projectIdOrSlug, mcVersion, { projectType = 'mod' } = {}) {
-  const kind = PROJECT_TYPES[projectType] || PROJECT_TYPES.mod;
+async function getBestVersionFile(projectIdOrSlug, mcVersion, { projectType = 'mod', loader = null } = {}) {
   const params = new URLSearchParams({ game_versions: JSON.stringify([mcVersion]) });
-  if (kind.loader) params.set('loaders', JSON.stringify([kind.loader]));
+  const loaderFacet = loaderFacetFor(projectType, loader);
+  if (loaderFacet) params.set('loaders', JSON.stringify([loaderFacet]));
   const versions = await apiGet(`/project/${projectIdOrSlug}/version?${params.toString()}`);
   if (!versions.length) return null;
   const version = versions[0];
@@ -144,4 +172,14 @@ function removeMod(filename, modsDir) {
   if (fs.existsSync(target)) fs.unlinkSync(target);
 }
 
-module.exports = { searchMods, getProject, getBestVersionFile, installMod, removeMod, downloadFile };
+module.exports = {
+  searchMods,
+  getProject,
+  getProjects,
+  getBestVersionFile,
+  installMod,
+  removeMod,
+  downloadFile,
+  apiGet,
+  USER_AGENT,
+};

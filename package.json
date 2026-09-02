@@ -19,6 +19,7 @@
   "dependencies": {
     "@xmcl/installer": "^5.4.0",
     "electron-updater": "^6.8.9",
+    "yauzl": "2.10.0",
     "msmc": "^5.0.5"
   },
   "overrides": {

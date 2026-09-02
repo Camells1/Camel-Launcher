@@ -21,6 +21,15 @@ contextBridge.exposeInMainWorld('mc', {
   renameInstance: (id, name) => ipcRenderer.invoke('instances:rename', id, name),
   updateInstance: (id, patch) => ipcRenderer.invoke('instances:update', id, patch),
   removeInstance: (id, opts) => ipcRenderer.invoke('instances:remove', id, opts),
+  setInstanceIcon: (id) => ipcRenderer.invoke('instances:setIcon', id),
+  clearInstanceIcon: (id) => ipcRenderer.invoke('instances:clearIcon', id),
+  duplicateInstance: (id, name) => ipcRenderer.invoke('instances:duplicate', id, name),
+
+  listLoaders: () => ipcRenderer.invoke('loaders:list'),
+
+  searchModpacks: (query, opts) => ipcRenderer.invoke('modpacks:search', query, opts),
+  installModpack: (project) => ipcRenderer.invoke('modpacks:install', project),
+  onModpackProgress: (cb) => ipcRenderer.on('modpacks:progress', (_e, payload) => cb(payload)),
 
   searchMods: (instanceId, query, opts) => ipcRenderer.invoke('mods:search', instanceId, query, opts),
   listMods: (instanceId) => ipcRenderer.invoke('mods:list', instanceId),

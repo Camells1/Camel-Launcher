@@ -250,6 +250,7 @@ h3.display { font-size: 14px; margin: 0 0 4px; }
 
 .btn.large  { padding: 13px 26px; font-size: 15px; border-radius: 5px; }
 .btn.small  { padding: 6px 12px; font-size: 12px; gap: 6px; }
+.btn.tiny   { padding: 4px 10px; font-size: 11.5px; gap: 5px; box-shadow: inset 0 2px 0 var(--btn-hi), inset 0 -2px 0 var(--btn-lo), 0 3px 0 var(--btn-edge); }
 .btn.block  { width: 100%; }
 
 .btn-icon { width: 15px; height: 15px; flex-shrink: 0; }
@@ -631,6 +632,21 @@ input:focus {
 .rail-swatch:hover { transform: translateY(-1px); filter: brightness(1.1); }
 .rail-swatch:active { transform: translateY(2px); }
 
+/* Custom instance icon (Prism/MultiMC let an instance carry a real picture).
+   The image fills the same bevelled tile the letter swatch uses, so the rail
+   stays a single column of identically-shaped chips either way. Nearest-
+   neighbour scaling keeps pixel-art icons crisp, which is what most Minecraft
+   pack icons actually are. */
+.rail-swatch.has-icon { background: #150e07; text-shadow: none; }
+.rail-swatch img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 3px;
+  image-rendering: pixelated;
+}
+
 .main-area {
   position: relative;
   z-index: 1;
@@ -702,6 +718,22 @@ input:focus {
 }
 .instance-card:hover .ic-open { opacity: 1; transform: translateX(0); }
 
+/* Duplicate: Prism's most-used instance action after Play. Tucked into the
+   card's top-right and only revealed on hover, so a resting grid stays calm. */
+.instance-card .ic-duplicate {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  opacity: 0;
+  transition: opacity var(--t-med) ease, color var(--t-fast) ease, background var(--t-fast) ease;
+}
+.instance-card .ic-duplicate svg { width: 15px; height: 15px; }
+.instance-card:hover .ic-duplicate,
+.instance-card .ic-duplicate:focus-visible { opacity: 1; }
+.instance-card .ic-duplicate:hover { color: var(--accent-hi); border-color: var(--accent-lo); }
+
 .empty-hint {
   grid-column: 1 / -1;
   text-align: center;
@@ -721,8 +753,35 @@ input:focus {
   gap: 16px;
   padding: 16px 18px;
 }
-.instance-icon-lg.rail-swatch { width: 58px; height: 58px; font-size: 18px; cursor: default; }
-.instance-icon-lg.rail-swatch:hover { transform: none; filter: none; }
+/* The header icon is the affordance for changing it, exactly as in Prism's
+   instance dialogs where the icon itself is the button that opens the picker.
+   A pencil badge on hover is what makes that discoverable. */
+.instance-icon-lg.rail-swatch { width: 58px; height: 58px; font-size: 18px; padding: 0; cursor: pointer; }
+.instance-icon-lg.rail-swatch:hover { transform: none; filter: brightness(1.12); }
+.instance-icon-lg.rail-swatch::after {
+  content: '✎';
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  width: 21px;
+  height: 21px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1;
+  color: var(--text);
+  text-shadow: none;
+  background: var(--sand-700);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity var(--t-fast) ease, transform var(--t-fast) var(--ease-out);
+}
+.instance-icon-lg.rail-swatch:hover::after { opacity: 1; transform: scale(1); }
+.instance-icon-lg.rail-swatch:focus-visible::after { opacity: 1; transform: scale(1); }
 .instance-header-info { flex: 1; min-width: 0; }
 .instance-header-info h2 { margin: 0 0 2px; font-size: 20px; font-weight: 680; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .instance-header-info p { margin: 0; font-size: 12.5px; }
@@ -849,6 +908,49 @@ input:focus {
 .ct-actions .icon-btn svg { width: 15px; height: 15px; }
 .empty-note { text-align: center; padding: 34px 0; font-size: 13px; }
 
+/* --- Log viewer ---
+   MultiMC and Prism put the level toggles plus Copy/Upload/Clear on one strip
+   above the console, and the search field on a strip below it. We keep a
+   single strip: the search is a live filter here rather than find-next, so it
+   leads, the toggles sit beside it and the actions are pushed right. */
+.log-toolbar { max-width: 940px; }
+.log-search-wrap { position: relative; flex: 1 1 240px; max-width: 340px; min-width: 150px; }
+.log-search-icon {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  color: var(--text-dim);
+  pointer-events: none;
+}
+.log-search { width: 100%; padding-left: 30px; }
+.log-search::-webkit-search-cancel-button { filter: invert(0.75) sepia(1) saturate(0.35); cursor: pointer; }
+
+.log-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.log-toggle:hover { color: var(--text); }
+.log-toggle input { accent-color: var(--accent); width: 14px; height: 14px; margin: 0; cursor: pointer; }
+
+.log-count { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.log-shell { position: relative; max-width: 940px; }
+.log-bottom-btn {
+  position: absolute;
+  right: 18px;
+  bottom: 14px;
+  box-shadow: inset 0 2px 0 var(--bevel-hi), inset 0 -2px 0 var(--bevel-lo), 0 3px 0 #0d0804, 0 6px 16px rgba(0, 0, 0, 0.6);
+}
+
 .log-content {
   max-height: 58vh;
   overflow: auto;
@@ -863,9 +965,19 @@ input:focus {
   color: #a8c47e;
   max-width: 940px;
   margin: 0;
+  min-height: 120px;
   white-space: pre-wrap;
   word-break: break-word;
 }
+.log-content.no-wrap { white-space: pre; word-break: normal; }
+
+/* Prism's default console palette: warnings orange, errors and fatals red,
+   everything else left in the pane's normal text colour. */
+.log-line { display: block; }
+.log-line.warn  { color: var(--accent-hi); }
+.log-line.error { color: var(--danger-hi); }
+.log-line.log-none { color: var(--text-dim); font-style: italic; }
+.log-content.no-color .log-line { color: inherit; }
 
 /* --- Browse mode --- */
 .starter-label { margin-bottom: 8px; }
@@ -992,11 +1104,62 @@ input:focus {
   z-index: 100;
   animation: fadeIn 0.15s ease both;
 }
-.modal { width: 380px; padding: 24px 26px; animation: cardRise 0.24s var(--ease-out) both; }
+.modal { width: 380px; padding: 24px 26px; animation: cardRise 0.24s var(--ease-out) both; max-height: 88vh; overflow-y: auto; }
+
+/* Instance-settings icon picker: a live preview beside its two actions, the
+   way Prism shows the instance icon inside its settings/copy dialogs. */
+.icon-picker-row { display: flex; align-items: center; gap: 14px; }
+.icon-picker-preview { width: 52px; height: 52px; font-size: 16px; cursor: default; flex-shrink: 0; }
+.icon-picker-preview:hover { transform: none; filter: none; }
+.icon-picker-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+.icon-picker-hint { flex-basis: 100%; margin: 0; font-size: 11px; }
+
+.field-hint { display: block; margin-top: 6px; font-size: 11px; line-height: 1.45; }
 .modal.narrow { width: 340px; }
+/* Browsing modpacks needs room for a real result list, so the New Instance
+   modal grows when its Modpacks source is selected. */
+.modal.wide { width: 560px; }
 .modal h3 { color: var(--text); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
 .confirm-body { margin: 0; font-size: 13px; line-height: 1.55; }
+
+/* ---- New Instance: loader picker + modpack browser ---- */
+/* The Modrinth App lays its loaders out as one even row, and four equal
+   columns fit the modal's width. Both selectors are doubled up so they
+   outrank the base `.segmented` rule, which sets inline-flex further down. */
+.segmented.loader-picker { display: grid; grid-template-columns: repeat(4, 1fr); width: 100%; margin-bottom: 0; }
+.segmented.loader-picker .seg-btn { padding: 7px 2px; }
+.segmented#new-instance-source { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+.modpack-blurb { margin: 10px 0 14px; line-height: 1.5; }
+
+/* With the pack list open the modal is the tallest thing in the app, so it
+   gets an explicit ceiling - otherwise its last row (the Close button) is
+   pushed past the panel's own bottom edge on shorter windows. */
+#new-instance-modal { max-height: calc(100vh - 40px); overflow-y: auto; }
+.modpack-list { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
+.modpack-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 11px;
+  background: var(--sand-950);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+}
+.modpack-row .mp-info { flex: 1; min-width: 0; }
+.modpack-row .mp-title { margin: 0 0 2px; font-size: 13.5px; font-weight: 650; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.modpack-row .mp-desc {
+  margin: 0 0 5px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--text-dim);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.modpack-row .mp-meta { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.modpack-row .mp-actions { flex-shrink: 0; }
 
 .toast-stack {
   position: fixed;

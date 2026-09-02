@@ -7,8 +7,9 @@ app.setName('Camel Launcher');
 const { createStores, JsonStore } = require('./src/store');
 const { AuthManager } = require('./src/auth');
 const { InstanceManager } = require('./src/instances');
-const { GameLauncher } = require('./src/launcher');
+const { GameLauncher, LOADERS, loaderLabel, normalizeLoader } = require('./src/launcher');
 const modrinth = require('./src/modrinth');
+const modpackDiscovery = require('./src/modpackDiscovery');
 const worlds = require('./src/worlds');
 const screenshots = require('./src/screenshots');
 const servers = require('./src/servers');
@@ -17,12 +18,15 @@ const modpack = require('./src/modpack');
 const skins = require('./src/skins');
 const { initAutoUpdater } = require('./src/updater');
 
+// "Quick add" chips. `loaders` is what each project actually publishes for on
+// Modrinth, so a Forge instance isn't offered a one-click button that can only
+// ever fail. Forge has no overlap with this list and simply gets no chips.
 const STARTER_MODS = [
-  { slug: 'fabric-api', title: 'Fabric API' },
-  { slug: 'sodium', title: 'Sodium (performance)' },
-  { slug: 'lithium', title: 'Lithium (performance)' },
-  { slug: 'modmenu', title: 'Mod Menu' },
-  { slug: 'iris', title: 'Iris (shaders)' },
+  { slug: 'fabric-api', title: 'Fabric API', loaders: ['fabric'] },
+  { slug: 'sodium', title: 'Sodium (performance)', loaders: ['fabric', 'neoforge', 'quilt'] },
+  { slug: 'lithium', title: 'Lithium (performance)', loaders: ['fabric', 'neoforge', 'quilt'] },
+  { slug: 'modmenu', title: 'Mod Menu', loaders: ['fabric', 'quilt'] },
+  { slug: 'iris', title: 'Iris (shaders)', loaders: ['fabric', 'neoforge', 'quilt'] },
 ];
 
 let mainWindow;
@@ -92,7 +96,10 @@ async function installProject(instanceId, project, { projectType = 'mod', visite
   if (visited.has(projectId)) return [];
   visited.add(projectId);
 
-  const file = await modrinth.installMod(projectId, inst.mcVersion, dir, { projectType });
+  // Mods have to match the instance's own loader; resource packs and shaders
+  // ignore the loader entirely (modrinth.js decides which applies).
+  const loader = normalizeLoader(inst.loader);
+  const file = await modrinth.installMod(projectId, inst.mcVersion, dir, { projectType, loader });
   let iconUrl = project.iconUrl;
   let title = project.title;
   if (!iconUrl) {
@@ -165,12 +172,35 @@ function registerIpc() {
 
   ipcMain.handle('instances:list', async () => instances.list());
 
-  ipcMain.handle('instances:create', async (_e, { name, mcVersion }) => {
-    return instances.create({ name, mcVersion, loader: 'fabric' });
+  ipcMain.handle('instances:create', async (_e, { name, mcVersion, loader }) => {
+    // Fabric stays the fallback for anything that doesn't name a loader, so a
+    // renderer that forgets the field can't silently produce vanilla instances.
+    return instances.create({ name, mcVersion, loader: normalizeLoader(loader || 'fabric') });
   });
 
   ipcMain.handle('instances:rename', async (_e, id, name) => instances.rename(id, name));
   ipcMain.handle('instances:update', async (_e, id, patch) => instances.update(id, patch));
+
+  // ---- Custom instance icons ----
+  // The picked file is copied into the instance folder, so the icon survives
+  // the user moving or deleting whatever they originally selected.
+  ipcMain.handle('instances:setIcon', async (_e, id) => {
+    requireInstance(id);
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      title: 'Choose an instance icon',
+      filters: [{ name: 'Images', extensions: ['png', 'jpg', 'jpeg'] }],
+      properties: ['openFile'],
+    });
+    if (canceled || !filePaths.length) return { canceled: true };
+    return { canceled: false, instance: instances.setIcon(id, filePaths[0]) };
+  });
+
+  ipcMain.handle('instances:clearIcon', async (_e, id) => instances.clearIcon(id));
+
+  ipcMain.handle('instances:duplicate', async (_e, id, name) => {
+    if (gameProcess && playingInstanceId === id) throw new Error('Stop the game before duplicating this instance.');
+    return instances.duplicate(id, name);
+  });
 
   ipcMain.handle('instances:remove', async (_e, id, opts) => {
     if (gameProcess && playingInstanceId === id) throw new Error('Stop the game before deleting this instance.');
@@ -183,7 +213,7 @@ function registerIpc() {
     const items = [];
     for (const inst of instances.list()) {
       if (inst.lastPlayedAt) {
-        items.push({ type: 'instance', instanceId: inst.id, name: inst.name, subtitle: `Fabric · ${inst.mcVersion}`, lastPlayedAt: inst.lastPlayedAt });
+        items.push({ type: 'instance', instanceId: inst.id, name: inst.name, subtitle: `${loaderLabel(normalizeLoader(inst.loader))} · ${inst.mcVersion}`, lastPlayedAt: inst.lastPlayedAt });
       }
       for (const server of servers.listServers(instances.folder(inst.id))) {
         if (server.lastPlayedAt) {
@@ -239,8 +269,12 @@ function registerIpc() {
 
   ipcMain.handle('mods:search', async (_e, instanceId, query, opts) => {
     const inst = requireInstance(instanceId);
-    return modrinth.searchMods(query, inst.mcVersion, opts);
+    return modrinth.searchMods(query, inst.mcVersion, { ...opts, loader: normalizeLoader(inst.loader) });
   });
+
+  // The loader list the New Instance picker renders, so the UI never has to
+  // keep its own copy of what src/launcher.js can actually install.
+  ipcMain.handle('loaders:list', async () => LOADERS);
 
   ipcMain.handle('mods:list', async (_e, instanceId) => {
     requireInstance(instanceId);
@@ -290,7 +324,7 @@ function registerIpc() {
     let updated = 0;
     for (const entry of metadata) {
       if (!entry.projectId) continue;
-      const best = await modrinth.getBestVersionFile(entry.projectId, inst.mcVersion, { projectType: entry.projectType });
+      const best = await modrinth.getBestVersionFile(entry.projectId, inst.mcVersion, { projectType: entry.projectType, loader: normalizeLoader(inst.loader) });
       if (!best || best.filename === entry.filename) continue;
       modrinth.removeMod(entry.filename, dir);
       modrinth.removeMod(`${entry.filename}.disabled`, dir);
@@ -310,7 +344,7 @@ function registerIpc() {
     for (const entry of metadata) {
       if (!entry.projectId) continue;
       try {
-        const best = await modrinth.getBestVersionFile(entry.projectId, inst.mcVersion, { projectType: entry.projectType });
+        const best = await modrinth.getBestVersionFile(entry.projectId, inst.mcVersion, { projectType: entry.projectType, loader: normalizeLoader(inst.loader) });
         if (best && best.filename !== entry.filename) updatable++;
       } catch {
         // treat lookup failures as "nothing to report" rather than an error
@@ -384,6 +418,48 @@ function registerIpc() {
     return { canceled: false, ...results };
   });
 
+  // ---- Modrinth modpack discovery (browse + one-click install) ----
+  // Unrelated to modpack:export/import above: this browses Modrinth's own
+  // project_type:modpack listings and turns one into a whole new instance.
+  ipcMain.handle('modpacks:search', async (_e, query, opts) => modpackDiscovery.searchModpacks(query, opts));
+
+  ipcMain.handle('modpacks:install', async (_e, project) => {
+    const projectId = project.id || project.slug;
+    const send = (msg) => mainWindow.webContents.send('modpacks:progress', { projectId, msg });
+
+    send('Looking up the latest version...');
+    const plan = await modpackDiscovery.getInstallPlan(projectId);
+
+    // The .mrpack's own manifest - not the search hit - decides the Minecraft
+    // version and loader, so the instance is only created once the pack has
+    // been downloaded and read.
+    const prepared = await modpackDiscovery.preparePack(plan, send);
+    let inst;
+    try {
+      inst = instances.create({
+        name: project.title || prepared.name,
+        mcVersion: prepared.mcVersion,
+        loader: prepared.loader,
+      });
+    } catch (err) {
+      modpackDiscovery.discardPreparedPack(prepared);
+      throw err;
+    }
+
+    try {
+      const result = await modpackDiscovery.applyMrpack(prepared, instances.folder(inst.id), send);
+      send('Tidying up mod details...');
+      const entries = await modpackDiscovery.decorateEntries(result.entries);
+      modsMetaStore(inst.id).set('installed', entries);
+      return { instance: inst, modCount: entries.length, versionNumber: plan.versionNumber };
+    } catch (err) {
+      // A half-installed pack is worse than none - drop the shell instance so
+      // the user can just click Install again.
+      instances.remove(inst.id, { deleteFiles: true });
+      throw err;
+    }
+  });
+
   ipcMain.handle('game:play', async (_e, instanceId, serverId) => {
     if (gameProcess) throw new Error('The game is already running.');
     const inst = requireInstance(instanceId);
@@ -400,7 +476,9 @@ function registerIpc() {
       if (found) server = servers.parseAddress(found.address);
     }
 
-    const resolved = await launcher.ensureInstalled(inst.mcVersion, send);
+    const resolved = await launcher.ensureInstalled(inst.mcVersion, normalizeLoader(inst.loader), send, {
+      javaPath: settings.javaPath,
+    });
     send('Launching...');
     launchStartedAt = Date.now();
     const child = await launcher.launchGame(resolved, account, settings, server);

@@ -204,7 +204,7 @@
       <!-- ---------- INSTANCE ---------- -->
       <section id="page-instance" class="page">
         <div class="instance-header panel">
-          <div class="instance-icon-lg" id="instance-icon-lg"></div>
+          <button class="instance-icon-lg" id="instance-icon-lg" title="Change instance icon"></button>
           <div class="instance-header-info">
             <h2 id="instance-title">Instance</h2>
             <p class="muted" id="instance-subtitle">Fabric · 1.21.1</p>
@@ -328,7 +328,23 @@
         </div>
 
         <div id="itab-logs" class="itab">
-          <pre id="log-content" class="log-content"></pre>
+          <div class="toolbar log-toolbar">
+            <div class="log-search-wrap">
+              <svg class="log-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+              <input id="log-search" type="search" class="log-search" placeholder="Search the log..." autocomplete="off" />
+            </div>
+            <label class="log-toggle"><input type="checkbox" id="log-colorize" checked /><span>Color lines</span></label>
+            <label class="log-toggle"><input type="checkbox" id="log-wrap" checked /><span>Wrap lines</span></label>
+            <span class="toolbar-spacer"></span>
+            <span id="log-count" class="muted small log-count"></span>
+            <button id="log-copy-btn" class="btn secondary tiny">Copy</button>
+            <button id="log-clear-btn" class="btn secondary tiny">Clear</button>
+          </div>
+          <div class="log-shell">
+            <pre id="log-content" class="log-content"></pre>
+            <button id="log-bottom-btn" class="btn secondary tiny log-bottom-btn hidden">Jump to bottom ↓</button>
+          </div>
+          <p id="log-empty" class="muted empty-note">Nothing logged yet. Hit Play and the game's output shows up here.</p>
         </div>
       </section>
 
@@ -423,23 +439,59 @@
 
   <!-- ================= NEW INSTANCE MODAL ================= -->
   <div id="modal-overlay" class="modal-overlay hidden">
-    <div class="modal panel">
+    <div class="modal panel" id="new-instance-modal">
       <h3 class="display">New Instance</h3>
       <div class="rule"></div>
-      <label class="field wide">
-        <span class="field-label">Name</span>
-        <input id="modal-name" type="text" placeholder="My Modpack" />
-      </label>
-      <label class="field wide">
-        <span class="field-label">Minecraft version</span>
-        <input id="modal-version" type="text" placeholder="1.21.1" value="1.21.1" />
-      </label>
-      <p class="muted small">Fabric will be installed automatically for this version.</p>
-      <div class="modal-actions">
-        <button id="modal-cancel-btn" class="btn secondary">Cancel</button>
-        <button id="modal-create-btn" class="btn primary">Create</button>
+
+      <!-- Prism Launcher's Add Instance dialog puts "build it yourself" and
+           "install a published pack" side by side as sources; same idea here,
+           in this app's own segmented-control language. -->
+      <div class="segmented" id="new-instance-source">
+        <button type="button" class="seg-btn active" data-source="custom">Custom</button>
+        <button type="button" class="seg-btn" data-source="modpack">Modpacks</button>
       </div>
-      <p id="modal-error" class="error-text"></p>
+
+      <div id="new-instance-custom">
+        <label class="field wide">
+          <span class="field-label">Name</span>
+          <input id="modal-name" type="text" placeholder="My Modpack" />
+        </label>
+        <label class="field wide">
+          <span class="field-label">Minecraft version</span>
+          <input id="modal-version" type="text" placeholder="1.21.1" value="1.21.1" />
+        </label>
+        <div class="field wide">
+          <span class="field-label">Mod loader</span>
+          <div class="segmented loader-picker" id="modal-loader">
+            <button type="button" class="seg-btn active" data-loader="fabric">Fabric</button>
+            <button type="button" class="seg-btn" data-loader="forge">Forge</button>
+            <button type="button" class="seg-btn" data-loader="quilt">Quilt</button>
+            <button type="button" class="seg-btn" data-loader="neoforge">NeoForge</button>
+          </div>
+        </div>
+        <p class="muted small" id="modal-loader-note">Fabric will be installed automatically for this version.</p>
+        <div class="modal-actions">
+          <button id="modal-cancel-btn" class="btn secondary">Cancel</button>
+          <button id="modal-create-btn" class="btn primary">Create</button>
+        </div>
+        <p id="modal-error" class="error-text"></p>
+      </div>
+
+      <div id="new-instance-modpack" class="hidden">
+        <div class="search-field wide">
+          <svg class="search-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+          <input id="modpack-search" type="text" placeholder="Search Modrinth modpacks..." />
+        </div>
+        <p class="muted small modpack-blurb">One click builds a whole new instance: the pack's own Minecraft version, its mod loader, and every mod at the exact build the author shipped.</p>
+        <div id="modpack-results" class="modpack-list"></div>
+        <div class="load-more-row">
+          <button id="modpack-load-more-btn" class="btn secondary small hidden">Load more modpacks</button>
+          <span id="modpack-count" class="muted small"></span>
+        </div>
+        <div class="modal-actions">
+          <button id="modpack-close-btn" class="btn secondary">Close</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -449,6 +501,19 @@
       <h3 class="display">Instance Settings</h3>
       <div class="rule"></div>
       <p class="muted small">Leave a field blank to use the global default from Settings.</p>
+
+      <div class="field wide">
+        <span class="field-label">Instance icon</span>
+        <div class="icon-picker-row">
+          <div class="rail-swatch icon-picker-preview" id="inst-icon-preview"></div>
+          <div class="icon-picker-actions">
+            <button type="button" id="inst-icon-choose-btn" class="btn secondary tiny">Choose image…</button>
+            <button type="button" id="inst-icon-reset-btn" class="btn secondary tiny">Reset</button>
+            <p class="muted small icon-picker-hint">PNG or JPG. Copied into the instance folder.</p>
+          </div>
+        </div>
+      </div>
+
       <div class="field-row">
         <label class="field">
           <span class="field-label">Min memory (MB)</span>
@@ -462,6 +527,11 @@
       <label class="field wide">
         <span class="field-label">Custom Java path</span>
         <input id="inst-setting-java" type="text" placeholder="Default" />
+      </label>
+      <label class="field wide">
+        <span class="field-label">JVM arguments</span>
+        <input id="inst-setting-jvmargs" type="text" placeholder="e.g. -XX:+UseG1GC -XX:MaxGCPauseMillis=50" spellcheck="false" />
+        <span class="field-hint muted small">Extra arguments passed to Java, separated by spaces. Memory flags are set above.</span>
       </label>
       <div class="modal-actions">
         <button id="instance-settings-cancel-btn" class="btn secondary">Cancel</button>

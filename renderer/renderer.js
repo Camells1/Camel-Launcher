@@ -46,6 +46,14 @@ const stopGlyph = instancePlayBtn.querySelector('.stop-glyph');
 const progressBox = document.getElementById('progress-box');
 const progressText = document.getElementById('progress-text');
 const logContent = document.getElementById('log-content');
+const logSearchInput = document.getElementById('log-search');
+const logColorizeToggle = document.getElementById('log-colorize');
+const logWrapToggle = document.getElementById('log-wrap');
+const logCountEl = document.getElementById('log-count');
+const logCopyBtn = document.getElementById('log-copy-btn');
+const logClearBtn = document.getElementById('log-clear-btn');
+const logBottomBtn = document.getElementById('log-bottom-btn');
+const logEmpty = document.getElementById('log-empty');
 
 const installedMode = document.getElementById('installed-mode');
 const browseMode = document.getElementById('browse-mode');
@@ -70,11 +78,30 @@ const saveSettingsBtn = document.getElementById('save-settings-btn');
 const settingsSaved = document.getElementById('settings-saved');
 
 const modalOverlay = document.getElementById('modal-overlay');
+const newInstanceModal = document.getElementById('new-instance-modal');
+const newInstanceSource = document.getElementById('new-instance-source');
+const newInstanceCustom = document.getElementById('new-instance-custom');
+const newInstanceModpack = document.getElementById('new-instance-modpack');
 const modalName = document.getElementById('modal-name');
 const modalVersion = document.getElementById('modal-version');
+const modalLoader = document.getElementById('modal-loader');
+const modalLoaderNote = document.getElementById('modal-loader-note');
 const modalError = document.getElementById('modal-error');
 const modalCancelBtn = document.getElementById('modal-cancel-btn');
 const modalCreateBtn = document.getElementById('modal-create-btn');
+
+const modpackSearchInput = document.getElementById('modpack-search');
+const modpackResults = document.getElementById('modpack-results');
+const modpackLoadMoreBtn = document.getElementById('modpack-load-more-btn');
+const modpackCount = document.getElementById('modpack-count');
+const modpackCloseBtn = document.getElementById('modpack-close-btn');
+
+// Mirrors the LOADERS table in src/launcher.js, which stays the source of
+// truth - init() replaces this from `loaders:list` so the two can't drift.
+let LOADER_LABELS = { fabric: 'Fabric', forge: 'Forge', quilt: 'Quilt', neoforge: 'NeoForge' };
+function loaderLabel(loader) {
+  return LOADER_LABELS[loader] || 'Vanilla';
+}
 
 const confirmOverlay = document.getElementById('confirm-overlay');
 const confirmTitle = document.getElementById('confirm-title');
@@ -88,6 +115,10 @@ const instanceSettingsOverlay = document.getElementById('instance-settings-overl
 const instSettingMinMem = document.getElementById('inst-setting-minmem');
 const instSettingMaxMem = document.getElementById('inst-setting-maxmem');
 const instSettingJava = document.getElementById('inst-setting-java');
+const instSettingJvmArgs = document.getElementById('inst-setting-jvmargs');
+const instIconPreview = document.getElementById('inst-icon-preview');
+const instIconChooseBtn = document.getElementById('inst-icon-choose-btn');
+const instIconResetBtn = document.getElementById('inst-icon-reset-btn');
 const instanceSettingsCancelBtn = document.getElementById('instance-settings-cancel-btn');
 const instanceSettingsSaveBtn = document.getElementById('instance-settings-save-btn');
 
@@ -118,6 +149,8 @@ const TRASH_ICON =
 const FOLDER_ICON =
   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg>';
 const PLAY_ICON = '<svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>';
+const COPY_ICON =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="1.5"/><path d="M5 15V5a1 1 0 0 1 1-1h9"/></svg>';
 
 // Instance swatches are drawn from a curated desert palette rather than a
 // full-spectrum HSL hash, so a rail of instances always harmonises with the
@@ -168,6 +201,32 @@ function initialFor(name) {
 // stylesheet can derive the light/dark bevel edges from it via color-mix().
 function paintSwatch(el, id) {
   el.style.setProperty('--swatch', colorForId(id));
+}
+
+// Draws an instance's identity into a swatch element. Prism Launcher and
+// MultiMC both let an instance carry a real picture, which is what makes a
+// long list of them scannable at a glance; we keep the generated letter
+// swatch as the fallback so an instance is never blank. The swatch colour is
+// painted either way, so it shows through while the file loads and comes
+// straight back if the icon file goes missing.
+function applyInstanceIcon(el, inst) {
+  paintSwatch(el, inst.id);
+  el.textContent = '';
+  el.classList.remove('has-icon');
+  if (!inst.iconUrl) {
+    el.textContent = initialFor(inst.name);
+    return;
+  }
+  el.classList.add('has-icon');
+  const img = document.createElement('img');
+  img.alt = '';
+  img.addEventListener('error', () => {
+    img.remove();
+    el.classList.remove('has-icon');
+    el.textContent = initialFor(inst.name);
+  });
+  img.src = inst.iconUrl;
+  el.appendChild(img);
 }
 
 function escapeHtml(str) {
@@ -374,6 +433,16 @@ function refreshSessionStatus(busy) {
 
 async function init() {
   paintCamelPixelArt();
+
+  // src/launcher.js owns the list of installable loaders; adopt its labels so
+  // the picker and every "Fabric · 1.21.1" style subtitle can't drift from it.
+  try {
+    const loaders = await window.mc.listLoaders();
+    LOADER_LABELS = Object.fromEntries(loaders.map((l) => [l.id, l.label]));
+  } catch {
+    // keep the built-in defaults
+  }
+
   const account = await window.mc.getAccount();
   await refreshAccountUi(account);
   if (!account) return;
@@ -442,8 +511,7 @@ function renderRailInstances() {
     btn.className = 'rail-swatch';
     btn.dataset.id = inst.id;
     btn.title = inst.name;
-    paintSwatch(btn, inst.id);
-    btn.textContent = initialFor(inst.name);
+    applyInstanceIcon(btn, inst);
     btn.addEventListener('click', () => openInstance(inst.id));
     railInstances.appendChild(btn);
   });
@@ -464,17 +532,21 @@ function renderInstanceGrid() {
     const running = playingInstanceId === inst.id;
     card.innerHTML = `
       <div class="rail-swatch"></div>
+      <button class="icon-btn ic-duplicate" title="Duplicate instance">${COPY_ICON}</button>
       <h4 class="ic-name">${escapeHtml(inst.name)}</h4>
       <div class="ic-meta">
-        <span class="badge accent">Fabric</span>
+        <span class="badge accent">${escapeHtml(loaderLabel(inst.loader))}</span>
         <span class="badge">${escapeHtml(inst.mcVersion)}</span>
         ${running ? '<span class="badge oasis">Running</span>' : ''}
       </div>
       <span class="ic-open">Open →</span>
     `;
-    paintSwatch(card.querySelector('.rail-swatch'), inst.id);
-    card.querySelector('.rail-swatch').textContent = initialFor(inst.name);
+    applyInstanceIcon(card.querySelector('.rail-swatch'), inst);
     card.addEventListener('click', () => openInstance(inst.id));
+    card.querySelector('.ic-duplicate').addEventListener('click', (e) => {
+      e.stopPropagation();
+      duplicateInstance(inst);
+    });
     instanceGrid.appendChild(card);
   });
 }
@@ -627,10 +699,9 @@ async function openInstance(id) {
   if (!inst) return;
 
   instanceTitle.textContent = inst.name;
-  instanceSubtitle.textContent = `Fabric · ${inst.mcVersion}`;
+  instanceSubtitle.textContent = `${loaderLabel(inst.loader)} · ${inst.mcVersion}`;
   instanceIconLg.className = 'instance-icon-lg rail-swatch';
-  paintSwatch(instanceIconLg, inst.id);
-  instanceIconLg.textContent = initialFor(inst.name);
+  applyInstanceIcon(instanceIconLg, inst);
 
   setInstancePlayState(playingInstanceId === id ? 'running' : 'idle');
   progressBox.classList.toggle('hidden', playingInstanceId !== id);
@@ -666,7 +737,7 @@ async function startPlay(serverId) {
   refreshSessionStatus(true);
   progressBox.classList.remove('hidden');
   progressText.textContent = 'Starting…';
-  logContent.textContent = '';
+  resetLog();
   try {
     await window.mc.play(activeInstanceId, serverId);
     playingInstanceId = activeInstanceId;
@@ -686,14 +757,12 @@ window.mc.onProgress(({ instanceId, msg }) => {
   if (instanceId === activeInstanceId) progressText.textContent = msg;
 });
 window.mc.onLog(({ instanceId, line }) => {
-  if (instanceId === activeInstanceId) {
-    logContent.textContent += line;
-    logContent.scrollTop = logContent.scrollHeight;
-  }
+  if (instanceId === activeInstanceId) appendLogChunk(line);
 });
 window.mc.onExit(({ instanceId, code, error, crash }) => {
   if (playingInstanceId === instanceId) playingInstanceId = null;
   if (instanceId === activeInstanceId) {
+    flushLogTail();
     setInstancePlayState('idle');
     progressText.textContent = error ? `Failed to start: ${error}` : `Game exited (code ${code ?? 'unknown'}).`;
   }
@@ -708,6 +777,188 @@ window.mc.onExit(({ instanceId, code, error, crash }) => {
       onClick: () => window.mc.openPath(crash.path),
     });
   }
+});
+
+/* ==========================================================================
+   LOG VIEWER
+
+   Modelled on MultiMC/Prism Launcher's console: a monospace pane with
+   per-level colouring, "Color lines"/"Wrap lines" toggles, Copy and Clear,
+   and a search box. Prism's search is find-next; ours filters live instead,
+   which is the long-standing request on their tracker and reads better in a
+   tab you can't resize.
+
+   The lines are held as an array rather than one growing string — you can't
+   filter concatenated text cleanly — and re-rendered from that array.
+   ========================================================================== */
+
+const LOG_MAX_LINES = 5000; // matches the spirit of Prism's console line limit
+let logLines = [];
+let logPartial = ''; // stdout chunks split mid-line; hold the tail until its newline arrives
+let logFilter = '';
+let logFollow = true; // false while the user is reading history further up
+let logShown = 0; // how many lines currently pass the filter (tracked, not recounted)
+
+// Prism colours Warning orange and Error/Fatal red over its normal text; we
+// mirror that. A stack-trace "\tat com.foo.Bar" line belongs with its
+// exception, so those get flagged too.
+function logLevelOf(line) {
+  if (/\b(ERROR|FATAL|SEVERE)\b|Exception|\bCaused by:|^\s+at\s/.test(line)) return 'error';
+  if (/\bWARN(ING)?\b/.test(line)) return 'warn';
+  return '';
+}
+
+function logMatches(line) {
+  return !logFilter || line.toLowerCase().includes(logFilter);
+}
+
+function logLineEl(line) {
+  const el = document.createElement('div');
+  const level = logLevelOf(line);
+  el.className = level ? `log-line ${level}` : 'log-line';
+  el.textContent = line;
+  return el;
+}
+
+function isLogPinnedToBottom() {
+  return logContent.scrollHeight - logContent.scrollTop - logContent.clientHeight < 24;
+}
+
+function scrollLogToBottom() {
+  logContent.scrollTop = logContent.scrollHeight;
+}
+
+function updateLogChrome() {
+  const total = logLines.length;
+  logEmpty.classList.toggle('hidden', total > 0);
+  if (!total) logCountEl.textContent = '';
+  else if (logFilter) logCountEl.textContent = `${logShown} of ${total} lines`;
+  else logCountEl.textContent = `${total} line${total === 1 ? '' : 's'}`;
+  logBottomBtn.classList.toggle('hidden', logFollow || !total);
+}
+
+function renderLog() {
+  const frag = document.createDocumentFragment();
+  logShown = 0;
+  for (const line of logLines) {
+    if (!logMatches(line)) continue;
+    frag.appendChild(logLineEl(line));
+    logShown++;
+  }
+  if (logFilter && !logShown && logLines.length) {
+    const none = document.createElement('div');
+    none.className = 'log-line log-none';
+    none.textContent = `No lines match "${logFilter}".`;
+    frag.appendChild(none);
+  }
+  logContent.replaceChildren(frag);
+  updateLogChrome();
+  if (logFollow) scrollLogToBottom();
+}
+
+function pushLogLine(line) {
+  logLines.push(line);
+  if (logLines.length > LOG_MAX_LINES) {
+    logLines.splice(0, logLines.length - LOG_MAX_LINES);
+    return false; // dropped lines off the top, so the DOM needs a full rebuild
+  }
+  return true;
+}
+
+// Appends one raw stdout/stderr chunk, which may contain any number of
+// newlines (or none at all).
+function appendLogChunk(chunk) {
+  logPartial += chunk;
+  const parts = logPartial.split(/\r?\n/);
+  logPartial = parts.pop();
+  if (!parts.length) return;
+
+  let incremental = true;
+  const fresh = [];
+  for (const line of parts) {
+    if (!pushLogLine(line)) incremental = false;
+    fresh.push(line);
+  }
+  if (!incremental) {
+    renderLog();
+    return;
+  }
+  // Fast path: only append the newly-matching lines instead of rebuilding.
+  const frag = document.createDocumentFragment();
+  for (const line of fresh) {
+    if (!logMatches(line)) continue;
+    frag.appendChild(logLineEl(line));
+    logShown++;
+  }
+  if (frag.childNodes.length) {
+    const noneRow = logContent.querySelector('.log-none');
+    if (noneRow) noneRow.remove();
+    logContent.appendChild(frag);
+  }
+  updateLogChrome();
+  if (logFollow) scrollLogToBottom();
+}
+
+/** Flushes a last line that the process never terminated with a newline. */
+function flushLogTail() {
+  if (!logPartial) return;
+  const tail = logPartial;
+  logPartial = '';
+  appendLogChunk(`${tail}\n`);
+}
+
+function resetLog() {
+  logLines = [];
+  logPartial = '';
+  logFollow = true;
+  logShown = 0;
+  logContent.replaceChildren();
+  updateLogChrome();
+}
+
+logContent.addEventListener('scroll', () => {
+  const pinned = isLogPinnedToBottom();
+  if (pinned === logFollow) return;
+  // Scrolling up to read history detaches the view; coming back re-attaches
+  // it. Without this the pane yanks you back down on every new line.
+  logFollow = pinned;
+  logBottomBtn.classList.toggle('hidden', logFollow || !logLines.length);
+});
+
+logBottomBtn.addEventListener('click', () => {
+  logFollow = true;
+  scrollLogToBottom();
+  logBottomBtn.classList.add('hidden');
+});
+
+logSearchInput.addEventListener('input', () => {
+  logFilter = logSearchInput.value.trim().toLowerCase();
+  logFollow = true; // a new filter re-anchors the view at the newest match
+  renderLog();
+});
+
+logColorizeToggle.addEventListener('change', () => {
+  logContent.classList.toggle('no-color', !logColorizeToggle.checked);
+});
+
+logWrapToggle.addEventListener('change', () => {
+  logContent.classList.toggle('no-wrap', !logWrapToggle.checked);
+});
+
+logCopyBtn.addEventListener('click', async () => {
+  const text = logLines.filter(logMatches).join('\n');
+  if (!text) return toast('Nothing to copy yet.', 'info');
+  try {
+    await navigator.clipboard.writeText(text);
+    toast(logFilter ? 'Matching log lines copied.' : 'Log copied to the clipboard.', 'success');
+  } catch (err) {
+    toast(`Could not copy: ${err.message || err}`, 'error');
+  }
+});
+
+logClearBtn.addEventListener('click', () => {
+  resetLog();
+  toast('Log cleared.', 'info', 2500);
 });
 
 deleteInstanceBtn.addEventListener('click', async () => {
@@ -732,13 +983,16 @@ deleteInstanceBtn.addEventListener('click', async () => {
   }
 });
 
-// ---- Instance settings (per-instance Java/memory overrides) ----
+// ---- Instance settings (per-instance Java/memory/JVM-arg overrides) ----
 instanceSettingsBtn.addEventListener('click', () => {
   const inst = currentInstance();
   if (!inst) return;
   instSettingMinMem.value = inst.minMemoryMb || '';
   instSettingMaxMem.value = inst.maxMemoryMb || '';
   instSettingJava.value = inst.javaPath || '';
+  instSettingJvmArgs.value = inst.jvmArgs || '';
+  applyInstanceIcon(instIconPreview, inst);
+  instIconResetBtn.disabled = !inst.iconUrl;
   instanceSettingsOverlay.classList.remove('hidden');
 });
 instanceSettingsCancelBtn.addEventListener('click', () => instanceSettingsOverlay.classList.add('hidden'));
@@ -752,6 +1006,7 @@ instanceSettingsSaveBtn.addEventListener('click', async () => {
     minMemoryMb: instSettingMinMem.value ? parseInt(instSettingMinMem.value, 10) : null,
     maxMemoryMb: instSettingMaxMem.value ? parseInt(instSettingMaxMem.value, 10) : null,
     javaPath: instSettingJava.value.trim() || null,
+    jvmArgs: instSettingJvmArgs.value.trim() || null,
   };
   try {
     const updated = await window.mc.updateInstance(inst.id, patch);
@@ -762,6 +1017,77 @@ instanceSettingsSaveBtn.addEventListener('click', async () => {
     toast(err.message || String(err), 'error');
   }
 });
+
+/* ---------- Custom instance icons ---------- */
+
+// Repaints every place an instance's icon appears, then keeps the local cache
+// in sync. Prism Launcher shows the instance icon in its list, its header and
+// its dialogs; ours lives in the rail, the Home grid and the detail header.
+function applyUpdatedInstance(updated) {
+  instances = instances.map((i) => (i.id === updated.id ? updated : i));
+  renderRailInstances();
+  renderInstanceGrid();
+  if (activeInstanceId === updated.id) {
+    instanceIconLg.className = 'instance-icon-lg rail-swatch';
+    applyInstanceIcon(instanceIconLg, updated);
+    applyInstanceIcon(instIconPreview, updated);
+    instIconResetBtn.disabled = !updated.iconUrl;
+  }
+}
+
+async function chooseInstanceIcon() {
+  const inst = currentInstance();
+  if (!inst) return;
+  try {
+    const result = await window.mc.setInstanceIcon(inst.id);
+    if (result.canceled) return;
+    applyUpdatedInstance(result.instance);
+    toast('Instance icon updated.', 'success');
+  } catch (err) {
+    toast(err.message || String(err), 'error');
+  }
+}
+
+instanceIconLg.addEventListener('click', chooseInstanceIcon);
+instIconChooseBtn.addEventListener('click', chooseInstanceIcon);
+instIconResetBtn.addEventListener('click', async () => {
+  const inst = currentInstance();
+  if (!inst) return;
+  try {
+    applyUpdatedInstance(await window.mc.clearInstanceIcon(inst.id));
+    toast('Icon reset to the default swatch.', 'success');
+  } catch (err) {
+    toast(err.message || String(err), 'error');
+  }
+});
+
+/* ---------- Duplicate instance ---------- */
+
+// Prism Launcher's "Copy Instance" dialog offers a checkbox per category
+// (saves, mods, configs, resource packs, screenshots, servers). We copy all of
+// them unconditionally and skip only what the launcher can re-download, which
+// keeps the action one click instead of a form.
+async function duplicateInstance(inst) {
+  const ok = await confirmDialog({
+    title: 'Duplicate instance',
+    body: `Make a copy of "${inst.name}"? Mods, configs, worlds, options and saved servers are copied. Minecraft itself is re-downloaded the first time you launch the copy.`,
+    confirmLabel: 'Duplicate',
+    danger: false,
+  });
+  if (!ok) return;
+  try {
+    const copy = await window.mc.duplicateInstance(inst.id);
+    instances.push(copy);
+    renderRailInstances();
+    renderInstanceGrid();
+    toast(`Created "${copy.name}".`, 'success', 6000, {
+      label: 'Open',
+      onClick: () => openInstance(copy.id),
+    });
+  } catch (err) {
+    toast(err.message || String(err), 'error');
+  }
+}
 
 // ---- Instance tabs ----
 document.querySelectorAll('.tab-btn').forEach((btn) => {
@@ -797,10 +1123,14 @@ backToInstalledBtn.addEventListener('click', async () => {
 // ---- Content type: Mods / Resource Packs / Shaders ----
 function setContentType(type) {
   currentContentType = type;
-  document.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b.dataset.ptype === type));
-  const isMods = type === 'mod';
-  document.querySelector('.starter-label').classList.toggle('hidden', !isMods);
-  starterRow.classList.toggle('hidden', !isMods);
+  // Scoped to this one control on purpose: the New Instance modal has its own
+  // .seg-btn groups (source + loader picker) that must not be reset from here.
+  contentTypeTabs.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b.dataset.ptype === type));
+  // Forge has none of the quick-add projects, so hide the whole section
+  // rather than leaving an empty "Quick add" heading behind.
+  const showStarters = type === 'mod' && starterModsForInstance().length > 0;
+  document.querySelector('.starter-label').classList.toggle('hidden', !showStarters);
+  starterRow.classList.toggle('hidden', !showStarters);
   modSearchInput.placeholder =
     type === 'resourcepack' ? 'Search resource packs on Modrinth...' : type === 'shader' ? 'Search shader packs on Modrinth...' : 'Search all of Modrinth...';
 }
@@ -943,9 +1273,17 @@ importModpackBtn.addEventListener('click', async () => {
 });
 
 // ---- Content: browse mode ----
+function starterModsForInstance() {
+  const inst = currentInstance();
+  const loader = inst ? inst.loader : 'fabric';
+  return ((currentSettings && currentSettings.starterMods) || []).filter(
+    (mod) => !mod.loaders || mod.loaders.includes(loader)
+  );
+}
+
 function renderStarterMods() {
   starterRow.innerHTML = '';
-  ((currentSettings && currentSettings.starterMods) || []).forEach((mod) => {
+  starterModsForInstance().forEach((mod) => {
     const chip = document.createElement('button');
     const already = installedProjectIds.has(mod.slug);
     chip.className = already ? 'chip installed' : 'chip';
@@ -1189,19 +1527,56 @@ addServerBtn.addEventListener('click', async () => {
 });
 
 // ---- New instance modal ----
+let selectedLoader = 'fabric';
+let modpackInstalling = false;
+let installingButton = null;
+
+function setSelectedLoader(loader) {
+  selectedLoader = loader;
+  modalLoader.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b.dataset.loader === loader));
+  const label = loaderLabel(loader);
+  modalLoaderNote.textContent =
+    loader === 'neoforge'
+      ? 'NeoForge will be installed automatically. It only exists for Minecraft 1.20.2 and newer.'
+      : `${label} will be installed automatically for this version.`;
+}
+modalLoader.querySelectorAll('.seg-btn').forEach((btn) => {
+  btn.addEventListener('click', () => setSelectedLoader(btn.dataset.loader));
+});
+
+// Two ways to end up with an instance, the way Prism's Add Instance dialog
+// offers "custom" and "install a published pack" from one place.
+function setInstanceSource(source) {
+  newInstanceSource.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b.dataset.source === source));
+  const browsing = source === 'modpack';
+  newInstanceCustom.classList.toggle('hidden', browsing);
+  newInstanceModpack.classList.toggle('hidden', !browsing);
+  newInstanceModal.classList.toggle('wide', browsing);
+  if (browsing && !modpackResults.childElementCount) runModpackSearch(true);
+  if (browsing) modpackSearchInput.focus();
+  else modalName.focus();
+}
+newInstanceSource.querySelectorAll('.seg-btn').forEach((btn) => {
+  btn.addEventListener('click', () => setInstanceSource(btn.dataset.source));
+});
+
 function openModal() {
   modalName.value = '';
   modalVersion.value = '1.21.1';
   modalError.textContent = '';
+  setSelectedLoader('fabric');
+  setInstanceSource('custom');
   modalOverlay.classList.remove('hidden');
   modalName.focus();
 }
 function closeModal() {
+  if (modpackInstalling) return;
   modalOverlay.classList.add('hidden');
 }
 railAddInstance.addEventListener('click', openModal);
 newInstanceBtn.addEventListener('click', openModal);
 modalCancelBtn.addEventListener('click', closeModal);
+modpackCloseBtn.addEventListener('click', closeModal);
 modalOverlay.addEventListener('click', (e) => {
   if (e.target === modalOverlay) closeModal();
 });
@@ -1215,13 +1590,13 @@ async function createInstanceFromModal() {
   }
   modalCreateBtn.disabled = true;
   try {
-    const inst = await window.mc.createInstance({ name, mcVersion });
+    const inst = await window.mc.createInstance({ name, mcVersion, loader: selectedLoader });
     instances.push(inst);
     renderRailInstances();
     renderInstanceGrid();
     closeModal();
     await openInstance(inst.id);
-    toast(`Created "${inst.name}".`, 'success');
+    toast(`Created "${inst.name}" (${loaderLabel(inst.loader)} ${inst.mcVersion}).`, 'success');
   } catch (err) {
     modalError.textContent = err.message || String(err);
   } finally {
@@ -1233,6 +1608,142 @@ modalCreateBtn.addEventListener('click', createInstanceFromModal);
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') createInstanceFromModal();
   });
+});
+
+// ---- Modpack browsing (Modrinth project_type:modpack) ----
+// Same paging shape as the mod search: reset on a new query, append on
+// "Load more". Installing one builds a whole instance in a single click.
+let modpackHits = [];
+let modpackTotal = 0;
+let modpackOffset = 0;
+let modpackSearchSeq = 0;
+const MODPACK_PAGE = 20;
+
+async function runModpackSearch(reset) {
+  const seq = ++modpackSearchSeq;
+  if (reset) {
+    modpackHits = [];
+    modpackOffset = 0;
+    modpackResults.innerHTML = '<p class="muted empty-note">Loading modpacks…</p>';
+  }
+  modpackLoadMoreBtn.disabled = true;
+  try {
+    const res = await window.mc.searchModpacks(modpackSearchInput.value.trim(), {
+      limit: MODPACK_PAGE,
+      offset: modpackOffset,
+    });
+    // A slower earlier request must not overwrite a newer one's results.
+    if (seq !== modpackSearchSeq) return;
+    modpackHits = reset ? res.hits : modpackHits.concat(res.hits);
+    modpackTotal = res.total;
+    modpackOffset += res.hits.length;
+    renderModpackResults();
+  } catch (err) {
+    if (seq !== modpackSearchSeq) return;
+    modpackResults.innerHTML = '';
+    const p = document.createElement('p');
+    p.className = 'muted empty-note';
+    p.textContent = `Couldn't reach Modrinth: ${err.message || err}`;
+    modpackResults.appendChild(p);
+  } finally {
+    modpackLoadMoreBtn.disabled = false;
+  }
+}
+
+// A pack's search hit lists every game version it has ever supported; the
+// newest is the one an install will actually land on.
+function newestGameVersion(hit) {
+  const versions = hit.gameVersions || [];
+  return versions.length ? versions[versions.length - 1] : '';
+}
+
+// Plenty of packs ship for several loaders, so show every one they list
+// rather than picking the first arbitrarily - which loader the install
+// actually lands on is decided by the .mrpack's own manifest.
+function loadersOfHit(hit) {
+  return (hit.categories || []).filter((c) => LOADER_LABELS[c]);
+}
+
+function renderModpackResults() {
+  modpackResults.innerHTML = '';
+  if (!modpackHits.length) {
+    const p = document.createElement('p');
+    p.className = 'muted empty-note';
+    p.textContent = 'No modpacks matched that search.';
+    modpackResults.appendChild(p);
+  }
+  modpackHits.forEach((pack) => {
+    const row = document.createElement('div');
+    row.className = 'modpack-row';
+    const loaders = loadersOfHit(pack);
+    const mcVersion = newestGameVersion(pack);
+    row.innerHTML = `
+      <div class="icon-slot lg"></div>
+      <div class="mp-info">
+        <h4 class="mp-title">${escapeHtml(pack.title)}</h4>
+        <p class="mp-desc">${escapeHtml(pack.description || '')}</p>
+        <div class="mp-meta">
+          ${loaders.map((l) => `<span class="badge accent">${escapeHtml(loaderLabel(l))}</span>`).join('')}
+          ${mcVersion ? `<span class="badge">${escapeHtml(mcVersion)}</span>` : ''}
+          <span class="downloads">${formatDownloads(pack.downloads)} downloads</span>
+        </div>
+      </div>
+      <div class="mp-actions"><button class="btn primary small">Install</button></div>
+    `;
+    fillIconSlot(row.querySelector('.icon-slot'), pack.iconUrl);
+    row.querySelector('button').addEventListener('click', () => installModpack(pack, row));
+    modpackResults.appendChild(row);
+  });
+  modpackCount.textContent = modpackTotal ? `${modpackHits.length} of ${modpackTotal} modpacks` : '';
+  modpackLoadMoreBtn.classList.toggle('hidden', modpackHits.length >= modpackTotal);
+}
+
+async function installModpack(pack, row) {
+  if (modpackInstalling) return;
+  const btn = row.querySelector('button');
+  modpackInstalling = true;
+  installingButton = btn;
+  // Installing a pack pulls down dozens of mods, so every other Install button
+  // is locked out until this one lands.
+  modpackResults.querySelectorAll('button').forEach((b) => (b.disabled = true));
+  btn.textContent = 'Installing…';
+  try {
+    const result = await window.mc.installModpack(pack);
+    instances.push(result.instance);
+    renderRailInstances();
+    renderInstanceGrid();
+    modpackInstalling = false;
+    installingButton = null;
+    closeModal();
+    await openInstance(result.instance.id);
+    toast(`Installed "${result.instance.name}" — ${result.modCount} mods, ${loaderLabel(result.instance.loader)} ${result.instance.mcVersion}.`, 'success');
+  } catch (err) {
+    toast(err.message || String(err), 'error');
+    btn.textContent = 'Install';
+  } finally {
+    modpackInstalling = false;
+    installingButton = null;
+    modpackResults.querySelectorAll('button').forEach((b) => (b.disabled = false));
+  }
+}
+
+let modpackSearchTimer;
+modpackSearchInput.addEventListener('input', () => {
+  clearTimeout(modpackSearchTimer);
+  modpackSearchTimer = setTimeout(() => runModpackSearch(true), 320);
+});
+modpackSearchInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    clearTimeout(modpackSearchTimer);
+    runModpackSearch(true);
+  }
+});
+modpackLoadMoreBtn.addEventListener('click', () => runModpackSearch(false));
+
+// A pack install is slow enough to need live feedback, so the row's own button
+// doubles as the progress readout.
+window.mc.onModpackProgress(({ msg }) => {
+  if (installingButton) installingButton.textContent = msg.replace(/\.\.\.$/, '…');
 });
 
 // Escape closes whichever layer is on top.
