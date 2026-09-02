@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:;" />
+  <!-- img-src needs plain http: specifically for Mojang's skin texture CDN
+       (textures.minecraft.net serves over http, not https) - everything else
+       in this app loads over https/data/file. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: http://textures.minecraft.net data: file:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:;" />
   <title>Camel Launcher</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -161,6 +164,9 @@
       <button class="rail-btn active" id="rail-home" title="Home">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5" /><path d="M6 10.5V20h5v-5h2v5h5V10.5" /></svg>
       </button>
+      <button class="rail-btn" id="rail-skins" title="Skins">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 4 7v2l3-1v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V8l3 1V7l-3-3-3 2h-4z"/></svg>
+      </button>
       <div class="rail-divider"></div>
       <div class="rail-instances" id="rail-instances"></div>
       <button class="rail-btn rail-add" id="rail-add-instance" title="New instance">
@@ -175,6 +181,12 @@
     <main class="main-area">
       <!-- ---------- HOME ---------- -->
       <section id="page-home" class="page active">
+        <div id="jump-in-section" class="hidden">
+          <p class="eyebrow">Jump in</p>
+          <div id="jump-in-list" class="jump-in-list"></div>
+          <div class="rule"></div>
+        </div>
+
         <div class="page-header">
           <div class="page-heading">
             <p class="eyebrow">The caravan</p>
@@ -197,6 +209,9 @@
             <h2 id="instance-title">Instance</h2>
             <p class="muted" id="instance-subtitle">Fabric · 1.21.1</p>
           </div>
+          <button id="instance-settings-btn" class="icon-btn" title="Instance settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.36a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.64 15a1.7 1.7 0 0 0-1.56-1.04H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.64 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.64a1.7 1.7 0 0 0 1.04-1.56V3a2 2 0 0 1 4 0v.09A1.7 1.7 0 0 0 15 4.64a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.36 9a1.7 1.7 0 0 0 1.56 1.04H21a2 2 0 0 1 0 4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg>
+          </button>
           <button id="delete-instance-btn" class="icon-btn danger" title="Delete instance">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>
           </button>
@@ -214,6 +229,9 @@
 
         <div class="tab-bar">
           <button class="tab-btn active" data-itab="content">Content</button>
+          <button class="tab-btn" data-itab="worlds">Worlds</button>
+          <button class="tab-btn" data-itab="screenshots">Screenshots</button>
+          <button class="tab-btn" data-itab="servers">Servers</button>
           <button class="tab-btn" data-itab="logs">Logs</button>
         </div>
 
@@ -224,7 +242,9 @@
                 <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
                 Browse content
               </button>
-              <button id="update-all-btn" class="btn secondary small">Update all</button>
+              <button id="update-all-btn" class="btn secondary small"><span class="btn-label">Update all</span><span id="update-badge" class="count-badge hidden">0</span></button>
+              <button id="export-modpack-btn" class="btn secondary small" title="Export this instance's mod list to share">Export</button>
+              <button id="import-modpack-btn" class="btn secondary small" title="Import a modpack file">Import</button>
               <span class="toolbar-spacer"></span>
               <div class="search-field">
                 <svg class="search-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
@@ -251,6 +271,12 @@
                 <input id="mod-search" type="text" placeholder="Search all of Modrinth..." />
               </div>
             </div>
+            <div class="segmented" id="content-type-tabs">
+              <button class="seg-btn active" data-ptype="mod">Mods</button>
+              <button class="seg-btn" data-ptype="resourcepack">Resource Packs</button>
+              <button class="seg-btn" data-ptype="shader">Shaders</button>
+              <button class="seg-btn" data-ptype="server">Servers</button>
+            </div>
             <p class="eyebrow starter-label">Quick add</p>
             <div class="starter-row" id="starter-row"></div>
             <div id="search-results" class="mod-grid"></div>
@@ -261,12 +287,81 @@
           </div>
         </div>
 
+        <div id="itab-worlds" class="itab">
+          <div class="toolbar">
+            <button id="open-worlds-folder-btn" class="btn secondary small">Open saves folder</button>
+          </div>
+          <div class="table-wrap">
+            <table class="content-table">
+              <thead><tr><th>World</th><th>Last played</th><th class="ct-actions-head">Actions</th></tr></thead>
+              <tbody id="worlds-tbody"></tbody>
+            </table>
+          </div>
+          <p id="worlds-empty" class="muted empty-note hidden">No singleplayer worlds yet.</p>
+        </div>
+
+        <div id="itab-screenshots" class="itab">
+          <div class="toolbar">
+            <button id="open-screenshots-folder-btn" class="btn secondary small">Open screenshots folder</button>
+          </div>
+          <div id="screenshots-grid" class="screenshot-grid"></div>
+          <p id="screenshots-empty" class="muted empty-note hidden">No screenshots yet — press F2 in-game to take one.</p>
+        </div>
+
+        <div id="itab-servers" class="itab">
+          <div class="toolbar">
+            <div class="search-field">
+              <input id="server-name-input" type="text" placeholder="Server name" />
+            </div>
+            <div class="search-field">
+              <input id="server-address-input" type="text" placeholder="play.example.com:25565" />
+            </div>
+            <button id="add-server-btn" class="btn primary small">Add server</button>
+          </div>
+          <div class="table-wrap">
+            <table class="content-table">
+              <thead><tr><th>Server</th><th>Address</th><th class="ct-actions-head">Actions</th></tr></thead>
+              <tbody id="servers-tbody"></tbody>
+            </table>
+          </div>
+          <p id="servers-empty" class="muted empty-note hidden">No saved servers yet.</p>
+        </div>
+
         <div id="itab-logs" class="itab">
           <pre id="log-content" class="log-content"></pre>
         </div>
       </section>
 
       <!-- ---------- SETTINGS ---------- -->
+      <!-- ---------- SKINS ---------- -->
+      <section id="page-skins" class="page">
+        <div class="page-heading">
+          <p class="eyebrow">Wardrobe</p>
+          <h2 class="display">Skin</h2>
+          <p class="muted page-sub">Changes apply to your signed-in Minecraft account, everywhere you play.</p>
+        </div>
+        <div class="skin-layout">
+          <div class="skin-preview panel">
+            <img id="skin-preview-img" alt="Current skin" />
+            <p id="skin-empty" class="muted small hidden">No skin loaded yet.</p>
+          </div>
+          <div class="skin-panel panel">
+            <p class="panel-title">Model</p>
+            <div class="segmented" id="skin-variant-tabs">
+              <button class="seg-btn active" data-variant="classic">Classic (Steve)</button>
+              <button class="seg-btn" data-variant="slim">Slim (Alex)</button>
+            </div>
+            <p class="panel-title">Change skin</p>
+            <p class="muted small skin-hint">Upload a 64×64 PNG skin texture.</p>
+            <div class="modal-actions skin-actions">
+              <button id="skin-reset-btn" class="btn secondary">Reset to default</button>
+              <button id="skin-upload-btn" class="btn primary">Upload skin…</button>
+            </div>
+            <p id="skin-error" class="error-text"></p>
+          </div>
+        </div>
+      </section>
+
       <section id="page-settings" class="page">
         <div class="page-heading">
           <p class="eyebrow">Configuration</p>
@@ -299,7 +394,7 @@
 
     <aside class="right-sidebar">
       <div class="sidebar-label">Playing as</div>
-      <div class="account-card panel">
+      <button id="account-card-toggle" class="account-card panel" type="button">
         <div class="avatar-slot">
           <img id="account-avatar" class="account-avatar" alt="" />
         </div>
@@ -307,7 +402,9 @@
           <div id="account-name" class="account-name">Player</div>
           <div class="muted account-sub">Minecraft account</div>
         </div>
-      </div>
+        <svg class="account-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div id="account-list" class="account-list panel hidden"></div>
 
       <div class="sidebar-label">Session</div>
       <div class="status-card panel">
@@ -343,6 +440,33 @@
         <button id="modal-create-btn" class="btn primary">Create</button>
       </div>
       <p id="modal-error" class="error-text"></p>
+    </div>
+  </div>
+
+  <!-- ================= INSTANCE SETTINGS MODAL ================= -->
+  <div id="instance-settings-overlay" class="modal-overlay hidden">
+    <div class="modal panel">
+      <h3 class="display">Instance Settings</h3>
+      <div class="rule"></div>
+      <p class="muted small">Leave a field blank to use the global default from Settings.</p>
+      <div class="field-row">
+        <label class="field">
+          <span class="field-label">Min memory (MB)</span>
+          <input id="inst-setting-minmem" type="number" step="256" placeholder="Default" />
+        </label>
+        <label class="field">
+          <span class="field-label">Max memory (MB)</span>
+          <input id="inst-setting-maxmem" type="number" step="256" placeholder="Default" />
+        </label>
+      </div>
+      <label class="field wide">
+        <span class="field-label">Custom Java path</span>
+        <input id="inst-setting-java" type="text" placeholder="Default" />
+      </label>
+      <div class="modal-actions">
+        <button id="instance-settings-cancel-btn" class="btn secondary">Cancel</button>
+        <button id="instance-settings-save-btn" class="btn primary">Save</button>
+      </div>
     </div>
   </div>
 

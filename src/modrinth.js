@@ -13,19 +13,28 @@ async function apiGet(pathAndQuery) {
   return res.json();
 }
 
+// Mods only exist for a specific loader (Fabric here); resource packs and
+// shaders are loader-agnostic on Modrinth's side (shaders are tagged with
+// their own "iris"/"optifine" category rather than a real loader facet), so
+// only mod searches/version-lookups should filter by loader.
+const PROJECT_TYPES = {
+  mod: { type: 'mod', loader: 'fabric' },
+  resourcepack: { type: 'resourcepack', loader: null },
+  shader: { type: 'shader', loader: null },
+};
+
 /**
- * Searches (or browses, if query is empty) every Modrinth mod compatible with
- * Fabric + a specific Minecraft version. Supports paging via offset.
+ * Searches (or browses, if query is empty) Modrinth for a given project type
+ * (mod/resourcepack/shader) compatible with a specific Minecraft version.
+ * Supports paging via offset.
  */
-async function searchMods(query, mcVersion, { limit = 30, offset = 0 } = {}) {
-  const facets = JSON.stringify([
-    ['project_type:mod'],
-    ['categories:fabric'],
-    [`versions:${mcVersion}`],
-  ]);
+async function searchMods(query, mcVersion, { limit = 30, offset = 0, projectType = 'mod' } = {}) {
+  const kind = PROJECT_TYPES[projectType] || PROJECT_TYPES.mod;
+  const facets = [[`project_type:${kind.type}`], [`versions:${mcVersion}`]];
+  if (kind.loader) facets.push([`categories:${kind.loader}`]);
   const params = new URLSearchParams({
     query: query || '',
-    facets,
+    facets: JSON.stringify(facets),
     limit: String(limit),
     offset: String(offset),
     // With no search text, sort by popularity so browsing surfaces the best mods first.
@@ -44,6 +53,7 @@ async function searchMods(query, mcVersion, { limit = 30, offset = 0 } = {}) {
       iconUrl: hit.icon_url,
       downloads: hit.downloads,
       author: hit.author,
+      projectType: hit.project_type,
     })),
   };
 }
@@ -58,15 +68,15 @@ async function getProject(idOrSlug) {
     description: p.description,
     iconUrl: p.icon_url,
     downloads: p.downloads,
+    projectType: p.project_type,
   };
 }
 
-/** Finds the best matching Fabric version file for a project + Minecraft version. */
-async function getBestVersionFile(projectIdOrSlug, mcVersion) {
-  const params = new URLSearchParams({
-    loaders: JSON.stringify(['fabric']),
-    game_versions: JSON.stringify([mcVersion]),
-  });
+/** Finds the best matching version file for a project + Minecraft version. */
+async function getBestVersionFile(projectIdOrSlug, mcVersion, { projectType = 'mod' } = {}) {
+  const kind = PROJECT_TYPES[projectType] || PROJECT_TYPES.mod;
+  const params = new URLSearchParams({ game_versions: JSON.stringify([mcVersion]) });
+  if (kind.loader) params.set('loaders', JSON.stringify([kind.loader]));
   const versions = await apiGet(`/project/${projectIdOrSlug}/version?${params.toString()}`);
   if (!versions.length) return null;
   const version = versions[0];
@@ -78,6 +88,11 @@ async function getBestVersionFile(projectIdOrSlug, mcVersion) {
     url: file.url,
     size: file.size,
     sha1: file.hashes && file.hashes.sha1,
+    // Only "required" deps that point at another project (not a pinned
+    // version) are worth auto-installing - e.g. a mod that needs Fabric API.
+    dependencies: (version.dependencies || [])
+      .filter((d) => d.dependency_type === 'required' && d.project_id)
+      .map((d) => d.project_id),
   };
 }
 
@@ -115,11 +130,11 @@ function downloadFile(url, destPath) {
   });
 }
 
-/** Downloads a mod's best-matching jar straight into the instance's mods folder. */
-async function installMod(projectIdOrSlug, mcVersion, modsDir) {
-  const file = await getBestVersionFile(projectIdOrSlug, mcVersion);
-  if (!file) throw new Error(`No Fabric build of this mod is available for Minecraft ${mcVersion}.`);
-  const destPath = path.join(modsDir, file.filename);
+/** Downloads a project's best-matching file straight into the given folder (mods/resourcepacks/shaderpacks). */
+async function installMod(projectIdOrSlug, mcVersion, destDir, opts = {}) {
+  const file = await getBestVersionFile(projectIdOrSlug, mcVersion, opts);
+  if (!file) throw new Error(`No compatible build of this project is available for Minecraft ${mcVersion}.`);
+  const destPath = path.join(destDir, file.filename);
   await downloadFile(file.url, destPath);
   return { ...file, path: destPath };
 }

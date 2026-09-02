@@ -82,6 +82,27 @@ class InstanceManager {
     return inst;
   }
 
+  /** Stamps "last played" for the Home page's recent-activity list. */
+  touch(id) {
+    const inst = this.get(id);
+    if (!inst) return;
+    inst.lastPlayedAt = Date.now();
+    this.save();
+  }
+
+  /** Per-instance overrides (minMemoryMb/maxMemoryMb/javaPath). Pass null/'' to clear a field back to the global default. */
+  update(id, patch) {
+    const inst = this.get(id);
+    if (!inst) throw new Error('Instance not found');
+    for (const key of ['minMemoryMb', 'maxMemoryMb', 'javaPath']) {
+      if (!(key in patch)) continue;
+      if (patch[key] === null || patch[key] === '') delete inst[key];
+      else inst[key] = patch[key];
+    }
+    this.save();
+    return inst;
+  }
+
   remove(id, { deleteFiles = false } = {}) {
     const inst = this.get(id);
     if (!inst) return;

@@ -20,7 +20,19 @@ const pages = {
   home: document.getElementById('page-home'),
   instance: document.getElementById('page-instance'),
   settings: document.getElementById('page-settings'),
+  skins: document.getElementById('page-skins'),
 };
+
+const railSkins = document.getElementById('rail-skins');
+const jumpInSection = document.getElementById('jump-in-section');
+const jumpInList = document.getElementById('jump-in-list');
+
+const skinPreviewImg = document.getElementById('skin-preview-img');
+const skinEmpty = document.getElementById('skin-empty');
+const skinVariantTabs = document.getElementById('skin-variant-tabs');
+const skinUploadBtn = document.getElementById('skin-upload-btn');
+const skinResetBtn = document.getElementById('skin-reset-btn');
+const skinError = document.getElementById('skin-error');
 
 const instanceTitle = document.getElementById('instance-title');
 const instanceSubtitle = document.getElementById('instance-subtitle');
@@ -71,8 +83,41 @@ const confirmOkBtn = document.getElementById('confirm-ok-btn');
 const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
 const toastStack = document.getElementById('toast-stack');
 
+const instanceSettingsBtn = document.getElementById('instance-settings-btn');
+const instanceSettingsOverlay = document.getElementById('instance-settings-overlay');
+const instSettingMinMem = document.getElementById('inst-setting-minmem');
+const instSettingMaxMem = document.getElementById('inst-setting-maxmem');
+const instSettingJava = document.getElementById('inst-setting-java');
+const instanceSettingsCancelBtn = document.getElementById('instance-settings-cancel-btn');
+const instanceSettingsSaveBtn = document.getElementById('instance-settings-save-btn');
+
+const accountCardToggle = document.getElementById('account-card-toggle');
+const accountList = document.getElementById('account-list');
+
+const updateBadge = document.getElementById('update-badge');
+const exportModpackBtn = document.getElementById('export-modpack-btn');
+const importModpackBtn = document.getElementById('import-modpack-btn');
+const contentTypeTabs = document.getElementById('content-type-tabs');
+
+const worldsTbody = document.getElementById('worlds-tbody');
+const worldsEmpty = document.getElementById('worlds-empty');
+const openWorldsFolderBtn = document.getElementById('open-worlds-folder-btn');
+
+const screenshotsGrid = document.getElementById('screenshots-grid');
+const screenshotsEmpty = document.getElementById('screenshots-empty');
+const openScreenshotsFolderBtn = document.getElementById('open-screenshots-folder-btn');
+
+const serverNameInput = document.getElementById('server-name-input');
+const serverAddressInput = document.getElementById('server-address-input');
+const addServerBtn = document.getElementById('add-server-btn');
+const serversTbody = document.getElementById('servers-tbody');
+const serversEmpty = document.getElementById('servers-empty');
+
 const TRASH_ICON =
   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>';
+const FOLDER_ICON =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg>';
+const PLAY_ICON = '<svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>';
 
 // Instance swatches are drawn from a curated desert palette rather than a
 // full-spectrum HSL hash, so a rail of instances always harmonises with the
@@ -103,6 +148,7 @@ let searchOffset = 0;
 let searchTotal = 0;
 const PAGE_SIZE = 30;
 let lastResults = [];
+let currentContentType = 'mod';
 
 function currentInstance() {
   return instances.find((i) => i.id === activeInstanceId) || null;
@@ -149,7 +195,7 @@ function fillIconSlot(slot, url) {
 
 /* ---------- Toasts + themed confirm (replacing native alert/confirm) ---------- */
 
-function toast(message, kind = 'info', ms = 4500) {
+function toast(message, kind = 'info', ms = 4500, action = null) {
   const el = document.createElement('div');
   el.className = `toast ${kind}`;
   const glyph = document.createElement('span');
@@ -159,6 +205,14 @@ function toast(message, kind = 'info', ms = 4500) {
   msg.className = 'toast-msg';
   msg.textContent = message;
   el.append(glyph, msg);
+  if (action) {
+    const btn = document.createElement('button');
+    btn.className = 'link-btn toast-action';
+    btn.textContent = action.label;
+    btn.addEventListener('click', action.onClick);
+    el.append(btn);
+    ms = Math.max(ms, 9000);
+  }
   toastStack.appendChild(el);
   setTimeout(() => {
     el.classList.add('out');
@@ -225,6 +279,84 @@ async function refreshAccountUi(account) {
   }
 }
 
+/* ---------- Multi-account switcher ---------- */
+
+let accountListOpen = false;
+
+function closeAccountList() {
+  accountListOpen = false;
+  accountList.classList.add('hidden');
+  accountCardToggle.setAttribute('aria-expanded', 'false');
+}
+
+async function toggleAccountList() {
+  accountListOpen = !accountListOpen;
+  accountCardToggle.setAttribute('aria-expanded', String(accountListOpen));
+  accountList.classList.toggle('hidden', !accountListOpen);
+  if (accountListOpen) await renderAccountList();
+}
+
+async function renderAccountList() {
+  const accounts = await window.mc.listAccounts();
+  accountList.innerHTML = '';
+  accounts.forEach((acc) => {
+    const row = document.createElement('button');
+    row.className = `account-list-item${acc.active ? ' active' : ''}`;
+    row.type = 'button';
+    row.innerHTML = `
+      <div class="avatar-slot"><img src="https://crafatar.com/avatars/${acc.uuid}?size=32&overlay" alt="" /></div>
+      <span class="acct-name">${escapeHtml(acc.name)}</span>
+      ${acc.active ? '' : `<button type="button" class="icon-btn danger acct-remove" title="Forget this account">${TRASH_ICON}</button>`}
+    `;
+    if (!acc.active) {
+      row.addEventListener('click', async (e) => {
+        if (e.target.closest('.acct-remove')) return;
+        try {
+          const account = await window.mc.switchAccount(acc.uuid);
+          await refreshAccountUi(account);
+          closeAccountList();
+          toast(`Switched to ${account.name}.`, 'success');
+        } catch (err) {
+          toast(err.message || String(err), 'error');
+        }
+      });
+      row.querySelector('.acct-remove').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await window.mc.removeAccount(acc.uuid);
+        toast(`Forgot ${acc.name}.`, 'info');
+        await renderAccountList();
+      });
+    }
+    accountList.appendChild(row);
+  });
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'account-list-add';
+  addBtn.type = 'button';
+  addBtn.textContent = '+ Add another account';
+  addBtn.addEventListener('click', async () => {
+    addBtn.disabled = true;
+    addBtn.textContent = 'Signing in…';
+    try {
+      const account = await window.mc.addAnotherAccount();
+      await refreshAccountUi(account);
+      closeAccountList();
+      toast(`Signed in as ${account.name}.`, 'success');
+    } catch (err) {
+      toast(err.message || String(err), 'error');
+    } finally {
+      addBtn.disabled = false;
+      addBtn.textContent = '+ Add another account';
+    }
+  });
+  accountList.appendChild(addBtn);
+}
+
+accountCardToggle.addEventListener('click', toggleAccountList);
+document.addEventListener('click', (e) => {
+  if (accountListOpen && !e.target.closest('#account-card-toggle') && !e.target.closest('#account-list')) closeAccountList();
+});
+
 /* ---------- Session status (right sidebar) ---------- */
 
 function setSessionStatus(text, state) {
@@ -254,6 +386,7 @@ async function init() {
   instances = await window.mc.listInstances();
   renderRailInstances();
   renderInstanceGrid();
+  loadRecentActivity();
   refreshSessionStatus(false);
   showPage('home');
 }
@@ -285,6 +418,7 @@ function showPage(page) {
   Object.entries(pages).forEach(([key, el]) => el.classList.toggle('active', key === page));
   railHome.classList.toggle('active', page === 'home');
   railSettings.classList.toggle('active', page === 'settings');
+  railSkins.classList.toggle('active', page === 'skins');
   document.querySelectorAll('.rail-swatch').forEach((el) => {
     el.classList.toggle('active', page === 'instance' && el.dataset.id === activeInstanceId);
   });
@@ -292,9 +426,14 @@ function showPage(page) {
 
 railHome.addEventListener('click', () => {
   renderInstanceGrid();
+  loadRecentActivity();
   showPage('home');
 });
 railSettings.addEventListener('click', () => showPage('settings'));
+railSkins.addEventListener('click', () => {
+  loadSkin();
+  showPage('skins');
+});
 
 function renderRailInstances() {
   railInstances.innerHTML = '';
@@ -340,6 +479,132 @@ function renderInstanceGrid() {
   });
 }
 
+function timeAgo(ms) {
+  const diff = Date.now() - ms;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return 'just now';
+  if (min < 60) return `${min} minute${min === 1 ? '' : 's'} ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr} hour${hr === 1 ? '' : 's'} ago`;
+  const day = Math.floor(hr / 24);
+  if (day === 1) return 'yesterday';
+  if (day < 7) return `${day} days ago`;
+  return new Date(ms).toLocaleDateString();
+}
+
+// "Jump in" - a merged, most-recent-first feed of instances and saved
+// servers you've actually launched, matching the "recently played" pattern
+// from Modrinth's own Home page.
+async function loadRecentActivity() {
+  const items = await window.mc.getRecentActivity(6);
+  jumpInSection.classList.toggle('hidden', items.length === 0);
+  jumpInList.innerHTML = '';
+  items.forEach((item) => {
+    const card = document.createElement('div');
+    card.className = 'jump-in-card panel';
+    card.innerHTML = `
+      <div class="rail-swatch"></div>
+      <div class="jump-info">
+        <div class="jump-name">${escapeHtml(item.name)}</div>
+        <div class="jump-sub">${escapeHtml(item.subtitle)}</div>
+      </div>
+      <span class="jump-ago">${timeAgo(item.lastPlayedAt)}</span>
+      <button class="icon-btn primary jump-play" title="Play">${PLAY_ICON}</button>
+    `;
+    paintSwatch(card.querySelector('.rail-swatch'), item.instanceId);
+    card.querySelector('.rail-swatch').textContent = initialFor(item.name);
+    card.addEventListener('click', async () => {
+      await openInstance(item.instanceId);
+      if (item.type === 'server') switchITab('servers');
+    });
+    card.querySelector('.jump-play').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await openInstance(item.instanceId);
+      startPlay(item.type === 'server' ? item.serverId : undefined);
+    });
+    jumpInList.appendChild(card);
+  });
+}
+
+// ---- Skins ----
+let skinCurrentVariant = 'classic';
+
+function skinVariantOf(skins) {
+  const active = (skins || []).find((s) => s.state === 'ACTIVE');
+  return (active && active.variant && active.variant.toLowerCase()) || 'classic';
+}
+
+async function loadSkin() {
+  skinError.textContent = '';
+  try {
+    const { skins: skinList } = await window.mc.getSkin();
+    const active = (skinList || []).find((s) => s.state === 'ACTIVE');
+    if (active) {
+      skinPreviewImg.src = active.url;
+      skinPreviewImg.classList.remove('hidden');
+      skinEmpty.classList.add('hidden');
+      skinCurrentVariant = skinVariantOf(skinList);
+    } else {
+      skinPreviewImg.classList.add('hidden');
+      skinEmpty.classList.remove('hidden');
+    }
+    skinVariantTabs.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b.dataset.variant === skinCurrentVariant));
+  } catch (err) {
+    skinError.textContent = err.message || String(err);
+  }
+}
+
+skinVariantTabs.querySelectorAll('.seg-btn').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    const variant = btn.dataset.variant;
+    if (variant === skinCurrentVariant) return;
+    skinVariantTabs.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b === btn));
+    try {
+      const { skins: skinList } = await window.mc.setSkinFromUrl(skinPreviewImg.src, variant);
+      skinCurrentVariant = variant;
+      const active = (skinList || []).find((s) => s.state === 'ACTIVE');
+      if (active) skinPreviewImg.src = active.url;
+      toast('Model updated.', 'success');
+    } catch (err) {
+      toast(err.message || String(err), 'error');
+      loadSkin();
+    }
+  });
+});
+
+skinUploadBtn.addEventListener('click', async () => {
+  skinUploadBtn.disabled = true;
+  skinError.textContent = '';
+  try {
+    const result = await window.mc.uploadSkin(skinCurrentVariant);
+    if (result.canceled) return;
+    const active = (result.skins || []).find((s) => s.state === 'ACTIVE');
+    if (active) {
+      skinPreviewImg.src = active.url;
+      skinPreviewImg.classList.remove('hidden');
+      skinEmpty.classList.add('hidden');
+    }
+    toast('Skin updated.', 'success');
+  } catch (err) {
+    skinError.textContent = err.message || String(err);
+  } finally {
+    skinUploadBtn.disabled = false;
+  }
+});
+
+skinResetBtn.addEventListener('click', async () => {
+  skinResetBtn.disabled = true;
+  try {
+    await window.mc.resetSkin();
+    await loadSkin();
+    toast('Reset to the default skin.', 'success');
+  } catch (err) {
+    toast(err.message || String(err), 'error');
+  } finally {
+    skinResetBtn.disabled = false;
+  }
+});
+
 // ---- Instance detail ----
 async function openInstance(id) {
   activeInstanceId = id;
@@ -358,7 +623,9 @@ async function openInstance(id) {
   switchITab('content');
   showInstalledMode();
   installedFilterInput.value = '';
+  setContentType('mod');
   await loadInstalledMods();
+  refreshUpdateBadge();
 
   showPage('instance');
 }
@@ -373,7 +640,8 @@ function setInstancePlayState(phase) {
   playBtnLabel.textContent = phase === 'installing' ? 'Working…' : phase === 'running' ? 'Stop' : 'Play';
 }
 
-instancePlayBtn.addEventListener('click', async () => {
+// Shared by the header Play button and each server row's "Play & Join".
+async function startPlay(serverId) {
   if (playingInstanceId === activeInstanceId) {
     instancePlayBtn.disabled = true;
     await window.mc.stop();
@@ -385,7 +653,7 @@ instancePlayBtn.addEventListener('click', async () => {
   progressText.textContent = 'Starting…';
   logContent.textContent = '';
   try {
-    await window.mc.play(activeInstanceId);
+    await window.mc.play(activeInstanceId, serverId);
     playingInstanceId = activeInstanceId;
     setInstancePlayState('running');
     refreshSessionStatus(false);
@@ -396,7 +664,8 @@ instancePlayBtn.addEventListener('click', async () => {
     refreshSessionStatus(false);
     toast(err.message || String(err), 'error');
   }
-});
+}
+instancePlayBtn.addEventListener('click', () => startPlay());
 
 window.mc.onProgress(({ instanceId, msg }) => {
   if (instanceId === activeInstanceId) progressText.textContent = msg;
@@ -407,7 +676,7 @@ window.mc.onLog(({ instanceId, line }) => {
     logContent.scrollTop = logContent.scrollHeight;
   }
 });
-window.mc.onExit(({ instanceId, code, error }) => {
+window.mc.onExit(({ instanceId, code, error, crash }) => {
   if (playingInstanceId === instanceId) playingInstanceId = null;
   if (instanceId === activeInstanceId) {
     setInstancePlayState('idle');
@@ -415,7 +684,15 @@ window.mc.onExit(({ instanceId, code, error }) => {
   }
   refreshSessionStatus(false);
   renderInstanceGrid();
-  if (error) toast(`Failed to start: ${error}`, 'error');
+  if (error) {
+    toast(`Failed to start: ${error}`, 'error');
+  } else if (crash) {
+    const summary = crash.description || crash.exceptionLine || 'The game crashed.';
+    toast(`Crashed: ${summary}`, 'error', 8000, {
+      label: 'View report',
+      onClick: () => window.mc.openPath(crash.path),
+    });
+  }
 });
 
 deleteInstanceBtn.addEventListener('click', async () => {
@@ -440,6 +717,37 @@ deleteInstanceBtn.addEventListener('click', async () => {
   }
 });
 
+// ---- Instance settings (per-instance Java/memory overrides) ----
+instanceSettingsBtn.addEventListener('click', () => {
+  const inst = currentInstance();
+  if (!inst) return;
+  instSettingMinMem.value = inst.minMemoryMb || '';
+  instSettingMaxMem.value = inst.maxMemoryMb || '';
+  instSettingJava.value = inst.javaPath || '';
+  instanceSettingsOverlay.classList.remove('hidden');
+});
+instanceSettingsCancelBtn.addEventListener('click', () => instanceSettingsOverlay.classList.add('hidden'));
+instanceSettingsOverlay.addEventListener('click', (e) => {
+  if (e.target === instanceSettingsOverlay) instanceSettingsOverlay.classList.add('hidden');
+});
+instanceSettingsSaveBtn.addEventListener('click', async () => {
+  const inst = currentInstance();
+  if (!inst) return;
+  const patch = {
+    minMemoryMb: instSettingMinMem.value ? parseInt(instSettingMinMem.value, 10) : null,
+    maxMemoryMb: instSettingMaxMem.value ? parseInt(instSettingMaxMem.value, 10) : null,
+    javaPath: instSettingJava.value.trim() || null,
+  };
+  try {
+    const updated = await window.mc.updateInstance(inst.id, patch);
+    instances = instances.map((i) => (i.id === updated.id ? updated : i));
+    instanceSettingsOverlay.classList.add('hidden');
+    toast('Instance settings saved.', 'success');
+  } catch (err) {
+    toast(err.message || String(err), 'error');
+  }
+});
+
 // ---- Instance tabs ----
 document.querySelectorAll('.tab-btn').forEach((btn) => {
   btn.addEventListener('click', () => switchITab(btn.dataset.itab));
@@ -447,6 +755,9 @@ document.querySelectorAll('.tab-btn').forEach((btn) => {
 function switchITab(tab) {
   document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b.dataset.itab === tab));
   document.querySelectorAll('.itab').forEach((el) => el.classList.toggle('active', el.id === `itab-${tab}`));
+  if (tab === 'worlds') loadWorlds();
+  else if (tab === 'screenshots') loadScreenshots();
+  else if (tab === 'servers') loadServers();
 }
 
 // ---- Content: installed table ----
@@ -466,6 +777,31 @@ browseContentBtn.addEventListener('click', showBrowseMode);
 backToInstalledBtn.addEventListener('click', async () => {
   showInstalledMode();
   await loadInstalledMods();
+});
+
+// ---- Content type: Mods / Resource Packs / Shaders ----
+function setContentType(type) {
+  currentContentType = type;
+  document.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b.dataset.ptype === type));
+  const isMods = type === 'mod';
+  document.querySelector('.starter-label').classList.toggle('hidden', !isMods);
+  starterRow.classList.toggle('hidden', !isMods);
+  modSearchInput.placeholder =
+    type === 'resourcepack' ? 'Search resource packs on Modrinth...' : type === 'shader' ? 'Search shader packs on Modrinth...' : 'Search all of Modrinth...';
+}
+contentTypeTabs.querySelectorAll('.seg-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    // Servers aren't a Modrinth-search category - they're this instance's own
+    // saved server list, which already has a full tab. Jump there instead of
+    // duplicating that UI inside Browse.
+    if (btn.dataset.ptype === 'server') {
+      showInstalledMode();
+      switchITab('servers');
+      return;
+    }
+    setContentType(btn.dataset.ptype);
+    runSearch(true);
+  });
 });
 
 async function loadInstalledMods() {
@@ -528,22 +864,66 @@ function renderInstalledTable() {
   });
 }
 
+const updateAllLabel = updateAllBtn.querySelector('.btn-label');
+
 updateAllBtn.addEventListener('click', async () => {
   updateAllBtn.disabled = true;
-  updateAllBtn.textContent = 'Updating…';
+  updateAllLabel.textContent = 'Updating…';
   try {
     const { updated } = await window.mc.updateAllMods(activeInstanceId);
     await loadInstalledMods();
-    updateAllBtn.textContent = updated ? `Updated ${updated}` : 'Up to date';
+    updateAllLabel.textContent = updated ? `Updated ${updated}` : 'Up to date';
     toast(updated ? `Updated ${updated} project${updated === 1 ? '' : 's'}.` : 'Everything is already up to date.', 'success');
+    refreshUpdateBadge();
   } catch (err) {
-    updateAllBtn.textContent = 'Update failed';
+    updateAllLabel.textContent = 'Update failed';
     toast(err.message || String(err), 'error');
   } finally {
     setTimeout(() => {
       updateAllBtn.disabled = false;
-      updateAllBtn.textContent = 'Update all';
+      updateAllLabel.textContent = 'Update all';
     }, 2000);
+  }
+});
+
+// Checks (without downloading) how many installed mods have a newer build,
+// and badges the Update all button. Best-effort: a lookup failure just means
+// no badge, never an error the player has to deal with.
+async function refreshUpdateBadge() {
+  updateBadge.classList.add('hidden');
+  try {
+    const { updatable } = await window.mc.checkModUpdates(activeInstanceId);
+    if (updatable > 0) {
+      updateBadge.textContent = String(updatable);
+      updateBadge.classList.remove('hidden');
+    }
+  } catch {
+    // silent - this is a nice-to-have indicator, not a critical path
+  }
+}
+
+exportModpackBtn.addEventListener('click', async () => {
+  try {
+    const result = await window.mc.exportModpack(activeInstanceId);
+    if (!result.canceled) toast(`Exported to ${result.filePath}.`, 'success');
+  } catch (err) {
+    toast(err.message || String(err), 'error');
+  }
+});
+
+importModpackBtn.addEventListener('click', async () => {
+  try {
+    const result = await window.mc.importModpack(activeInstanceId);
+    if (result.canceled) return;
+    await loadInstalledMods();
+    refreshUpdateBadge();
+    if (result.failed.length) {
+      toast(`Installed ${result.installed}, ${result.failed.length} failed.`, 'error');
+    } else {
+      toast(`Installed ${result.installed} mod${result.installed === 1 ? '' : 's'} from the modpack.`, 'success');
+    }
+  } catch (err) {
+    toast(err.message || String(err), 'error');
   }
 });
 
@@ -561,15 +941,23 @@ function renderStarterMods() {
   });
 }
 
+// Turns an installProject() result (the primary project + any auto-installed
+// required dependencies) into a friendly toast message.
+function describeInstall(title, installedList) {
+  const extras = (installedList || []).slice(1).map((m) => m.title);
+  return extras.length ? `Installed "${title}" (+ ${extras.join(', ')}).` : `Installed "${title}".`;
+}
+
 async function quickInstall(mod, chip) {
   chip.disabled = true;
   chip.textContent = `Installing ${mod.title}…`;
   try {
-    await window.mc.installMod(activeInstanceId, { slug: mod.slug, title: mod.title });
+    const result = await window.mc.installMod(activeInstanceId, { slug: mod.slug, title: mod.title }, { projectType: 'mod' });
     await loadInstalledMods();
     renderStarterMods();
     renderSearchResults();
-    toast(`Installed "${mod.title}".`, 'success');
+    refreshUpdateBadge();
+    toast(describeInstall(mod.title, result), 'success');
   } catch (err) {
     chip.disabled = false;
     chip.textContent = `+ ${mod.title}`;
@@ -612,7 +1000,11 @@ async function runSearch(reset) {
     loadMoreBtn.textContent = 'Loading…';
   }
   try {
-    const page = await window.mc.searchMods(activeInstanceId, searchQuery, { limit: PAGE_SIZE, offset: searchOffset });
+    const page = await window.mc.searchMods(activeInstanceId, searchQuery, {
+      limit: PAGE_SIZE,
+      offset: searchOffset,
+      projectType: currentContentType,
+    });
     searchTotal = page.total;
     lastResults = reset ? page.hits : [...lastResults, ...page.hits];
     searchOffset += page.hits.length;
@@ -661,11 +1053,16 @@ function renderSearchResults() {
         btn.disabled = true;
         btn.textContent = 'Installing…';
         try {
-          await window.mc.installMod(activeInstanceId, mod);
-          await loadInstalledMods();
-          renderStarterMods();
+          const result = await window.mc.installMod(activeInstanceId, mod, { projectType: currentContentType });
+          if (currentContentType === 'mod') {
+            await loadInstalledMods();
+            renderStarterMods();
+            refreshUpdateBadge();
+          } else {
+            installedProjectIds.add(mod.id);
+          }
           renderSearchResults();
-          toast(`Installed "${mod.title}".`, 'success');
+          toast(describeInstall(mod.title, result), 'success');
         } catch (err) {
           btn.disabled = false;
           btn.textContent = 'Install';
@@ -679,6 +1076,102 @@ function renderSearchResults() {
   loadMoreBtn.classList.toggle('hidden', lastResults.length >= searchTotal);
 }
 loadMoreBtn.addEventListener('click', () => runSearch(false));
+
+// ---- Worlds ----
+function formatDate(ms) {
+  if (!ms) return '—';
+  return new Date(ms).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+
+async function loadWorlds() {
+  const list = await window.mc.listWorlds(activeInstanceId);
+  worldsTbody.innerHTML = '';
+  worldsEmpty.classList.toggle('hidden', list.length !== 0);
+  list.forEach((world) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="ct-title">${escapeHtml(world.name)}</td>
+      <td class="ct-version">${formatDate(world.lastPlayed)}</td>
+      <td class="ct-actions">
+        <button class="icon-btn" title="Open folder">${FOLDER_ICON}</button>
+        <button class="icon-btn danger" title="Delete world">${TRASH_ICON}</button>
+      </td>
+    `;
+    tr.querySelectorAll('.icon-btn')[0].addEventListener('click', () => window.mc.openWorldFolder(activeInstanceId, world.name));
+    tr.querySelectorAll('.icon-btn')[1].addEventListener('click', async () => {
+      const ok = await confirmDialog({ title: 'Delete world', body: `Permanently delete "${world.name}"? This cannot be undone.`, confirmLabel: 'Delete forever' });
+      if (!ok) return;
+      await window.mc.deleteWorld(activeInstanceId, world.name);
+      await loadWorlds();
+      toast(`Deleted world "${world.name}".`, 'success');
+    });
+    worldsTbody.appendChild(tr);
+  });
+}
+openWorldsFolderBtn.addEventListener('click', () => window.mc.openWorldFolder(activeInstanceId, ''));
+
+// ---- Screenshots ----
+async function loadScreenshots() {
+  const list = await window.mc.listScreenshots(activeInstanceId);
+  screenshotsGrid.innerHTML = '';
+  screenshotsEmpty.classList.toggle('hidden', list.length !== 0);
+  list.forEach((shot) => {
+    const card = document.createElement('div');
+    card.className = 'screenshot-card';
+    card.innerHTML = `
+      <img src="${shot.url}" alt="${escapeHtml(shot.name)}" loading="lazy" />
+      <button class="icon-btn danger shot-remove" title="Delete screenshot">${TRASH_ICON}</button>
+    `;
+    card.querySelector('.shot-remove').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await window.mc.deleteScreenshot(activeInstanceId, shot.name);
+      await loadScreenshots();
+    });
+    screenshotsGrid.appendChild(card);
+  });
+}
+openScreenshotsFolderBtn.addEventListener('click', () => window.mc.openScreenshotsFolder(activeInstanceId));
+
+// ---- Servers ----
+async function loadServers() {
+  const list = await window.mc.listServers(activeInstanceId);
+  serversTbody.innerHTML = '';
+  serversEmpty.classList.toggle('hidden', list.length !== 0);
+  list.forEach((server) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="ct-title">${escapeHtml(server.name)}</td>
+      <td class="ct-version">${escapeHtml(server.address)}</td>
+      <td class="ct-actions">
+        <button class="btn small primary">${PLAY_ICON}Join</button>
+        <button class="icon-btn danger" title="Remove server">${TRASH_ICON}</button>
+      </td>
+    `;
+    tr.querySelector('.btn.primary').addEventListener('click', () => startPlay(server.id));
+    tr.querySelector('.icon-btn').addEventListener('click', async () => {
+      await window.mc.removeServer(activeInstanceId, server.id);
+      await loadServers();
+    });
+    serversTbody.appendChild(tr);
+  });
+}
+addServerBtn.addEventListener('click', async () => {
+  const name = serverNameInput.value.trim();
+  const address = serverAddressInput.value.trim();
+  if (!name || !address) {
+    toast('A server needs both a name and an address.', 'error');
+    return;
+  }
+  try {
+    await window.mc.addServer(activeInstanceId, { name, address });
+    serverNameInput.value = '';
+    serverAddressInput.value = '';
+    await loadServers();
+    toast(`Added "${name}".`, 'success');
+  } catch (err) {
+    toast(err.message || String(err), 'error');
+  }
+});
 
 // ---- New instance modal ----
 function openModal() {

@@ -62,8 +62,8 @@ class GameLauncher {
     return resolved;
   }
 
-  /** Spawns the game process. Returns the ChildProcess. */
-  async launchGame(resolvedVersion, account, settings) {
+  /** Spawns the game process. `server` (optional) is { ip, port } to connect straight into. */
+  async launchGame(resolvedVersion, account, settings, server) {
     const javaPath = findJava(settings.javaPath);
     if (!javaPath) {
       throw new Error(
@@ -82,6 +82,7 @@ class GameLauncher {
       resolution: { width: settings.width, height: settings.height },
       launcherName: 'CamelLauncher',
       launcherBrand: 'CamelLauncher',
+      ...(server ? { server } : {}),
     });
   }
 }
