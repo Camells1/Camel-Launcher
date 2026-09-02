@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline';" />
+  <title>Camel Launcher</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="login-screen" class="screen">
+    <svg class="desert-backdrop" viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="650" cy="90" r="130" class="sun-glow" />
+      <circle cx="650" cy="90" r="68" class="sun-core" />
+      <path d="M0,250 C100,215 200,270 300,235 C400,200 500,255 600,225 C700,198 750,225 800,215 L800,400 L0,400 Z" class="dune dune-far" />
+      <path d="M0,295 C120,258 220,315 340,285 C460,258 560,305 680,275 C740,262 770,285 800,278 L800,400 L0,400 Z" class="dune dune-mid" />
+      <g class="camel-walk">
+        <use href="#camel-shape" x="500" y="230" width="70" height="42" />
+      </g>
+      <path d="M0,335 C150,308 250,355 380,328 C500,305 600,345 700,322 C750,310 780,326 800,322 L800,400 L0,400 Z" class="dune dune-near" />
+      <g id="elephant-walk" class="elephant-walk hidden">
+        <use href="#elephant-shape" x="480" y="270" width="80" height="48" />
+      </g>
+      <defs>
+        <g id="camel-shape">
+          <rect x="18" y="42" width="5" height="16" rx="2"/>
+          <rect x="30" y="42" width="5" height="16" rx="2"/>
+          <rect x="58" y="42" width="5" height="16" rx="2"/>
+          <rect x="70" y="42" width="5" height="16" rx="2"/>
+          <ellipse cx="45" cy="38" rx="26" ry="12"/>
+          <ellipse cx="36" cy="24" rx="8" ry="10"/>
+          <ellipse cx="52" cy="24" rx="8" ry="10"/>
+          <path d="M64 34 Q78 30 80 14" stroke="currentColor" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <ellipse cx="84" cy="10" rx="7" ry="5.5"/>
+          <ellipse cx="92" cy="12" rx="4" ry="2.6"/>
+          <ellipse cx="80" cy="4" rx="2.2" ry="3" transform="rotate(-20 80 4)"/>
+          <path d="M19 40 q-6 4 -3 12" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </g>
+        <g id="elephant-shape">
+          <rect x="20" y="42" width="7" height="17" rx="2"/>
+          <rect x="34" y="42" width="7" height="17" rx="2"/>
+          <rect x="58" y="42" width="7" height="17" rx="2"/>
+          <rect x="72" y="42" width="7" height="17" rx="2"/>
+          <ellipse cx="50" cy="34" rx="32" ry="17"/>
+          <ellipse cx="22" cy="19" rx="15" ry="13"/>
+          <ellipse cx="80" cy="24" rx="13" ry="12"/>
+          <path d="M90 27 Q101 32 98 46" stroke="currentColor" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M24 40 q-6 4 -3 12" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </g>
+      </defs>
+    </svg>
+    <p id="elephant-caption" class="elephant-caption hidden">🐘 Easter egg: an elephant only wanders by 1 in 100 times.</p>
+    <div class="login-card">
+      <svg class="camel-hero camel-pixel-slot" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"></svg>
+      <h1>Camel Launcher</h1>
+      <p class="subtitle">Sign in with the Microsoft account that owns Minecraft.</p>
+      <button id="login-btn" class="btn primary large">Sign in with Microsoft</button>
+      <p id="login-error" class="error-text"></p>
+    </div>
+  </div>
+
+  <div id="app-screen" class="screen hidden">
+    <nav class="icon-rail">
+      <button class="rail-btn active" id="rail-home" title="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5" /><path d="M6 10.5V20h5v-5h2v5h5V10.5" /></svg>
+      </button>
+      <div class="rail-divider"></div>
+      <div class="rail-instances" id="rail-instances"></div>
+      <button class="rail-btn rail-add" id="rail-add-instance" title="New instance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <div class="rail-spacer"></div>
+      <button class="rail-btn" id="rail-settings" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
+      </button>
+    </nav>
+
+    <main class="main-area">
+      <section id="page-home" class="page active">
+        <div class="page-header">
+          <div>
+            <svg class="camel-icon camel-pixel-slot" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"></svg>
+            <h2 class="inline-title">Camel Launcher</h2>
+          </div>
+          <button id="new-instance-btn" class="btn primary">+ New Instance</button>
+        </div>
+        <p class="muted">Each instance is its own Minecraft version + mod list. Make one per modpack, or one per friend group.</p>
+        <div class="instance-grid" id="instance-grid"></div>
+      </section>
+
+      <section id="page-instance" class="page">
+        <div class="instance-header">
+          <div class="instance-icon-lg" id="instance-icon-lg"></div>
+          <div class="instance-header-info">
+            <h2 id="instance-title">Instance</h2>
+            <p class="muted" id="instance-subtitle">Fabric · 1.21.1</p>
+          </div>
+          <button id="delete-instance-btn" class="icon-btn danger" title="Delete instance">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>
+          </button>
+          <button id="instance-play-btn" class="btn primary large">
+            <span class="btn-label">Play</span>
+            <svg class="spinner hidden" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="5"/></svg>
+          </button>
+        </div>
+        <div id="progress-box" class="progress-box hidden">
+          <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+          <div id="progress-text">Working...</div>
+        </div>
+
+        <div class="tab-bar">
+          <button class="tab-btn active" data-itab="content">Content</button>
+          <button class="tab-btn" data-itab="logs">Logs</button>
+        </div>
+
+        <div id="itab-content" class="itab active">
+          <div id="installed-mode">
+            <div class="toolbar">
+              <button id="browse-content-btn" class="btn primary small">Browse content</button>
+              <button id="update-all-btn" class="btn secondary small">Update all</button>
+              <span class="toolbar-spacer"></span>
+              <input id="installed-filter" type="text" placeholder="Filter installed content..." />
+            </div>
+            <table class="content-table">
+              <thead>
+                <tr><th>Project</th><th>Version</th><th class="ct-actions-head">Actions</th></tr>
+              </thead>
+              <tbody id="installed-tbody"></tbody>
+            </table>
+            <p id="installed-empty" class="muted empty-note hidden">No content installed yet — click "Browse content" to add some.</p>
+          </div>
+
+          <div id="browse-mode" class="hidden">
+            <div class="toolbar">
+              <button id="back-to-installed-btn" class="btn secondary small">&larr; Back to installed</button>
+              <span class="toolbar-spacer"></span>
+              <input id="mod-search" type="text" placeholder="Search all of Modrinth..." />
+            </div>
+            <div class="starter-row" id="starter-row"></div>
+            <div id="search-results" class="mod-grid"></div>
+            <div class="load-more-row">
+              <button id="load-more-btn" class="btn secondary hidden">Load more mods</button>
+              <span id="results-count" class="muted"></span>
+            </div>
+          </div>
+        </div>
+
+        <div id="itab-logs" class="itab">
+          <pre id="log-content" class="log-content"></pre>
+        </div>
+      </section>
+
+      <section id="page-settings" class="page">
+        <h2>Settings</h2>
+        <p class="muted">Applies to every instance.</p>
+        <label class="field">
+          Min memory (MB)
+          <input id="setting-minmem" type="number" step="256" />
+        </label>
+        <label class="field">
+          Max memory (MB)
+          <input id="setting-maxmem" type="number" step="256" />
+        </label>
+        <label class="field">
+          Custom Java path (optional)
+          <input id="setting-java" type="text" placeholder="Auto-detected" />
+        </label>
+        <button id="save-settings-btn" class="btn primary">Save settings</button>
+        <p id="settings-saved" class="hint hidden">Saved.</p>
+      </section>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="sidebar-label">Playing as</div>
+      <div class="account-card">
+        <img id="account-avatar" class="account-avatar" />
+        <div class="account-info">
+          <div id="account-name" class="account-name">Player</div>
+          <div class="muted account-sub">Minecraft account</div>
+        </div>
+      </div>
+      <button id="logout-btn" class="link-btn">Sign out</button>
+    </aside>
+  </div>
+
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>New Instance</h3>
+      <label class="field">
+        Name
+        <input id="modal-name" type="text" placeholder="My Modpack" />
+      </label>
+      <label class="field">
+        Minecraft version
+        <input id="modal-version" type="text" placeholder="1.21.1" value="1.21.1" />
+      </label>
+      <p class="muted small">Fabric will be installed automatically for this version.</p>
+      <div class="modal-actions">
+        <button id="modal-cancel-btn" class="btn secondary">Cancel</button>
+        <button id="modal-create-btn" class="btn primary">Create</button>
+      </div>
+      <p id="modal-error" class="error-text"></p>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
