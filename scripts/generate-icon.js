@@ -1,45 +1,33 @@
+// Regenerates build/icon.png (the window/taskbar/installer icon) from the
+// default (ochre) badge logo in renderer/assets/logos - the same source the
+// in-app rail logo uses, so the two never drift apart.
 const fs = require('fs');
 const path = require('path');
 const { PNG } = require('pngjs');
-const { GRID, PALETTE, COLS, ROWS } = require('../src/camelArt');
 
-const SCALE = 10;
-const CANVAS = 256;
+const LOGO_PATH = path.join(__dirname, '..', 'renderer', 'assets', 'logos', 'logo-ochre.png');
+const OUT_PATH = path.join(__dirname, '..', 'build', 'icon.png');
+const CANVAS = 512;
 
-function hexToRgb(hex) {
-  const n = parseInt(hex.slice(1), 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-}
-
-const png = new PNG({ width: CANVAS, height: CANVAS });
-
-const artWidth = COLS * SCALE;
-const artHeight = ROWS * SCALE;
-const offsetX = Math.round((CANVAS - artWidth) / 2);
-const offsetY = Math.round((CANVAS - artHeight) / 2);
-
-for (let row = 0; row < ROWS; row++) {
-  for (let col = 0; col < COLS; col++) {
-    const code = GRID[row][col];
-    if (code === '.') continue;
-    const [r, g, b] = hexToRgb(PALETTE[code]);
-    for (let dy = 0; dy < SCALE; dy++) {
-      for (let dx = 0; dx < SCALE; dx++) {
-        const x = offsetX + col * SCALE + dx;
-        const y = offsetY + row * SCALE + dy;
-        const idx = (CANVAS * y + x) << 2;
-        png.data[idx] = r;
-        png.data[idx + 1] = g;
-        png.data[idx + 2] = b;
-        png.data[idx + 3] = 255;
-      }
-    }
+const src = PNG.sync.read(fs.readFileSync(LOGO_PATH));
+const out = new PNG({ width: CANVAS, height: CANVAS });
+const scale = (CANVAS * 0.86) / src.width;
+const destSize = Math.round(src.width * scale);
+const offset = Math.round((CANVAS - destSize) / 2);
+for (let y = 0; y < destSize; y++) {
+  const sy = Math.min(src.height - 1, Math.floor(y / scale));
+  for (let x = 0; x < destSize; x++) {
+    const sx = Math.min(src.width - 1, Math.floor(x / scale));
+    const sIdx = (sy * src.width + sx) << 2;
+    const dIdx = ((y + offset) * CANVAS + (x + offset)) << 2;
+    out.data[dIdx] = src.data[sIdx];
+    out.data[dIdx + 1] = src.data[sIdx + 1];
+    out.data[dIdx + 2] = src.data[sIdx + 2];
+    out.data[dIdx + 3] = src.data[sIdx + 3];
   }
 }
 
-const outDir = path.join(__dirname, '..', 'build');
-fs.mkdirSync(outDir, { recursive: true });
-const outPath = path.join(outDir, 'icon.png');
-png.pack().pipe(fs.createWriteStream(outPath)).on('finish', () => {
-  console.log('Wrote', outPath);
+fs.mkdirSync(path.dirname(OUT_PATH), { recursive: true });
+out.pack().pipe(fs.createWriteStream(OUT_PATH)).on('finish', () => {
+  console.log('Wrote', OUT_PATH);
 });

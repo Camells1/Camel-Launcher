@@ -33,7 +33,8 @@
       "preload.js",
       "src/**/*",
       "renderer/**/*",
-      "build/icon.png"
+      "build/icon.png",
+      "build/icons/**/*"
     ],
     "win": {
       "target": [

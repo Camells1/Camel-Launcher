@@ -31,9 +31,14 @@ contextBridge.exposeInMainWorld('mc', {
   installModpack: (project) => ipcRenderer.invoke('modpacks:install', project),
   onModpackProgress: (cb) => ipcRenderer.on('modpacks:progress', (_e, payload) => cb(payload)),
 
+  listModrinthAppProfiles: () => ipcRenderer.invoke('modrinthApp:listProfiles'),
+  importFromModrinthApp: (opts, profileName) => ipcRenderer.invoke('modrinthApp:import', opts, profileName),
+  onModrinthAppProgress: (cb) => ipcRenderer.on('modrinthApp:progress', (_e, payload) => cb(payload)),
+
   searchMods: (instanceId, query, opts) => ipcRenderer.invoke('mods:search', instanceId, query, opts),
   listMods: (instanceId) => ipcRenderer.invoke('mods:list', instanceId),
   installMod: (instanceId, project, opts) => ipcRenderer.invoke('mods:install', instanceId, project, opts),
+  uploadModFiles: (instanceId) => ipcRenderer.invoke('mods:uploadFiles', instanceId),
   removeMod: (instanceId, filename) => ipcRenderer.invoke('mods:remove', instanceId, filename),
   toggleMod: (instanceId, filename) => ipcRenderer.invoke('mods:toggle', instanceId, filename),
   updateAllMods: (instanceId) => ipcRenderer.invoke('mods:updateAll', instanceId),
@@ -48,6 +53,7 @@ contextBridge.exposeInMainWorld('mc', {
   openScreenshotsFolder: (instanceId) => ipcRenderer.invoke('screenshots:openFolder', instanceId),
 
   listServers: (instanceId) => ipcRenderer.invoke('servers:list', instanceId),
+  listAllServers: () => ipcRenderer.invoke('servers:listAll'),
   addServer: (instanceId, entry) => ipcRenderer.invoke('servers:add', instanceId, entry),
   removeServer: (instanceId, id) => ipcRenderer.invoke('servers:remove', instanceId, id),
 
@@ -69,6 +75,14 @@ contextBridge.exposeInMainWorld('mc', {
 
   openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
   openPath: (targetPath) => ipcRenderer.invoke('shell:openPath', targetPath),
+
+  setAppIcon: (accent) => ipcRenderer.invoke('app:setIcon', accent),
+
+  minimizeWindow: () => ipcRenderer.invoke('window:minimize'),
+  toggleMaximizeWindow: () => ipcRenderer.invoke('window:toggleMaximize'),
+  closeWindow: () => ipcRenderer.invoke('window:close'),
+  isWindowMaximized: () => ipcRenderer.invoke('window:isMaximized'),
+  onWindowState: (cb) => ipcRenderer.on('window:state', (_e, payload) => cb(payload)),
 
   checkForUpdates: () => ipcRenderer.invoke('update:check'),
   onUpdateStatus: (cb) => ipcRenderer.on('update:status', (_e, payload) => cb(payload)),

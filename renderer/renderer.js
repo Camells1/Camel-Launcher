@@ -1,3 +1,34 @@
+const titlebarBreadcrumb = document.getElementById('titlebar-breadcrumb');
+const titlebarStatus = document.getElementById('titlebar-status');
+const titlebarStatusName = document.getElementById('titlebar-status-name');
+const titlebarStopBtn = document.getElementById('titlebar-stop-btn');
+const titlebarLogo = document.getElementById('titlebar-logo');
+const titlebarMinBtn = document.getElementById('titlebar-min-btn');
+const titlebarMaxBtn = document.getElementById('titlebar-max-btn');
+const titlebarCloseBtn = document.getElementById('titlebar-close-btn');
+
+titlebarMinBtn.addEventListener('click', () => window.mc.minimizeWindow());
+titlebarMaxBtn.addEventListener('click', () => window.mc.toggleMaximizeWindow());
+titlebarCloseBtn.addEventListener('click', () => window.mc.closeWindow());
+titlebarStopBtn.addEventListener('click', async () => {
+  if (!playingInstanceId) return;
+  if (currentSettings && currentSettings.confirmStopGame) {
+    const ok = await confirmDialog({ title: 'Stop game', body: 'Stop the running game? Any unsaved progress in-world will be lost.', confirmLabel: 'Stop' });
+    if (!ok) return;
+  }
+  if (playingInstanceId === activeInstanceId) instancePlayBtn.disabled = true;
+  await window.mc.stop();
+});
+
+function updateMaxIcon(maximized) {
+  titlebarMaxBtn.title = maximized ? 'Restore' : 'Maximize';
+  titlebarMaxBtn.innerHTML = maximized
+    ? '<svg viewBox="0 0 12 12"><rect x="3" y="3.5" width="5.5" height="5.5" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.1"/><path d="M4.5 3.5V2.5a1 1 0 0 1 1-1H9a1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1H8.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>'
+    : '<svg viewBox="0 0 12 12"><rect x="2.5" y="2.5" width="7" height="7" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>';
+}
+window.mc.onWindowState(({ maximized }) => updateMaxIcon(maximized));
+window.mc.isWindowMaximized().then(updateMaxIcon);
+
 const loginScreen = document.getElementById('login-screen');
 const appScreen = document.getElementById('app-screen');
 const loginBtn = document.getElementById('login-btn');
@@ -21,11 +52,39 @@ const pages = {
   instance: document.getElementById('page-instance'),
   settings: document.getElementById('page-settings'),
   skins: document.getElementById('page-skins'),
+  browse: document.getElementById('page-browse'),
+  modpacks: document.getElementById('page-modpacks'),
+  allServers: document.getElementById('page-all-servers'),
 };
+
+const brandLogo = document.getElementById('brand-logo');
+const homeHeroLogo = document.getElementById('home-hero-logo');
+const sidebarFootLogo = document.getElementById('sidebar-foot-logo');
+const railBrowse = document.getElementById('rail-browse');
+const railModpacks = document.getElementById('rail-modpacks');
+const railAllServers = document.getElementById('rail-all-servers');
+
+const discoverModpackSearch = document.getElementById('discover-modpack-search');
+const discoverModpackResults = document.getElementById('discover-modpack-results');
+const discoverModpackLoadMoreBtn = document.getElementById('discover-modpack-load-more-btn');
+const discoverModpackCount = document.getElementById('discover-modpack-count');
+
+const allServersTbody = document.getElementById('all-servers-tbody');
+const allServersEmpty = document.getElementById('all-servers-empty');
+const browseTargetSelect = document.getElementById('browse-target-select');
+const browseSearchInput = document.getElementById('browse-search');
+const browseResults = document.getElementById('browse-results');
+const browseLoadMoreBtn = document.getElementById('browse-load-more-btn');
+const browseResultsCount = document.getElementById('browse-results-count');
+const browseNoInstances = document.getElementById('browse-no-instances');
+const browseToolbar = browseTargetSelect.closest('.toolbar');
 
 const railSkins = document.getElementById('rail-skins');
 const jumpInSection = document.getElementById('jump-in-section');
 const jumpInList = document.getElementById('jump-in-list');
+const homeGreetingEyebrow = document.getElementById('home-greeting-eyebrow');
+const homeGreetingName = document.getElementById('home-greeting-name');
+const homeGreetingSub = document.getElementById('home-greeting-sub');
 
 const skinPreviewImg = document.getElementById('skin-preview-img');
 const skinEmpty = document.getElementById('skin-empty');
@@ -36,6 +95,8 @@ const skinError = document.getElementById('skin-error');
 
 const instanceTitle = document.getElementById('instance-title');
 const instanceSubtitle = document.getElementById('instance-subtitle');
+const instanceMetaPlaytime = document.getElementById('instance-meta-playtime');
+const instanceMetaLastPlayed = document.getElementById('instance-meta-lastplayed');
 const instanceIconLg = document.getElementById('instance-icon-lg');
 const deleteInstanceBtn = document.getElementById('delete-instance-btn');
 const instancePlayBtn = document.getElementById('instance-play-btn');
@@ -64,6 +125,9 @@ const installedFilterInput = document.getElementById('installed-filter');
 const installedTbody = document.getElementById('installed-tbody');
 const installedEmpty = document.getElementById('installed-empty');
 const tableWrap = document.querySelector('.table-wrap');
+const uploadFilesBtn = document.getElementById('upload-files-btn');
+const installedTypeTabs = document.getElementById('installed-type-tabs');
+const refreshInstalledBtn = document.getElementById('refresh-installed-btn');
 
 const starterRow = document.getElementById('starter-row');
 const modSearchInput = document.getElementById('mod-search');
@@ -76,6 +140,14 @@ const settingMaxMem = document.getElementById('setting-maxmem');
 const settingJava = document.getElementById('setting-java');
 const saveSettingsBtn = document.getElementById('save-settings-btn');
 const settingsSaved = document.getElementById('settings-saved');
+const settingThemeTabs = document.getElementById('setting-theme-tabs');
+const settingAccentRow = document.getElementById('setting-accent-row');
+const settingReduceMotion = document.getElementById('setting-reduce-motion');
+const settingLoaderTabs = document.getElementById('setting-loader-tabs');
+const settingMinimizeOnPlay = document.getElementById('setting-minimize-on-play');
+const settingConfirmStop = document.getElementById('setting-confirm-stop');
+const settingAlwaysOnTop = document.getElementById('setting-always-on-top');
+const settingAutoUpdate = document.getElementById('setting-auto-update');
 
 const modalOverlay = document.getElementById('modal-overlay');
 const newInstanceModal = document.getElementById('new-instance-modal');
@@ -95,6 +167,16 @@ const modpackResults = document.getElementById('modpack-results');
 const modpackLoadMoreBtn = document.getElementById('modpack-load-more-btn');
 const modpackCount = document.getElementById('modpack-count');
 const modpackCloseBtn = document.getElementById('modpack-close-btn');
+
+const newInstanceImport = document.getElementById('new-instance-import');
+const importProfileList = document.getElementById('import-profile-list');
+const importDetails = document.getElementById('import-details');
+const importName = document.getElementById('import-name');
+const importVersion = document.getElementById('import-version');
+const importLoader = document.getElementById('import-loader');
+const importBtn = document.getElementById('import-btn');
+const importCancelBtn = document.getElementById('import-cancel-btn');
+const importError = document.getElementById('import-error');
 
 // Mirrors the LOADERS table in src/launcher.js, which stays the source of
 // truth - init() replaces this from `loaders:list` so the two can't drift.
@@ -182,6 +264,14 @@ let searchTotal = 0;
 const PAGE_SIZE = 30;
 let lastResults = [];
 let currentContentType = 'mod';
+let installedTypeFilter = 'all';
+
+// ---- Browse Mods (instance-agnostic search) ----
+let browseQuery = '';
+let browseOffset = 0;
+let browseTotal = 0;
+let lastBrowseResults = [];
+let browseInstalledProjectIds = new Set();
 
 function currentInstance() {
   return instances.find((i) => i.id === activeInstanceId) || null;
@@ -328,13 +418,32 @@ function showLogin() {
   appScreen.classList.add('hidden');
 }
 
+let currentAccountName = null;
+
 async function refreshAccountUi(account) {
   if (account && account.name) {
+    currentAccountName = account.name;
     accountName.textContent = account.name;
     if (account.uuid) accountAvatar.src = `https://crafatar.com/avatars/${account.uuid}?size=64&overlay`;
     showApp();
   } else {
     showLogin();
+  }
+}
+
+// A quiet bit of life on the page you land on every single time - who's
+// signed in, what time it is, and whether there's anything waiting for them.
+function renderHomeGreeting() {
+  const hour = new Date().getHours();
+  homeGreetingEyebrow.textContent = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  homeGreetingName.textContent = currentAccountName || 'Traveler';
+  if (!instances.length) {
+    homeGreetingSub.textContent = 'Let’s get your first instance set up.';
+  } else {
+    const running = instances.find((i) => i.id === playingInstanceId);
+    homeGreetingSub.textContent = running
+      ? `${running.name} is running right now.`
+      : `${instances.length} instance${instances.length === 1 ? '' : 's'} ready to play.`;
   }
 }
 
@@ -423,11 +532,11 @@ function setSessionStatus(text, state) {
   statusDot.className = state ? `status-dot ${state}` : 'status-dot';
 }
 function refreshSessionStatus(busy) {
+  const inst = playingInstanceId ? instances.find((i) => i.id === playingInstanceId) : null;
+  titlebarStatus.classList.toggle('hidden', !playingInstanceId);
+  if (playingInstanceId) titlebarStatusName.textContent = inst ? inst.name : 'Minecraft';
   if (busy) return setSessionStatus('Preparing…', 'busy');
-  if (playingInstanceId) {
-    const inst = instances.find((i) => i.id === playingInstanceId);
-    return setSessionStatus(`Running · ${inst ? inst.name : 'Minecraft'}`, 'live');
-  }
+  if (playingInstanceId) return setSessionStatus(`Running · ${inst ? inst.name : 'Minecraft'}`, 'live');
   setSessionStatus('Idle', '');
 }
 
@@ -451,10 +560,13 @@ async function init() {
   settingMinMem.value = currentSettings.minMemoryMb;
   settingMaxMem.value = currentSettings.maxMemoryMb;
   settingJava.value = currentSettings.javaPath || '';
+  applyAppearanceSettings(currentSettings);
+  renderSettingsControls(currentSettings);
 
   instances = await window.mc.listInstances();
   renderRailInstances();
   renderInstanceGrid();
+  renderHomeGreeting();
   loadRecentActivity();
   refreshSessionStatus(false);
   showPage('home');
@@ -482,19 +594,50 @@ logoutBtn.addEventListener('click', async () => {
 });
 
 // ---- Page routing ----
+const PAGE_LABELS = {
+  home: 'Home',
+  skins: 'Skins',
+  browse: 'Browse Mods',
+  modpacks: 'Discover Modpacks',
+  allServers: 'All Servers',
+  settings: 'Settings',
+};
+
+function renderBreadcrumb(page) {
+  const parts = ['Home'];
+  if (page === 'instance') {
+    const inst = currentInstance();
+    parts.push(inst ? inst.name : 'Instance');
+  } else if (page !== 'home') {
+    parts.push(PAGE_LABELS[page] || page);
+  }
+  titlebarBreadcrumb.innerHTML = parts
+    .map((label, i) => {
+      const isLast = i === parts.length - 1;
+      const crumb = `<span class="crumb${isLast ? ' current' : ''}">${escapeHtml(label)}</span>`;
+      return i === 0 ? crumb : `<span class="sep">›</span>${crumb}`;
+    })
+    .join('');
+}
+
 function showPage(page) {
   currentPage = page;
   Object.entries(pages).forEach(([key, el]) => el.classList.toggle('active', key === page));
   railHome.classList.toggle('active', page === 'home');
   railSettings.classList.toggle('active', page === 'settings');
   railSkins.classList.toggle('active', page === 'skins');
+  railBrowse.classList.toggle('active', page === 'browse');
+  railModpacks.classList.toggle('active', page === 'modpacks');
+  railAllServers.classList.toggle('active', page === 'allServers');
   document.querySelectorAll('.rail-swatch').forEach((el) => {
     el.classList.toggle('active', page === 'instance' && el.dataset.id === activeInstanceId);
   });
+  renderBreadcrumb(page);
 }
 
 railHome.addEventListener('click', () => {
   renderInstanceGrid();
+  renderHomeGreeting();
   loadRecentActivity();
   showPage('home');
 });
@@ -502,6 +645,18 @@ railSettings.addEventListener('click', () => showPage('settings'));
 railSkins.addEventListener('click', () => {
   loadSkin();
   showPage('skins');
+});
+railBrowse.addEventListener('click', () => {
+  openBrowsePage();
+  showPage('browse');
+});
+railModpacks.addEventListener('click', () => {
+  if (!discoverModpackResults.childElementCount) runDiscoverModpackSearch(true);
+  showPage('modpacks');
+});
+railAllServers.addEventListener('click', () => {
+  loadAllServers();
+  showPage('allServers');
 });
 
 function renderRailInstances() {
@@ -520,15 +675,21 @@ function renderRailInstances() {
 function renderInstanceGrid() {
   instanceGrid.innerHTML = '';
   if (!instances.length) {
-    const empty = document.createElement('p');
-    empty.className = 'muted empty-hint';
-    empty.textContent = 'No instances yet. Click "New Instance" to create your first modpack.';
+    const empty = document.createElement('div');
+    empty.className = 'empty-hint mascot-empty';
+    empty.innerHTML = `
+      <svg class="camel-pixel-slot mascot-empty-camel" viewBox="0 0 33 20" xmlns="http://www.w3.org/2000/svg"></svg>
+      <p class="muted">No instances yet. Click "New Instance" to create your first modpack.</p>
+    `;
     instanceGrid.appendChild(empty);
+    paintCamelPixelArt();
     return;
   }
-  instances.forEach((inst) => {
+  instances.forEach((inst, i) => {
     const card = document.createElement('div');
     card.className = 'instance-card';
+    card.dataset.loader = inst.loader;
+    card.style.setProperty('--stagger', i);
     const running = playingInstanceId === inst.id;
     card.innerHTML = `
       <div class="rail-swatch"></div>
@@ -537,7 +698,7 @@ function renderInstanceGrid() {
       <div class="ic-meta">
         <span class="badge accent">${escapeHtml(loaderLabel(inst.loader))}</span>
         <span class="badge">${escapeHtml(inst.mcVersion)}</span>
-        ${running ? '<span class="badge oasis">Running</span>' : ''}
+        ${running ? '<span class="badge oasis">Running</span>' : inst.lastPlayedAt ? `<span class="ic-last-played">${timeAgo(inst.lastPlayedAt)}</span>` : ''}
       </div>
       <span class="ic-open">Open →</span>
     `;
@@ -549,6 +710,13 @@ function renderInstanceGrid() {
     });
     instanceGrid.appendChild(card);
   });
+}
+
+function formatPlaytime(ms) {
+  if (!ms) return '';
+  const hours = ms / 3600000;
+  if (hours < 1) return `${Math.max(1, Math.round(ms / 60000))} minutes played`;
+  return `${hours < 10 ? hours.toFixed(1) : Math.round(hours)} hours played`;
 }
 
 function timeAgo(ms) {
@@ -571,9 +739,10 @@ async function loadRecentActivity() {
   const items = await window.mc.getRecentActivity(6);
   jumpInSection.classList.toggle('hidden', items.length === 0);
   jumpInList.innerHTML = '';
-  items.forEach((item) => {
+  items.forEach((item, i) => {
     const card = document.createElement('div');
     card.className = 'jump-in-card panel';
+    card.style.setProperty('--stagger', i);
     card.innerHTML = `
       <div class="rail-swatch"></div>
       <div class="jump-info">
@@ -692,6 +861,13 @@ skinResetBtn.addEventListener('click', async () => {
   }
 });
 
+function refreshInstanceHeaderMeta(inst) {
+  instanceSubtitle.textContent = `${loaderLabel(inst.loader)} · ${inst.mcVersion}`;
+  instanceMetaPlaytime.querySelector('span').textContent = formatPlaytime(inst.totalPlaytimeMs);
+  instanceMetaPlaytime.classList.toggle('hidden', !inst.totalPlaytimeMs);
+  instanceMetaLastPlayed.querySelector('span').textContent = inst.lastPlayedAt ? `Last played ${timeAgo(inst.lastPlayedAt)}` : 'Never played';
+}
+
 // ---- Instance detail ----
 async function openInstance(id) {
   activeInstanceId = id;
@@ -699,7 +875,7 @@ async function openInstance(id) {
   if (!inst) return;
 
   instanceTitle.textContent = inst.name;
-  instanceSubtitle.textContent = `${loaderLabel(inst.loader)} · ${inst.mcVersion}`;
+  refreshInstanceHeaderMeta(inst);
   instanceIconLg.className = 'instance-icon-lg rail-swatch';
   applyInstanceIcon(instanceIconLg, inst);
 
@@ -709,6 +885,8 @@ async function openInstance(id) {
   switchITab('content');
   showInstalledMode();
   installedFilterInput.value = '';
+  installedTypeFilter = 'all';
+  installedTypeTabs.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b.dataset.itype === 'all'));
   setContentType('mod');
   await loadInstalledMods();
   refreshUpdateBadge();
@@ -729,6 +907,10 @@ function setInstancePlayState(phase) {
 // Shared by the header Play button and each server row's "Play & Join".
 async function startPlay(serverId) {
   if (playingInstanceId === activeInstanceId) {
+    if (currentSettings && currentSettings.confirmStopGame) {
+      const ok = await confirmDialog({ title: 'Stop game', body: 'Stop the running game? Any unsaved progress in-world will be lost.', confirmLabel: 'Stop' });
+      if (!ok) return;
+    }
     instancePlayBtn.disabled = true;
     await window.mc.stop();
     return;
@@ -759,12 +941,15 @@ window.mc.onProgress(({ instanceId, msg }) => {
 window.mc.onLog(({ instanceId, line }) => {
   if (instanceId === activeInstanceId) appendLogChunk(line);
 });
-window.mc.onExit(({ instanceId, code, error, crash }) => {
+window.mc.onExit(async ({ instanceId, code, error, crash }) => {
   if (playingInstanceId === instanceId) playingInstanceId = null;
+  instances = await window.mc.listInstances();
   if (instanceId === activeInstanceId) {
     flushLogTail();
     setInstancePlayState('idle');
     progressText.textContent = error ? `Failed to start: ${error}` : `Game exited (code ${code ?? 'unknown'}).`;
+    const inst = currentInstance();
+    if (inst) refreshInstanceHeaderMeta(inst);
   }
   refreshSessionStatus(false);
   renderInstanceGrid();
@@ -1157,9 +1342,37 @@ async function loadInstalledMods() {
 
 installedFilterInput.addEventListener('input', renderInstalledTable);
 
+installedTypeTabs.querySelectorAll('.seg-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    installedTypeFilter = btn.dataset.itype;
+    installedTypeTabs.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b === btn));
+    renderInstalledTable();
+  });
+});
+
+refreshInstalledBtn.addEventListener('click', () => loadInstalledMods());
+
+uploadFilesBtn.addEventListener('click', async () => {
+  uploadFilesBtn.disabled = true;
+  try {
+    const result = await window.mc.uploadModFiles(activeInstanceId);
+    if (result.canceled) return;
+    await loadInstalledMods();
+    toast(`Added ${result.added} file${result.added === 1 ? '' : 's'}.`, 'success');
+  } catch (err) {
+    toast(err.message || String(err), 'error');
+  } finally {
+    uploadFilesBtn.disabled = false;
+  }
+});
+
 function renderInstalledTable() {
   const filterText = installedFilterInput.value.trim().toLowerCase();
-  const filtered = installedModsCache.filter((m) => !filterText || m.title.toLowerCase().includes(filterText));
+  const filtered = installedModsCache.filter(
+    (m) =>
+      (!filterText || m.title.toLowerCase().includes(filterText)) &&
+      (installedTypeFilter === 'all' || m.projectType === installedTypeFilter)
+  );
   installedTbody.innerHTML = '';
 
   // Three distinct states rather than one: nothing installed, nothing
@@ -1181,7 +1394,7 @@ function renderInstalledTable() {
     tr.innerHTML = `
       <td class="ct-project">
         <div class="icon-slot"></div>
-        <div><div class="ct-title">${escapeHtml(mod.title)}</div><div class="ct-source">Modrinth</div></div>
+        <div><div class="ct-title">${escapeHtml(mod.title)}</div><div class="ct-source">${mod.projectId ? 'Modrinth' : 'Local file'}${mod.projectType === 'resourcepack' ? ' · Resource Pack' : ''}</div></div>
       </td>
       <td class="ct-version">${escapeHtml(inst ? inst.mcVersion : '')}</td>
       <td class="ct-actions">
@@ -1384,9 +1597,10 @@ function renderSearchResults() {
     p.textContent = 'No mods matched that search.';
     searchResults.appendChild(p);
   }
-  lastResults.forEach((mod) => {
+  lastResults.forEach((mod, i) => {
     const card = document.createElement('div');
     card.className = 'mod-card';
+    card.style.setProperty('--stagger', i % 12);
     const already = installedProjectIds.has(mod.id) || installedProjectIds.has(mod.slug);
     card.innerHTML = `
       <div class="icon-slot lg"></div>
@@ -1429,6 +1643,283 @@ function renderSearchResults() {
   loadMoreBtn.classList.toggle('hidden', lastResults.length >= searchTotal);
 }
 loadMoreBtn.addEventListener('click', () => runSearch(false));
+
+// ---- Browse Mods (instance-agnostic search) ----
+// Same Modrinth search/install pipeline as the per-instance Content tab, just
+// with the "which instance" question asked up front via a dropdown instead of
+// assumed from context - so searching for a mod never requires opening one first.
+async function openBrowsePage() {
+  const hasInstances = instances.length > 0;
+  browseNoInstances.classList.toggle('hidden', hasInstances);
+  browseToolbar.classList.toggle('hidden', !hasInstances);
+  browseResults.classList.toggle('hidden', !hasInstances);
+  if (!hasInstances) {
+    browseResults.innerHTML = '';
+    return;
+  }
+  const previousTarget = browseTargetSelect.value;
+  browseTargetSelect.innerHTML = instances
+    .map((inst) => `<option value="${inst.id}">${escapeHtml(inst.name)} (${escapeHtml(loaderLabel(inst.loader))} ${escapeHtml(inst.mcVersion)})</option>`)
+    .join('');
+  // Keep whatever was selected if it still exists, otherwise fall back to the
+  // most recently played instance so the default target is usually the right one.
+  const stillExists = instances.some((i) => i.id === previousTarget);
+  const mostRecent = [...instances].sort((a, b) => (b.lastPlayedAt || 0) - (a.lastPlayedAt || 0))[0];
+  browseTargetSelect.value = stillExists ? previousTarget : (mostRecent || instances[0]).id;
+  await refreshBrowseInstalledSet();
+  if (!lastBrowseResults.length) runBrowseSearch(true);
+  else renderBrowseResults();
+}
+
+async function refreshBrowseInstalledSet() {
+  const targetId = browseTargetSelect.value;
+  if (!targetId) {
+    browseInstalledProjectIds = new Set();
+    return;
+  }
+  const installed = await window.mc.listMods(targetId);
+  browseInstalledProjectIds = new Set(installed.map((m) => m.projectId).filter(Boolean));
+}
+
+browseTargetSelect.addEventListener('change', async () => {
+  await refreshBrowseInstalledSet();
+  runBrowseSearch(true);
+});
+
+let browseSearchTimer = null;
+browseSearchInput.addEventListener('input', () => {
+  clearTimeout(browseSearchTimer);
+  browseSearchTimer = setTimeout(() => runBrowseSearch(true), 350);
+});
+
+async function runBrowseSearch(reset) {
+  const targetId = browseTargetSelect.value;
+  if (!targetId) return;
+  if (reset) {
+    browseQuery = browseSearchInput.value.trim();
+    browseOffset = 0;
+    lastBrowseResults = [];
+    browseResults.innerHTML = skeletonCards(6);
+    browseResultsCount.textContent = '';
+    browseLoadMoreBtn.classList.add('hidden');
+  } else {
+    browseLoadMoreBtn.disabled = true;
+    browseLoadMoreBtn.textContent = 'Loading…';
+  }
+  try {
+    const page = await window.mc.searchMods(targetId, browseQuery, {
+      limit: PAGE_SIZE,
+      offset: browseOffset,
+      projectType: 'mod',
+    });
+    browseTotal = page.total;
+    lastBrowseResults = reset ? page.hits : [...lastBrowseResults, ...page.hits];
+    browseOffset += page.hits.length;
+    renderBrowseResults();
+  } catch (err) {
+    browseResults.innerHTML = '';
+    const p = document.createElement('p');
+    p.className = 'muted empty-note';
+    p.textContent = `Couldn't reach Modrinth: ${err.message || err}`;
+    browseResults.appendChild(p);
+    toast(`Search failed: ${err.message || err}`, 'error');
+  } finally {
+    browseLoadMoreBtn.disabled = false;
+    browseLoadMoreBtn.textContent = 'Load more mods';
+  }
+}
+
+function renderBrowseResults() {
+  browseResults.innerHTML = '';
+  if (!lastBrowseResults.length) {
+    const p = document.createElement('p');
+    p.className = 'muted empty-note';
+    p.textContent = 'No mods matched that search.';
+    browseResults.appendChild(p);
+  }
+  lastBrowseResults.forEach((mod, i) => {
+    const card = document.createElement('div');
+    card.className = 'mod-card';
+    card.style.setProperty('--stagger', i % 12);
+    const already = browseInstalledProjectIds.has(mod.id) || browseInstalledProjectIds.has(mod.slug);
+    card.innerHTML = `
+      <div class="icon-slot lg"></div>
+      <div class="mod-info">
+        <h4 class="mod-title">${escapeHtml(mod.title)}</h4>
+        <span class="downloads">${formatDownloads(mod.downloads)} downloads</span>
+        <p class="mod-desc">${escapeHtml(mod.description || '')}</p>
+        <div class="mod-actions">
+          <button class="btn small ${already ? 'secondary' : 'primary'}" ${already ? 'disabled' : ''}>${already ? '✓ Installed' : 'Install'}</button>
+        </div>
+      </div>
+    `;
+    fillIconSlot(card.querySelector('.icon-slot'), mod.iconUrl);
+    const btn = card.querySelector('button');
+    if (!already) {
+      btn.addEventListener('click', async () => {
+        const targetId = browseTargetSelect.value;
+        btn.disabled = true;
+        btn.textContent = 'Installing…';
+        try {
+          const result = await window.mc.installMod(targetId, mod, { projectType: 'mod' });
+          browseInstalledProjectIds.add(mod.id);
+          renderBrowseResults();
+          const targetName = instances.find((i) => i.id === targetId)?.name || 'your instance';
+          toast(`${describeInstall(mod.title, result)} → ${targetName}`, 'success');
+        } catch (err) {
+          btn.disabled = false;
+          btn.textContent = 'Install';
+          toast(err.message || String(err), 'error');
+        }
+      });
+    }
+    browseResults.appendChild(card);
+  });
+  browseResultsCount.textContent = browseTotal ? `${lastBrowseResults.length} of ${browseTotal} projects` : '';
+  browseLoadMoreBtn.classList.toggle('hidden', lastBrowseResults.length >= browseTotal);
+}
+browseLoadMoreBtn.addEventListener('click', () => runBrowseSearch(false));
+
+// ---- Discover Modpacks (standalone page - same pack search/install as the
+// New Instance modal's Modpacks tab, just reachable without opening that modal) ----
+let discoverModpackHits = [];
+let discoverModpackTotal = 0;
+let discoverModpackOffset = 0;
+let discoverModpackSeq = 0;
+let discoverModpackInstalling = false;
+const DISCOVER_MODPACK_PAGE = 20;
+
+async function runDiscoverModpackSearch(reset) {
+  const seq = ++discoverModpackSeq;
+  if (reset) {
+    discoverModpackHits = [];
+    discoverModpackOffset = 0;
+    discoverModpackResults.innerHTML = '<p class="muted empty-note">Loading modpacks…</p>';
+  }
+  discoverModpackLoadMoreBtn.disabled = true;
+  try {
+    const res = await window.mc.searchModpacks(discoverModpackSearch.value.trim(), {
+      limit: DISCOVER_MODPACK_PAGE,
+      offset: discoverModpackOffset,
+    });
+    if (seq !== discoverModpackSeq) return;
+    discoverModpackHits = reset ? res.hits : discoverModpackHits.concat(res.hits);
+    discoverModpackTotal = res.total;
+    discoverModpackOffset += res.hits.length;
+    renderDiscoverModpackResults();
+  } catch (err) {
+    if (seq !== discoverModpackSeq) return;
+    discoverModpackResults.innerHTML = '';
+    const p = document.createElement('p');
+    p.className = 'muted empty-note';
+    p.textContent = `Couldn't reach Modrinth: ${err.message || err}`;
+    discoverModpackResults.appendChild(p);
+  } finally {
+    discoverModpackLoadMoreBtn.disabled = false;
+  }
+}
+
+function renderDiscoverModpackResults() {
+  discoverModpackResults.innerHTML = '';
+  if (!discoverModpackHits.length) {
+    const p = document.createElement('p');
+    p.className = 'muted empty-note';
+    p.textContent = 'No modpacks matched that search.';
+    discoverModpackResults.appendChild(p);
+  }
+  discoverModpackHits.forEach((pack) => {
+    const row = document.createElement('div');
+    row.className = 'modpack-row';
+    const loaders = loadersOfHit(pack);
+    const mcVersion = newestGameVersion(pack);
+    row.innerHTML = `
+      <div class="icon-slot lg"></div>
+      <div class="mp-info">
+        <h4 class="mp-title">${escapeHtml(pack.title)}</h4>
+        <p class="mp-desc">${escapeHtml(pack.description || '')}</p>
+        <div class="mp-meta">
+          ${loaders.map((l) => `<span class="badge accent">${escapeHtml(loaderLabel(l))}</span>`).join('')}
+          ${mcVersion ? `<span class="badge">${escapeHtml(mcVersion)}</span>` : ''}
+          <span class="downloads">${formatDownloads(pack.downloads)} downloads</span>
+        </div>
+      </div>
+      <div class="mp-actions"><button class="btn primary small">Install</button></div>
+    `;
+    fillIconSlot(row.querySelector('.icon-slot'), pack.iconUrl);
+    row.querySelector('button').addEventListener('click', () => installDiscoverModpack(pack, row));
+    discoverModpackResults.appendChild(row);
+  });
+  discoverModpackCount.textContent = discoverModpackTotal ? `${discoverModpackHits.length} of ${discoverModpackTotal} modpacks` : '';
+  discoverModpackLoadMoreBtn.classList.toggle('hidden', discoverModpackHits.length >= discoverModpackTotal);
+}
+
+async function installDiscoverModpack(pack, row) {
+  if (discoverModpackInstalling) return;
+  const btn = row.querySelector('button');
+  discoverModpackInstalling = true;
+  discoverModpackResults.querySelectorAll('button').forEach((b) => (b.disabled = true));
+  btn.textContent = 'Installing…';
+  try {
+    const result = await window.mc.installModpack(pack);
+    instances.push(result.instance);
+    renderRailInstances();
+    renderInstanceGrid();
+    await openInstance(result.instance.id);
+    toast(`Installed "${result.instance.name}" — ${result.modCount} mods, ${loaderLabel(result.instance.loader)} ${result.instance.mcVersion}.`, 'success');
+  } catch (err) {
+    toast(err.message || String(err), 'error');
+    btn.textContent = 'Install';
+  } finally {
+    discoverModpackInstalling = false;
+    discoverModpackResults.querySelectorAll('button').forEach((b) => (b.disabled = false));
+  }
+}
+
+let discoverModpackSearchTimer;
+discoverModpackSearch.addEventListener('input', () => {
+  clearTimeout(discoverModpackSearchTimer);
+  discoverModpackSearchTimer = setTimeout(() => runDiscoverModpackSearch(true), 320);
+});
+discoverModpackSearch.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    clearTimeout(discoverModpackSearchTimer);
+    runDiscoverModpackSearch(true);
+  }
+});
+discoverModpackLoadMoreBtn.addEventListener('click', () => runDiscoverModpackSearch(false));
+window.mc.onModpackProgress(({ msg }) => {
+  if (discoverModpackInstalling) {
+    const btn = discoverModpackResults.querySelector('button:disabled');
+    if (btn) btn.textContent = msg.replace(/\.\.\.$/, '…');
+  }
+});
+
+// ---- All Servers (aggregated across every instance) ----
+async function loadAllServers() {
+  const list = await window.mc.listAllServers();
+  allServersTbody.innerHTML = '';
+  allServersEmpty.classList.toggle('hidden', list.length !== 0);
+  list.forEach((server) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="ct-project"><div><div class="ct-title">${escapeHtml(server.name)}</div><div class="ct-source">${escapeHtml(server.address)}</div></div></td>
+      <td class="ct-version">${escapeHtml(server.instanceName)}</td>
+      <td class="ct-actions">
+        <button class="btn small primary">${PLAY_ICON}Join</button>
+        <button class="icon-btn danger" title="Remove server">${TRASH_ICON}</button>
+      </td>
+    `;
+    tr.querySelector('.btn.primary').addEventListener('click', async () => {
+      await openInstance(server.instanceId);
+      startPlay(server.id);
+    });
+    tr.querySelector('.icon-btn').addEventListener('click', async () => {
+      await window.mc.removeServer(server.instanceId, server.id);
+      await loadAllServers();
+    });
+    allServersTbody.appendChild(tr);
+  });
+}
 
 // ---- Worlds ----
 function formatDate(ms) {
@@ -1544,17 +2035,22 @@ modalLoader.querySelectorAll('.seg-btn').forEach((btn) => {
   btn.addEventListener('click', () => setSelectedLoader(btn.dataset.loader));
 });
 
-// Two ways to end up with an instance, the way Prism's Add Instance dialog
+// Three ways to end up with an instance, the way Prism's Add Instance dialog
 // offers "custom" and "install a published pack" from one place.
 function setInstanceSource(source) {
   newInstanceSource.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b.dataset.source === source));
-  const browsing = source === 'modpack';
-  newInstanceCustom.classList.toggle('hidden', browsing);
-  newInstanceModpack.classList.toggle('hidden', !browsing);
-  newInstanceModal.classList.toggle('wide', browsing);
-  if (browsing && !modpackResults.childElementCount) runModpackSearch(true);
-  if (browsing) modpackSearchInput.focus();
-  else modalName.focus();
+  newInstanceCustom.classList.toggle('hidden', source !== 'custom');
+  newInstanceModpack.classList.toggle('hidden', source !== 'modpack');
+  newInstanceImport.classList.toggle('hidden', source !== 'import');
+  newInstanceModal.classList.toggle('wide', source !== 'custom');
+  if (source === 'modpack') {
+    if (!modpackResults.childElementCount) runModpackSearch(true);
+    modpackSearchInput.focus();
+  } else if (source === 'import') {
+    if (!importProfileList.childElementCount) loadImportProfiles();
+  } else {
+    modalName.focus();
+  }
 }
 newInstanceSource.querySelectorAll('.seg-btn').forEach((btn) => {
   btn.addEventListener('click', () => setInstanceSource(btn.dataset.source));
@@ -1564,19 +2060,20 @@ function openModal() {
   modalName.value = '';
   modalVersion.value = '1.21.1';
   modalError.textContent = '';
-  setSelectedLoader('fabric');
+  setSelectedLoader((currentSettings && currentSettings.defaultLoader) || 'fabric');
   setInstanceSource('custom');
   modalOverlay.classList.remove('hidden');
   modalName.focus();
 }
 function closeModal() {
-  if (modpackInstalling) return;
+  if (modpackInstalling || importInstalling) return;
   modalOverlay.classList.add('hidden');
 }
 railAddInstance.addEventListener('click', openModal);
 newInstanceBtn.addEventListener('click', openModal);
 modalCancelBtn.addEventListener('click', closeModal);
 modpackCloseBtn.addEventListener('click', closeModal);
+importCancelBtn.addEventListener('click', closeModal);
 modalOverlay.addEventListener('click', (e) => {
   if (e.target === modalOverlay) closeModal();
 });
@@ -1746,6 +2243,106 @@ window.mc.onModpackProgress(({ msg }) => {
   if (installingButton) installingButton.textContent = msg.replace(/\.\.\.$/, '…');
 });
 
+// ---- Import from Modrinth App ----
+// Lets a friend bring their own Modrinth App mod list in without any help -
+// no chat, no scripts, just picking a profile from a list on their own PC.
+let importInstalling = false;
+let importSelectedLoader = 'fabric';
+let selectedImportProfile = null;
+
+importLoader.querySelectorAll('.seg-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    importSelectedLoader = btn.dataset.loader;
+    importLoader.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b === btn));
+  });
+});
+
+async function loadImportProfiles() {
+  selectedImportProfile = null;
+  importDetails.classList.add('hidden');
+  importBtn.disabled = true;
+  importError.textContent = '';
+  importProfileList.innerHTML = '<p class="muted empty-note">Looking for Modrinth App profiles…</p>';
+  try {
+    const profiles = await window.mc.listModrinthAppProfiles();
+    if (!profiles.length) {
+      importProfileList.innerHTML = '<p class="muted empty-note">No Modrinth App profiles found on this PC. Install some mods in the Modrinth App first, then come back here.</p>';
+      return;
+    }
+    importProfileList.innerHTML = '';
+    profiles.forEach((profile) => {
+      const row = document.createElement('div');
+      row.className = 'modpack-row';
+      row.innerHTML = `
+        <div class="mp-info">
+          <p class="mp-title"></p>
+          <div class="mp-meta">
+            <span class="badge oasis">${profile.modCount} enabled</span>
+            ${profile.disabledCount ? `<span class="badge">${profile.disabledCount} disabled</span>` : ''}
+          </div>
+        </div>
+        <div class="mp-actions"><button type="button" class="btn small secondary">Select</button></div>
+      `;
+      row.querySelector('.mp-title').textContent = profile.name;
+      row.querySelector('button').addEventListener('click', () => selectImportProfile(profile, row));
+      importProfileList.appendChild(row);
+    });
+  } catch (err) {
+    importProfileList.innerHTML = `<p class="muted empty-note">Couldn't scan for Modrinth App profiles: ${escapeHtml(err.message || String(err))}</p>`;
+  }
+}
+
+function selectImportProfile(profile, row) {
+  selectedImportProfile = profile;
+  importProfileList.querySelectorAll('.modpack-row').forEach((r) => r.classList.remove('active-row'));
+  importProfileList.querySelectorAll('button').forEach((b) => (b.textContent = 'Select'));
+  row.classList.add('active-row');
+  row.querySelector('button').textContent = 'Selected';
+  importDetails.classList.remove('hidden');
+  importName.value = profile.name;
+  importError.textContent = '';
+  importBtn.disabled = false;
+}
+
+async function runImport() {
+  if (importInstalling || !selectedImportProfile) return;
+  const name = importName.value.trim() || selectedImportProfile.name;
+  const mcVersion = importVersion.value.trim();
+  if (!mcVersion) {
+    importError.textContent = 'Enter the Minecraft version that profile uses.';
+    return;
+  }
+  importError.textContent = '';
+  importInstalling = true;
+  importBtn.disabled = true;
+  importBtn.textContent = 'Importing…';
+  try {
+    const result = await window.mc.importFromModrinthApp({ name, mcVersion, loader: importSelectedLoader }, selectedImportProfile.name);
+    instances.push(result.instance);
+    renderRailInstances();
+    renderInstanceGrid();
+    importInstalling = false;
+    closeModal();
+    await openInstance(result.instance.id);
+    const parts = [];
+    if (result.matchedCount) parts.push(`${result.matchedCount} from Modrinth`);
+    if (result.copiedCount) parts.push(`${result.copiedCount} copied as-is`);
+    if (result.disabledCount) parts.push(`${result.disabledCount} carried over disabled`);
+    toast(`Imported "${result.instance.name}" — ${parts.join(', ') || 'nothing to install'}.`, 'success');
+  } catch (err) {
+    importError.textContent = err.message || String(err);
+  } finally {
+    importInstalling = false;
+    importBtn.disabled = false;
+    importBtn.textContent = 'Import';
+  }
+}
+importBtn.addEventListener('click', runImport);
+
+window.mc.onModrinthAppProgress(({ msg }) => {
+  if (importInstalling) importBtn.textContent = msg.replace(/\.\.\.$/, '…');
+});
+
 // Escape closes whichever layer is on top.
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
@@ -1764,6 +2361,63 @@ saveSettingsBtn.addEventListener('click', async () => {
   settingsSaved.classList.remove('hidden');
   setTimeout(() => settingsSaved.classList.add('hidden'), 2000);
 });
+
+// ---- Appearance & behavior: applied live and saved immediately on click,
+// unlike the Java/Memory fields above which need an explicit Save. ----
+function applyAppearanceSettings(settings) {
+  const accent = settings.accentColor || 'ochre';
+  document.documentElement.dataset.theme = settings.theme || 'dark';
+  document.documentElement.dataset.accent = accent;
+  document.documentElement.classList.toggle('reduce-motion', !!settings.reduceMotion);
+  brandLogo.src = `assets/logos/logo-${accent}.png`;
+  titlebarLogo.src = `assets/logos/logo-${accent}.png`;
+  homeHeroLogo.src = `assets/logos/logo-${accent}.png`;
+  sidebarFootLogo.src = `assets/logos/logo-${accent}.png`;
+  window.mc.setAppIcon(accent);
+}
+
+function renderSettingsControls(settings) {
+  settingThemeTabs.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b.dataset.theme === (settings.theme || 'dark')));
+  settingAccentRow.querySelectorAll('.accent-swatch').forEach((b) => b.classList.toggle('active', b.dataset.accent === (settings.accentColor || 'ochre')));
+  settingLoaderTabs.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b.dataset.loader === (settings.defaultLoader || 'fabric')));
+  settingReduceMotion.checked = !!settings.reduceMotion;
+  settingMinimizeOnPlay.checked = !!settings.minimizeOnPlay;
+  settingConfirmStop.checked = settings.confirmStopGame !== false;
+  settingAlwaysOnTop.checked = !!settings.alwaysOnTop;
+  settingAutoUpdate.checked = settings.autoCheckUpdates !== false;
+}
+
+async function saveAppearancePatch(patch) {
+  currentSettings = { ...currentSettings, ...(await window.mc.setSettings(patch)) };
+  applyAppearanceSettings(currentSettings);
+}
+
+settingThemeTabs.querySelectorAll('.seg-btn').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    settingThemeTabs.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b === btn));
+    await saveAppearancePatch({ theme: btn.dataset.theme });
+  });
+});
+
+settingAccentRow.querySelectorAll('.accent-swatch').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    settingAccentRow.querySelectorAll('.accent-swatch').forEach((b) => b.classList.toggle('active', b === btn));
+    await saveAppearancePatch({ accentColor: btn.dataset.accent });
+  });
+});
+
+settingLoaderTabs.querySelectorAll('.seg-btn').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    settingLoaderTabs.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b === btn));
+    await saveAppearancePatch({ defaultLoader: btn.dataset.loader });
+  });
+});
+
+settingReduceMotion.addEventListener('change', () => saveAppearancePatch({ reduceMotion: settingReduceMotion.checked }));
+settingMinimizeOnPlay.addEventListener('change', () => saveAppearancePatch({ minimizeOnPlay: settingMinimizeOnPlay.checked }));
+settingConfirmStop.addEventListener('change', () => saveAppearancePatch({ confirmStopGame: settingConfirmStop.checked }));
+settingAlwaysOnTop.addEventListener('change', () => saveAppearancePatch({ alwaysOnTop: settingAlwaysOnTop.checked }));
+settingAutoUpdate.addEventListener('change', () => saveAppearancePatch({ autoCheckUpdates: settingAutoUpdate.checked }));
 
 // ---- Easter egg: 1/100 chance an elephant wanders across the login screen ----
 if (Math.random() < 0.01) {

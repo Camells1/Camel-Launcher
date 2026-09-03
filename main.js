@@ -10,6 +10,7 @@ const { InstanceManager } = require('./src/instances');
 const { GameLauncher, LOADERS, loaderLabel, normalizeLoader } = require('./src/launcher');
 const modrinth = require('./src/modrinth');
 const modpackDiscovery = require('./src/modpackDiscovery');
+const modrinthAppImport = require('./src/modrinthAppImport');
 const worlds = require('./src/worlds');
 const screenshots = require('./src/screenshots');
 const servers = require('./src/servers');
@@ -76,6 +77,7 @@ function createWindow() {
     minHeight: 600,
     backgroundColor: '#1b120a',
     icon: path.join(__dirname, 'build', 'icon.png'),
+    frame: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -85,6 +87,10 @@ function createWindow() {
   });
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'));
+
+  const sendState = () => mainWindow.webContents.send('window:state', { maximized: mainWindow.isMaximized() });
+  mainWindow.on('maximize', sendState);
+  mainWindow.on('unmaximize', sendState);
 }
 
 // ---- Mod installation (with required-dependency auto-resolution) ----
@@ -167,6 +173,7 @@ function registerIpc() {
 
   ipcMain.handle('settings:set', async (_e, patch) => {
     stores.settings.setAll(patch);
+    if ('alwaysOnTop' in patch) mainWindow.setAlwaysOnTop(!!patch.alwaysOnTop);
     return stores.settings.getAll();
   });
 
@@ -276,30 +283,66 @@ function registerIpc() {
   // keep its own copy of what src/launcher.js can actually install.
   ipcMain.handle('loaders:list', async () => LOADERS);
 
-  ipcMain.handle('mods:list', async (_e, instanceId) => {
-    requireInstance(instanceId);
-    const dir = launcherFor(instanceId).modsDir;
+  // Mods and resource packs live in separate folders on disk but show up as
+  // one unified list in the Content tab, so every handler that acts on a
+  // single file needs to know which folder actually holds it.
+  function dirForContentFile(instanceId, filename) {
+    const launcher = launcherFor(instanceId);
+    if (fs.existsSync(path.join(launcher.modsDir, filename))) return launcher.modsDir;
+    return launcher.folder.resourcepacks;
+  }
+
+  function listContentDir(dir, projectType, extensions, metadata) {
     let files = [];
     try {
-      files = fs.readdirSync(dir).filter((f) => f.endsWith('.jar') || f.endsWith('.jar.disabled'));
+      files = fs.readdirSync(dir).filter((f) => extensions.some((ext) => f.endsWith(ext) || f.endsWith(`${ext}.disabled`)));
     } catch {
       files = [];
     }
-    const metadata = modsMetaStore(instanceId).get('installed') || [];
     return files.map((filename) => {
       const enabled = !filename.endsWith('.disabled');
       const baseName = enabled ? filename : filename.slice(0, -'.disabled'.length);
       const meta = metadata.find((m) => m.filename === baseName);
-      return { ...(meta || { filename: baseName, title: baseName.replace(/\.jar$/, '') }), filename, enabled };
+      return { ...(meta || { filename: baseName, title: baseName.replace(/\.(jar|zip)$/, '') }), filename, enabled, projectType };
     });
+  }
+
+  ipcMain.handle('mods:list', async (_e, instanceId) => {
+    const launcher = launcherFor(instanceId);
+    const metadata = modsMetaStore(instanceId).get('installed') || [];
+    return [
+      ...listContentDir(launcher.modsDir, 'mod', ['.jar'], metadata),
+      ...listContentDir(launcher.folder.resourcepacks, 'resourcepack', ['.zip'], metadata),
+    ];
   });
 
   ipcMain.handle('mods:install', async (_e, instanceId, project, opts) => {
     return installProject(instanceId, project, opts);
   });
 
+  // Drops arbitrary local files straight into the mods folder - for anything
+  // that isn't on Modrinth (a friend's private build, a jar off a forum post).
+  ipcMain.handle('mods:uploadFiles', async (_e, instanceId) => {
+    requireInstance(instanceId);
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      title: 'Add mod files',
+      filters: [{ name: 'Mod/resource pack files', extensions: ['jar', 'zip'] }],
+      properties: ['openFile', 'multiSelections'],
+    });
+    if (canceled || !filePaths.length) return { canceled: true, added: 0 };
+    const launcher = launcherFor(instanceId);
+    let added = 0;
+    for (const src of filePaths) {
+      const destDir = src.toLowerCase().endsWith('.zip') ? launcher.folder.resourcepacks : launcher.modsDir;
+      fs.mkdirSync(destDir, { recursive: true });
+      fs.copyFileSync(src, path.join(destDir, path.basename(src)));
+      added++;
+    }
+    return { canceled: false, added };
+  });
+
   ipcMain.handle('mods:remove', async (_e, instanceId, filename) => {
-    const dir = launcherFor(instanceId).modsDir;
+    const dir = dirForContentFile(instanceId, filename);
     modrinth.removeMod(filename, dir);
     const store = modsMetaStore(instanceId);
     const metadata = store.get('installed') || [];
@@ -309,7 +352,7 @@ function registerIpc() {
   });
 
   ipcMain.handle('mods:toggle', async (_e, instanceId, filename) => {
-    const dir = launcherFor(instanceId).modsDir;
+    const dir = dirForContentFile(instanceId, filename);
     const isDisabled = filename.endsWith('.disabled');
     const target = isDisabled ? filename.slice(0, -'.disabled'.length) : `${filename}.disabled`;
     fs.renameSync(path.join(dir, filename), path.join(dir, target));
@@ -318,12 +361,13 @@ function registerIpc() {
 
   ipcMain.handle('mods:updateAll', async (_e, instanceId) => {
     const inst = requireInstance(instanceId);
-    const dir = launcherFor(instanceId).modsDir;
+    const launcher = launcherFor(instanceId);
     const store = modsMetaStore(instanceId);
     const metadata = store.get('installed') || [];
     let updated = 0;
     for (const entry of metadata) {
       if (!entry.projectId) continue;
+      const dir = entry.projectType === 'resourcepack' ? launcher.folder.resourcepacks : launcher.modsDir;
       const best = await modrinth.getBestVersionFile(entry.projectId, inst.mcVersion, { projectType: entry.projectType, loader: normalizeLoader(inst.loader) });
       if (!best || best.filename === entry.filename) continue;
       modrinth.removeMod(entry.filename, dir);
@@ -376,6 +420,17 @@ function registerIpc() {
   });
 
   // ---- Servers ----
+  // Every instance keeps its own favorites; this flattens them into one list
+  // (tagged with which instance each came from) for a global "All Servers" view.
+  ipcMain.handle('servers:listAll', async () => {
+    const all = [];
+    for (const inst of instances.list()) {
+      for (const server of servers.listServers(instances.folder(inst.id))) {
+        all.push({ ...server, instanceId: inst.id, instanceName: inst.name });
+      }
+    }
+    return all;
+  });
   ipcMain.handle('servers:list', async (_e, instanceId) => servers.listServers(instances.folder(instanceId)));
   ipcMain.handle('servers:add', async (_e, instanceId, entry) => servers.addServer(instances.folder(instanceId), entry));
   ipcMain.handle('servers:remove', async (_e, instanceId, id) => {
@@ -460,6 +515,78 @@ function registerIpc() {
     }
   });
 
+  // ---- Import from Modrinth App ----
+  // Identifies a friend's local Modrinth App mods by content hash against
+  // Modrinth's public API - works on any PC regardless of that app's version,
+  // since it never touches Modrinth App's own (undocumented) database.
+  ipcMain.handle('modrinthApp:listProfiles', async () => modrinthAppImport.listProfiles());
+
+  ipcMain.handle('modrinthApp:import', async (_e, { name, mcVersion, loader }, profileName) => {
+    const { enabled, disabled } = modrinthAppImport.scanProfileMods(profileName);
+    if (!enabled.length && !disabled.length) throw new Error(`No mods found in the "${profileName}" profile.`);
+
+    const send = (msg) => mainWindow.webContents.send('modrinthApp:progress', { msg });
+    send('Creating instance...');
+    const inst = instances.create({ name: name || profileName, mcVersion, loader: normalizeLoader(loader || 'fabric') });
+
+    try {
+      send('Hashing local mod files...');
+      const hashToPath = new Map();
+      for (const filePath of enabled) {
+        hashToPath.set(await modrinthAppImport.sha1File(filePath), filePath);
+      }
+
+      send('Matching mods against Modrinth...');
+      let resolved = {};
+      try {
+        resolved = await modrinthAppImport.resolveByHash([...hashToPath.keys()]);
+      } catch (err) {
+        console.error('Modrinth hash lookup failed, falling back to raw file copies:', err.message);
+      }
+
+      const destDir = launcherFor(inst.id).modsDir;
+      fs.mkdirSync(destDir, { recursive: true });
+
+      let matchedCount = 0;
+      let copiedCount = 0;
+      const failed = [];
+      let done = 0;
+      for (const [hash, filePath] of hashToPath) {
+        done++;
+        const filename = path.basename(filePath);
+        const version = resolved[hash];
+        if (version && version.project_id) {
+          send(`Installing ${filename} (${done}/${hashToPath.size})...`);
+          try {
+            await installProject(inst.id, { id: version.project_id }, { projectType: 'mod' });
+            matchedCount++;
+            continue;
+          } catch (err) {
+            failed.push({ filename, error: err.message });
+            // fall through to a raw copy so the mod still makes it across
+          }
+        } else {
+          send(`Copying ${filename} (not on Modrinth) (${done}/${hashToPath.size})...`);
+        }
+        fs.copyFileSync(filePath, path.join(destDir, filename));
+        copiedCount++;
+      }
+
+      // Disabled mods are carried over inert, exactly as they were - no
+      // network calls or metadata, just the same "off" state the source had.
+      for (const filePath of disabled) {
+        fs.copyFileSync(filePath, path.join(destDir, path.basename(filePath)));
+      }
+
+      return { instance: inst, matchedCount, copiedCount, disabledCount: disabled.length, failed };
+    } catch (err) {
+      // A half-imported instance is worse than none - drop the shell so the
+      // user can just try again.
+      instances.remove(inst.id, { deleteFiles: true });
+      throw err;
+    }
+  });
+
   ipcMain.handle('game:play', async (_e, instanceId, serverId) => {
     if (gameProcess) throw new Error('The game is already running.');
     const inst = requireInstance(instanceId);
@@ -486,12 +613,14 @@ function registerIpc() {
     playingInstanceId = instanceId;
     instances.touch(instanceId);
     if (serverId) servers.touchServer(instances.folder(instanceId), serverId);
+    if (settings.minimizeOnPlay) mainWindow.minimize();
 
     child.stdout.on('data', (d) => mainWindow.webContents.send('game:log', { instanceId, line: d.toString() }));
     child.stderr.on('data', (d) => mainWindow.webContents.send('game:log', { instanceId, line: d.toString() }));
     child.on('exit', (code, signal) => {
       gameProcess = null;
       playingInstanceId = null;
+      instances.addPlaytime(instanceId, Date.now() - launchStartedAt);
       let crash = null;
       if (code) {
         const report = crashReports.findLatestCrashReport(instances.folder(instanceId), launchStartedAt);
@@ -513,6 +642,23 @@ function registerIpc() {
     return true;
   });
 
+  // Repaints the taskbar/title-bar icon to match the chosen accent - same
+  // badge art the in-app rail logo uses, just switched at the OS level too.
+  ipcMain.handle('app:setIcon', async (_e, accent) => {
+    const iconPath = path.join(__dirname, 'build', 'icons', `icon-${accent}.png`);
+    if (fs.existsSync(iconPath)) mainWindow.setIcon(iconPath);
+  });
+
+  // ---- Custom title bar (the window is frameless; the renderer draws its
+  // own bar and drives minimize/maximize/close through these) ----
+  ipcMain.handle('window:minimize', () => mainWindow.minimize());
+  ipcMain.handle('window:toggleMaximize', () => {
+    if (mainWindow.isMaximized()) mainWindow.unmaximize();
+    else mainWindow.maximize();
+  });
+  ipcMain.handle('window:close', () => mainWindow.close());
+  ipcMain.handle('window:isMaximized', () => mainWindow.isMaximized());
+
   ipcMain.handle('shell:openExternal', async (_e, url) => {
     if (/^https:\/\//.test(url)) await shell.openExternal(url);
   });
@@ -530,7 +676,8 @@ app.whenReady().then(() => {
 
   registerIpc();
   createWindow();
-  initAutoUpdater(mainWindow);
+  mainWindow.setAlwaysOnTop(!!stores.settings.getAll().alwaysOnTop);
+  if (stores.settings.getAll().autoCheckUpdates !== false) initAutoUpdater(mainWindow);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

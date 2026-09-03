@@ -127,6 +127,14 @@ class InstanceManager {
     this.save();
   }
 
+  /** Accumulates total playtime, stamped once per session on exit. */
+  addPlaytime(id, ms) {
+    const inst = this.get(id);
+    if (!inst || !(ms > 0)) return;
+    inst.totalPlaytimeMs = (inst.totalPlaytimeMs || 0) + ms;
+    this.save();
+  }
+
   /** Per-instance overrides (minMemoryMb/maxMemoryMb/javaPath/jvmArgs). Pass null/'' to clear a field back to the global default. */
   update(id, patch) {
     const inst = this.get(id);

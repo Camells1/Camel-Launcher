@@ -7,6 +7,14 @@ const DEFAULT_SETTINGS = {
   javaPath: '',
   width: 854,
   height: 480,
+  theme: 'dark',
+  accentColor: 'ochre',
+  reduceMotion: false,
+  defaultLoader: 'fabric',
+  minimizeOnPlay: false,
+  alwaysOnTop: false,
+  autoCheckUpdates: true,
+  confirmStopGame: true,
 };
 
 class JsonStore {

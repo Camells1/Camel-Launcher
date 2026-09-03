@@ -13,6 +13,33 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- ================= CUSTOM TITLE BAR ================= -->
+  <div id="custom-titlebar">
+    <div class="titlebar-drag">
+      <img class="titlebar-logo" id="titlebar-logo" src="assets/logos/logo-ochre.png" alt="" />
+      <span class="titlebar-brand-name">Camel Launcher</span>
+      <nav class="titlebar-breadcrumb" id="titlebar-breadcrumb"></nav>
+    </div>
+    <div class="titlebar-status hidden" id="titlebar-status">
+      <span class="status-dot live"></span>
+      <span id="titlebar-status-name"></span>
+      <button id="titlebar-stop-btn" class="titlebar-stop-btn" title="Stop">
+        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+      </button>
+    </div>
+    <div class="titlebar-controls">
+      <button id="titlebar-min-btn" class="titlebar-btn" title="Minimize">
+        <svg viewBox="0 0 12 12"><rect x="2" y="5.5" width="8" height="1.2" fill="currentColor"/></svg>
+      </button>
+      <button id="titlebar-max-btn" class="titlebar-btn" title="Maximize">
+        <svg viewBox="0 0 12 12"><rect x="2.5" y="2.5" width="7" height="7" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>
+      </button>
+      <button id="titlebar-close-btn" class="titlebar-btn close" title="Close">
+        <svg viewBox="0 0 12 12"><path d="M2.5 2.5 L9.5 9.5 M9.5 2.5 L2.5 9.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
   <!-- ================= LOGIN ================= -->
   <div id="login-screen" class="screen">
     <svg class="desert-backdrop" viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -58,13 +85,12 @@
           <rect x="30" y="42" width="5" height="16" rx="2"/>
           <rect x="58" y="42" width="5" height="16" rx="2"/>
           <rect x="70" y="42" width="5" height="16" rx="2"/>
-          <ellipse cx="45" cy="38" rx="26" ry="12"/>
-          <ellipse cx="36" cy="24" rx="8" ry="10"/>
-          <ellipse cx="52" cy="24" rx="8" ry="10"/>
-          <path d="M64 34 Q78 30 80 14" stroke="currentColor" stroke-width="9" fill="none" stroke-linecap="round"/>
-          <ellipse cx="84" cy="10" rx="7" ry="5.5"/>
-          <ellipse cx="92" cy="12" rx="4" ry="2.6"/>
-          <ellipse cx="80" cy="4" rx="2.2" ry="3" transform="rotate(-20 80 4)"/>
+          <ellipse cx="45" cy="38" rx="27" ry="12"/>
+          <ellipse cx="40" cy="18" rx="13" ry="15"/>
+          <path d="M66 32 Q80 26 82 11" stroke="currentColor" stroke-width="10" fill="none" stroke-linecap="round"/>
+          <ellipse cx="85" cy="9" rx="7" ry="5.3"/>
+          <ellipse cx="93" cy="11" rx="4" ry="2.5"/>
+          <ellipse cx="81" cy="3" rx="2.2" ry="3" transform="rotate(-20 81 3)"/>
           <path d="M19 40 q-6 4 -3 12" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
         </g>
         <g id="elephant-shape" fill="currentColor">
@@ -139,7 +165,7 @@
 
     <div class="login-card panel">
       <div class="login-brand">
-        <svg class="camel-hero camel-pixel-slot" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"></svg>
+        <svg class="camel-hero camel-pixel-slot" viewBox="0 0 33 20" xmlns="http://www.w3.org/2000/svg"></svg>
         <h1 class="display">Camel<br />Launcher</h1>
       </div>
       <div class="rule"></div>
@@ -155,17 +181,230 @@
 
   <!-- ================= APP ================= -->
   <div id="app-screen" class="screen hidden">
-    <div class="app-atmosphere" aria-hidden="true"></div>
+    <div class="app-atmosphere" aria-hidden="true">
+      <svg class="desert-backdrop" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect class="sky" x="0" y="0" width="800" height="400" fill="url(#sky-grad)" />
+        <g class="stars">
+          <rect x="52"  y="26"  width="2" height="2" style="--d:0s"    />
+          <rect x="118" y="58"  width="2" height="2" style="--d:1.3s"  />
+          <rect x="186" y="18"  width="2" height="2" style="--d:2.6s"  />
+          <rect x="243" y="72"  width="2" height="2" style="--d:0.7s"  />
+          <rect x="310" y="34"  width="2" height="2" style="--d:3.4s"  />
+          <rect x="376" y="12"  width="2" height="2" style="--d:1.9s"  />
+          <rect x="421" y="63"  width="2" height="2" style="--d:2.2s"  />
+          <rect x="487" y="28"  width="2" height="2" style="--d:0.4s"  />
+          <rect x="94"  y="96"  width="2" height="2" style="--d:2.9s"  />
+          <rect x="271" y="104" width="2" height="2" style="--d:1.1s"  />
+          <rect x="553" y="46"  width="2" height="2" style="--d:3.1s"  />
+          <rect x="713" y="22"  width="2" height="2" style="--d:1.6s"  />
+          <rect x="760" y="66"  width="2" height="2" style="--d:2.4s"  />
+          <rect x="614" y="14"  width="2" height="2" style="--d:0.9s"  />
+          <rect x="160" y="130" width="2" height="2" style="--d:3.7s"  />
+          <rect x="32"  y="150" width="2" height="2" style="--d:2.0s"  />
+        </g>
+        <circle class="sun-halo" cx="500" cy="230" r="230" fill="url(#sun-halo)" />
+        <circle class="sun-core" cx="500" cy="230" r="60" />
+        <g class="sun-bands">
+          <rect x="428" y="250" width="144" height="4" />
+          <rect x="420" y="264" width="160" height="3" />
+          <rect x="436" y="276" width="128" height="2" />
+        </g>
+        <path class="dune dune-far" d="M0,250 C100,215 200,270 300,235 C400,200 500,255 600,225 C700,198 750,225 800,215 L800,400 L0,400 Z" fill="url(#dune-far-grad)" />
+        <g class="oasis">
+          <ellipse class="oasis-water" cx="150" cy="289" rx="56" ry="8" />
+          <use href="#palm-shape" x="96"  y="238" width="30" height="52" />
+          <use href="#palm-shape" x="124" y="228" width="36" height="62" />
+          <use href="#palm-shape" x="164" y="242" width="26" height="46" />
+        </g>
+        <path class="dune dune-mid" d="M0,295 C120,258 220,315 340,285 C460,258 560,305 680,275 C740,262 770,285 800,278 L800,400 L0,400 Z" fill="url(#dune-mid-grad)" />
+        <g class="camel-walk">
+          <g class="camel-bob">
+            <use href="#camel-shape" x="500" y="230" width="70" height="42" />
+          </g>
+        </g>
+        <path class="dune dune-near" d="M0,335 C150,308 250,355 380,328 C500,305 600,345 700,322 C750,310 780,326 800,322 L800,400 L0,400 Z" fill="url(#dune-near-grad)" />
+      </svg>
+
+      <!-- Jungle scene - shown when accent = oasis -->
+      <svg class="jungle-backdrop" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="jungle-sky-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#0c2318" />
+            <stop offset="35%"  stop-color="#123a26" />
+            <stop offset="65%"  stop-color="#255c3a" />
+            <stop offset="100%" stop-color="#4c8a4f" />
+          </linearGradient>
+          <radialGradient id="jungle-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#d9f0a0" stop-opacity="0.75" />
+            <stop offset="40%"  stop-color="#9fd66a" stop-opacity="0.28" />
+            <stop offset="100%" stop-color="#6fbf5a" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id="canopy-far-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1c4a2c" /><stop offset="100%" stop-color="#0f2f1c" />
+          </linearGradient>
+          <linearGradient id="canopy-mid-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#123322" /><stop offset="100%" stop-color="#0a2016" />
+          </linearGradient>
+          <linearGradient id="canopy-near-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0a2417" /><stop offset="100%" stop-color="#05140d" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="800" height="400" fill="url(#jungle-sky-grad)" />
+        <g class="fireflies">
+          <rect x="70"  y="120" width="2.5" height="2.5" style="--d:0s"   fill="#e8ffb0"/>
+          <rect x="150" y="200" width="2.5" height="2.5" style="--d:1.2s" fill="#e8ffb0"/>
+          <rect x="260" y="150" width="2.5" height="2.5" style="--d:2.1s" fill="#e8ffb0"/>
+          <rect x="340" y="230" width="2.5" height="2.5" style="--d:0.6s" fill="#e8ffb0"/>
+          <rect x="470" y="170" width="2.5" height="2.5" style="--d:2.7s" fill="#e8ffb0"/>
+          <rect x="600" y="210" width="2.5" height="2.5" style="--d:1.6s" fill="#e8ffb0"/>
+          <rect x="690" y="140" width="2.5" height="2.5" style="--d:0.9s" fill="#e8ffb0"/>
+          <rect x="730" y="240" width="2.5" height="2.5" style="--d:2.3s" fill="#e8ffb0"/>
+        </g>
+        <circle cx="450" cy="210" r="220" fill="url(#jungle-glow)" />
+        <path class="canopy canopy-far" d="M0,190 C90,150 180,210 280,170 C380,140 460,200 560,165 C660,140 740,180 800,160 L800,400 L0,400 Z" fill="url(#canopy-far-grad)" />
+        <path class="canopy canopy-mid" d="M0,240 C110,200 220,260 330,225 C440,195 540,250 650,215 C710,200 760,225 800,215 L800,400 L0,400 Z" fill="url(#canopy-mid-grad)" />
+        <path class="canopy canopy-near" d="M0,290 C130,255 240,310 360,278 C480,250 580,300 700,272 C740,262 770,278 800,272 L800,400 L0,400 Z" fill="url(#canopy-near-grad)" />
+      </svg>
+
+      <!-- Volcano scene - shown when accent = clay -->
+      <svg class="volcano-backdrop" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="volcano-sky-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#160a08" />
+            <stop offset="40%"  stop-color="#2e1310" />
+            <stop offset="70%"  stop-color="#5a2216" />
+            <stop offset="100%" stop-color="#8f3820" />
+          </linearGradient>
+          <radialGradient id="lava-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#ffd27a" stop-opacity="0.9" />
+            <stop offset="35%"  stop-color="#ff8f3d" stop-opacity="0.4" />
+            <stop offset="100%" stop-color="#ff6a2e" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id="ash-far-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3a2018" /><stop offset="100%" stop-color="#241310" />
+          </linearGradient>
+          <linearGradient id="ash-near-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1c0f0b" /><stop offset="100%" stop-color="#0c0605" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="800" height="400" fill="url(#volcano-sky-grad)" />
+        <g class="embers">
+          <rect x="380" y="260" width="2.5" height="2.5" style="--d:0s"   fill="#ffb066"/>
+          <rect x="420" y="240" width="2.5" height="2.5" style="--d:0.9s" fill="#ffb066"/>
+          <rect x="450" y="270" width="2.5" height="2.5" style="--d:1.7s" fill="#ff8f3d"/>
+          <rect x="470" y="230" width="2.5" height="2.5" style="--d:0.4s" fill="#ffb066"/>
+          <rect x="500" y="255" width="2.5" height="2.5" style="--d:2.2s" fill="#ff8f3d"/>
+          <rect x="520" y="225" width="2.5" height="2.5" style="--d:1.1s" fill="#ffb066"/>
+        </g>
+        <circle cx="460" cy="230" r="180" fill="url(#lava-glow)" />
+        <path class="dune dune-far" d="M0,260 C120,230 200,150 340,140 C420,135 460,170 500,140 C560,175 620,235 800,220 L800,400 L0,400 Z" fill="url(#ash-far-grad)" />
+        <ellipse cx="470" cy="152" rx="26" ry="10" fill="#ffb066" opacity="0.85" />
+        <path class="dune dune-near" d="M0,330 C150,300 250,350 380,325 C500,300 600,340 700,320 C750,308 780,322 800,318 L800,400 L0,400 Z" fill="url(#ash-near-grad)" />
+      </svg>
+
+      <!-- Ocean scene - shown when accent = azure -->
+      <svg class="ocean-backdrop" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="ocean-sky-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#082032" />
+            <stop offset="35%"  stop-color="#0e3a56" />
+            <stop offset="70%"  stop-color="#1a5d84" />
+            <stop offset="100%" stop-color="#2f89ad" />
+          </linearGradient>
+          <radialGradient id="ocean-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#d6f3ff" stop-opacity="0.8" />
+            <stop offset="40%"  stop-color="#8fd3ec" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="#5fb8dd" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id="wave-far-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#164e6e" /><stop offset="100%" stop-color="#0d3450" />
+          </linearGradient>
+          <linearGradient id="wave-mid-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0f3a58" /><stop offset="100%" stop-color="#092438" />
+          </linearGradient>
+          <linearGradient id="wave-near-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#082639" /><stop offset="100%" stop-color="#04141f" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="800" height="400" fill="url(#ocean-sky-grad)" />
+        <g class="bubbles">
+          <rect x="90"  y="300" width="3" height="3" style="--d:0s"   fill="#dff5ff"/>
+          <rect x="180" y="260" width="2.5" height="2.5" style="--d:1.1s" fill="#dff5ff"/>
+          <rect x="300" y="320" width="3" height="3" style="--d:2.0s" fill="#cdeeff"/>
+          <rect x="420" y="270" width="2.5" height="2.5" style="--d:0.7s" fill="#dff5ff"/>
+          <rect x="540" y="310" width="3" height="3" style="--d:1.6s" fill="#cdeeff"/>
+          <rect x="650" y="255" width="2.5" height="2.5" style="--d:2.4s" fill="#dff5ff"/>
+          <rect x="720" y="300" width="3" height="3" style="--d:0.3s" fill="#cdeeff"/>
+        </g>
+        <circle cx="500" cy="160" r="220" fill="url(#ocean-glow)" />
+        <path class="dune dune-far" d="M0,230 C100,200 200,245 300,215 C400,190 500,230 600,205 C700,185 750,205 800,200 L800,400 L0,400 Z" fill="url(#wave-far-grad)" />
+        <path class="dune dune-mid" d="M0,275 C120,245 220,290 340,262 C460,238 560,278 680,255 C740,244 770,262 800,258 L800,400 L0,400 Z" fill="url(#wave-mid-grad)" />
+        <path class="dune dune-near" d="M0,320 C150,296 250,336 380,314 C500,294 600,328 700,310 C750,300 780,314 800,310 L800,400 L0,400 Z" fill="url(#wave-near-grad)" />
+      </svg>
+
+      <!-- Space scene - shown when accent = mauve -->
+      <svg class="space-backdrop" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="space-sky-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#0a0714" />
+            <stop offset="50%"  stop-color="#160f2b" />
+            <stop offset="100%" stop-color="#241a3d" />
+          </linearGradient>
+          <radialGradient id="planet-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#e0c8ff" stop-opacity="0.55" />
+            <stop offset="45%"  stop-color="#c79bdd" stop-opacity="0.22" />
+            <stop offset="100%" stop-color="#9b6b8f" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+        <rect x="0" y="0" width="800" height="400" fill="url(#space-sky-grad)" />
+        <g class="stars">
+          <rect x="52"  y="26"  width="2" height="2" style="--d:0s"    />
+          <rect x="118" y="58"  width="2" height="2" style="--d:1.3s"  />
+          <rect x="186" y="18"  width="2" height="2" style="--d:2.6s"  />
+          <rect x="243" y="72"  width="2" height="2" style="--d:0.7s"  />
+          <rect x="310" y="34"  width="2" height="2" style="--d:3.4s"  />
+          <rect x="376" y="12"  width="2" height="2" style="--d:1.9s"  />
+          <rect x="421" y="63"  width="2" height="2" style="--d:2.2s"  />
+          <rect x="487" y="28"  width="2" height="2" style="--d:0.4s"  />
+          <rect x="94"  y="96"  width="2" height="2" style="--d:2.9s"  />
+          <rect x="271" y="104" width="2" height="2" style="--d:1.1s"  />
+          <rect x="553" y="46"  width="2" height="2" style="--d:3.1s"  />
+          <rect x="713" y="22"  width="2" height="2" style="--d:1.6s"  />
+          <rect x="760" y="66"  width="2" height="2" style="--d:2.4s"  />
+          <rect x="614" y="14"  width="2" height="2" style="--d:0.9s"  />
+          <rect x="160" y="130" width="2" height="2" style="--d:3.7s"  />
+          <rect x="32"  y="150" width="2" height="2" style="--d:2.0s"  />
+          <rect x="230" y="220" width="2" height="2" style="--d:1.4s"  />
+          <rect x="500" y="280" width="2" height="2" style="--d:2.8s"  />
+          <rect x="650" y="180" width="2" height="2" style="--d:0.2s"  />
+          <rect x="360" y="300" width="2" height="2" style="--d:3.2s"  />
+        </g>
+        <circle cx="500" cy="190" r="230" fill="url(#planet-glow)" />
+        <circle cx="500" cy="190" r="70" fill="#9b6b8f" />
+        <ellipse cx="500" cy="190" rx="115" ry="16" fill="none" stroke="#c79bdd" stroke-width="4" opacity="0.55" transform="rotate(-12 500 190)" />
+        <circle cx="180" cy="300" r="30" fill="#5a4468" opacity="0.85" />
+        <circle cx="700" cy="90" r="14" fill="#7a5c8e" opacity="0.7" />
+      </svg>
+    </div>
 
     <nav class="icon-rail">
       <div class="rail-brand" title="Camel Launcher">
-        <svg class="camel-mark camel-pixel-slot" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"></svg>
+        <img class="brand-logo" id="brand-logo" src="assets/logos/logo-ochre.png" alt="Camel Launcher" />
       </div>
       <button class="rail-btn active" id="rail-home" title="Home">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5" /><path d="M6 10.5V20h5v-5h2v5h5V10.5" /></svg>
       </button>
       <button class="rail-btn" id="rail-skins" title="Skins">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 4 7v2l3-1v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V8l3 1V7l-3-3-3 2h-4z"/></svg>
+      </button>
+      <button class="rail-btn" id="rail-browse" title="Browse Mods">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+      </button>
+      <button class="rail-btn" id="rail-modpacks" title="Discover Modpacks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+      </button>
+      <button class="rail-btn" id="rail-all-servers" title="All Servers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><circle cx="7" cy="7.5" r="1" fill="currentColor" stroke="none"/><circle cx="7" cy="16.5" r="1" fill="currentColor" stroke="none"/></svg>
       </button>
       <div class="rail-divider"></div>
       <div class="rail-instances" id="rail-instances"></div>
@@ -181,6 +420,16 @@
     <main class="main-area">
       <!-- ---------- HOME ---------- -->
       <section id="page-home" class="page active">
+        <div class="home-hero">
+          <div class="home-hero-glow"></div>
+          <img class="home-hero-logo" id="home-hero-logo" src="assets/logos/logo-ochre.png" alt="" />
+          <div class="home-hero-text">
+            <p class="eyebrow" id="home-greeting-eyebrow">Welcome back</p>
+            <h1 class="display home-hero-name" id="home-greeting-name">Traveler</h1>
+            <p class="muted" id="home-greeting-sub">Ready when you are.</p>
+          </div>
+        </div>
+
         <div id="jump-in-section" class="hidden">
           <p class="eyebrow">Jump in</p>
           <div id="jump-in-list" class="jump-in-list"></div>
@@ -207,7 +456,20 @@
           <button class="instance-icon-lg" id="instance-icon-lg" title="Change instance icon"></button>
           <div class="instance-header-info">
             <h2 id="instance-title">Instance</h2>
-            <p class="muted" id="instance-subtitle">Fabric · 1.21.1</p>
+            <div class="instance-meta-row">
+              <span class="instance-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v8a1 1 0 0 1-.5.87l-8 4.62a1 1 0 0 1-1 0l-8-4.62A1 1 0 0 1 3 16V8a1 1 0 0 1 .5-.87l8-4.62a1 1 0 0 1 1 0l8 4.62A1 1 0 0 1 21 8Z"/><path d="M3.27 7.5 12 12.5l8.73-5"/><path d="M12 22V12.5"/></svg>
+                <span id="instance-subtitle">Fabric · 1.21.1</span>
+              </span>
+              <span class="instance-meta-item" id="instance-meta-playtime">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                <span></span>
+              </span>
+              <span class="instance-meta-item" id="instance-meta-lastplayed">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13a9 9 0 1 0 2.02-6.36L3 8"/><path d="M12 7v5l3 2"/></svg>
+                <span></span>
+              </span>
+            </div>
           </div>
           <button id="instance-settings-btn" class="icon-btn" title="Instance settings">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.36a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.64 15a1.7 1.7 0 0 0-1.56-1.04H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.64 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.64a1.7 1.7 0 0 0 1.04-1.56V3a2 2 0 0 1 4 0v.09A1.7 1.7 0 0 0 15 4.64a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.36 9a1.7 1.7 0 0 0 1.56 1.04H21a2 2 0 0 1 0 4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg>
@@ -228,11 +490,26 @@
         </div>
 
         <div class="tab-bar">
-          <button class="tab-btn active" data-itab="content">Content</button>
-          <button class="tab-btn" data-itab="worlds">Worlds</button>
-          <button class="tab-btn" data-itab="screenshots">Screenshots</button>
-          <button class="tab-btn" data-itab="servers">Servers</button>
-          <button class="tab-btn" data-itab="logs">Logs</button>
+          <button class="tab-btn active" data-itab="content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8v8a1 1 0 0 1-.5.87l-8 4.62a1 1 0 0 1-1 0l-8-4.62A1 1 0 0 1 3 16V8a1 1 0 0 1 .5-.87l8-4.62a1 1 0 0 1 1 0l8 4.62A1 1 0 0 1 21 8Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+            Content
+          </button>
+          <button class="tab-btn" data-itab="worlds">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 3a15 15 0 0 1 0 18"/><path d="M12 3a15 15 0 0 0 0 18"/></svg>
+            Worlds
+          </button>
+          <button class="tab-btn" data-itab="screenshots">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="m21 16-4.5-4.5a2 2 0 0 0-2.8 0L7 18"/></svg>
+            Screenshots
+          </button>
+          <button class="tab-btn" data-itab="servers">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><circle cx="7" cy="7.5" r="1" fill="currentColor" stroke="none"/><circle cx="7" cy="16.5" r="1" fill="currentColor" stroke="none"/></svg>
+            Servers
+          </button>
+          <button class="tab-btn" data-itab="logs">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h8l4 4v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M9 12h6"/><path d="M9 16h6"/><path d="M9 8h2"/></svg>
+            Logs
+          </button>
         </div>
 
         <div id="itab-content" class="itab active">
@@ -242,6 +519,10 @@
                 <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
                 Browse content
               </button>
+              <button id="upload-files-btn" class="btn secondary small" title="Add local .jar/.zip files directly">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m6 9 6-6 6 6"/><path d="M5 20h14"/></svg>
+                Upload files
+              </button>
               <button id="update-all-btn" class="btn secondary small"><span class="btn-label">Update all</span><span id="update-badge" class="count-badge hidden">0</span></button>
               <button id="export-modpack-btn" class="btn secondary small" title="Export this instance's mod list to share">Export</button>
               <button id="import-modpack-btn" class="btn secondary small" title="Import a modpack file">Import</button>
@@ -250,6 +531,17 @@
                 <svg class="search-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
                 <input id="installed-filter" type="text" placeholder="Filter installed content..." />
               </div>
+            </div>
+            <div class="toolbar">
+              <div class="segmented" id="installed-type-tabs">
+                <button class="seg-btn active" data-itype="all">All</button>
+                <button class="seg-btn" data-itype="mod">Mods</button>
+                <button class="seg-btn" data-itype="resourcepack">Resource Packs</button>
+              </div>
+              <span class="toolbar-spacer"></span>
+              <button id="refresh-installed-btn" class="icon-btn" title="Refresh">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.3-6.4L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.3 6.4L3 16"/><path d="M3 21v-5h5"/></svg>
+              </button>
             </div>
             <div class="table-wrap">
               <table class="content-table">
@@ -378,12 +670,141 @@
         </div>
       </section>
 
+      <!-- ---------- BROWSE MODS (instance-agnostic) ---------- -->
+      <section id="page-browse" class="page">
+        <div class="page-heading">
+          <p class="eyebrow">Discover</p>
+          <h2 class="display">Browse Mods</h2>
+          <p class="muted page-sub">Search all of Modrinth without opening an instance first - pick where to install as you go.</p>
+        </div>
+        <div class="toolbar">
+          <label class="field-inline">
+            <span class="field-label">Install into</span>
+            <select id="browse-target-select"></select>
+          </label>
+          <span class="toolbar-spacer"></span>
+          <div class="search-field wide">
+            <svg class="search-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+            <input id="browse-search" type="text" placeholder="Search all of Modrinth..." />
+          </div>
+        </div>
+        <p id="browse-no-instances" class="muted empty-note hidden">Create an instance first, then come back here to search Modrinth for it.</p>
+        <div id="browse-results" class="mod-grid"></div>
+        <div class="load-more-row">
+          <button id="browse-load-more-btn" class="btn secondary hidden">Load more mods</button>
+          <span id="browse-results-count" class="muted small"></span>
+        </div>
+      </section>
+
+      <!-- ---------- DISCOVER MODPACKS (instance-agnostic) ---------- -->
+      <section id="page-modpacks" class="page">
+        <div class="page-heading">
+          <p class="eyebrow">Discover</p>
+          <h2 class="display">Modpacks</h2>
+          <p class="muted page-sub">One click builds a whole new instance - the pack's own Minecraft version, its loader, and every mod at the exact build the author shipped.</p>
+        </div>
+        <div class="search-field wide">
+          <svg class="search-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+          <input id="discover-modpack-search" type="text" placeholder="Search Modrinth modpacks..." />
+        </div>
+        <div id="discover-modpack-results" class="modpack-list"></div>
+        <div class="load-more-row">
+          <button id="discover-modpack-load-more-btn" class="btn secondary small hidden">Load more modpacks</button>
+          <span id="discover-modpack-count" class="muted small"></span>
+        </div>
+      </section>
+
+      <!-- ---------- ALL SERVERS (aggregated across instances) ---------- -->
+      <section id="page-all-servers" class="page">
+        <div class="page-heading">
+          <p class="eyebrow">Multiplayer</p>
+          <h2 class="display">All Servers</h2>
+          <p class="muted page-sub">Every favorite you've saved, across every instance, in one place.</p>
+        </div>
+        <div class="table-wrap">
+          <table class="content-table">
+            <thead>
+              <tr><th>Server</th><th>Instance</th><th class="ct-actions-head">Actions</th></tr>
+            </thead>
+            <tbody id="all-servers-tbody"></tbody>
+          </table>
+        </div>
+        <p id="all-servers-empty" class="muted empty-note hidden">No saved servers yet - add one from an instance's Servers tab.</p>
+      </section>
+
       <section id="page-settings" class="page">
         <div class="page-heading">
           <p class="eyebrow">Configuration</p>
           <h2 class="display">Settings</h2>
           <p class="muted page-sub">Applies to every instance.</p>
         </div>
+        <div class="settings-panel panel">
+          <p class="panel-title">Appearance</p>
+          <label class="field-label">Theme</label>
+          <div class="segmented" id="setting-theme-tabs">
+            <button class="seg-btn" data-theme="dark">Dark</button>
+            <button class="seg-btn" data-theme="light">Light</button>
+          </div>
+          <label class="field-label">Accent color</label>
+          <div class="accent-swatch-row" id="setting-accent-row">
+            <button class="accent-swatch" data-accent="ochre" style="--swatch-color:#e8963c" title="Ochre"></button>
+            <button class="accent-swatch" data-accent="oasis" style="--swatch-color:#4fa07d" title="Oasis"></button>
+            <button class="accent-swatch" data-accent="clay" style="--swatch-color:#c2604a" title="Clay"></button>
+            <button class="accent-swatch" data-accent="mauve" style="--swatch-color:#9b6b8f" title="Mauve"></button>
+            <button class="accent-swatch" data-accent="azure" style="--swatch-color:#4a90c2" title="Azure"></button>
+          </div>
+          <div class="settings-toggle-row">
+            <div>
+              <span class="field-label">Reduce motion</span>
+              <p class="muted small">Turns off animations and transitions throughout the app.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-reduce-motion" /><span class="switch-slider"></span></label>
+          </div>
+        </div>
+
+        <div class="settings-panel panel">
+          <p class="panel-title">Behavior</p>
+          <label class="field-label">Default loader for new instances</label>
+          <div class="segmented loader-picker" id="setting-loader-tabs">
+            <button class="seg-btn" data-loader="fabric">Fabric</button>
+            <button class="seg-btn" data-loader="forge">Forge</button>
+            <button class="seg-btn" data-loader="quilt">Quilt</button>
+            <button class="seg-btn" data-loader="neoforge">NeoForge</button>
+          </div>
+          <div class="settings-toggle-row">
+            <div>
+              <span class="field-label">Minimize when a game launches</span>
+              <p class="muted small">Get the launcher out of the way as soon as Minecraft opens.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-minimize-on-play" /><span class="switch-slider"></span></label>
+          </div>
+          <div class="settings-toggle-row">
+            <div>
+              <span class="field-label">Confirm before stopping a running game</span>
+              <p class="muted small">Ask before force-closing Minecraft from the Stop button.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-confirm-stop" /><span class="switch-slider"></span></label>
+          </div>
+        </div>
+
+        <div class="settings-panel panel">
+          <p class="panel-title">Window &amp; Updates</p>
+          <div class="settings-toggle-row" style="margin-top: 0;">
+            <div>
+              <span class="field-label">Always on top</span>
+              <p class="muted small">Keep the launcher above other windows.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-always-on-top" /><span class="switch-slider"></span></label>
+          </div>
+          <div class="settings-toggle-row">
+            <div>
+              <span class="field-label">Automatically check for updates</span>
+              <p class="muted small">Check once per launch. Only affects the installed (non-portable) build.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-auto-update" /><span class="switch-slider"></span></label>
+          </div>
+        </div>
+
         <div class="settings-panel panel">
           <p class="panel-title">Java &amp; Memory</p>
           <div class="field-row">
@@ -431,7 +852,7 @@
       <div class="rail-spacer"></div>
 
       <div class="sidebar-foot">
-        <svg class="camel-mark sm camel-pixel-slot" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"></svg>
+        <img class="sidebar-foot-logo" id="sidebar-foot-logo" src="assets/logos/logo-ochre.png" alt="" />
         <button id="logout-btn" class="link-btn">Sign out</button>
       </div>
     </aside>
@@ -449,6 +870,7 @@
       <div class="segmented" id="new-instance-source">
         <button type="button" class="seg-btn active" data-source="custom">Custom</button>
         <button type="button" class="seg-btn" data-source="modpack">Modpacks</button>
+        <button type="button" class="seg-btn" data-source="import">Import</button>
       </div>
 
       <div id="new-instance-custom">
@@ -491,6 +913,37 @@
         <div class="modal-actions">
           <button id="modpack-close-btn" class="btn secondary">Close</button>
         </div>
+      </div>
+
+      <div id="new-instance-import" class="hidden">
+        <p class="muted small modpack-blurb">Bring your mod list over from a Modrinth App profile on this PC. Mods found on Modrinth get installed properly (with updates); anything else gets copied across as-is.</p>
+        <div id="import-profile-list" class="modpack-list"></div>
+        <div id="import-details" class="hidden">
+          <div class="rule"></div>
+          <label class="field wide">
+            <span class="field-label">Name</span>
+            <input id="import-name" type="text" placeholder="My Modpack" />
+          </label>
+          <label class="field wide">
+            <span class="field-label">Minecraft version</span>
+            <input id="import-version" type="text" placeholder="1.21.1" value="1.21.1" />
+          </label>
+          <div class="field wide">
+            <span class="field-label">Mod loader</span>
+            <div class="segmented loader-picker" id="import-loader">
+              <button type="button" class="seg-btn active" data-loader="fabric">Fabric</button>
+              <button type="button" class="seg-btn" data-loader="forge">Forge</button>
+              <button type="button" class="seg-btn" data-loader="quilt">Quilt</button>
+              <button type="button" class="seg-btn" data-loader="neoforge">NeoForge</button>
+            </div>
+          </div>
+          <p class="muted small">Match whatever version and loader that profile uses in Modrinth App — check there if you're not sure.</p>
+        </div>
+        <div class="modal-actions">
+          <button id="import-cancel-btn" class="btn secondary">Cancel</button>
+          <button id="import-btn" class="btn primary" disabled>Import</button>
+        </div>
+        <p id="import-error" class="error-text"></p>
       </div>
     </div>
   </div>
