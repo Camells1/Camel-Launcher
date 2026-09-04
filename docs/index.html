@@ -298,6 +298,41 @@
   }
   .bug-sub { color: var(--text-muted); max-width: 520px; margin: 0 auto 32px; font-size: 15px; }
   .bug-btn { font-size: 17px; padding: 17px 38px; }
+
+  .bug-form { max-width: 480px; margin: 0 auto; text-align: left; }
+  .bug-field { margin-bottom: 16px; }
+  .bug-field label { display: block; font-size: 12.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 7px; }
+  .bug-field input, .bug-field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg-strong);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    transition: border-color 0.3s ease, background 0.4s ease;
+  }
+  .bug-field input:focus, .bug-field textarea:focus { outline: none; border-color: rgba(var(--accent-rgb), 0.6); }
+  .bug-field textarea { min-height: 100px; }
+  .bug-website-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .bug-form-foot { display: flex; align-items: center; gap: 16px; justify-content: center; margin-top: 6px; }
+  .bug-status { font-size: 13.5px; color: var(--text-muted); }
+  .bug-status.error { color: #ff8a80; }
+  .bug-status.ok { color: #7fd9ae; }
+  .bug-success {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 14px;
+    background: rgba(127, 217, 174, 0.12);
+    border: 1px solid rgba(127, 217, 174, 0.3);
+    color: var(--text);
+    font-size: 14.5px;
+  }
+  .hidden { display: none !important; }
+
   @media (max-width: 600px) {
     .bug-heading { font-size: 32px; }
   }
@@ -752,8 +787,31 @@
       <div class="bug-panel glass">
         <span class="eyebrow">Found something broken?</span>
         <h2 class="bug-heading">Report a Bug</h2>
-        <p class="bug-sub">Crash, glitch, or something that just isn't working right? File it on GitHub and it'll get looked at.</p>
-        <a class="btn primary bug-btn" href="https://github.com/Camells1/Camel-Launcher/issues/new">Report a Bug</a>
+        <p class="bug-sub">Crash, glitch, or something that just isn't working right? Tell us about it below - it goes straight through, no account or GitHub needed.</p>
+
+        <form class="bug-form" id="bug-form">
+          <div class="bug-field">
+            <label for="bug-title">What happened</label>
+            <input type="text" id="bug-title" name="title" placeholder="e.g. Instance won't launch after updating Fabric" required maxlength="150" />
+          </div>
+          <div class="bug-field">
+            <label for="bug-desc">Details</label>
+            <textarea id="bug-desc" name="description" placeholder="What were you doing, what did you expect, and what actually happened?" required maxlength="1500"></textarea>
+          </div>
+          <div class="bug-field">
+            <label for="bug-contact">Discord username or email (optional, if you want a reply)</label>
+            <input type="text" id="bug-contact" name="contact" placeholder="optional" maxlength="100" />
+          </div>
+          <div class="bug-field bug-website-field" aria-hidden="true">
+            <label for="bug-website">Website</label>
+            <input type="text" id="bug-website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+          <div class="bug-form-foot">
+            <button type="submit" class="btn primary bug-btn" id="bug-submit">Send Bug Report</button>
+            <span class="bug-status" id="bug-status"></span>
+          </div>
+        </form>
+        <div class="bug-success hidden" id="bug-success">Thanks - your bug report was sent. If you left contact info, expect to hear back soon.</div>
       </div>
     </section>
   </div>
@@ -802,6 +860,74 @@
       });
 
       syncPressedState();
+    })();
+  </script>
+
+  <script>
+    (function () {
+      // Paste your Discord webhook URL below (Discord: Server Settings -> Integrations ->
+      // Webhooks -> New Webhook -> Copy Webhook URL). This runs client-side since the site
+      // is static, so the URL is visible in the page source - regenerate it in Discord if
+      // it's ever abused.
+      var WEBHOOK_URL = 'https://discord.com/api/webhooks/1545260025059213406/OiDOEys6GQNkXUvgJoTs-HmMVK_yGbj0Fl-KkV_ZbXzcVoeHA0uu84VvxBt0duZvEpQC';
+      var form = document.getElementById('bug-form');
+      var statusEl = document.getElementById('bug-status');
+      var submitBtn = document.getElementById('bug-submit');
+      var successEl = document.getElementById('bug-success');
+      if (!form) return;
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var title = document.getElementById('bug-title').value.trim();
+        var desc = document.getElementById('bug-desc').value.trim();
+        var contact = document.getElementById('bug-contact').value.trim();
+        var honeypot = document.getElementById('bug-website').value.trim();
+
+        if (!title || !desc) return;
+
+        // Honeypot: real visitors never fill this hidden field. Pretend success so bots move on.
+        if (honeypot) {
+          form.classList.add('hidden');
+          successEl.classList.remove('hidden');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+        statusEl.textContent = '';
+        statusEl.className = 'bug-status';
+
+        var accent = document.documentElement.getAttribute('data-accent') || 'ochre';
+        var theme = document.documentElement.getAttribute('data-theme') || 'dark';
+
+        var payload = {
+          embeds: [{
+            title: '🐛 ' + title.slice(0, 250),
+            description: desc.slice(0, 3900),
+            color: 15242812,
+            fields: contact ? [{ name: 'Contact', value: contact.slice(0, 200), inline: true }] : [],
+            footer: { text: 'Camel Launcher site · ' + theme + '/' + accent },
+            timestamp: new Date().toISOString()
+          }]
+        };
+
+        fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).then(function (res) {
+          if (!res.ok) throw new Error('bad status');
+          form.reset();
+          form.classList.add('hidden');
+          successEl.classList.remove('hidden');
+        }).catch(function () {
+          statusEl.textContent = "Couldn't send - check your connection and try again.";
+          statusEl.className = 'bug-status error';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send Bug Report';
+        });
+      });
     })();
   </script>
 
