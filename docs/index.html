@@ -286,6 +286,22 @@
   .feature-card p { font-size: 13.5px; color: var(--text-muted); margin: 0; }
 
   /* ---------- interactive theme demo ---------- */
+  .bug-report { padding: 10px 0 70px; text-align: center; }
+  .bug-panel { border-radius: 28px; padding: 54px 40px; }
+  .bug-heading {
+    font-size: 46px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    margin: 18px 0 14px;
+    color: var(--text);
+  }
+  .bug-sub { color: var(--text-muted); max-width: 520px; margin: 0 auto 32px; font-size: 15px; }
+  .bug-btn { font-size: 17px; padding: 17px 38px; }
+  @media (max-width: 600px) {
+    .bug-heading { font-size: 32px; }
+  }
+
   .theme-demo { padding: 30px 0 80px; }
   .demo-panel { border-radius: 28px; padding: 40px; text-align: center; }
   .demo-panel h2 { font-size: 26px; font-weight: 800; margin: 0 0 8px; }
@@ -621,6 +637,7 @@
       <nav class="top-links">
         <a href="#features">Features</a>
         <a href="#try-it">Try the theme</a>
+        <a href="#report-bug">Report a Bug</a>
         <a href="https://github.com/Camells1/Camel-Launcher">GitHub</a>
       </nav>
     </header>
@@ -728,6 +745,15 @@
             <div class="line short"></div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="bug-report" id="report-bug">
+      <div class="bug-panel glass">
+        <span class="eyebrow">Found something broken?</span>
+        <h2 class="bug-heading">Report a Bug</h2>
+        <p class="bug-sub">Crash, glitch, or something that just isn't working right? File it on GitHub and it'll get looked at.</p>
+        <a class="btn primary bug-btn" href="https://github.com/Camells1/Camel-Launcher/issues/new">Report a Bug</a>
       </div>
     </section>
   </div>
