@@ -248,15 +248,16 @@
     display: none;
     width: 100%;
   }
-  .shot-frame img.shot-ochre { display: block; }
-  :root[data-accent="oasis"] .shot-frame img.shot-ochre { display: none; }
-  :root[data-accent="oasis"] .shot-frame img.shot-oasis { display: block; }
-  :root[data-accent="clay"]  .shot-frame img.shot-ochre { display: none; }
-  :root[data-accent="clay"]  .shot-frame img.shot-clay  { display: block; }
-  :root[data-accent="azure"] .shot-frame img.shot-ochre { display: none; }
-  :root[data-accent="azure"] .shot-frame img.shot-azure { display: block; }
-  :root[data-accent="mauve"] .shot-frame img.shot-ochre { display: none; }
-  :root[data-accent="mauve"] .shot-frame img.shot-mauve { display: block; }
+  :root[data-accent="ochre"]:not([data-theme="light"]) .shot-frame img.shot-ochre-dark  { display: block; }
+  :root[data-accent="ochre"][data-theme="light"]       .shot-frame img.shot-ochre-light { display: block; }
+  :root[data-accent="oasis"]:not([data-theme="light"]) .shot-frame img.shot-oasis-dark  { display: block; }
+  :root[data-accent="oasis"][data-theme="light"]       .shot-frame img.shot-oasis-light { display: block; }
+  :root[data-accent="clay"]:not([data-theme="light"])  .shot-frame img.shot-clay-dark   { display: block; }
+  :root[data-accent="clay"][data-theme="light"]        .shot-frame img.shot-clay-light  { display: block; }
+  :root[data-accent="azure"]:not([data-theme="light"]) .shot-frame img.shot-azure-dark  { display: block; }
+  :root[data-accent="azure"][data-theme="light"]       .shot-frame img.shot-azure-light { display: block; }
+  :root[data-accent="mauve"]:not([data-theme="light"]) .shot-frame img.shot-mauve-dark  { display: block; }
+  :root[data-accent="mauve"][data-theme="light"]       .shot-frame img.shot-mauve-light { display: block; }
 
   section.features { padding: 80px 0 30px; }
   .section-heading { text-align: center; max-width: 600px; margin: 0 auto 46px; }
@@ -638,11 +639,16 @@
       </div>
       <p class="hint">Downloads the installer (.exe) directly - just run it, no command line needed. Windows SmartScreen may warn since it isn't code-signed - click "More info &rarr; Run anyway".</p>
       <div class="shot-frame glass">
-        <img class="shot-ochre" src="assets/hero-ochre.png" alt="Camel Launcher screenshot, desert theme" />
-        <img class="shot-oasis" src="assets/hero-oasis.png" alt="Camel Launcher screenshot, jungle theme" />
-        <img class="shot-clay"  src="assets/hero-clay.png"  alt="Camel Launcher screenshot, volcano theme" />
-        <img class="shot-azure" src="assets/hero-azure.png" alt="Camel Launcher screenshot, ocean theme" />
-        <img class="shot-mauve" src="assets/hero-mauve.png" alt="Camel Launcher screenshot, space theme" />
+        <img class="shot-ochre-dark"  src="assets/hero-ochre-dark.png"  alt="Camel Launcher screenshot, desert theme" />
+        <img class="shot-ochre-light" src="assets/hero-ochre-light.png" alt="Camel Launcher screenshot, desert theme, light mode" />
+        <img class="shot-oasis-dark"  src="assets/hero-oasis-dark.png"  alt="Camel Launcher screenshot, jungle theme" />
+        <img class="shot-oasis-light" src="assets/hero-oasis-light.png" alt="Camel Launcher screenshot, jungle theme, light mode" />
+        <img class="shot-clay-dark"   src="assets/hero-clay-dark.png"   alt="Camel Launcher screenshot, volcano theme" />
+        <img class="shot-clay-light"  src="assets/hero-clay-light.png"  alt="Camel Launcher screenshot, volcano theme, light mode" />
+        <img class="shot-azure-dark"  src="assets/hero-azure-dark.png"  alt="Camel Launcher screenshot, ocean theme" />
+        <img class="shot-azure-light" src="assets/hero-azure-light.png" alt="Camel Launcher screenshot, ocean theme, light mode" />
+        <img class="shot-mauve-dark"  src="assets/hero-mauve-dark.png"  alt="Camel Launcher screenshot, space theme" />
+        <img class="shot-mauve-light" src="assets/hero-mauve-light.png" alt="Camel Launcher screenshot, space theme, light mode" />
       </div>
     </div>
   </div>
