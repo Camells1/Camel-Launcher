@@ -3,7 +3,16 @@
 A custom Minecraft launcher for you and your friends, styled after the
 Modrinth App: an instance rail on the left (one icon per modpack), a
 Modrinth-powered content browser, sign-in with a Microsoft account (multiple
-accounts, switchable), and a desert theme with a pixel-art camel mascot. No ads.
+accounts, switchable), and a frameless window with its own custom title bar
+(breadcrumb navigation, a live "now playing" pill). No ads.
+
+Pick one of five accent colors in Settings → Appearance — Ochre, Oasis, Clay,
+Mauve, Azure — and the whole app repaints: not just buttons, the entire
+neutral palette, the animated backdrop scene behind the login/home screens
+(desert, jungle, volcano, ocean, space, respectively), and even the real
+camel-head app/taskbar icon. Each of the five pairs with both a dark and a
+light variant, so there are ten looks in total, all built around the same
+pixel-art camel mascot.
 
 Each **instance** is a fully separate Minecraft install — its own version,
 its own mod loader, its own mods/worlds/screenshots/servers — living under
@@ -27,12 +36,12 @@ npm run dist
 
 This produces two files in `dist/`:
 
-- **`Camel Launcher Setup 1.0.0.exe`** — a real installer. Run it, click
+- **`Camel Launcher Setup 1.1.0.exe`** — a real installer. Run it, click
   Install (no admin rights needed, it installs to your user profile), and
   you get a Start Menu entry, a desktop shortcut, and an uninstaller — just
   like any other app. This is what you want for your own PC, and the only
   one that auto-updates (see below).
-- **`Camel Launcher 1.0.0.exe`** — a portable version, no install step, just
+- **`Camel Launcher 1.1.0.exe`** — a portable version, no install step, just
   double-click and run. Handy if you'd rather not install anything, or want
   to run it from a USB stick. Doesn't auto-update.
 
@@ -47,27 +56,37 @@ That's normal for small/indie apps, not a sign anything's wrong.
 1. Click **Sign in with Microsoft** and log in with the account that owns
    Minecraft. You can add more accounts later from the account card in the
    sidebar and switch between them any time.
-2. Click **+ New Instance** — name it, pick a Minecraft version, and pick a
-   mod loader (Fabric/Forge/Quilt/NeoForge). Or browse **Discover Modpacks**
-   to install a complete, pre-configured pack in one click instead of
-   building one from scratch. Everyone in the group should end up with an
-   instance on the same version + loader + mods to stay compatible for
+2. Click **+ New Instance** and pick one of three ways to end up with one:
+   **Custom** (name it, pick a Minecraft version and a mod loader —
+   Fabric/Forge/Quilt/NeoForge), **Modpacks** (install a complete,
+   pre-configured pack from Modrinth in one click), or **Import** (already
+   using the Modrinth App? Pull a profile's mod list straight over — see
+   "How mod sharing works" below). Everyone in the group should end up with
+   an instance on the same version + loader + mods to stay compatible for
    multiplayer.
 3. Open the instance's **Content** tab, click **Browse content** — search or
    use the quick-add chips to install mods, resource packs, or shaders from
    Modrinth. Installing a mod that needs another one (like Fabric API)
    installs that automatically too. Back in Content: each item has an on/off
    toggle (disables without deleting), a remove button, **Update all**, and
-   Export/Import to share your exact mod list with a friend as a file.
+   Export/Import to share your exact mod list with a friend as a file. The
+   rail also has standalone **Browse Mods**, **Discover Modpacks**, and
+   **All Servers** pages, so searching Modrinth or checking your saved
+   servers never requires opening an instance first.
 4. Check out the instance's other tabs: **Worlds** (your saves, with a
    folder shortcut), **Screenshots** (a gallery), and **Servers** (save
    favorites and "Play & Join" straight into one).
 5. Hit **Play** in the instance header. First launch downloads the game +
    loader + assets, so it can take a few minutes; the button becomes **Stop**
-   while running, and a crash (if one happens) shows a summary with a link to
-   the full crash report instead of just an exit code.
+   while running (with a matching status pill in the title bar), and a crash
+   (if one happens) shows a summary with a link to the full crash report
+   instead of just an exit code.
 6. Click the **Skins** icon in the rail to preview, change, or reset your
    Minecraft skin without leaving the launcher.
+7. Open **Settings** from the rail to pick a theme and accent color
+   (Appearance), set default Java/memory/JVM options, check per-instance
+   disk usage, and more — it's organized into sections down the left side
+   rather than one long scrolling page.
 
 Once you've played something, Home shows a **Jump in** strip of your most
 recently played instances and servers for one-click relaunching.
@@ -85,11 +104,16 @@ recently played instances and servers for one-click relaunching.
 
 There's no shared server — everyone runs their own copy of the app, creates
 an instance with the same Minecraft version + loader, and installs the same
-mods from Modrinth (or just installs the same modpack via Discover Modpacks,
-or imports the `.json` file one person exported from Content → Export). As
-long as those match, you'll all be compatible for multiplayer. (Server-side-
-only mods still need to be installed on whatever server you play on,
-separately.)
+mods from Modrinth. There are a few ways to actually get there together:
+install the same modpack via Discover Modpacks, import the `.json` file one
+person exported from Content → Export, or — if a friend already has a mod
+list built up in the Modrinth App — pull it straight over with **New
+Instance → Import**, which matches their local files against Modrinth by
+content hash and installs each one properly (anything not found on Modrinth
+gets copied across as-is, and disabled mods stay disabled). As long as
+everyone's mods match, you'll all be compatible for multiplayer.
+(Server-side-only mods still need to be installed on whatever server you
+play on, separately.)
 
 ## Auto-updates
 
@@ -100,60 +124,56 @@ in the bottom-right corner — and when the download finishes it shows
 **"Update ready — restarting..."**, closes, installs silently, and reopens on the
 new version. No installer to click through.
 
-### Right now this does nothing, and that's on purpose
+### It's live
 
-There is no update server yet, so `package.json` points at an obvious
-placeholder:
+`package.json` → `build` → `publish` points at a real GitHub repo:
 
 ```json
 "publish": [
-  { "provider": "generic", "url": "https://example.com/camel-launcher-updates/" }
+  { "provider": "github", "owner": "Camells1", "repo": "Camel-Launcher" }
 ]
 ```
 
-**`https://example.com/camel-launcher-updates/` is not a real URL** — nothing is
-hosted there and nothing ever will be. Until you replace it, every update check
-fails. That is handled: the failure is logged to the main-process console and
-**nothing is shown in the UI**. The launcher behaves exactly as it did before.
+[github.com/Camells1/Camel-Launcher](https://github.com/Camells1/Camel-Launcher)
+already has a v1.1.0 release published on it, so an installed copy that's
+behind will pick up the newer build the next time it's opened — no further
+setup needed. (In a `npm start` dev run the check is skipped entirely —
+`electron-updater` only runs in a packaged app — and a failed check, e.g. no
+network, is just logged to the main-process console with nothing shown in
+the UI, so a temporary hiccup never looks like an error to whoever's playing.)
 
-(In a `npm start` dev run the check is skipped entirely — `electron-updater`
-only runs in a packaged app.)
+### Shipping a new update
 
-### Turning it on for real
-
-1. **Find somewhere to host files.** Any plain static file host over HTTPS
-   works — a GitHub Releases page, an S3 bucket, Cloudflare R2, Netlify, or a
-   web server you own. There's no server-side code involved; the updater only
-   does plain HTTP GETs for the static files you upload in step 5.
-2. **Point the app at it.** Replace the placeholder `url` in `package.json` →
-   `build` → `publish` with your own (keep the trailing slash):
-
-   ```json
-   "publish": [
-     { "provider": "generic", "url": "https://updates.yoursite.net/camel-launcher/" }
-   ]
-   ```
-
-   If you'd rather use GitHub Releases, swap the whole block for
-   `{ "provider": "github", "owner": "your-github-username", "repo": "CustomMCLauncher" }`
-   and attach the build output to a public release instead — everything else
-   below works the same.
-3. **Bump the version** in `package.json` (`"version": "1.0.1"`, etc). The
-   updater only acts when the hosted version is *newer* than the installed one,
-   so shipping an update always means bumping this first.
-4. **Build:** `npm run dist`.
-5. **Upload these three files from `dist/` to that URL:**
-   - `latest.yml` — the update manifest (version number + checksum). Generated
-     automatically by `npm run dist`; this is the file the app fetches to decide
-     whether an update exists.
+1. **Bump the version** in `package.json` (`"version": "1.1.1"`, etc). The
+   updater only acts when the published version is *newer* than the installed
+   one, so shipping an update always means bumping this first.
+2. **Build:** `npm run dist`. This produces (among other things) three files
+   in `dist/` that matter for the update feed:
+   - `latest.yml` — the update manifest (version number + checksum). This is
+     the file the app fetches to decide whether an update exists.
    - `Camel Launcher Setup <version>.exe` — the installer that gets downloaded.
    - `Camel Launcher Setup <version>.exe.blockmap` — lets the updater download
      only the changed chunks instead of the whole 110 MB installer.
+3. **Publish a GitHub Release** on `Camells1/Camel-Launcher` tagged to match
+   the bumped version (e.g. `v1.1.1`), and attach those three files as release
+   assets. (electron-builder can also do this step for you in one command —
+   set a `GH_TOKEN` env var with `repo` access and run
+   `npm run dist -- --publish always` instead of a plain `npm run dist`.)
+   Keep older releases up there too if you like; only the newest `latest.yml`
+   decides what's current.
+4. That's it. Anyone running an older *installed* copy picks it up the next
+   time they open the launcher.
 
-   Keep older installers up there too if you like; only `latest.yml` decides
-   what's current.
-6. That's it. Anyone running an older *installed* copy picks it up the next time
-   they open the launcher.
+### Pointing this at a different repo (or a plain static host)
+
+Forked this and want updates to go to your own copy instead? Replace the
+`owner`/`repo` in `package.json` → `build` → `publish` with your own — every
+step above works the same against your fork. You don't need GitHub at all,
+either: any plain static file host over HTTPS works (an S3 bucket, Cloudflare
+R2, Netlify, your own web server). Swap the `publish` block for
+`{ "provider": "generic", "url": "https://updates.yoursite.net/camel-launcher/" }`
+and upload the same three files from step 2 there instead — the updater just
+does plain HTTP GETs, no server-side code involved.
 
 ### Things worth knowing
 
@@ -197,23 +217,27 @@ won't silently forget your login over a bad connection.
 
 ## Project layout
 
-- `main.js` — Electron main process, all the IPC wiring
+- `main.js` — Electron main process, all the IPC wiring; also owns the frameless
+  `BrowserWindow` and the minimize/maximize/close handlers the custom title bar calls into
 - `preload.js` — the `contextBridge` that exposes a safe `window.mc.*` API to the renderer
 - `src/auth.js` — Microsoft/Xbox/Minecraft login (via `msmc`); supports multiple saved accounts
-- `src/instances.js` — multi-instance data model (create/rename/duplicate/delete, per-instance folders, per-instance Java/memory/JVM-arg overrides, custom icons)
+- `src/instances.js` — multi-instance data model (create/rename/duplicate/delete, per-instance folders, per-instance Java/memory/JVM-arg overrides, custom icons, playtime tracking)
 - `src/launcher.js` — installs the game + mod loader, launches it (via `@xmcl/core` / `@xmcl/installer`)
 - `src/modrinth.js` — mod/resourcepack/shader/modpack search + download/update from the Modrinth API
 - `src/modpackDiscovery.js` — browsing and one-click installing full Modrinth modpacks
+- `src/modrinthAppImport.js` — finds a friend's local Modrinth App profiles and matches their mod files against Modrinth by content hash, for the New Instance → Import flow
 - `src/skins.js` — view/upload/reset the signed-in account's skin (Mojang profile API)
 - `src/worlds.js`, `src/screenshots.js`, `src/servers.js` — per-instance saves/screenshots/favorite-servers management
 - `src/crashReports.js` — summarizes the newest crash report after a non-zero exit
 - `src/modpack.js` — export/import *your own* instance's installed-mod list as a shareable file (distinct from `modpackDiscovery.js`, which browses Modrinth's public modpacks)
 - `src/javaFinder.js` — locates a local Java install
-- `src/store.js` — tiny JSON-file settings/account storage
+- `src/store.js` — tiny JSON-file settings/account storage; also holds the default settings (theme, accent color, memory, etc.)
 - `src/camelArt.js` — the pixel-art camel logo, shared by the UI and the icon generator
 - `src/updater.js` / `renderer/updater.js` — auto-update (see above)
 - `scripts/generate-icon.js` — rasterizes `camelArt.js` into `build/icon.png` (the window/taskbar icon)
-- `renderer/` — the UI (plain HTML/CSS/JS, no build step, no framework)
+- `build/icons/` — one pre-recolored app icon per accent color (`icon-<accent>.png`); swapped in as the real OS taskbar/window icon when you change the accent in Settings
+- `renderer/assets/logos/` — one pre-recolored camel-head logo per accent color, used as the rail brand mark, title bar logo, home hero icon, and sidebar footer icon
+- `renderer/` — the UI (plain HTML/CSS/JS, no build step, no framework): the custom title bar, the theming system (`data-theme`/`data-accent` on `<html>`, driving the whole palette plus the animated desert/jungle/volcano/ocean/space backdrop scenes), and the categorized Settings page all live in `renderer/index.html` + `renderer/renderer.js` + `renderer/style.css`
 
 ## Known limitations
 

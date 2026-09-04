@@ -77,6 +77,8 @@ contextBridge.exposeInMainWorld('mc', {
   openPath: (targetPath) => ipcRenderer.invoke('shell:openPath', targetPath),
 
   setAppIcon: (accent) => ipcRenderer.invoke('app:setIcon', accent),
+  getUserDataPath: () => ipcRenderer.invoke('app:getUserDataPath'),
+  getInstancesDiskUsage: () => ipcRenderer.invoke('instances:diskUsage'),
 
   minimizeWindow: () => ipcRenderer.invoke('window:minimize'),
   toggleMaximizeWindow: () => ipcRenderer.invoke('window:toggleMaximize'),

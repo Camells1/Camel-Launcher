@@ -35,10 +35,14 @@ const loginBtn = document.getElementById('login-btn');
 const loginBtnLabel = loginBtn.querySelector('.btn-label');
 const loginError = document.getElementById('login-error');
 const logoutBtn = document.getElementById('logout-btn');
+const reportBugBtn = document.getElementById('report-bug-btn');
 const accountName = document.getElementById('account-name');
 const accountAvatar = document.getElementById('account-avatar');
 const sessionStatus = document.getElementById('session-status');
 const statusDot = document.getElementById('status-dot');
+const statInstances = document.getElementById('stat-instances');
+const statMods = document.getElementById('stat-mods');
+const statPlaytime = document.getElementById('stat-playtime');
 
 const railHome = document.getElementById('rail-home');
 const railSettings = document.getElementById('rail-settings');
@@ -78,6 +82,7 @@ const browseLoadMoreBtn = document.getElementById('browse-load-more-btn');
 const browseResultsCount = document.getElementById('browse-results-count');
 const browseNoInstances = document.getElementById('browse-no-instances');
 const browseToolbar = browseTargetSelect.closest('.toolbar');
+const browseContentTypeTabs = document.getElementById('browse-content-type-tabs');
 
 const railSkins = document.getElementById('rail-skins');
 const jumpInSection = document.getElementById('jump-in-section');
@@ -128,6 +133,13 @@ const tableWrap = document.querySelector('.table-wrap');
 const uploadFilesBtn = document.getElementById('upload-files-btn');
 const installedTypeTabs = document.getElementById('installed-type-tabs');
 const refreshInstalledBtn = document.getElementById('refresh-installed-btn');
+const installedSortSelect = document.getElementById('installed-sort');
+const installedSelectAll = document.getElementById('installed-select-all');
+const bulkActionBar = document.getElementById('bulk-action-bar');
+const bulkSelectedCount = document.getElementById('bulk-selected-count');
+const bulkEnableBtn = document.getElementById('bulk-enable-btn');
+const bulkDisableBtn = document.getElementById('bulk-disable-btn');
+const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
 
 const starterRow = document.getElementById('starter-row');
 const modSearchInput = document.getElementById('mod-search');
@@ -148,6 +160,21 @@ const settingMinimizeOnPlay = document.getElementById('setting-minimize-on-play'
 const settingConfirmStop = document.getElementById('setting-confirm-stop');
 const settingAlwaysOnTop = document.getElementById('setting-always-on-top');
 const settingAutoUpdate = document.getElementById('setting-auto-update');
+const settingJvmArgs = document.getElementById('setting-jvm-args');
+const saveSettingsBtnJava = document.getElementById('save-settings-btn-java');
+const settingsNavItems = document.querySelectorAll('.settings-nav-item');
+const settingsTabs = document.querySelectorAll('.settings-tab');
+const settingsProfileAvatar = document.getElementById('settings-profile-avatar');
+const settingsProfileName = document.getElementById('settings-profile-name');
+const settingsSignoutBtn = document.getElementById('settings-signout-btn');
+const settingsAccountList = document.getElementById('settings-account-list');
+const settingsAddAccountBtn = document.getElementById('settings-add-account-btn');
+const settingsDataPath = document.getElementById('settings-data-path');
+const settingsOpenDataBtn = document.getElementById('settings-open-data-btn');
+const settingsResourceTotal = document.getElementById('settings-resource-total');
+const settingsResourceTbody = document.getElementById('settings-resource-tbody');
+const settingsOpenInstancesBtn = document.getElementById('settings-open-instances-btn');
+const settingsRefreshResourcesBtn = document.getElementById('settings-refresh-resources-btn');
 
 const modalOverlay = document.getElementById('modal-overlay');
 const newInstanceModal = document.getElementById('new-instance-modal');
@@ -228,6 +255,8 @@ const serversEmpty = document.getElementById('servers-empty');
 
 const TRASH_ICON =
   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>';
+const MORE_ICON =
+  '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></svg>';
 const FOLDER_ICON =
   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg>';
 const PLAY_ICON = '<svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>';
@@ -237,18 +266,53 @@ const COPY_ICON =
 // Instance swatches are drawn from a curated desert palette rather than a
 // full-spectrum HSL hash, so a rail of instances always harmonises with the
 // theme. All are mid-luminance so the dark initial on top stays legible.
-const SWATCH_PALETTE = [
-  '#d98b3f', // ochre
-  '#c25f3c', // terracotta
-  '#a8474a', // clay red
-  '#8c6a3f', // dune shadow
-  '#c9a227', // golden yellow
-  '#6f8f5e', // desert sage
-  '#4f9e86', // oasis teal
-  '#9b6b8f', // dusk mauve
-  '#b8763a', // sienna
-  '#7d8a4e', // olive scrub
-];
+// Basic (no custom icon) instance swatches are colored as variations on the
+// *current* accent's hue, not a fixed palette - so an instance's "avatar"
+// belongs to whichever biome is active instead of clashing with it.
+const ACCENT_HEX = { ochre: '#e8963c', oasis: '#4fa07d', clay: '#c2604a', mauve: '#9b6b8f', azure: '#4a90c2' };
+
+function hexToHsl(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = ((n >> 16) & 255) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h, s;
+  const l = (max + min) / 2;
+  if (max === min) {
+    h = s = 0;
+  } else {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h /= 6;
+  }
+  return [h * 360, s * 100, l * 100];
+}
+
+function hslToHex(h, s, l) {
+  h /= 360; s /= 100; l /= 100;
+  let r, g, b;
+  if (s === 0) {
+    r = g = b = l;
+  } else {
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    };
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
+  }
+  const toHex = (x) => Math.round(x * 255).toString(16).padStart(2, '0');
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
 
 let currentSettings = null;
 let instances = [];
@@ -265,6 +329,9 @@ const PAGE_SIZE = 30;
 let lastResults = [];
 let currentContentType = 'mod';
 let installedTypeFilter = 'all';
+let installedSort = 'name-asc';
+let selectedContentFilenames = new Set();
+let openContentMenuFilename = null;
 
 // ---- Browse Mods (instance-agnostic search) ----
 let browseQuery = '';
@@ -272,15 +339,20 @@ let browseOffset = 0;
 let browseTotal = 0;
 let lastBrowseResults = [];
 let browseInstalledProjectIds = new Set();
+let browseContentType = 'mod';
 
 function currentInstance() {
   return instances.find((i) => i.id === activeInstanceId) || null;
 }
 
 function colorForId(id) {
+  const accent = (currentSettings && currentSettings.accentColor) || 'ochre';
+  const [h, s] = hexToHsl(ACCENT_HEX[accent] || ACCENT_HEX.ochre);
   let hash = 0;
   for (let i = 0; i < String(id).length; i++) hash = (hash * 31 + String(id).charCodeAt(i)) >>> 0;
-  return SWATCH_PALETTE[hash % SWATCH_PALETTE.length];
+  const lightness = 38 + (hash % 5) * 8; // five lightness steps for per-instance variety
+  const hueJitter = ((hash >> 3) % 21) - 10; // -10..+10 degrees, stays in the same color family
+  return hslToHex((h + hueJitter + 360) % 360, Math.max(35, Math.min(70, s)), lightness);
 }
 
 function initialFor(name) {
@@ -340,6 +412,78 @@ function fillIconSlot(slot, url) {
   img.addEventListener('error', () => img.remove());
   img.src = url;
   slot.appendChild(img);
+}
+
+/* ---------- Content tab: shared per-row "more actions" popover ----------
+   A single floating menu appended to <body> (not nested inside the table),
+   so it's never clipped by .table-wrap's overflow:hidden and doesn't need
+   one DOM subtree per row. Positioned via getBoundingClientRect() each time
+   it opens. */
+const contentRowMenu = document.createElement('div');
+contentRowMenu.className = 'ct-menu-dropdown hidden';
+document.body.appendChild(contentRowMenu);
+
+function closeContentRowMenu() {
+  contentRowMenu.classList.add('hidden');
+  contentRowMenu.innerHTML = '';
+  openContentMenuFilename = null;
+}
+
+function openContentRowMenu(anchorBtn, mod) {
+  contentRowMenu.innerHTML = '';
+  if (mod.projectId) {
+    const viewBtn = document.createElement('button');
+    viewBtn.type = 'button';
+    viewBtn.className = 'ct-menu-item';
+    viewBtn.textContent = 'View on Modrinth';
+    viewBtn.addEventListener('click', () => {
+      closeContentRowMenu();
+      window.mc.openExternal(`https://modrinth.com/project/${mod.projectId}`);
+    });
+    contentRowMenu.appendChild(viewBtn);
+  }
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.className = 'ct-menu-item danger';
+  removeBtn.textContent = 'Remove';
+  removeBtn.addEventListener('click', async () => {
+    closeContentRowMenu();
+    await removeInstalledMod(mod);
+  });
+  contentRowMenu.appendChild(removeBtn);
+
+  openContentMenuFilename = mod.filename;
+  contentRowMenu.classList.remove('hidden');
+  const btnRect = anchorBtn.getBoundingClientRect();
+  const menuRect = contentRowMenu.getBoundingClientRect();
+  let left = btnRect.right - menuRect.width;
+  let top = btnRect.bottom + 6;
+  left = Math.max(8, Math.min(left, window.innerWidth - menuRect.width - 8));
+  if (top + menuRect.height > window.innerHeight - 8) top = btnRect.top - menuRect.height - 6;
+  contentRowMenu.style.left = `${left}px`;
+  contentRowMenu.style.top = `${top}px`;
+}
+
+document.addEventListener('click', (e) => {
+  if (!contentRowMenu.classList.contains('hidden') && !contentRowMenu.contains(e.target)) closeContentRowMenu();
+});
+// Scroll doesn't bubble, so this needs the capture phase to catch it happening
+// in any scrollable ancestor - the menu's fixed position would otherwise go
+// stale relative to whatever anchor button it was opened from.
+document.addEventListener('scroll', () => closeContentRowMenu(), true);
+
+// Removes a single installed mod/resourcepack, reused by both the per-row
+// overflow menu and (looped) by the bulk-delete action.
+async function removeInstalledMod(mod) {
+  const ok = await confirmDialog({
+    title: 'Remove content',
+    body: `Remove "${mod.title}" from this instance?`,
+    confirmLabel: 'Remove',
+  });
+  if (!ok) return;
+  await window.mc.removeMod(activeInstanceId, mod.filename);
+  await loadInstalledMods();
+  toast(`Removed "${mod.title}".`, 'success');
 }
 
 /* ---------- Toasts + themed confirm (replacing native alert/confirm) ---------- */
@@ -424,7 +568,11 @@ async function refreshAccountUi(account) {
   if (account && account.name) {
     currentAccountName = account.name;
     accountName.textContent = account.name;
-    if (account.uuid) accountAvatar.src = `https://crafatar.com/avatars/${account.uuid}?size=64&overlay`;
+    settingsProfileName.textContent = account.name;
+    if (account.uuid) {
+      accountAvatar.src = `https://crafatar.com/avatars/${account.uuid}?size=64&overlay`;
+      settingsProfileAvatar.src = `https://crafatar.com/avatars/${account.uuid}?size=112&overlay`;
+    }
     showApp();
   } else {
     showLogin();
@@ -464,9 +612,26 @@ async function toggleAccountList() {
   if (accountListOpen) await renderAccountList();
 }
 
-async function renderAccountList() {
+async function addAnotherAccountFlow(btn, onDone) {
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+  try {
+    const account = await window.mc.addAnotherAccount();
+    await refreshAccountUi(account);
+    if (onDone) onDone();
+    toast(`Signed in as ${account.name}.`, 'success');
+  } catch (err) {
+    toast(err.message || String(err), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = label;
+  }
+}
+
+async function renderAccountList(container = accountList, { includeAddButton = true } = {}) {
   const accounts = await window.mc.listAccounts();
-  accountList.innerHTML = '';
+  container.innerHTML = '';
   accounts.forEach((acc) => {
     const row = document.createElement('button');
     row.className = `account-list-item${acc.active ? ' active' : ''}`;
@@ -492,32 +657,20 @@ async function renderAccountList() {
         e.stopPropagation();
         await window.mc.removeAccount(acc.uuid);
         toast(`Forgot ${acc.name}.`, 'info');
-        await renderAccountList();
+        await renderAccountList(container, { includeAddButton });
       });
     }
-    accountList.appendChild(row);
+    container.appendChild(row);
   });
 
-  const addBtn = document.createElement('button');
-  addBtn.className = 'account-list-add';
-  addBtn.type = 'button';
-  addBtn.textContent = '+ Add another account';
-  addBtn.addEventListener('click', async () => {
-    addBtn.disabled = true;
-    addBtn.textContent = 'Signing in…';
-    try {
-      const account = await window.mc.addAnotherAccount();
-      await refreshAccountUi(account);
-      closeAccountList();
-      toast(`Signed in as ${account.name}.`, 'success');
-    } catch (err) {
-      toast(err.message || String(err), 'error');
-    } finally {
-      addBtn.disabled = false;
-      addBtn.textContent = '+ Add another account';
-    }
-  });
-  accountList.appendChild(addBtn);
+  if (includeAddButton) {
+    const addBtn = document.createElement('button');
+    addBtn.className = 'account-list-add';
+    addBtn.type = 'button';
+    addBtn.textContent = '+ Add another account';
+    addBtn.addEventListener('click', () => addAnotherAccountFlow(addBtn, closeAccountList));
+    container.appendChild(addBtn);
+  }
 }
 
 accountCardToggle.addEventListener('click', toggleAccountList);
@@ -560,6 +713,7 @@ async function init() {
   settingMinMem.value = currentSettings.minMemoryMb;
   settingMaxMem.value = currentSettings.maxMemoryMb;
   settingJava.value = currentSettings.javaPath || '';
+  settingJvmArgs.value = currentSettings.jvmArgs || '';
   applyAppearanceSettings(currentSettings);
   renderSettingsControls(currentSettings);
 
@@ -591,6 +745,10 @@ loginBtn.addEventListener('click', async () => {
 logoutBtn.addEventListener('click', async () => {
   await window.mc.logout();
   showLogin();
+});
+
+reportBugBtn.addEventListener('click', () => {
+  window.mc.openExternal('https://camells1.github.io/Camel-Launcher/#report-bug');
 });
 
 // ---- Page routing ----
@@ -673,6 +831,7 @@ function renderRailInstances() {
 }
 
 function renderInstanceGrid() {
+  refreshCaravanStats();
   instanceGrid.innerHTML = '';
   if (!instances.length) {
     const empty = document.createElement('div');
@@ -710,6 +869,19 @@ function renderInstanceGrid() {
     });
     instanceGrid.appendChild(card);
   });
+}
+
+async function refreshCaravanStats() {
+  statInstances.textContent = instances.length;
+  const totalMs = instances.reduce((sum, i) => sum + (i.totalPlaytimeMs || 0), 0);
+  const hours = totalMs / 3600000;
+  statPlaytime.textContent = hours < 1 ? `${Math.round(totalMs / 60000)}m` : hours < 10 ? `${hours.toFixed(1)}h` : `${Math.round(hours)}h`;
+  try {
+    const counts = await Promise.all(instances.map((i) => window.mc.listMods(i.id)));
+    statMods.textContent = counts.reduce((sum, list) => sum + list.length, 0);
+  } catch {
+    // best effort only - stats aren't worth surfacing an error for
+  }
 }
 
 function formatPlaytime(ms) {
@@ -1352,6 +1524,76 @@ installedTypeTabs.querySelectorAll('.seg-btn').forEach((btn) => {
 
 refreshInstalledBtn.addEventListener('click', () => loadInstalledMods());
 
+installedSortSelect.addEventListener('change', () => {
+  installedSort = installedSortSelect.value;
+  renderInstalledTable();
+});
+
+// Same filter predicate renderInstalledTable uses, factored out so the
+// "select all" checkbox can select/deselect exactly what's currently visible.
+function getFilteredInstalledMods() {
+  const filterText = installedFilterInput.value.trim().toLowerCase();
+  return installedModsCache.filter(
+    (m) =>
+      (!filterText || m.title.toLowerCase().includes(filterText)) &&
+      (installedTypeFilter === 'all' || m.projectType === installedTypeFilter)
+  );
+}
+
+function updateSelectAllHeader(filtered) {
+  const selectedCount = filtered.filter((m) => selectedContentFilenames.has(m.filename)).length;
+  installedSelectAll.checked = filtered.length > 0 && selectedCount === filtered.length;
+  installedSelectAll.indeterminate = selectedCount > 0 && selectedCount < filtered.length;
+}
+
+function updateBulkActionBar() {
+  const n = selectedContentFilenames.size;
+  bulkActionBar.classList.toggle('hidden', n === 0);
+  bulkSelectedCount.textContent = `${n} selected`;
+}
+
+installedSelectAll.addEventListener('change', () => {
+  const filtered = getFilteredInstalledMods();
+  filtered.forEach((m) => {
+    if (installedSelectAll.checked) selectedContentFilenames.add(m.filename);
+    else selectedContentFilenames.delete(m.filename);
+  });
+  renderInstalledTable();
+});
+
+// Flips only the selected items that aren't already in the target state -
+// toggleMod (mods:toggle in main.js) flips a file's .disabled suffix each
+// call, it doesn't take an explicit desired state.
+async function bulkSetEnabled(enable) {
+  const targets = installedModsCache.filter((m) => selectedContentFilenames.has(m.filename) && m.enabled !== enable);
+  for (const m of targets) {
+    await window.mc.toggleMod(activeInstanceId, m.filename);
+  }
+  selectedContentFilenames.clear();
+  await loadInstalledMods();
+  if (targets.length) toast(`${enable ? 'Enabled' : 'Disabled'} ${targets.length} item${targets.length === 1 ? '' : 's'}.`, 'success');
+}
+
+bulkEnableBtn.addEventListener('click', () => bulkSetEnabled(true));
+bulkDisableBtn.addEventListener('click', () => bulkSetEnabled(false));
+
+bulkDeleteBtn.addEventListener('click', async () => {
+  const targets = installedModsCache.filter((m) => selectedContentFilenames.has(m.filename));
+  if (!targets.length) return;
+  const ok = await confirmDialog({
+    title: 'Remove content',
+    body: `Remove ${targets.length} item${targets.length === 1 ? '' : 's'} from this instance?`,
+    confirmLabel: 'Remove',
+  });
+  if (!ok) return;
+  for (const m of targets) {
+    await window.mc.removeMod(activeInstanceId, m.filename);
+  }
+  selectedContentFilenames.clear();
+  await loadInstalledMods();
+  toast(`Removed ${targets.length} item${targets.length === 1 ? '' : 's'}.`, 'success');
+});
+
 uploadFilesBtn.addEventListener('click', async () => {
   uploadFilesBtn.disabled = true;
   try {
@@ -1367,12 +1609,21 @@ uploadFilesBtn.addEventListener('click', async () => {
 });
 
 function renderInstalledTable() {
-  const filterText = installedFilterInput.value.trim().toLowerCase();
-  const filtered = installedModsCache.filter(
-    (m) =>
-      (!filterText || m.title.toLowerCase().includes(filterText)) &&
-      (installedTypeFilter === 'all' || m.projectType === installedTypeFilter)
-  );
+  // Stale filename lingering after something got removed elsewhere -
+  // keep the Set from growing selections for content that no longer exists.
+  const cacheFilenames = new Set(installedModsCache.map((m) => m.filename));
+  Array.from(selectedContentFilenames).forEach((f) => {
+    if (!cacheFilenames.has(f)) selectedContentFilenames.delete(f);
+  });
+  // A pending anchor button for the popover is about to be torn down below.
+  closeContentRowMenu();
+
+  installedModsCache.sort((a, b) => {
+    const cmp = a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
+    return installedSort === 'name-desc' ? -cmp : cmp;
+  });
+
+  const filtered = getFilteredInstalledMods();
   installedTbody.innerHTML = '';
 
   // Three distinct states rather than one: nothing installed, nothing
@@ -1392,6 +1643,7 @@ function renderInstalledTable() {
   filtered.forEach((mod) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
+      <td class="ct-check"><input type="checkbox" class="ct-checkbox row-select" title="Select" ${selectedContentFilenames.has(mod.filename) ? 'checked' : ''} /></td>
       <td class="ct-project">
         <div class="icon-slot"></div>
         <div><div class="ct-title">${escapeHtml(mod.title)}</div><div class="ct-source">${mod.projectId ? 'Modrinth' : 'Local file'}${mod.projectType === 'resourcepack' ? ' · Resource Pack' : ''}</div></div>
@@ -1399,7 +1651,7 @@ function renderInstalledTable() {
       <td class="ct-version">${escapeHtml(inst ? inst.mcVersion : '')}</td>
       <td class="ct-actions">
         <label class="switch" title="${mod.enabled ? 'Disable' : 'Enable'}"><input type="checkbox" ${mod.enabled ? 'checked' : ''} /><span class="switch-slider"></span></label>
-        <button class="icon-btn danger" title="Remove">${TRASH_ICON}</button>
+        <button class="icon-btn ct-menu-btn" title="More actions">${MORE_ICON}</button>
       </td>
     `;
     fillIconSlot(tr.querySelector('.icon-slot'), mod.iconUrl);
@@ -1407,19 +1659,24 @@ function renderInstalledTable() {
       await window.mc.toggleMod(activeInstanceId, mod.filename);
       await loadInstalledMods();
     });
-    tr.querySelector('.icon-btn').addEventListener('click', async () => {
-      const ok = await confirmDialog({
-        title: 'Remove content',
-        body: `Remove "${mod.title}" from this instance?`,
-        confirmLabel: 'Remove',
-      });
-      if (!ok) return;
-      await window.mc.removeMod(activeInstanceId, mod.filename);
-      await loadInstalledMods();
-      toast(`Removed "${mod.title}".`, 'success');
+    tr.querySelector('.row-select').addEventListener('change', (e) => {
+      if (e.target.checked) selectedContentFilenames.add(mod.filename);
+      else selectedContentFilenames.delete(mod.filename);
+      updateSelectAllHeader(filtered);
+      updateBulkActionBar();
+    });
+    const menuBtn = tr.querySelector('.ct-menu-btn');
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wasOpenForThis = openContentMenuFilename === mod.filename;
+      closeContentRowMenu();
+      if (!wasOpenForThis) openContentRowMenu(menuBtn, mod);
     });
     installedTbody.appendChild(tr);
   });
+
+  updateSelectAllHeader(filtered);
+  updateBulkActionBar();
 }
 
 const updateAllLabel = updateAllBtn.querySelector('.btn-label');
@@ -1652,6 +1909,7 @@ async function openBrowsePage() {
   const hasInstances = instances.length > 0;
   browseNoInstances.classList.toggle('hidden', hasInstances);
   browseToolbar.classList.toggle('hidden', !hasInstances);
+  browseContentTypeTabs.classList.toggle('hidden', !hasInstances);
   browseResults.classList.toggle('hidden', !hasInstances);
   if (!hasInstances) {
     browseResults.innerHTML = '';
@@ -1692,6 +1950,25 @@ browseSearchInput.addEventListener('input', () => {
   browseSearchTimer = setTimeout(() => runBrowseSearch(true), 350);
 });
 
+// ---- Browse Mods content type: Mods / Resource Packs / Shaders ----
+browseContentTypeTabs.querySelectorAll('.seg-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    browseContentType = btn.dataset.ptype;
+    browseContentTypeTabs.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('active', b === btn));
+    browseSearchInput.placeholder =
+      browseContentType === 'resourcepack'
+        ? 'Search resource packs on Modrinth...'
+        : browseContentType === 'shader'
+        ? 'Search shader packs on Modrinth...'
+        : 'Search all of Modrinth...';
+    runBrowseSearch(true);
+  });
+});
+
+function browseContentTypeLabel() {
+  return browseContentType === 'resourcepack' ? 'resource packs' : browseContentType === 'shader' ? 'shaders' : 'mods';
+}
+
 async function runBrowseSearch(reset) {
   const targetId = browseTargetSelect.value;
   if (!targetId) return;
@@ -1710,7 +1987,7 @@ async function runBrowseSearch(reset) {
     const page = await window.mc.searchMods(targetId, browseQuery, {
       limit: PAGE_SIZE,
       offset: browseOffset,
-      projectType: 'mod',
+      projectType: browseContentType,
     });
     browseTotal = page.total;
     lastBrowseResults = reset ? page.hits : [...lastBrowseResults, ...page.hits];
@@ -1734,7 +2011,7 @@ function renderBrowseResults() {
   if (!lastBrowseResults.length) {
     const p = document.createElement('p');
     p.className = 'muted empty-note';
-    p.textContent = 'No mods matched that search.';
+    p.textContent = `No ${browseContentTypeLabel()} matched that search.`;
     browseResults.appendChild(p);
   }
   lastBrowseResults.forEach((mod, i) => {
@@ -1761,7 +2038,7 @@ function renderBrowseResults() {
         btn.disabled = true;
         btn.textContent = 'Installing…';
         try {
-          const result = await window.mc.installMod(targetId, mod, { projectType: 'mod' });
+          const result = await window.mc.installMod(targetId, mod, { projectType: browseContentType });
           browseInstalledProjectIds.add(mod.id);
           renderBrowseResults();
           const targetName = instances.find((i) => i.id === targetId)?.name || 'your instance';
@@ -1794,7 +2071,7 @@ async function runDiscoverModpackSearch(reset) {
   if (reset) {
     discoverModpackHits = [];
     discoverModpackOffset = 0;
-    discoverModpackResults.innerHTML = '<p class="muted empty-note">Loading modpacks…</p>';
+    discoverModpackResults.innerHTML = skeletonCards(6);
   }
   discoverModpackLoadMoreBtn.disabled = true;
   try {
@@ -2351,16 +2628,19 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ---- Settings page ----
-saveSettingsBtn.addEventListener('click', async () => {
+async function saveJavaAndMemorySettings() {
   const patch = {
     minMemoryMb: parseInt(settingMinMem.value, 10) || 2048,
     maxMemoryMb: parseInt(settingMaxMem.value, 10) || 4096,
     javaPath: settingJava.value.trim(),
+    jvmArgs: settingJvmArgs.value.trim(),
   };
   currentSettings = { ...currentSettings, ...(await window.mc.setSettings(patch)) };
   settingsSaved.classList.remove('hidden');
   setTimeout(() => settingsSaved.classList.add('hidden'), 2000);
-});
+}
+saveSettingsBtn.addEventListener('click', saveJavaAndMemorySettings);
+saveSettingsBtnJava.addEventListener('click', saveJavaAndMemorySettings);
 
 // ---- Appearance & behavior: applied live and saved immediately on click,
 // unlike the Java/Memory fields above which need an explicit Save. ----
@@ -2374,6 +2654,14 @@ function applyAppearanceSettings(settings) {
   homeHeroLogo.src = `assets/logos/logo-${accent}.png`;
   sidebarFootLogo.src = `assets/logos/logo-${accent}.png`;
   window.mc.setAppIcon(accent);
+
+  // Basic (letter) instance swatches derive their color from the accent, so
+  // repaint every place one appears now that the accent just changed.
+  renderRailInstances();
+  renderInstanceGrid();
+  loadRecentActivity();
+  const inst = currentInstance();
+  if (inst) applyInstanceIcon(instanceIconLg, inst);
 }
 
 function renderSettingsControls(settings) {
@@ -2418,6 +2706,57 @@ settingMinimizeOnPlay.addEventListener('change', () => saveAppearancePatch({ min
 settingConfirmStop.addEventListener('change', () => saveAppearancePatch({ confirmStopGame: settingConfirmStop.checked }));
 settingAlwaysOnTop.addEventListener('change', () => saveAppearancePatch({ alwaysOnTop: settingAlwaysOnTop.checked }));
 settingAutoUpdate.addEventListener('change', () => saveAppearancePatch({ autoCheckUpdates: settingAutoUpdate.checked }));
+
+// ---- Settings nav: categorized sidebar + content, like a real app's
+// preferences window rather than one long scrolling page. ----
+function showSettingsTab(tab) {
+  settingsNavItems.forEach((btn) => btn.classList.toggle('active', btn.dataset.settingsTab === tab));
+  settingsTabs.forEach((el) => el.classList.toggle('active', el.dataset.settingsContent === tab));
+  if (tab === 'accounts') renderAccountList(settingsAccountList, { includeAddButton: false });
+  if (tab === 'privacy') loadSettingsDataPath();
+  if (tab === 'resources') loadSettingsResourceUsage();
+}
+settingsNavItems.forEach((btn) => {
+  btn.addEventListener('click', () => showSettingsTab(btn.dataset.settingsTab));
+});
+
+settingsSignoutBtn.addEventListener('click', () => logoutBtn.click());
+settingsAddAccountBtn.addEventListener('click', () => addAnotherAccountFlow(settingsAddAccountBtn, () => renderAccountList(settingsAccountList, { includeAddButton: false })));
+
+async function loadSettingsDataPath() {
+  settingsDataPath.textContent = await window.mc.getUserDataPath();
+}
+settingsOpenDataBtn.addEventListener('click', async () => window.mc.openPath(await window.mc.getUserDataPath()));
+
+function formatBytes(bytes) {
+  if (!bytes) return '0 MB';
+  const mb = bytes / (1024 * 1024);
+  return mb < 1024 ? `${mb.toFixed(0)} MB` : `${(mb / 1024).toFixed(2)} GB`;
+}
+
+async function loadSettingsResourceUsage() {
+  settingsResourceTotal.textContent = 'Calculating disk usage...';
+  settingsResourceTbody.innerHTML = '';
+  try {
+    const usage = await window.mc.getInstancesDiskUsage();
+    const total = usage.reduce((sum, u) => sum + u.bytes, 0);
+    settingsResourceTotal.textContent = `${formatBytes(total)} total across ${usage.length} instance${usage.length === 1 ? '' : 's'}.`;
+    usage
+      .sort((a, b) => b.bytes - a.bytes)
+      .forEach((u) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="ct-title">${escapeHtml(u.name)}</td><td class="ct-version">${formatBytes(u.bytes)}</td>`;
+        settingsResourceTbody.appendChild(tr);
+      });
+  } catch (err) {
+    settingsResourceTotal.textContent = `Couldn't calculate disk usage: ${err.message || err}`;
+  }
+}
+settingsRefreshResourcesBtn.addEventListener('click', loadSettingsResourceUsage);
+settingsOpenInstancesBtn.addEventListener('click', async () => {
+  const dataPath = await window.mc.getUserDataPath();
+  window.mc.openPath(`${dataPath}\\instances`);
+});
 
 // ---- Easter egg: 1/100 chance an elephant wanders across the login screen ----
 if (Math.random() < 0.01) {

@@ -1,6 +1,6 @@
 {
   "name": "camel-launcher",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Camel Launcher - a custom Minecraft launcher with a built-in Modrinth mod browser",
   "main": "main.js",
   "scripts": {
@@ -52,8 +52,9 @@
     },
     "publish": [
       {
-        "provider": "generic",
-        "url": "https://example.com/camel-launcher-updates/"
+        "provider": "github",
+        "owner": "Camells1",
+        "repo": "Camel-Launcher"
       }
     ]
   }

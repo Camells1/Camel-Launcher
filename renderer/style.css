@@ -441,6 +441,7 @@ h3.display { font-size: 15px; margin: 0 0 4px; }
 .btn.small  { padding: 7px 14px; font-size: 12px; gap: 6px; }
 .btn.tiny   { padding: 5px 12px; font-size: 11.5px; gap: 5px; }
 .btn.block  { width: 100%; }
+.bug-report-btn { margin-top: 14px; }
 
 .btn-icon { width: 15px; height: 15px; flex-shrink: 0; }
 .btn.large .btn-icon { width: 17px; height: 17px; }
@@ -699,6 +700,34 @@ html[data-accent="mauve"] .app-atmosphere .space-backdrop   { display: block; }
 .volcano-backdrop .embers rect { animation: driftUp 3.6s ease-in infinite; animation-delay: var(--d, 0s); }
 .ocean-backdrop .bubbles rect { animation: driftUp 5.2s ease-in infinite; animation-delay: var(--d, 0s); }
 .space-backdrop .stars rect { fill: #ffeccb; animation: twinkle 4.5s ease-in-out infinite; animation-delay: var(--d, 0s); }
+
+/* ---- Extra life added to each biome scene: vines, birds, smoke, fish, seaweed, shooting stars ---- */
+.jungle-backdrop .vine { animation: gentleSway 4s ease-in-out infinite; animation-delay: var(--sway-d, 0s); transform-origin: top center; }
+.jungle-backdrop .jungle-bird { animation: birdBob 2.4s ease-in-out infinite; transform-origin: center; }
+@keyframes gentleSway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+@keyframes birdBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+.volcano-backdrop .smoke ellipse { animation: smokeDrift 6s ease-in infinite; animation-delay: var(--d, 0s); transform-origin: center; }
+@keyframes smokeDrift {
+  0%   { transform: translateY(0) scale(1); opacity: 0.5; }
+  100% { transform: translateY(-60px) scale(1.6); opacity: 0; }
+}
+
+.ocean-backdrop .fish { animation: fishSwim 22s linear infinite; }
+.ocean-backdrop .fish-a { animation-duration: 26s; }
+.ocean-backdrop .fish-b { animation-duration: 19s; animation-delay: -6s; }
+@keyframes fishSwim { from { transform: translateX(-60px); } to { transform: translateX(860px); } }
+.ocean-backdrop .seaweed path { animation: gentleSway 3.2s ease-in-out infinite; transform-origin: bottom center; }
+.ocean-backdrop .seaweed path:nth-child(2) { animation-delay: 0.6s; }
+.ocean-backdrop .seaweed path:nth-child(3) { animation-delay: 1.2s; }
+
+.space-backdrop .shooting-star { animation: shootingStar 7s ease-in infinite; animation-delay: 2s; opacity: 0; }
+@keyframes shootingStar {
+  0%   { transform: translate(-100px, 0) rotate(18deg); opacity: 0; }
+  4%   { opacity: 1; }
+  18%  { transform: translate(500px, 160px) rotate(18deg); opacity: 0; }
+  100% { opacity: 0; }
+}
 
 .heat-haze {
   position: absolute;
@@ -1306,9 +1335,55 @@ html[data-theme="light"] .app-atmosphere::after {
    ========================================================================== */
 
 .settings-panel { max-width: 520px; padding: 26px 28px; margin-bottom: 18px; }
-.settings-panel .field-label { display: block; margin: 18px 0 8px; }
-.settings-panel .field-label:first-of-type { margin-top: 0; }
+.settings-tab .field-label { display: block; margin: 18px 0 8px; }
+.settings-tab .field-label:first-of-type { margin-top: 0; }
 .settings-actions { display: flex; align-items: center; gap: 14px; margin-top: 6px; }
+
+/* ==========================================================================
+   SETTINGS — categorized sidebar + content layout
+   ========================================================================== */
+.settings-layout { display: flex; gap: 28px; align-items: flex-start; max-width: 900px; }
+.settings-nav { width: 210px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px; }
+.settings-nav-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin: 18px 0 6px;
+  padding: 0 12px;
+}
+.settings-nav-label:first-child { margin-top: 0; }
+.settings-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--r-md);
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--t-fast) ease, color var(--t-fast) ease;
+}
+.settings-nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+.settings-nav-item:hover { background: var(--sand-800); color: var(--text); }
+.settings-nav-item.active { background: var(--accent-soft); color: var(--accent-hi); }
+
+.settings-content { flex: 1; min-width: 0; padding-bottom: 40px; }
+.settings-tab { display: none; animation: tabIn 0.22s ease both; }
+.settings-tab.active { display: block; }
+.settings-tab h3 { margin-bottom: 4px; }
+.settings-tab-sub { max-width: 56ch; margin: 0 0 20px; }
+
+.settings-profile-card { display: flex; align-items: center; gap: 14px; margin: 4px 0 18px; }
+.avatar-slot.lg { width: 56px; height: 56px; }
+.settings-profile-name { font-size: 15px; font-weight: 700; }
+#settings-account-list.account-list { display: flex; flex-direction: column; gap: 4px; padding: 8px; margin-bottom: 16px; }
 
 .settings-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; }
 .settings-toggle-row .muted.small { margin: 3px 0 0; }
@@ -1365,6 +1440,13 @@ html[data-theme="light"] .app-atmosphere::after {
 .account-sub { font-size: 10.5px; color: var(--text-dim); }
 
 .status-card { display: flex; align-items: center; gap: 9px; padding: 11px 14px; }
+
+.stats-card { padding: 4px 14px; display: flex; flex-direction: column; }
+.stat-row { display: flex; align-items: center; gap: 9px; padding: 10px 0; }
+.stat-row + .stat-row { border-top: 1px solid var(--hairline); }
+.stat-row svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--accent); }
+.stat-label { flex: 1; font-size: 12px; color: var(--text-muted); }
+.stat-value { font-size: 13px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
 .status-dot {
   width: 9px;
   height: 9px;
@@ -1672,3 +1754,112 @@ html[data-theme="light"] .app-atmosphere::after {
   .search-field input { width: 190px; }
   .search-field.wide input { width: 220px; }
 }
+
+/* ==========================================================================
+   CONTENT TAB — bulk select, sort, per-row overflow menu
+   ========================================================================== */
+
+/* Custom round checkbox (row-select + header select-all), matching the
+   recessed-well look of inputs/selects rather than a bare browser checkbox. */
+.ct-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  flex-shrink: 0;
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  background: var(--well);
+  border: 1px solid var(--sand-600);
+  border-radius: var(--r-sm);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  accent-color: var(--accent);
+  transition: background var(--t-fast) ease, border-color var(--t-fast) ease, box-shadow var(--t-fast) ease;
+}
+.ct-checkbox:hover { border-color: var(--accent-lo); }
+.ct-checkbox:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 2px; }
+.ct-checkbox:checked,
+.ct-checkbox:indeterminate {
+  background: var(--accent);
+  border-color: var(--accent-lo);
+  box-shadow: var(--shadow-sm);
+}
+.ct-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid #2b1608;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.ct-checkbox:indeterminate::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 7px;
+  width: 8px;
+  height: 2px;
+  background: #2b1608;
+  border-radius: 1px;
+}
+
+.ct-check-head, .ct-check { width: 40px; padding-right: 0 !important; }
+
+/* Bulk action bar - sits above the table, only shown while 1+ rows are
+   selected (toggled via the shared .hidden utility). */
+.bulk-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 940px;
+  padding: 10px 16px;
+  margin-bottom: 14px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-lo);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  animation: tabIn 0.18s ease both;
+}
+.bulk-count { font-size: 12.5px; font-weight: 700; color: var(--accent-hi); }
+
+/* Per-row "more actions" popover - a single shared element appended to
+   <body> and positioned with fixed coordinates in JS (see contentRowMenu in
+   renderer.js), so it always escapes .table-wrap's overflow:hidden instead
+   of being clipped for rows near the bottom of a long list. */
+.ct-menu-dropdown {
+  position: fixed;
+  min-width: 190px;
+  background: var(--sand-800);
+  border: 1px solid var(--sand-600);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 300;
+  animation: tabIn 0.14s ease both;
+}
+.ct-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--t-fast) ease, color var(--t-fast) ease;
+}
+.ct-menu-item:hover { background: var(--accent-soft); color: var(--accent-hi); }
+.ct-menu-item.danger:hover { background: var(--danger-soft); color: var(--danger-hi); }

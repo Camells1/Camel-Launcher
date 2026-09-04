@@ -15,6 +15,7 @@ const DEFAULT_SETTINGS = {
   alwaysOnTop: false,
   autoCheckUpdates: true,
   confirmStopGame: true,
+  jvmArgs: '',
 };
 
 class JsonStore {

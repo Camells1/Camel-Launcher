@@ -659,6 +659,31 @@ function registerIpc() {
   ipcMain.handle('window:close', () => mainWindow.close());
   ipcMain.handle('window:isMaximized', () => mainWindow.isMaximized());
 
+  // ---- Data & Privacy / Resource management ----
+  ipcMain.handle('app:getUserDataPath', async () => app.getPath('userData'));
+
+  function folderSizeBytes(dir) {
+    let total = 0;
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return 0;
+    }
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) total += folderSizeBytes(full);
+      else {
+        try { total += fs.statSync(full).size; } catch { /* file vanished mid-scan, skip */ }
+      }
+    }
+    return total;
+  }
+
+  ipcMain.handle('instances:diskUsage', async () => {
+    return instances.list().map((inst) => ({ id: inst.id, name: inst.name, bytes: folderSizeBytes(instances.folder(inst.id)) }));
+  });
+
   ipcMain.handle('shell:openExternal', async (_e, url) => {
     if (/^https:\/\//.test(url)) await shell.openExternal(url);
   });
