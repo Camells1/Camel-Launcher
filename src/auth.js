@@ -63,19 +63,31 @@ class AuthManager {
 
   /** Pops an Electron login window, adds the account, and makes it active. */
   async login(parentWindow) {
-    const xbox = await this.authManager.launch('electron', {
-      parent: parentWindow,
-      width: 520,
-      height: 700,
-    });
-    const mc = await xbox.getMinecraft();
-    if (!mc.profile || !mc.profile.name) {
-      throw new Error('This Microsoft account does not own Minecraft.');
+    try {
+      const xbox = await this.authManager.launch('electron', {
+        parent: parentWindow,
+        width: 520,
+        height: 700,
+      });
+      const mc = await xbox.getMinecraft();
+      if (!mc.profile || !mc.profile.name) {
+        throw new Error('This Microsoft account does not own Minecraft.');
+      }
+      const account = toAccountRecord(mc, xbox);
+      this.upsertAccount(account);
+      this.accountStore.set('activeUuid', account.uuid);
+      return account;
+    } catch (err) {
+      // Same non-Error-throw quirk handled in refreshOne() below, but here it
+      // must become a real Error - this one crosses the IPC boundary straight
+      // to the login screen, and a plain object shows up there as the useless
+      // literal string "[object Object]".
+      if (err instanceof Error) throw err;
+      if (isRejectedByAuthServer(err)) {
+        throw new Error('Microsoft rejected this sign-in. Make sure this account owns Minecraft, then try again.');
+      }
+      throw new Error("Couldn't reach Microsoft's sign-in servers. Check your internet connection and try again.");
     }
-    const account = toAccountRecord(mc, xbox);
-    this.upsertAccount(account);
-    this.accountStore.set('activeUuid', account.uuid);
-    return account;
   }
 
   /** Tries to silently refresh one saved account. Returns the refreshed record, or null. */
