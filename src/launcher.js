@@ -42,28 +42,25 @@ function normalizeLoader(loader) {
   return 'vanilla';
 }
 
-/** "1.21.4" -> [1, 21, 4], "1.8" -> [1, 8, 0]. Anything else (snapshots, old_beta ids) -> null. */
-function parseMcVersion(id) {
-  const m = /^1\.(\d+)(?:\.(\d+))?$/.exec(id);
-  if (!m) return null;
-  return [1, parseInt(m[1], 10), m[2] ? parseInt(m[2], 10) : 0];
-}
-function compareMcVersion(a, b) {
-  for (let i = 0; i < 3; i++) if (a[i] !== b[i]) return a[i] - b[i];
-  return 0;
-}
-
 let versionListCache = null;
-/** Every official release from 1.8 through the latest, newest first — for the version picker. */
+/**
+ * Every official release from 1.8 through the latest, newest first — for the
+ * version picker. Ordered by Mojang's own `releaseTime` rather than parsing
+ * the id as a number: Mojang dropped the "1.x" scheme entirely partway
+ * through 2026 in favor of year-based ids ("26.1", "26.2", ...), so any
+ * fixed id format we hardcode here is one scheme change away from silently
+ * dropping the newest versions again. releaseTime sorts correctly across
+ * however many numbering schemes Mojang has used.
+ */
 async function listMinecraftVersions() {
   if (!versionListCache) {
     const list = await getVersionList();
-    const MIN_VERSION = [1, 8, 0];
-    versionListCache = list.versions
-      .filter((v) => v.type === 'release')
-      .map((v) => ({ id: v.id, parsed: parseMcVersion(v.id) }))
-      .filter((v) => v.parsed && compareMcVersion(v.parsed, MIN_VERSION) >= 0)
-      .sort((a, b) => compareMcVersion(b.parsed, a.parsed))
+    const releases = list.versions.filter((v) => v.type === 'release');
+    const oldest = releases.find((v) => v.id === '1.8');
+    const cutoff = oldest ? new Date(oldest.releaseTime).getTime() : 0;
+    versionListCache = releases
+      .filter((v) => new Date(v.releaseTime).getTime() >= cutoff)
+      .sort((a, b) => new Date(b.releaseTime) - new Date(a.releaseTime))
       .map((v) => v.id);
   }
   return versionListCache;
