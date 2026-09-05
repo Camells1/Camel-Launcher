@@ -2,6 +2,11 @@ const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
+// Lets the renderer force a JS heap GC pass (see setLowPowerMode below) when
+// the game is running and the launcher window is out of view - must be set
+// before the app is ready.
+app.commandLine.appendSwitch('js-flags', '--expose-gc');
+
 app.setName('Camel Launcher');
 
 const { createStores, JsonStore } = require('./src/store');
@@ -37,6 +42,27 @@ let instances;
 let gameProcess = null;
 let playingInstanceId = null;
 let launchStartedAt = 0;
+let lowPowerMode = false;
+
+// While a game is running and the launcher window is out of view (minimized
+// or just not the focused window), there's no reason for it to keep repainting
+// its animated backdrop or holding onto every bit of renderer memory it had
+// while actively being looked at. Dropping into "low power" pauses that
+// rendering work and asks V8 to reclaim what it can; bringing the window back
+// - or the game exiting - restores everything exactly as it was, since this
+// only ever hides/pauses existing UI rather than tearing any of it down.
+function setLowPowerMode(enabled) {
+  if (enabled === lowPowerMode || !mainWindow) return;
+  lowPowerMode = enabled;
+  mainWindow.webContents.send('perf:lowPower', enabled);
+  mainWindow.webContents.setFrameRate(enabled ? 3 : 60);
+  if (enabled) {
+    setTimeout(() => {
+      if (!lowPowerMode) return; // mode may have flipped back before this fired
+      mainWindow.webContents.executeJavaScript('window.gc && window.gc();').catch(() => {});
+    }, 400);
+  }
+}
 
 function requireInstance(id) {
   const inst = instances.get(id);
@@ -91,6 +117,14 @@ function createWindow() {
   const sendState = () => mainWindow.webContents.send('window:state', { maximized: mainWindow.isMaximized() });
   mainWindow.on('maximize', sendState);
   mainWindow.on('unmaximize', sendState);
+
+  // Only actually drop into low power while a game is running - otherwise
+  // clicking away to another app while just browsing mods would pause the
+  // launcher's own UI for no reason.
+  mainWindow.on('blur', () => { if (gameProcess) setLowPowerMode(true); });
+  mainWindow.on('minimize', () => { if (gameProcess) setLowPowerMode(true); });
+  mainWindow.on('focus', () => setLowPowerMode(false));
+  mainWindow.on('restore', () => setLowPowerMode(false));
 }
 
 // ---- Mod installation (with required-dependency auto-resolution) ----
@@ -622,6 +656,7 @@ function registerIpc() {
     child.on('exit', (code, signal) => {
       gameProcess = null;
       playingInstanceId = null;
+      setLowPowerMode(false);
       instances.addPlaytime(instanceId, Date.now() - launchStartedAt);
       let crash = null;
       if (code) {
@@ -633,6 +668,7 @@ function registerIpc() {
     child.on('error', (err) => {
       gameProcess = null;
       playingInstanceId = null;
+      setLowPowerMode(false);
       mainWindow.webContents.send('game:exit', { instanceId, code: -1, signal: null, error: err.message });
     });
 

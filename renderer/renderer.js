@@ -29,6 +29,14 @@ function updateMaxIcon(maximized) {
 window.mc.onWindowState(({ maximized }) => updateMaxIcon(maximized));
 window.mc.isWindowMaximized().then(updateMaxIcon);
 
+// Main process toggles this while a game is running and the window is out of
+// view - see setLowPowerMode() in main.js. Pausing the animated backdrop here
+// is the actual saving; window.gc() (if the low-power flag needs it) is
+// triggered from the main process itself via executeJavaScript.
+window.mc.onLowPowerMode((enabled) => {
+  document.documentElement.classList.toggle('low-power', enabled);
+});
+
 const loginScreen = document.getElementById('login-screen');
 const appScreen = document.getElementById('app-screen');
 const loginBtn = document.getElementById('login-btn');

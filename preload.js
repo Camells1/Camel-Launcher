@@ -85,6 +85,7 @@ contextBridge.exposeInMainWorld('mc', {
   closeWindow: () => ipcRenderer.invoke('window:close'),
   isWindowMaximized: () => ipcRenderer.invoke('window:isMaximized'),
   onWindowState: (cb) => ipcRenderer.on('window:state', (_e, payload) => cb(payload)),
+  onLowPowerMode: (cb) => ipcRenderer.on('perf:lowPower', (_e, enabled) => cb(enabled)),
 
   checkForUpdates: () => ipcRenderer.invoke('update:check'),
   onUpdateStatus: (cb) => ipcRenderer.on('update:status', (_e, payload) => cb(payload)),

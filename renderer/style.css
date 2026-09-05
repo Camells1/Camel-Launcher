@@ -832,6 +832,14 @@ html[data-theme="light"] .app-atmosphere::after {
   background: linear-gradient(180deg, rgba(255, 250, 240, 0.5) 0%, rgba(255, 250, 240, 0.68) 45%, rgba(255, 250, 240, 0.82) 100%);
 }
 
+/* While a game is running and this window is minimized/unfocused, there's no
+   point spending CPU/GPU repainting an animated scene nobody can see - the
+   backdrop is the single most continuously-animated thing in the whole app.
+   Everything here is a pure visibility/animation toggle, nothing is torn
+   down, so returning to normal is instant and loses no state. */
+html.low-power .app-atmosphere { display: none; }
+html.low-power * { animation-play-state: paused !important; }
+
 .icon-rail {
   position: relative;
   z-index: 2;
