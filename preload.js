@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld('mc', {
   setSettings: (patch) => ipcRenderer.invoke('settings:set', patch),
 
   listInstances: () => ipcRenderer.invoke('instances:list'),
+  listMinecraftVersions: () => ipcRenderer.invoke('versions:listMinecraft'),
   createInstance: (opts) => ipcRenderer.invoke('instances:create', opts),
   renameInstance: (id, name) => ipcRenderer.invoke('instances:rename', id, name),
   updateInstance: (id, patch) => ipcRenderer.invoke('instances:update', id, patch),

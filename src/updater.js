@@ -172,10 +172,13 @@ async function checkForUpdates() {
 }
 
 /**
- * Register update IPC and kick off one silent check shortly after the UI loads.
+ * Register update IPC, and — unless the user turned automatic checks off —
+ * kick off one silent check shortly after the UI loads. The IPC handler is
+ * always registered regardless of `autoCheck`: the Settings "Check for
+ * Updates" button must keep working even when automatic checks are disabled.
  * Safe to call once from app startup; failures here never break the app.
  */
-function initAutoUpdater(win) {
+function initAutoUpdater(win, { autoCheck = true } = {}) {
   targetWindow = win;
 
   try {
@@ -183,6 +186,8 @@ function initAutoUpdater(win) {
   } catch (err) {
     logError('could not register update:check IPC:', err && err.message);
   }
+
+  if (!autoCheck) return;
 
   const start = () => setTimeout(() => { checkForUpdates(); }, STARTUP_CHECK_DELAY_MS);
 

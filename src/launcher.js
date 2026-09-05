@@ -42,6 +42,33 @@ function normalizeLoader(loader) {
   return 'vanilla';
 }
 
+/** "1.21.4" -> [1, 21, 4], "1.8" -> [1, 8, 0]. Anything else (snapshots, old_beta ids) -> null. */
+function parseMcVersion(id) {
+  const m = /^1\.(\d+)(?:\.(\d+))?$/.exec(id);
+  if (!m) return null;
+  return [1, parseInt(m[1], 10), m[2] ? parseInt(m[2], 10) : 0];
+}
+function compareMcVersion(a, b) {
+  for (let i = 0; i < 3; i++) if (a[i] !== b[i]) return a[i] - b[i];
+  return 0;
+}
+
+let versionListCache = null;
+/** Every official release from 1.8 through the latest, newest first — for the version picker. */
+async function listMinecraftVersions() {
+  if (!versionListCache) {
+    const list = await getVersionList();
+    const MIN_VERSION = [1, 8, 0];
+    versionListCache = list.versions
+      .filter((v) => v.type === 'release')
+      .map((v) => ({ id: v.id, parsed: parseMcVersion(v.id) }))
+      .filter((v) => v.parsed && compareMcVersion(v.parsed, MIN_VERSION) >= 0)
+      .sort((a, b) => compareMcVersion(b.parsed, a.parsed))
+      .map((v) => v.id);
+  }
+  return versionListCache;
+}
+
 const NEOFORGE_VERSIONS_URL =
   'https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge';
 
@@ -69,9 +96,48 @@ async function pickNeoforgeVersion(mcVersion) {
   return matches[matches.length - 1];
 }
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// xmcl's aggregate download errors build their own `.message` by concatenating
+// every nested failure's stack trace, so surfacing `err.message` straight to
+// the UI dumps a wall of repeated "DownloadAggregateError: ..." text. Collapse
+// it into one readable sentence instead, after retries are exhausted.
+function describeInstallError(err, what) {
+  const name = String(err && err.name);
+  if (name !== 'AggregateError' && name !== 'DownloadAggregateError') return err;
+
+  const leaves = [];
+  (function collect(e, depth) {
+    if (depth > 10 || !e) return;
+    if (Array.isArray(e.errors) && e.errors.length) e.errors.forEach((sub) => collect(sub, depth + 1));
+    else leaves.push(e);
+  })(err, 0);
+
+  const hosts = new Set();
+  for (const e of leaves) {
+    const url = e.url || (e.request && e.request.url) || (e.options && e.options.url);
+    if (url) {
+      try {
+        hosts.add(new URL(url).host);
+      } catch {
+        /* not a URL, skip */
+      }
+    }
+  }
+  const where = hosts.size ? ` (${[...hosts].join(', ')})` : '';
+  return new Error(
+    `Couldn't download some ${what}${where} after several retries. This is usually a temporary connection issue — check your internet connection and try again.`
+  );
+}
+
 // Asset/library downloads occasionally hit transient network errors when
-// fetching thousands of files concurrently. xmcl skips files already on disk,
-// so retrying just re-fetches whatever failed instead of starting over.
+// fetching thousands of files concurrently (a CDN edge timing out or
+// resetting the connection for a handful of files). xmcl skips files already
+// on disk, so retrying just re-fetches whatever failed instead of starting
+// over. A short, growing delay between attempts matters here: retrying
+// instantly tends to land on the same unhealthy connection/route, while
+// waiting a couple seconds gives DNS/anycast a chance to hand back a
+// different, healthy edge server.
 async function withRetry(fn, attempts, onRetry) {
   let lastErr;
   for (let i = 0; i < attempts; i++) {
@@ -79,7 +145,10 @@ async function withRetry(fn, attempts, onRetry) {
       return await fn();
     } catch (err) {
       lastErr = err;
-      if (i < attempts - 1) onRetry(i + 1, err);
+      if (i < attempts - 1) {
+        onRetry(i + 1, err);
+        await sleep(Math.min(2000 * (i + 1), 8000));
+      }
     }
   }
   throw lastErr;
@@ -129,21 +198,29 @@ class GameLauncher {
     if (!versionMeta) throw new Error(`Unknown Minecraft version: ${mcVersion}`);
 
     onProgress(`Downloading Minecraft ${mcVersion}...`);
-    await withRetry(
-      () => install(versionMeta, this.folder),
-      3,
-      (attempt) => onProgress(`A few files failed to download, retrying (${attempt}/3)...`)
-    );
+    try {
+      await withRetry(
+        () => install(versionMeta, this.folder),
+        5,
+        (attempt) => onProgress(`A few files failed to download, retrying (${attempt}/5)...`)
+      );
+    } catch (err) {
+      throw describeInstallError(err, 'Minecraft files');
+    }
 
     const versionId = await this.installLoader(kind, mcVersion, onProgress, javaPath);
 
     onProgress(`Downloading ${loaderLabel(kind)} libraries...`);
     const resolved = await Version.parse(this.folder, versionId);
-    await withRetry(
-      () => installDependencies(resolved),
-      3,
-      (attempt) => onProgress(`A few libraries failed to download, retrying (${attempt}/3)...`)
-    );
+    try {
+      await withRetry(
+        () => installDependencies(resolved),
+        5,
+        (attempt) => onProgress(`A few libraries failed to download, retrying (${attempt}/5)...`)
+      );
+    } catch (err) {
+      throw describeInstallError(err, 'libraries');
+    }
 
     onProgress('Ready.');
     return resolved;
@@ -243,4 +320,12 @@ class GameLauncher {
   }
 }
 
-module.exports = { GameLauncher, LOADERS, LOADER_IDS, loaderLabel, normalizeLoader, splitJvmArgs };
+module.exports = {
+  GameLauncher,
+  LOADERS,
+  LOADER_IDS,
+  loaderLabel,
+  normalizeLoader,
+  splitJvmArgs,
+  listMinecraftVersions,
+};

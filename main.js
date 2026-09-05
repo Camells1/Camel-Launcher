@@ -12,7 +12,7 @@ app.setName('Camel Launcher');
 const { createStores, JsonStore } = require('./src/store');
 const { AuthManager } = require('./src/auth');
 const { InstanceManager } = require('./src/instances');
-const { GameLauncher, LOADERS, loaderLabel, normalizeLoader } = require('./src/launcher');
+const { GameLauncher, LOADERS, loaderLabel, normalizeLoader, listMinecraftVersions } = require('./src/launcher');
 const modrinth = require('./src/modrinth');
 const modpackDiscovery = require('./src/modpackDiscovery');
 const modrinthAppImport = require('./src/modrinthAppImport');
@@ -675,6 +675,8 @@ function registerIpc() {
     return true;
   });
 
+  ipcMain.handle('versions:listMinecraft', async () => listMinecraftVersions());
+
   ipcMain.handle('game:stop', async () => {
     if (gameProcess) gameProcess.kill();
     return true;
@@ -740,7 +742,7 @@ app.whenReady().then(() => {
   registerIpc();
   createWindow();
   mainWindow.setAlwaysOnTop(!!stores.settings.getAll().alwaysOnTop);
-  if (stores.settings.getAll().autoCheckUpdates !== false) initAutoUpdater(mainWindow);
+  initAutoUpdater(mainWindow, { autoCheck: stores.settings.getAll().autoCheckUpdates !== false });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

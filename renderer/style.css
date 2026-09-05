@@ -574,7 +574,7 @@ select:focus {
   color: var(--text-dim);
   margin-bottom: 6px;
 }
-.field input { display: block; width: 100%; border-radius: var(--r-sm); }
+.field input, .field select { display: block; width: 100%; border-radius: var(--r-sm); }
 .field-row { display: flex; gap: 14px; }
 .field-row .field { flex: 1; }
 

@@ -2341,14 +2341,38 @@ newInstanceSource.querySelectorAll('.seg-btn').forEach((btn) => {
   btn.addEventListener('click', () => setInstanceSource(btn.dataset.source));
 });
 
-function openModal() {
+// Cached across the whole session — the release list barely changes and every
+// modal open would otherwise re-fetch Mojang's manifest for nothing.
+let mcVersionsPromise = null;
+function getMcVersions() {
+  if (!mcVersionsPromise) {
+    mcVersionsPromise = window.mc.listMinecraftVersions().catch((err) => {
+      mcVersionsPromise = null;
+      throw err;
+    });
+  }
+  return mcVersionsPromise;
+}
+function populateVersionSelect(select, versions) {
+  const previous = select.value;
+  select.innerHTML = versions.map((v) => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+  if (previous && versions.includes(previous)) select.value = previous;
+}
+
+async function openModal() {
   modalName.value = '';
-  modalVersion.value = '1.21.1';
   modalError.textContent = '';
   setSelectedLoader((currentSettings && currentSettings.defaultLoader) || 'fabric');
   setInstanceSource('custom');
   modalOverlay.classList.remove('hidden');
   modalName.focus();
+  try {
+    const versions = await getMcVersions();
+    populateVersionSelect(modalVersion, versions);
+    populateVersionSelect(importVersion, versions);
+  } catch {
+    modalError.textContent = 'Could not load the Minecraft version list — check your connection.';
+  }
 }
 function closeModal() {
   if (modpackInstalling || importInstalling) return;
