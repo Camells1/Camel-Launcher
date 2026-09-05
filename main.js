@@ -522,60 +522,62 @@ function registerIpc() {
   ipcMain.handle('modrinthApp:listProfiles', async () => modrinthAppImport.listProfiles());
 
   ipcMain.handle('modrinthApp:import', async (_e, { name, mcVersion, loader }, profileName) => {
-    const { enabled, disabled } = modrinthAppImport.scanProfileMods(profileName);
-    if (!enabled.length && !disabled.length) throw new Error(`No mods found in the "${profileName}" profile.`);
+    const { enabled, disabled } = modrinthAppImport.scanProfileContent(profileName);
+    if (!enabled.length && !disabled.length) throw new Error(`No mods or resource packs found in the "${profileName}" profile.`);
 
     const send = (msg) => mainWindow.webContents.send('modrinthApp:progress', { msg });
     send('Creating instance...');
     const inst = instances.create({ name: name || profileName, mcVersion, loader: normalizeLoader(loader || 'fabric') });
 
     try {
-      send('Hashing local mod files...');
-      const hashToPath = new Map();
-      for (const filePath of enabled) {
-        hashToPath.set(await modrinthAppImport.sha1File(filePath), filePath);
+      send('Hashing local files...');
+      const hashToEntry = new Map();
+      for (const entry of enabled) {
+        hashToEntry.set(await modrinthAppImport.sha1File(entry.path), entry);
       }
 
-      send('Matching mods against Modrinth...');
+      send('Matching files against Modrinth...');
       let resolved = {};
       try {
-        resolved = await modrinthAppImport.resolveByHash([...hashToPath.keys()]);
+        resolved = await modrinthAppImport.resolveByHash([...hashToEntry.keys()]);
       } catch (err) {
         console.error('Modrinth hash lookup failed, falling back to raw file copies:', err.message);
       }
 
-      const destDir = launcherFor(inst.id).modsDir;
-      fs.mkdirSync(destDir, { recursive: true });
+      const launcher = launcherFor(inst.id);
+      const destDirFor = (type) => (type === 'resourcepack' ? launcher.folder.resourcepacks : launcher.modsDir);
+      fs.mkdirSync(launcher.modsDir, { recursive: true });
+      fs.mkdirSync(launcher.folder.resourcepacks, { recursive: true });
 
       let matchedCount = 0;
       let copiedCount = 0;
       const failed = [];
       let done = 0;
-      for (const [hash, filePath] of hashToPath) {
+      for (const [hash, entry] of hashToEntry) {
         done++;
-        const filename = path.basename(filePath);
+        const filename = path.basename(entry.path);
         const version = resolved[hash];
         if (version && version.project_id) {
-          send(`Installing ${filename} (${done}/${hashToPath.size})...`);
+          send(`Installing ${filename} (${done}/${hashToEntry.size})...`);
           try {
-            await installProject(inst.id, { id: version.project_id }, { projectType: 'mod' });
+            await installProject(inst.id, { id: version.project_id }, { projectType: entry.type });
             matchedCount++;
             continue;
           } catch (err) {
             failed.push({ filename, error: err.message });
-            // fall through to a raw copy so the mod still makes it across
+            // fall through to a raw copy so the file still makes it across
           }
         } else {
-          send(`Copying ${filename} (not on Modrinth) (${done}/${hashToPath.size})...`);
+          send(`Copying ${filename} (not on Modrinth) (${done}/${hashToEntry.size})...`);
         }
-        fs.copyFileSync(filePath, path.join(destDir, filename));
+        fs.copyFileSync(entry.path, path.join(destDirFor(entry.type), filename));
         copiedCount++;
       }
 
-      // Disabled mods are carried over inert, exactly as they were - no
+      // Disabled items are carried over inert, exactly as they were - no
       // network calls or metadata, just the same "off" state the source had.
-      for (const filePath of disabled) {
-        fs.copyFileSync(filePath, path.join(destDir, path.basename(filePath)));
+      for (const entry of disabled) {
+        fs.copyFileSync(entry.path, path.join(destDirFor(entry.type), path.basename(entry.path)));
       }
 
       return { instance: inst, matchedCount, copiedCount, disabledCount: disabled.length, failed };

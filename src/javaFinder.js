@@ -57,10 +57,21 @@ function findOnPath() {
   return isValidJava(fallback) ? fallback : null;
 }
 
+// electron-builder's extraResources ships our own copy of Java 21 at
+// resources/jre (see scripts/fetch-jre.js) so nobody has to install Java
+// themselves. process.resourcesPath always exists under Electron - in dev
+// (unpacked) it points at Electron's own resources dir, which naturally has
+// no "jre" folder, so this just falls through there instead of finding one.
+function findBundledJre() {
+  if (!process.resourcesPath) return null;
+  const candidate = path.join(process.resourcesPath, 'jre', 'bin', exeName());
+  return fs.existsSync(candidate) ? candidate : null;
+}
+
 /** Best-effort local Java discovery. Returns a path/command usable with spawn, or null. */
 function findJava(overridePath) {
   if (overridePath && fs.existsSync(overridePath)) return overridePath;
-  return findFromJavaHome() || findInWindowsInstallDirs() || findOnPath();
+  return findFromJavaHome() || findInWindowsInstallDirs() || findOnPath() || findBundledJre();
 }
 
 module.exports = { findJava, isValidJava };

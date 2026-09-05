@@ -14,7 +14,7 @@ function profilesRoot() {
   return path.join(os.homedir(), 'AppData', 'Roaming', 'ModrinthApp', 'profiles');
 }
 
-/** Every Modrinth App profile on this PC that has at least one mod jar. */
+/** Every Modrinth App profile on this PC that has at least one mod or resource pack. */
 function listProfiles() {
   const root = profilesRoot();
   let entries;
@@ -25,26 +25,40 @@ function listProfiles() {
   }
   return entries
     .map((d) => {
-      const { enabled, disabled } = scanProfileMods(d.name);
+      const { enabled, disabled } = scanProfileContent(d.name);
       return { name: d.name, modCount: enabled.length, disabledCount: disabled.length };
     })
     .filter((p) => p.modCount + p.disabledCount > 0)
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
-/** Absolute paths of a profile's enabled (.jar) and disabled (.jar.disabled) mod files. */
-function scanProfileMods(profileName) {
-  const modsDir = path.join(profilesRoot(), profileName, 'mods');
-  let files = [];
-  try {
-    files = fs.readdirSync(modsDir);
-  } catch {
-    return { enabled: [], disabled: [] };
+// Modrinth App lays a profile out just like a real .minecraft folder - mods
+// and resource packs each in their own subfolder, disabled ones renamed with
+// a ".disabled" suffix in place.
+const CONTENT_FOLDERS = [
+  { subdir: 'mods', ext: '.jar', type: 'mod' },
+  { subdir: 'resourcepacks', ext: '.zip', type: 'resourcepack' },
+];
+
+/** Every mod and resource pack file in a profile, tagged with its type and enabled state. */
+function scanProfileContent(profileName) {
+  const base = path.join(profilesRoot(), profileName);
+  const enabled = [];
+  const disabled = [];
+  for (const { subdir, ext, type } of CONTENT_FOLDERS) {
+    let files;
+    try {
+      files = fs.readdirSync(path.join(base, subdir));
+    } catch {
+      continue;
+    }
+    for (const f of files) {
+      const filePath = path.join(base, subdir, f);
+      if (f.endsWith(ext)) enabled.push({ path: filePath, type });
+      else if (f.endsWith(ext + '.disabled')) disabled.push({ path: filePath, type });
+    }
   }
-  return {
-    enabled: files.filter((f) => f.endsWith('.jar')).map((f) => path.join(modsDir, f)),
-    disabled: files.filter((f) => f.endsWith('.jar.disabled')).map((f) => path.join(modsDir, f)),
-  };
+  return { enabled, disabled };
 }
 
 function sha1File(filePath) {
@@ -69,4 +83,4 @@ async function resolveByHash(hashes) {
   return res.json(); // { [sha1]: versionObject }
 }
 
-module.exports = { profilesRoot, listProfiles, scanProfileMods, sha1File, resolveByHash };
+module.exports = { profilesRoot, listProfiles, scanProfileContent, sha1File, resolveByHash };

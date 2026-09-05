@@ -1,10 +1,11 @@
 {
   "name": "camel-launcher",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "description": "Camel Launcher - a custom Minecraft launcher with a built-in Modrinth mod browser",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "predist": "node scripts/fetch-jre.js",
     "dist": "electron-builder"
   },
   "keywords": [],
@@ -35,6 +36,12 @@
       "renderer/**/*",
       "build/icon.png",
       "build/icons/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "build/jre",
+        "to": "jre"
+      }
     ],
     "win": {
       "target": [
