@@ -40,8 +40,20 @@
     </div>
   </div>
 
+  <!-- ================= BOOT LOADING ================= -->
+  <!-- Shown first on every launch while init() confirms a saved sign-in is
+       still valid, so an already-signed-in user never sees the login form
+       flash before the app appears. -->
+  <div id="boot-loading-screen" class="screen">
+    <div class="boot-loading-card">
+      <img class="boot-loading-logo" id="boot-loading-logo" src="assets/logos/logo-ochre.png" alt="" />
+      <div class="progress-bar boot-loading-bar"><div class="progress-bar-fill"></div></div>
+      <p class="muted small" id="boot-loading-text">Signing you in…</p>
+    </div>
+  </div>
+
   <!-- ================= LOGIN ================= -->
-  <div id="login-screen" class="screen">
+  <div id="login-screen" class="screen hidden">
     <svg class="desert-backdrop" viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
         <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
@@ -1036,6 +1048,13 @@
                   <p class="muted small">Check once per launch. Only affects the installed (non-portable) build.</p>
                 </div>
                 <label class="switch"><input type="checkbox" id="setting-auto-update" /><span class="switch-slider"></span></label>
+              </div>
+              <div class="settings-toggle-row hidden" id="update-now-row">
+                <div>
+                  <span class="field-label" id="update-now-label">Update available</span>
+                  <p class="muted small" id="update-now-status">A newer version is ready to install.</p>
+                </div>
+                <button id="update-now-btn" class="btn secondary">Update now</button>
               </div>
             </div>
           </div>

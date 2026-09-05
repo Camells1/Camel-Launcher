@@ -776,6 +776,29 @@ html[data-accent="mauve"] .app-atmosphere .space-backdrop   { display: block; }
   border-radius: var(--r-xl);
   animation: cardRise 0.55s var(--ease-out) both;
 }
+
+#boot-loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #120e2b;
+}
+.boot-loading-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  animation: fadeIn 0.3s ease both;
+}
+.boot-loading-bar { width: 220px; }
+.boot-loading-bar .progress-bar-fill { width: 40%; }
+.boot-loading-logo {
+  width: 84px;
+  height: 84px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.4));
+  animation: heroFloat 5s ease-in-out infinite;
+}
 .login-brand { display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .login-card h1 { color: var(--text); }
 .subtitle { color: var(--text-muted); margin: 0 0 20px; font-size: 13px; }

@@ -2,6 +2,21 @@ const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
+// A single bad network response (a flaky CDN mid-download, a reset connection
+// during an update check) can throw from deep inside a library we don't
+// control - undici's HTTP/1.1 parser is a known source of these as a bare
+// assertion failure, not a normal rejected promise. Without a listener here,
+// Node treats that as fatal and kills the whole app out from under whoever's
+// mid-game-launch. Log it and keep running instead: the failing operation
+// (a download, a version check) simply fails/retries on its own rather than
+// taking the launcher down with it.
+process.on('uncaughtException', (err) => {
+  console.error('[fatal] uncaught exception (recovered, app keeps running):', (err && err.stack) || err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[fatal] unhandled rejection (recovered, app keeps running):', (reason && reason.stack) || reason);
+});
+
 // Lets the renderer force a JS heap GC pass (see setLowPowerMode below) when
 // the game is running and the launcher window is out of view - must be set
 // before the app is ready.

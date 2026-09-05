@@ -3,6 +3,7 @@ const titlebarStatus = document.getElementById('titlebar-status');
 const titlebarStatusName = document.getElementById('titlebar-status-name');
 const titlebarStopBtn = document.getElementById('titlebar-stop-btn');
 const titlebarLogo = document.getElementById('titlebar-logo');
+const bootLoadingLogo = document.getElementById('boot-loading-logo');
 const titlebarMinBtn = document.getElementById('titlebar-min-btn');
 const titlebarMaxBtn = document.getElementById('titlebar-max-btn');
 const titlebarCloseBtn = document.getElementById('titlebar-close-btn');
@@ -37,6 +38,7 @@ window.mc.onLowPowerMode((enabled) => {
   document.documentElement.classList.toggle('low-power', enabled);
 });
 
+const bootLoadingScreen = document.getElementById('boot-loading-screen');
 const loginScreen = document.getElementById('login-screen');
 const appScreen = document.getElementById('app-screen');
 const loginBtn = document.getElementById('login-btn');
@@ -168,6 +170,10 @@ const settingMinimizeOnPlay = document.getElementById('setting-minimize-on-play'
 const settingConfirmStop = document.getElementById('setting-confirm-stop');
 const settingAlwaysOnTop = document.getElementById('setting-always-on-top');
 const settingAutoUpdate = document.getElementById('setting-auto-update');
+const updateNowRow = document.getElementById('update-now-row');
+const updateNowLabel = document.getElementById('update-now-label');
+const updateNowBtn = document.getElementById('update-now-btn');
+const updateNowStatus = document.getElementById('update-now-status');
 const settingJvmArgs = document.getElementById('setting-jvm-args');
 const saveSettingsBtnJava = document.getElementById('save-settings-btn-java');
 const settingsNavItems = document.querySelectorAll('.settings-nav-item');
@@ -562,10 +568,12 @@ function paintCamelPixelArt() {
 }
 
 function showApp() {
+  bootLoadingScreen.classList.add('hidden');
   loginScreen.classList.add('hidden');
   appScreen.classList.remove('hidden');
 }
 function showLogin() {
+  bootLoadingScreen.classList.add('hidden');
   loginScreen.classList.remove('hidden');
   appScreen.classList.add('hidden');
 }
@@ -713,7 +721,16 @@ async function init() {
     // keep the built-in defaults
   }
 
-  const account = await window.mc.getAccount();
+  // The boot-loading screen is visible by default so an already-signed-in
+  // user never sees the login form flash while this resolves - but that
+  // means a failure here must still fall through to the login screen rather
+  // than leaving the loading screen stuck up with no way forward.
+  let account = null;
+  try {
+    account = await window.mc.getAccount();
+  } catch (err) {
+    console.error('Could not restore the saved sign-in:', err);
+  }
   await refreshAccountUi(account);
   if (!account) return;
 
@@ -2738,6 +2755,69 @@ settingMinimizeOnPlay.addEventListener('change', () => saveAppearancePatch({ min
 settingConfirmStop.addEventListener('change', () => saveAppearancePatch({ confirmStopGame: settingConfirmStop.checked }));
 settingAlwaysOnTop.addEventListener('change', () => saveAppearancePatch({ alwaysOnTop: settingAlwaysOnTop.checked }));
 settingAutoUpdate.addEventListener('change', () => saveAppearancePatch({ autoCheckUpdates: settingAutoUpdate.checked }));
+
+// "Update now" only ever appears once a newer version has actually been
+// found — nothing to show while you're already current. The automatic
+// startup check (gated by the toggle above) is what discovers updates;
+// electron-updater downloads them and the main process closes + relaunches
+// on its own once the download finishes (src/updater.js scheduleRestart).
+// This button just reflects that and offers a retry if the download errors.
+let updateInFlight = false;
+function setUpdateNowStatus(text, { busy = false } = {}) {
+  updateNowStatus.textContent = text;
+  updateNowBtn.disabled = busy;
+}
+function showUpdateNow(version) {
+  updateNowLabel.textContent = version ? `Update to ${version} available` : 'Update available';
+  updateNowRow.classList.remove('hidden');
+}
+function hideUpdateNow() {
+  updateNowRow.classList.add('hidden');
+}
+
+updateNowBtn.addEventListener('click', async () => {
+  if (updateInFlight) return;
+  updateInFlight = true;
+  setUpdateNowStatus('Checking for updates…', { busy: true });
+  try {
+    const result = await window.mc.checkForUpdates();
+    if (!result.ok || !result.updateAvailable) {
+      updateInFlight = false;
+      hideUpdateNow();
+    }
+    // Otherwise it's already downloading — the listeners below take it from here.
+  } catch (err) {
+    updateInFlight = false;
+    setUpdateNowStatus(`Couldn't check for updates: ${err.message || err}`);
+  }
+});
+
+window.mc.onUpdateStatus(({ state, version, message }) => {
+  if (state === 'checking') {
+    updateInFlight = true;
+  } else if (state === 'available') {
+    updateInFlight = true;
+    showUpdateNow(version);
+    setUpdateNowStatus(`Update ${version || ''} found — downloading…`.replace('  ', ' '), { busy: true });
+  } else if (state === 'ready') {
+    updateInFlight = true;
+    setUpdateNowStatus(`Update ${version || ''} ready — closing and relaunching…`.replace('  ', ' '), { busy: true });
+  } else if (state === 'none') {
+    updateInFlight = false;
+    hideUpdateNow();
+  } else if (state === 'error') {
+    updateInFlight = false;
+    // Only surface the error if the row is already showing (a retry after a
+    // known update failed to download) — a failed background check while
+    // still current shouldn't pop an update row that was never earned.
+    if (!updateNowRow.classList.contains('hidden')) {
+      setUpdateNowStatus(`Update failed: ${message || 'unknown error'} — click to retry.`);
+    }
+  }
+});
+window.mc.onUpdateProgress(({ percent }) => {
+  setUpdateNowStatus(`Downloading update… ${Math.round(percent || 0)}%`, { busy: true });
+});
 
 // ---- Settings nav: categorized sidebar + content, like a real app's
 // preferences window rather than one long scrolling page. ----
