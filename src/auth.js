@@ -12,6 +12,37 @@ function isRejectedByAuthServer(err) {
   return typeof status === 'number' && status >= 400 && status < 500;
 }
 
+// msmc tags a rejection with a dotted reason code (err.ts, e.g.
+// "error.auth.minecraft.entitlements") identifying exactly which step in the
+// Microsoft -> Xbox Live -> Minecraft chain failed. These are copied from its
+// own util/lexicon.js (not reachable via a supported import - msmc's
+// package.json "exports" only exposes its top-level entry point) so a failed
+// sign-in can say something more useful than a generic rejection notice.
+const AUTH_REASON_TEXT = {
+  'error.auth.xboxLive': 'Failed to sign in to Xbox Live.',
+  'error.auth.xsts': 'Could not obtain an Xbox Live security token.',
+  'error.auth.xsts.userNotFound': "This Microsoft account doesn't have an Xbox account set up. Sign in at xbox.com once to create one, then try again.",
+  'error.auth.xsts.bannedCountry': 'Xbox Live is not available in the region this Microsoft account is registered to.',
+  'error.auth.xsts.child': 'This is a child account. An adult needs to add it to a Microsoft Family group before it can sign in.',
+  'error.auth.xsts.child.SK': 'South Korean law requires an adult to grant parental permissions for this account on the Xbox site before it can sign in.',
+  'error.auth.minecraft.login': "Couldn't verify this Xbox account with Minecraft's servers.",
+  'error.auth.minecraft.profile': "This Microsoft account doesn't appear to own Minecraft: Java Edition (no ownership entitlement found). If you bought it on Xbox/Game Pass, sign in with that exact account; if you own it through an old Mojang.com account, migrate it to a Microsoft account first at minecraft.net.",
+  'error.auth.minecraft.entitlements': "Couldn't check this account's Minecraft ownership - Minecraft's entitlement server may be temporarily down. Try again shortly.",
+};
+
+function authRejectionMessage(err) {
+  const code = err && typeof err.ts === 'string' ? err.ts : '';
+  if (AUTH_REASON_TEXT[code]) return AUTH_REASON_TEXT[code];
+  // Unknown/shortened code - fall back to whichever prefix we do recognize.
+  const parts = code.split('.');
+  while (parts.length) {
+    parts.pop();
+    const prefix = parts.join('.');
+    if (AUTH_REASON_TEXT[prefix]) return AUTH_REASON_TEXT[prefix];
+  }
+  return 'Microsoft rejected this sign-in.';
+}
+
 function toAccountRecord(mc, xbox) {
   return {
     name: mc.profile.name,
@@ -84,7 +115,7 @@ class AuthManager {
       // literal string "[object Object]".
       if (err instanceof Error) throw err;
       if (isRejectedByAuthServer(err)) {
-        throw new Error('Microsoft rejected this sign-in. Make sure this account owns Minecraft, then try again.');
+        throw new Error(authRejectionMessage(err));
       }
       throw new Error("Couldn't reach Microsoft's sign-in servers. Check your internet connection and try again.");
     }
