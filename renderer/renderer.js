@@ -170,9 +170,8 @@ const settingMinimizeOnPlay = document.getElementById('setting-minimize-on-play'
 const settingConfirmStop = document.getElementById('setting-confirm-stop');
 const settingAlwaysOnTop = document.getElementById('setting-always-on-top');
 const settingAutoUpdate = document.getElementById('setting-auto-update');
-const updateNowRow = document.getElementById('update-now-row');
-const updateNowLabel = document.getElementById('update-now-label');
-const updateNowBtn = document.getElementById('update-now-btn');
+const titlebarUpdateBtn = document.getElementById('titlebar-update-btn');
+const titlebarUpdateLabel = document.getElementById('titlebar-update-label');
 const updateNowStatus = document.getElementById('update-now-status');
 const settingJvmArgs = document.getElementById('setting-jvm-args');
 const saveSettingsBtnJava = document.getElementById('save-settings-btn-java');
@@ -2756,26 +2755,32 @@ settingConfirmStop.addEventListener('change', () => saveAppearancePatch({ confir
 settingAlwaysOnTop.addEventListener('change', () => saveAppearancePatch({ alwaysOnTop: settingAlwaysOnTop.checked }));
 settingAutoUpdate.addEventListener('change', () => saveAppearancePatch({ autoCheckUpdates: settingAutoUpdate.checked }));
 
-// "Update now" only ever appears once a newer version has actually been
-// found — nothing to show while you're already current. The automatic
-// startup check (gated by the toggle above) is what discovers updates;
-// electron-updater downloads them and the main process closes + relaunches
-// on its own once the download finishes (src/updater.js scheduleRestart).
-// This button just reflects that and offers a retry if the download errors.
+// The titlebar update button only ever appears once a newer version has
+// actually been found — nothing to show while you're already current. The
+// automatic startup check (gated by the toggle above) is what discovers
+// updates; electron-updater downloads them and the main process closes +
+// relaunches on its own once the download finishes (src/updater.js
+// scheduleRestart). This button just reflects that and offers a retry if
+// the download errors. Its `title` carries the full status as a tooltip
+// since the titlebar has no room for a sentence; the same text also lands
+// in Settings (updateNowStatus) for anyone who wants to see it without
+// hovering.
 let updateInFlight = false;
 function setUpdateNowStatus(text, { busy = false } = {}) {
   updateNowStatus.textContent = text;
-  updateNowBtn.disabled = busy;
+  titlebarUpdateBtn.title = text;
+  titlebarUpdateBtn.classList.toggle('busy', busy);
 }
 function showUpdateNow(version) {
-  updateNowLabel.textContent = version ? `Update to ${version} available` : 'Update available';
-  updateNowRow.classList.remove('hidden');
+  titlebarUpdateLabel.textContent = version ? `Update ${version}` : 'Update';
+  titlebarUpdateBtn.classList.remove('hidden');
 }
 function hideUpdateNow() {
-  updateNowRow.classList.add('hidden');
+  titlebarUpdateBtn.classList.add('hidden');
+  updateNowStatus.textContent = '';
 }
 
-updateNowBtn.addEventListener('click', async () => {
+titlebarUpdateBtn.addEventListener('click', async () => {
   if (updateInFlight) return;
   updateInFlight = true;
   setUpdateNowStatus('Checking for updates…', { busy: true });
@@ -2807,10 +2812,10 @@ window.mc.onUpdateStatus(({ state, version, message }) => {
     hideUpdateNow();
   } else if (state === 'error') {
     updateInFlight = false;
-    // Only surface the error if the row is already showing (a retry after a
-    // known update failed to download) — a failed background check while
-    // still current shouldn't pop an update row that was never earned.
-    if (!updateNowRow.classList.contains('hidden')) {
+    // Only surface the error if the button is already showing (a retry after
+    // a known update failed to download) — a failed background check while
+    // still current shouldn't pop up a button that was never earned.
+    if (!titlebarUpdateBtn.classList.contains('hidden')) {
       setUpdateNowStatus(`Update failed: ${message || 'unknown error'} — click to retry.`);
     }
   }

@@ -1,6 +1,6 @@
 {
   "name": "camel-launcher",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "Camel Launcher - a custom Minecraft launcher with a built-in Modrinth mod browser",
   "main": "main.js",
   "scripts": {
