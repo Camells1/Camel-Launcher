@@ -105,6 +105,10 @@ html[data-accent="azure"] {
   --accent: #4a90c2; --accent-hi: #7fb8e0; --accent-lo: #2f5f85; --accent-edge: #1d3d57;
   --accent-soft: rgba(74, 144, 194, 0.14);
 }
+html[data-accent="starburst"] {
+  --accent: #ffd60a; --accent-hi: #ffe873; --accent-lo: #c9a300; --accent-edge: #7a5f00;
+  --accent-soft: rgba(255, 214, 10, 0.16);
+}
 
 /* ---- Light · Desert (ochre) — the light counterpart of the :root default ---- */
 html[data-theme="light"] {
@@ -197,6 +201,27 @@ html[data-theme="light"][data-accent="mauve"] {
   --well: #dcc0ef; --well-deep: #cca8e5;
   --text: #200f33; --text-muted: #55397a; --text-dim: #6e5090;
   --hairline: rgba(80, 20, 120, 0.08);
+  --shadow-sm: 0 2px 8px rgba(60, 15, 90, 0.14);
+  --shadow-md: 0 6px 18px rgba(60, 15, 90, 0.16);
+  --shadow-lg: 0 14px 36px rgba(60, 15, 90, 0.2);
+  --inset-hi: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* ---- Dark · Starburst ---- */
+html[data-theme="dark"][data-accent="starburst"] {
+  --sand-950: #0a0512; --sand-900: #120a1e; --sand-850: #190f2a; --sand-800: #221640;
+  --sand-700: #301f58; --sand-600: #402a72; --sand-500: #55398f;
+  --well: #08040f; --well-deep: #05030a;
+  --text: #f7eefc; --text-muted: #c9aee8; --text-dim: #9678b8;
+  --hairline: rgba(230, 190, 255, 0.09);
+}
+/* ---- Light · Starburst ---- */
+html[data-theme="light"][data-accent="starburst"] {
+  --sand-950: #f8f3ff; --sand-900: #ece0fb; --sand-850: #ded0f5; --sand-800: #f0e4fc;
+  --sand-700: #cbb0ec; --sand-600: #b18fdd; --sand-500: #9370c4;
+  --well: #ded0f5; --well-deep: #c9b0ec;
+  --text: #1e0f38; --text-muted: #4a2f70; --text-dim: #6b4a90;
+  --hairline: rgba(90, 20, 130, 0.08);
   --shadow-sm: 0 2px 8px rgba(60, 15, 90, 0.14);
   --shadow-md: 0 6px 18px rgba(60, 15, 90, 0.16);
   --shadow-lg: 0 14px 36px rgba(60, 15, 90, 0.2);
@@ -709,6 +734,8 @@ html[data-accent="azure"] .app-atmosphere .desert-backdrop  { display: none; }
 html[data-accent="azure"] .app-atmosphere .ocean-backdrop   { display: block; }
 html[data-accent="mauve"] .app-atmosphere .desert-backdrop  { display: none; }
 html[data-accent="mauve"] .app-atmosphere .space-backdrop   { display: block; }
+html[data-accent="starburst"] .app-atmosphere .desert-backdrop    { display: none; }
+html[data-accent="starburst"] .app-atmosphere .starburst-backdrop { display: block; }
 
 @keyframes driftUp {
   0%   { transform: translateY(0); opacity: 0; }
@@ -721,6 +748,7 @@ html[data-accent="mauve"] .app-atmosphere .space-backdrop   { display: block; }
 .volcano-backdrop .embers rect { animation: driftUp 3.6s ease-in infinite; animation-delay: var(--d, 0s); }
 .ocean-backdrop .bubbles rect { animation: driftUp 5.2s ease-in infinite; animation-delay: var(--d, 0s); }
 .space-backdrop .stars rect { fill: #ffeccb; animation: twinkle 4.5s ease-in-out infinite; animation-delay: var(--d, 0s); }
+.starburst-backdrop .stars rect { fill: #ffe23d; animation: twinkle 4.5s ease-in-out infinite; animation-delay: var(--d, 0s); }
 
 /* ---- Extra life added to each biome scene: vines, birds, smoke, fish, seaweed, shooting stars ---- */
 .jungle-backdrop .vine { animation: gentleSway 4s ease-in-out infinite; animation-delay: var(--sway-d, 0s); transform-origin: top center; }
@@ -749,6 +777,8 @@ html[data-accent="mauve"] .app-atmosphere .space-backdrop   { display: block; }
   18%  { transform: translate(500px, 160px) rotate(18deg); opacity: 0; }
   100% { opacity: 0; }
 }
+
+.starburst-backdrop .starburst-sparkles path { animation: twinkle 2.6s ease-in-out infinite; animation-delay: var(--d, 0s); transform-origin: center; }
 
 .heat-haze {
   position: absolute;
@@ -882,6 +912,24 @@ html[data-theme="light"] .app-atmosphere::after {
    Everything here is a pure visibility/animation toggle, nothing is torn
    down, so returning to normal is instant and loses no state. */
 html.low-power .app-atmosphere { display: none; }
+
+/* A little corner signature for the starburst theme only - sits just clear
+   of the icon rail so it never gets hidden behind it. */
+.starburst-signature {
+  display: none;
+  position: absolute;
+  left: calc(var(--rail-w) + 18px);
+  bottom: 14px;
+  z-index: 1;
+  font-family: 'Segoe Script', 'Brush Script MT', cursive;
+  font-size: 26px;
+  color: #ffe873;
+  text-shadow: 0 0 10px rgba(255, 214, 10, 0.65), 0 0 22px rgba(255, 214, 10, 0.35);
+  opacity: 0.9;
+  pointer-events: none;
+  user-select: none;
+}
+html[data-accent="starburst"] .starburst-signature { display: block; }
 html.low-power * { animation-play-state: paused !important; }
 
 .icon-rail {

@@ -282,7 +282,7 @@ const COPY_ICON =
 // Basic (no custom icon) instance swatches are colored as variations on the
 // *current* accent's hue, not a fixed palette - so an instance's "avatar"
 // belongs to whichever biome is active instead of clashing with it.
-const ACCENT_HEX = { ochre: '#e8963c', oasis: '#4fa07d', clay: '#c2604a', mauve: '#9b6b8f', azure: '#4a90c2' };
+const ACCENT_HEX = { ochre: '#e8963c', oasis: '#4fa07d', clay: '#c2604a', mauve: '#9b6b8f', azure: '#4a90c2', starburst: '#ffd60a' };
 
 function hexToHsl(hex) {
   const n = parseInt(hex.slice(1), 16);
