@@ -34,7 +34,8 @@ async function getInstallPlan(projectIdOrSlug) {
     || version.files.find((f) => f.filename.endsWith('.mrpack'));
   if (!file) throw new Error('This modpack has no .mrpack download, so it cannot be installed automatically.');
 
-  const mcVersion = (version.game_versions || [])[version.game_versions.length - 1];
+  const gameVersions = version.game_versions || [];
+  const mcVersion = gameVersions[gameVersions.length - 1];
   if (!mcVersion) throw new Error('This modpack does not declare a Minecraft version.');
 
   return {
@@ -179,29 +180,38 @@ async function applyMrpack(prepared, instanceDir, onProgress = () => {}) {
     const entries = [];
     let done = 0;
 
-    for (const file of files) {
-      const dest = safeJoin(instanceDir, file.path);
-      if (!dest) {
-        console.error(`Skipping modpack file with an unsafe path: ${file.path}`);
-        continue;
-      }
-      const url = (file.downloads || [])[0];
-      if (!url) continue;
-      done++;
-      onProgress(`Downloading pack files (${done}/${files.length})...`);
-      await download(url, dest);
+    // Downloading one file at a time made installs far slower than the
+    // network needed to be - a handful of files in flight at once cuts
+    // install time substantially without hammering the CDN.
+    const CONCURRENCY = 6;
+    let cursor = 0;
+    async function worker() {
+      while (cursor < files.length) {
+        const file = files[cursor++];
+        const dest = safeJoin(instanceDir, file.path);
+        if (!dest) {
+          console.error(`Skipping modpack file with an unsafe path: ${file.path}`);
+          continue;
+        }
+        const url = (file.downloads || [])[0];
+        if (!url) continue;
+        await download(url, dest);
+        done++;
+        onProgress(`Downloading pack files (${done}/${files.length})...`);
 
-      // Only mods land in .camel-mods.json; resource packs and shaders the
-      // pack ships stay on disk but aren't managed as installed projects.
-      if (file.path.startsWith('mods/')) {
-        entries.push({
-          filename: path.basename(file.path),
-          title: path.basename(file.path).replace(/\.jar$/, ''),
-          projectId: projectIdFromCdnUrl(url),
-          projectType: 'mod',
-        });
+        // Only mods land in .camel-mods.json; resource packs and shaders the
+        // pack ships stay on disk but aren't managed as installed projects.
+        if (file.path.startsWith('mods/')) {
+          entries.push({
+            filename: path.basename(file.path),
+            title: path.basename(file.path).replace(/\.jar$/, ''),
+            projectId: projectIdFromCdnUrl(url),
+            projectType: 'mod',
+          });
+        }
       }
     }
+    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, files.length) }, worker));
 
     onProgress('Applying pack configuration...');
     for (const [name, buffer] of contents) {

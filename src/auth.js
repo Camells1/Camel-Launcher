@@ -151,8 +151,12 @@ class AuthManager {
   async switchAccount(uuid) {
     const account = this.getAccounts().find((a) => a.uuid === uuid);
     if (!account) throw new Error('That account is no longer saved.');
-    this.accountStore.set('activeUuid', uuid);
-    return this.refreshOne(account);
+    // Only commit the switch once the refresh actually succeeds - otherwise
+    // a transient network failure would leave a non-refreshed account
+    // active instead of keeping the previously-working one.
+    const fresh = await this.refreshOne(account);
+    if (fresh) this.accountStore.set('activeUuid', uuid);
+    return fresh;
   }
 
   removeAccount(uuid) {

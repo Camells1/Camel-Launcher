@@ -1834,7 +1834,10 @@ function skeletonCards(n) {
     .join('');
 }
 
+let modSearchSeq = 0;
+
 async function runSearch(reset) {
+  const seq = ++modSearchSeq;
   if (reset) {
     searchQuery = modSearchInput.value.trim();
     searchOffset = 0;
@@ -1852,12 +1855,15 @@ async function runSearch(reset) {
       offset: searchOffset,
       projectType: currentContentType,
     });
+    // A slower earlier request must not overwrite a newer one's results.
+    if (seq !== modSearchSeq) return;
     searchTotal = page.total;
     lastResults = reset ? page.hits : [...lastResults, ...page.hits];
     searchOffset += page.hits.length;
     renderSearchResults();
     renderStarterMods();
   } catch (err) {
+    if (seq !== modSearchSeq) return;
     searchResults.innerHTML = '';
     const p = document.createElement('p');
     p.className = 'muted empty-note';
@@ -1993,9 +1999,12 @@ function browseContentTypeLabel() {
   return browseContentType === 'resourcepack' ? 'resource packs' : browseContentType === 'shader' ? 'shaders' : 'mods';
 }
 
+let browseSearchSeq = 0;
+
 async function runBrowseSearch(reset) {
   const targetId = browseTargetSelect.value;
   if (!targetId) return;
+  const seq = ++browseSearchSeq;
   if (reset) {
     browseQuery = browseSearchInput.value.trim();
     browseOffset = 0;
@@ -2013,11 +2022,14 @@ async function runBrowseSearch(reset) {
       offset: browseOffset,
       projectType: browseContentType,
     });
+    // A slower earlier request must not overwrite a newer one's results.
+    if (seq !== browseSearchSeq) return;
     browseTotal = page.total;
     lastBrowseResults = reset ? page.hits : [...lastBrowseResults, ...page.hits];
     browseOffset += page.hits.length;
     renderBrowseResults();
   } catch (err) {
+    if (seq !== browseSearchSeq) return;
     browseResults.innerHTML = '';
     const p = document.createElement('p');
     p.className = 'muted empty-note';

@@ -58,6 +58,10 @@ let gameProcess = null;
 let playingInstanceId = null;
 let launchStartedAt = 0;
 let lowPowerMode = false;
+// Reserved synchronously (before any await) inside game:play so a second
+// overlapping call can't slip past the `gameProcess` check while the first
+// is still installing/launching.
+let launchInProgress = false;
 
 // While a game is running and the launcher window is out of view (minimized
 // or just not the focused window), there's no reason for it to keep repainting
@@ -419,9 +423,13 @@ function registerIpc() {
       const dir = entry.projectType === 'resourcepack' ? launcher.folder.resourcepacks : launcher.modsDir;
       const best = await modrinth.getBestVersionFile(entry.projectId, inst.mcVersion, { projectType: entry.projectType, loader: normalizeLoader(inst.loader) });
       if (!best || best.filename === entry.filename) continue;
+      // entry.filename is always the enabled (base) name - check the actual
+      // on-disk state so updating a disabled mod doesn't silently re-enable it.
+      const wasDisabled = fs.existsSync(path.join(dir, `${entry.filename}.disabled`));
       modrinth.removeMod(entry.filename, dir);
       modrinth.removeMod(`${entry.filename}.disabled`, dir);
-      await modrinth.downloadFile(best.url, path.join(dir, best.filename));
+      const destName = wasDisabled ? `${best.filename}.disabled` : best.filename;
+      await modrinth.downloadFile(best.url, path.join(dir, destName));
       entry.filename = best.filename;
       updated++;
     }
@@ -639,55 +647,60 @@ function registerIpc() {
   });
 
   ipcMain.handle('game:play', async (_e, instanceId, serverId) => {
-    if (gameProcess) throw new Error('The game is already running.');
-    const inst = requireInstance(instanceId);
-    const account = authManager.getSavedAccount();
-    if (!account) throw new Error('Not signed in.');
+    if (gameProcess || launchInProgress) throw new Error('The game is already running.');
+    launchInProgress = true;
+    try {
+      const inst = requireInstance(instanceId);
+      const account = authManager.getSavedAccount();
+      if (!account) throw new Error('Not signed in.');
 
-    const settings = { ...stores.settings.getAll(), ...inst };
-    const send = (msg) => mainWindow.webContents.send('game:progress', { instanceId, msg });
-    const launcher = launcherFor(instanceId);
+      const settings = { ...stores.settings.getAll(), ...inst };
+      const send = (msg) => mainWindow.webContents.send('game:progress', { instanceId, msg });
+      const launcher = launcherFor(instanceId);
 
-    let server;
-    if (serverId) {
-      const found = servers.listServers(instances.folder(instanceId)).find((s) => s.id === serverId);
-      if (found) server = servers.parseAddress(found.address);
-    }
-
-    const resolved = await launcher.ensureInstalled(inst.mcVersion, normalizeLoader(inst.loader), send, {
-      javaPath: settings.javaPath,
-    });
-    send('Launching...');
-    launchStartedAt = Date.now();
-    const child = await launcher.launchGame(resolved, account, settings, server);
-    gameProcess = child;
-    playingInstanceId = instanceId;
-    instances.touch(instanceId);
-    if (serverId) servers.touchServer(instances.folder(instanceId), serverId);
-    if (settings.minimizeOnPlay) mainWindow.minimize();
-
-    child.stdout.on('data', (d) => mainWindow.webContents.send('game:log', { instanceId, line: d.toString() }));
-    child.stderr.on('data', (d) => mainWindow.webContents.send('game:log', { instanceId, line: d.toString() }));
-    child.on('exit', (code, signal) => {
-      gameProcess = null;
-      playingInstanceId = null;
-      setLowPowerMode(false);
-      instances.addPlaytime(instanceId, Date.now() - launchStartedAt);
-      let crash = null;
-      if (code) {
-        const report = crashReports.findLatestCrashReport(instances.folder(instanceId), launchStartedAt);
-        if (report) crash = crashReports.summarizeCrashReport(report.path);
+      let server;
+      if (serverId) {
+        const found = servers.listServers(instances.folder(instanceId)).find((s) => s.id === serverId);
+        if (found) server = servers.parseAddress(found.address);
       }
-      mainWindow.webContents.send('game:exit', { instanceId, code, signal, crash });
-    });
-    child.on('error', (err) => {
-      gameProcess = null;
-      playingInstanceId = null;
-      setLowPowerMode(false);
-      mainWindow.webContents.send('game:exit', { instanceId, code: -1, signal: null, error: err.message });
-    });
 
-    return true;
+      const resolved = await launcher.ensureInstalled(inst.mcVersion, normalizeLoader(inst.loader), send, {
+        javaPath: settings.javaPath,
+      });
+      send('Launching...');
+      launchStartedAt = Date.now();
+      const child = await launcher.launchGame(resolved, account, settings, server);
+      gameProcess = child;
+      playingInstanceId = instanceId;
+      instances.touch(instanceId);
+      if (serverId) servers.touchServer(instances.folder(instanceId), serverId);
+      if (settings.minimizeOnPlay) mainWindow.minimize();
+
+      child.stdout.on('data', (d) => mainWindow.webContents.send('game:log', { instanceId, line: d.toString() }));
+      child.stderr.on('data', (d) => mainWindow.webContents.send('game:log', { instanceId, line: d.toString() }));
+      child.on('exit', (code, signal) => {
+        gameProcess = null;
+        playingInstanceId = null;
+        setLowPowerMode(false);
+        instances.addPlaytime(instanceId, Date.now() - launchStartedAt);
+        let crash = null;
+        if (code) {
+          const report = crashReports.findLatestCrashReport(instances.folder(instanceId), launchStartedAt);
+          if (report) crash = crashReports.summarizeCrashReport(report.path);
+        }
+        mainWindow.webContents.send('game:exit', { instanceId, code, signal, crash });
+      });
+      child.on('error', (err) => {
+        gameProcess = null;
+        playingInstanceId = null;
+        setLowPowerMode(false);
+        mainWindow.webContents.send('game:exit', { instanceId, code: -1, signal: null, error: err.message });
+      });
+
+      return true;
+    } finally {
+      launchInProgress = false;
+    }
   });
 
   ipcMain.handle('versions:listMinecraft', async () => listMinecraftVersions());
@@ -717,26 +730,32 @@ function registerIpc() {
   // ---- Data & Privacy / Resource management ----
   ipcMain.handle('app:getUserDataPath', async () => app.getPath('userData'));
 
-  function folderSizeBytes(dir) {
+  // Async so a large instance folder (tens of thousands of asset/library
+  // files) doesn't block the main process's event loop - readdirSync/statSync
+  // here would freeze the whole app (all IPC, window dragging, etc.) for the
+  // duration of the walk.
+  async function folderSizeBytes(dir) {
     let total = 0;
     let entries;
     try {
-      entries = fs.readdirSync(dir, { withFileTypes: true });
+      entries = await fs.promises.readdir(dir, { withFileTypes: true });
     } catch {
       return 0;
     }
     for (const entry of entries) {
       const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) total += folderSizeBytes(full);
+      if (entry.isDirectory()) total += await folderSizeBytes(full);
       else {
-        try { total += fs.statSync(full).size; } catch { /* file vanished mid-scan, skip */ }
+        try { total += (await fs.promises.stat(full)).size; } catch { /* file vanished mid-scan, skip */ }
       }
     }
     return total;
   }
 
   ipcMain.handle('instances:diskUsage', async () => {
-    return instances.list().map((inst) => ({ id: inst.id, name: inst.name, bytes: folderSizeBytes(instances.folder(inst.id)) }));
+    return Promise.all(
+      instances.list().map(async (inst) => ({ id: inst.id, name: inst.name, bytes: await folderSizeBytes(instances.folder(inst.id)) }))
+    );
   });
 
   ipcMain.handle('shell:openExternal', async (_e, url) => {

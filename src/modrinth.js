@@ -129,6 +129,13 @@ function downloadFile(url, destPath) {
     fs.mkdirSync(path.dirname(destPath), { recursive: true });
     const tmpPath = `${destPath}.part`;
     const file = fs.createWriteStream(tmpPath);
+    // Without this, a write error (disk full, AV lock, permissions) throws
+    // as an unhandled EventEmitter error and crashes the whole main process
+    // instead of just failing this one download.
+    file.on('error', (err) => {
+      fs.rm(tmpPath, { force: true }, () => {});
+      reject(err);
+    });
     https
       .get(url, { headers: { 'User-Agent': USER_AGENT } }, (res) => {
         if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {

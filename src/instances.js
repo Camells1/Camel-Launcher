@@ -34,17 +34,35 @@ class InstanceManager {
   }
 
   load() {
+    let raw;
     try {
-      return JSON.parse(fs.readFileSync(this.indexPath, 'utf-8'));
+      raw = fs.readFileSync(this.indexPath, 'utf-8');
     } catch (err) {
       if (err.code !== 'ENOENT') console.error('Failed to read instances.json:', err);
+      return [];
+    }
+    try {
+      return JSON.parse(raw);
+    } catch (err) {
+      // The file exists but isn't valid JSON (e.g. truncated by a crash/power
+      // loss mid-write). Move it aside instead of silently discarding it, so
+      // a corrupted-but-recoverable file isn't overwritten by the next save.
+      console.error('instances.json is corrupted, moving it aside:', err);
+      try {
+        fs.renameSync(this.indexPath, `${this.indexPath}.corrupt-${Date.now()}`);
+      } catch { /* best effort */ }
       return [];
     }
   }
 
   save() {
     fs.mkdirSync(this.userDataPath, { recursive: true });
-    fs.writeFileSync(this.indexPath, JSON.stringify(this.instances, null, 2));
+    // Write to a temp file and rename over the real one - rename is atomic,
+    // so a crash/power loss mid-write can never leave instances.json
+    // truncated (the old file stays intact until the new one is complete).
+    const tmpPath = `${this.indexPath}.tmp`;
+    fs.writeFileSync(tmpPath, JSON.stringify(this.instances, null, 2));
+    fs.renameSync(tmpPath, this.indexPath);
   }
 
   // v1 of this launcher had exactly one hardcoded instance at userData/instance.

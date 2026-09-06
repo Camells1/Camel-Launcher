@@ -14,6 +14,20 @@ function exeName() {
   return process.platform === 'win32' ? 'javaw.exe' : 'java';
 }
 
+// Compares version-ish folder names (e.g. "jdk-21.0.1+12" vs "jdk-8.0.302")
+// by their numeric components instead of lexicographically, so "jdk-8..."
+// doesn't outrank "jdk-21..." just because '8' > '2' as a character.
+function compareVersionDirs(a, b) {
+  const numsOf = (name) => (name.match(/\d+/g) || []).map(Number);
+  const av = numsOf(a);
+  const bv = numsOf(b);
+  for (let i = 0; i < Math.max(av.length, bv.length); i++) {
+    const diff = (av[i] || 0) - (bv[i] || 0);
+    if (diff !== 0) return diff;
+  }
+  return a.localeCompare(b);
+}
+
 function isValidJava(javaPath) {
   try {
     execFileSync(javaPath, ['-version'], { stdio: 'ignore' });
@@ -42,7 +56,7 @@ function findInWindowsInstallDirs() {
     const versionDirs = entries
       .filter((e) => e.isDirectory())
       .map((e) => e.name)
-      .sort()
+      .sort(compareVersionDirs)
       .reverse();
     for (const versionDir of versionDirs) {
       const candidate = path.join(dir, versionDir, 'bin', exeName());
