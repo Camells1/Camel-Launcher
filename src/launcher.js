@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const { MinecraftFolder, Version, launch } = require('@xmcl/core');
 const {
   install,
@@ -171,6 +172,45 @@ function splitJvmArgs(raw) {
   return String(raw).trim().split(/\s+/).filter(Boolean);
 }
 
+// Remembers exactly what ensureInstalled() last verified for this instance,
+// so an unchanged instance can skip straight to launch instead of redoing a
+// full install/asset/library pass (which, for Fabric especially, means a
+// round trip to Modrinth just to reconfirm a loader build that never
+// changed) on every single Play click.
+function installMarkerPath(instanceDir) {
+  return path.join(instanceDir, '.camel-install.json');
+}
+function readInstallMarker(instanceDir) {
+  try {
+    return JSON.parse(fs.readFileSync(installMarkerPath(instanceDir), 'utf-8'));
+  } catch {
+    return null;
+  }
+}
+function writeInstallMarker(instanceDir, marker) {
+  try {
+    fs.writeFileSync(installMarkerPath(instanceDir), JSON.stringify(marker));
+  } catch {
+    // Non-fatal: worst case, the next launch just re-verifies from scratch.
+  }
+}
+
+// A cheap, local-only sanity check (no network, no per-file hashing) that a
+// previously-installed version is still actually launchable: the version
+// JSON parses and its inheritance chain resolves, and a client jar exists
+// somewhere along that chain (loader versions like Fabric inherit vanilla's
+// jar rather than shipping their own). Returns the resolved version, or null
+// if anything's missing and a real install is needed.
+async function verifyLocallyInstalled(folder, versionId) {
+  try {
+    const resolved = await Version.parse(folder, versionId);
+    const hasJar = resolved.pathChain.some((dir) => fs.existsSync(folder.getVersionJar(path.basename(dir))));
+    return hasJar ? resolved : null;
+  } catch {
+    return null;
+  }
+}
+
 class GameLauncher {
   constructor(instanceDir) {
     this.instanceDir = instanceDir;
@@ -188,6 +228,18 @@ class GameLauncher {
    */
   async ensureInstalled(mcVersion, loader, onProgress = () => {}, { javaPath } = {}) {
     const kind = normalizeLoader(loader);
+
+    const marker = readInstallMarker(this.instanceDir);
+    if (marker && marker.mcVersion === mcVersion && marker.loader === kind) {
+      onProgress('Checking existing install...');
+      const resolved = await verifyLocallyInstalled(this.folder, marker.versionId);
+      if (resolved) {
+        onProgress('Ready.');
+        return resolved;
+      }
+      // Marker's stale (files moved/deleted/corrupted) - fall through to a
+      // real install below, same as if this were the first launch.
+    }
 
     onProgress('Checking Minecraft version list...');
     const list = await getVersionList();
@@ -219,6 +271,7 @@ class GameLauncher {
       throw describeInstallError(err, 'libraries');
     }
 
+    writeInstallMarker(this.instanceDir, { mcVersion, loader: kind, versionId });
     onProgress('Ready.');
     return resolved;
   }
