@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-accent="ochre">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Camel Crosshairs</title>
+<meta name="description" content="Camel Crosshairs is a free always-on-top crosshair overlay for Windows - 100 built-in presets, custom shapes and colors, or your own image." />
+<link rel="icon" href="assets/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  /* ---------- base tokens (dark, desert/ochre default) ---------- */
+  :root, :root[data-accent="ochre"] {
+    --accent: #e8963c;
+    --accent-hi: #ffb35c;
+    --accent-lo: #a35f16;
+    --accent-rgb: 232, 150, 60;
+  }
+  :root[data-accent="oasis"] { --accent:#4fa07d; --accent-hi:#6dcf9e; --accent-lo:#2b6b4c; --accent-rgb:79,160,125; }
+  :root[data-accent="clay"]  { --accent:#c2604a; --accent-hi:#e8836a; --accent-lo:#8a3823; --accent-rgb:194,96,74; }
+  :root[data-accent="azure"] { --accent:#4a90c2; --accent-hi:#6fb3e6; --accent-lo:#2a5f8a; --accent-rgb:74,144,194; }
+  :root[data-accent="mauve"] { --accent:#9b6b8f; --accent-hi:#c294b8; --accent-lo:#6b4363; --accent-rgb:155,107,143; }
+  :root[data-accent="starburst"] { --accent:#ffd60a; --accent-hi:#ffe873; --accent-lo:#c9a300; --accent-rgb:255,214,10; }
+
+  :root {
+    --bg-0: #0a0603;
+    --bg-1: #140c06;
+    --text: #f8eeda;
+    --text-muted: #c6a87d;
+    --text-dim: #8f7a63;
+    --glass-bg: rgba(255,255,255,0.055);
+    --glass-bg-strong: rgba(255,255,255,0.09);
+    --glass-border: rgba(255,255,255,0.14);
+    --glass-highlight: rgba(255,255,255,0.22);
+    --shadow: 0 24px 60px rgba(0,0,0,0.5);
+  }
+  :root[data-theme="light"] {
+    --bg-0: #f3e9d8;
+    --bg-1: #fbf3e6;
+    --text: #2c2013;
+    --text-muted: #6b5640;
+    --text-dim: #94806a;
+    --glass-bg: rgba(255,255,255,0.5);
+    --glass-bg-strong: rgba(255,255,255,0.72);
+    --glass-border: rgba(60,40,20,0.12);
+    --glass-highlight: rgba(255,255,255,0.75);
+    --shadow: 0 24px 60px rgba(120,90,50,0.18);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 60%);
+    color: var(--text);
+    font-family: "Inter", -apple-system, system-ui, sans-serif;
+    line-height: 1.6;
+    transition: background 0.6s ease, color 0.4s ease;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  button { font-family: inherit; }
+
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 28px; position: relative; z-index: 1; }
+
+  /* ---------- glass primitives ---------- */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow), inset 0 1px 0 var(--glass-highlight);
+    transition: background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+  }
+
+  header.top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    margin: 16px auto 0;
+    max-width: 1044px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 26px;
+    border-radius: 999px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 16px; }
+  .brand img { width: 30px; height: 30px; }
+  .top-links { display: flex; gap: 22px; font-size: 14px; font-weight: 600; }
+  .top-links a { color: var(--text-muted); text-decoration: none; transition: color 0.4s ease; }
+  .top-links a:hover { color: var(--accent-hi); }
+
+  .hero { padding: 74px 0 40px; text-align: center; }
+  .hero-inner { max-width: 720px; margin: 0 auto; }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-hi);
+    background: rgba(var(--accent-rgb), 0.14);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
+    padding: 7px 16px;
+    border-radius: 999px;
+    margin-bottom: 22px;
+    transition: color 0.4s ease, background 0.4s ease, border-color 0.4s ease;
+  }
+  h1 {
+    font-size: 52px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 18px;
+    line-height: 1.08;
+  }
+  h1 span { color: var(--accent-hi); transition: color 0.4s ease; }
+  .subtitle { font-size: 18px; color: var(--text-muted); max-width: 560px; margin: 0 auto 34px; }
+
+  .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.15s ease, background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn.primary {
+    color: #fff;
+    background: linear-gradient(135deg, rgba(var(--accent-rgb),0.95), rgba(var(--accent-rgb),0.7));
+    border-color: rgba(255,255,255,0.3);
+    box-shadow: 0 14px 34px rgba(var(--accent-rgb),0.4), inset 0 1px 0 rgba(255,255,255,0.4);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+  }
+  .btn.secondary { color: var(--text); border-color: var(--glass-border); }
+  .btn::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -60%;
+    width: 40%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.7s ease;
+  }
+  .btn:hover::after { left: 130%; }
+  .hint { font-size: 13px; color: var(--text-dim); }
+
+  .shot-frame {
+    margin: 52px auto 0;
+    max-width: 560px;
+    border-radius: 26px;
+    overflow: hidden;
+    padding: 10px;
+    position: relative;
+  }
+  .shot-frame img { border-radius: 18px; width: 100%; }
+
+  section.features { padding: 80px 0 30px; }
+  .section-heading { text-align: center; max-width: 600px; margin: 0 auto 46px; }
+  .section-heading h2 { font-size: 32px; font-weight: 800; margin: 0 0 10px; letter-spacing: -0.01em; }
+  .section-heading p { color: var(--text-muted); margin: 0; }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .feature-card { border-radius: 20px; padding: 26px; }
+  .feature-card .icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 16px;
+    background: rgba(var(--accent-rgb), 0.16);
+    transition: background 0.4s ease;
+  }
+  .feature-card h3 { font-size: 16px; margin: 0 0 8px; }
+  .feature-card p { font-size: 13.5px; color: var(--text-muted); margin: 0; }
+
+  .theme-demo { padding: 30px 0 80px; }
+  .demo-panel { border-radius: 28px; padding: 40px; text-align: center; }
+  .demo-panel h2 { font-size: 26px; font-weight: 800; margin: 0 0 8px; }
+  .demo-panel p.lead { color: var(--text-muted); margin: 0 0 30px; font-size: 14.5px; }
+  .demo-controls { display: flex; align-items: center; justify-content: center; gap: 22px; flex-wrap: wrap; }
+  .swatch-row { display: flex; gap: 14px; }
+  .swatch-btn {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.2s ease, border-color 0.3s ease;
+  }
+  .swatch-btn:hover { transform: translateY(-3px) scale(1.05); }
+  .swatch-btn[aria-pressed="true"] { border-color: var(--text); }
+  .swatch-btn span {
+    position: absolute; inset: 3px;
+    border-radius: 50%;
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.35), inset 0 -3px 6px rgba(0,0,0,0.25);
+  }
+  .swatch-ochre span { background: #e8963c; }
+  .swatch-oasis span { background: #4fa07d; }
+  .swatch-clay span { background: #c2604a; }
+  .swatch-azure span { background: #4a90c2; }
+  .swatch-mauve span { background: #9b6b8f; }
+  .swatch-starburst span { background: #ffd60a; }
+  .swatch-label {
+    position: absolute;
+    top: 54px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 10.5px;
+    color: var(--text-dim);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .swatch-btn:hover .swatch-label { opacity: 1; }
+
+  .mode-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg-strong);
+  }
+  .mode-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .mode-btn[aria-pressed="true"] { background: rgba(var(--accent-rgb), 0.22); color: var(--accent-hi); }
+
+  footer {
+    padding: 30px 0 50px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+  footer .glass { display: inline-block; padding: 14px 26px; border-radius: 999px; }
+  footer a { color: var(--text-muted); text-decoration: none; font-weight: 600; transition: color 0.4s ease; }
+  footer a:hover { color: var(--accent-hi); }
+
+  @media (max-width: 760px) {
+    h1 { font-size: 34px; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .top-links { display: none; }
+    .demo-panel { padding: 28px 18px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <header class="top glass">
+      <div class="brand"><img src="assets/logo.png" alt="" /> Camel Crosshairs</div>
+      <nav class="top-links">
+        <a href="index.html">Camel Launcher</a>
+        <a href="#features">Features</a>
+        <a href="https://github.com/Camells1/Camel-Crosshairs">GitHub</a>
+      </nav>
+    </header>
+  </div>
+
+  <div class="hero">
+    <div class="wrap hero-inner">
+      <span class="eyebrow">Free &middot; Windows</span>
+      <h1>Put a crosshair<br />on <span>any game</span></h1>
+      <p class="subtitle">A small always-on-top overlay for games that don't come with a crosshair. 100 built-in presets, fully custom shapes and colors, or upload your own image - lives quietly in the system tray.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="https://github.com/Camells1/Camel-Crosshairs/releases/download/v1.0.0/Camel-Crosshairs-Setup-1.0.0.exe">
+          Download for Windows
+        </a>
+        <a class="btn secondary glass" href="https://github.com/Camells1/Camel-Crosshairs/releases/latest">Other versions</a>
+      </div>
+      <p class="hint">Downloads the installer (.exe) directly - no admin rights needed. Your browser may warn the file isn't commonly downloaded (click the arrow next to Delete/Discard and choose Keep), and Windows SmartScreen may warn too since it isn't code-signed - click "More info &rarr; Run anyway". Both are normal for a free, unsigned app.</p>
+      <div class="shot-frame glass">
+        <img src="assets/crosshairs-screenshot.png" alt="Camel Crosshairs settings window, showing the shape editor and the six accent themes" />
+      </div>
+    </div>
+  </div>
+
+  <section class="features" id="features">
+    <div class="section-heading">
+      <span class="eyebrow">What it does</span>
+      <h2>One small app, stays out of the way</h2>
+      <p>Runs from the system tray using almost no resources. No game files are touched.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card glass">
+        <div class="icon">&#127919;</div>
+        <h3>100 built-in presets</h3>
+        <p>20 colors &times; 5 shapes, ready to go - or dial in your own size, thickness, gap, and outline.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="icon">&#128444;&#65039;</div>
+        <h3>Use your own image</h3>
+        <p>Upload any picture and use it as your crosshair instead of a drawn shape.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="icon">&#128433;&#65039;</div>
+        <h3>Hides your real cursor</h3>
+        <p>Optionally replaces the system cursor so your crosshair is the only thing on screen - always restored on exit.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="icon">&#128204;</div>
+        <h3>Always on top</h3>
+        <p>Sits above any game or app running in windowed or borderless mode.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="icon">&#127912;</div>
+        <h3>Six themes</h3>
+        <p>The same accent colors as Camel Launcher, right down to Starburst.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="icon">&#128276;</div>
+        <h3>Lives in the tray</h3>
+        <p>Toggle it on/off or open settings from the tray icon - no taskbar clutter, no background window.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="theme-demo" id="try-it">
+    <div class="wrap">
+      <div class="demo-panel glass">
+        <h2>Try the theme</h2>
+        <p class="lead">Same picker as the Camel Launcher site - pick a color, pick light or dark.</p>
+        <div class="demo-controls">
+          <div class="swatch-row">
+            <button class="swatch-btn swatch-ochre" data-accent="ochre" aria-pressed="true"><span></span><span class="swatch-label">Desert</span></button>
+            <button class="swatch-btn swatch-oasis" data-accent="oasis" aria-pressed="false"><span></span><span class="swatch-label">Jungle</span></button>
+            <button class="swatch-btn swatch-clay" data-accent="clay" aria-pressed="false"><span></span><span class="swatch-label">Volcano</span></button>
+            <button class="swatch-btn swatch-azure" data-accent="azure" aria-pressed="false"><span></span><span class="swatch-label">Ocean</span></button>
+            <button class="swatch-btn swatch-mauve" data-accent="mauve" aria-pressed="false"><span></span><span class="swatch-label">Space</span></button>
+            <button class="swatch-btn swatch-starburst" data-accent="starburst" aria-pressed="false"><span></span><span class="swatch-label">Starburst</span></button>
+          </div>
+          <div class="mode-toggle">
+            <button class="mode-btn" data-mode="dark" aria-pressed="true" title="Dark mode">&#127769;</button>
+            <button class="mode-btn" data-mode="light" aria-pressed="false" title="Light mode">&#9728;&#65039;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="glass">
+        Camel Crosshairs is free and open source &middot; <a href="https://github.com/Camells1/Camel-Crosshairs">source on GitHub</a> &middot; <a href="https://github.com/Camells1/Camel-Crosshairs/releases/latest">latest release</a> &middot; <a href="index.html">back to Camel Launcher</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var savedAccent = localStorage.getItem('cl-site-accent');
+      var savedTheme = localStorage.getItem('cl-site-theme');
+      if (savedAccent) root.setAttribute('data-accent', savedAccent);
+      if (savedTheme) root.setAttribute('data-theme', savedTheme);
+
+      function syncPressedState() {
+        var accent = root.getAttribute('data-accent');
+        var theme = root.getAttribute('data-theme');
+        document.querySelectorAll('.swatch-btn').forEach(function (btn) {
+          btn.setAttribute('aria-pressed', String(btn.dataset.accent === accent));
+        });
+        document.querySelectorAll('.mode-btn').forEach(function (btn) {
+          btn.setAttribute('aria-pressed', String(btn.dataset.mode === theme));
+        });
+      }
+
+      document.querySelectorAll('.swatch-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          root.setAttribute('data-accent', btn.dataset.accent);
+          localStorage.setItem('cl-site-accent', btn.dataset.accent);
+          syncPressedState();
+        });
+      });
+
+      document.querySelectorAll('.mode-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          root.setAttribute('data-theme', btn.dataset.mode);
+          localStorage.setItem('cl-site-theme', btn.dataset.mode);
+          syncPressedState();
+        });
+      });
+
+      syncPressedState();
+    })();
+  </script>
+</body>
+</html>

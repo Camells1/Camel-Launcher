@@ -46,6 +46,7 @@ const loginBtnLabel = loginBtn.querySelector('.btn-label');
 const loginError = document.getElementById('login-error');
 const logoutBtn = document.getElementById('logout-btn');
 const reportBugBtn = document.getElementById('report-bug-btn');
+const crosshairsPromoBtn = document.getElementById('crosshairs-promo-btn');
 const accountName = document.getElementById('account-name');
 const accountAvatar = document.getElementById('account-avatar');
 const sessionStatus = document.getElementById('session-status');
@@ -773,6 +774,10 @@ logoutBtn.addEventListener('click', async () => {
 
 reportBugBtn.addEventListener('click', () => {
   window.mc.openExternal('https://camells1.github.io/Camel-Launcher/#report-bug');
+});
+
+crosshairsPromoBtn.addEventListener('click', () => {
+  window.mc.openExternal('https://camells1.github.io/Camel-Launcher/crosshairs.html');
 });
 
 // ---- Page routing ----

@@ -1078,6 +1078,7 @@ html.low-power * { animation-play-state: paused !important; }
   animation: heroFloat 5s ease-in-out infinite;
 }
 .home-hero-text { position: relative; min-width: 0; }
+.crosshairs-promo-btn { margin-top: 16px; }
 .home-hero-name { font-size: 22px; margin: 2px 0 4px; }
 #home-greeting-sub { margin: 0; font-size: 13px; }
 
