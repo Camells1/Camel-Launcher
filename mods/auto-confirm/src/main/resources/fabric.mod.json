@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "camel-auto-confirm",
+  "version": "${version}",
+  "name": "Camel Auto Confirm",
+  "description": "Auto-presses Yes on server confirm dialogs, and can run a command on a timer while you hold an item.",
+  "authors": ["Camel"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["com.camel.autoconfirm.AutoConfirmMod"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": "~1.21.11"
+  }
+}
