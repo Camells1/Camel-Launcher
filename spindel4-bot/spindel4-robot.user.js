@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      4.3
+// @version      4.7
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -593,6 +593,8 @@
     "Play again": ["Play again", "Nog een keer", "Opnieuw spelen", "Nog een potje", "Opnieuw"],
     "Back": ["Back", "Terug"],
     "Against the computer": ["Against the computer", "Tegen de computer"],
+    "Play online": ["Play online", "Online spelen"],
+    "Join": ["Join", "Meedoen"],
     "1 computer": ["1 computer"],
     "2 computers": ["2 computers"],
     "3 computers": ["3 computers"],
@@ -603,7 +605,9 @@
     "Impossible": ["Impossible", "Onmogelijk"],
   };
   const RX = {
-    yourMove: /^(your move|your turn:|jouw zet|jij bent aan zet|je bent aan zet|aan (de beurt|zet):)(?!\s*computer\s*\d)/i,
+    yourMove: /^(your move|your turn:|jouw zet|jij bent aan zet|je bent aan zet|jij bent aan de beurt|je bent aan de beurt|it'?s your turn|aan (de beurt|zet):)(?!\s*computer\s*\d)/i,
+    youTurn: /^(jij bent aan de beurt|je bent aan de beurt|jij bent aan zet|je bent aan zet|it'?s your turn|your move)/i,
+    youWin: /^(jij|je|you)\b.*\b(wint|wins|won|gewonnen)\b/i,
     order: /^(order|volgorde)/i,
     tutorial: /how to make a move|zo doe je een zet/i,
     yourTurn: /^(your turn|nu jij|jouw beurt)/i,
@@ -694,8 +698,20 @@
     const dots = ns.filter((n) => n !== lab && n.w > 6 && n.w <= 30 && Math.abs(n.w - n.h) < 2 && Math.abs(n.y + n.h / 2 - cy) < 14 && n.x > lab.x)
       .sort((a, b) => a.x - b.x);
     if (dots.length < 2) return null;
-    const maxW = Math.max(...dots.map((d) => d.w));
-    return dots.map((d) => ({ color: img.px(d.x + d.w / 2, d.y + d.h / 2), current: d.w === maxW }));
+    const maxW = Math.max(...dots.map((d) => d.w)), minW = Math.min(...dots.map((d) => d.w));
+    // against the computer the player to move has a bigger dot; online all dots
+    // can be the same size, then "current" stays unknown
+    if (maxW - minW >= 2) return dots.map((d) => ({ color: img.px(d.x + d.w / 2, d.y + d.h / 2), current: d.w === maxW }));
+    // same size: the player to move has a dark ring around the dot
+    const lum = (c) => 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2];
+    const info = dots.map((d) => {
+      const cx = d.x + d.w / 2, cy = d.y + d.h / 2, c = img.px(cx, cy);
+      const e = [img.px(d.x + 1.5, cy), img.px(d.x + d.w - 1.5, cy), img.px(cx, d.y + 1.5), img.px(cx, d.y + d.h - 1.5)];
+      const edge = Math.min(...e.map(lum));
+      return { color: c, ring: lum(c) - edge };
+    });
+    const ringed = info.filter((i) => i.ring > 45);
+    return info.map((i) => ({ color: i.color, current: ringed.length === 1 ? i === ringed[0] : null }));
   }
 
   function readBoard(box, img, colors) {
@@ -744,11 +760,11 @@
   // stats are stored as "2 computers - Hard"; show them in the right language
   const showMode = (k) => NL ? k.replace(/ - (\w+)$/, (m, l) => " - " + lvName(l)) : k;
   const auto = window.__S4R_CONFIG || {};
-  const settings = Object.assign({ computers: "1", level: "climb", think: 3, games: 0, assistWin: false, assistBlock: false, running: false }, store.get(SET_KEY, {}), auto);
+  const settings = Object.assign({ computers: "1", level: "climb", think: 3, games: 0, assistWin: false, assistBlock: false, onlineCode: "", running: false }, store.get(SET_KEY, {}), auto);
   let running = !!settings.running;
   let game = null, current = null, rotateIdx = store.get("S4R_rot", 0), climb = store.get("S4R_climb", {}), streak = {}, lastAction = Date.now(), lastSig = "";
   let gamesThisRun = store.get(SET_KEY, {}).played || 0; // survives a page reload
-  const saveSettings = () => store.set(SET_KEY, { computers: settings.computers, level: settings.level, think: settings.think, games: settings.games, assistWin: settings.assistWin, assistBlock: settings.assistBlock, played: gamesThisRun, running });
+  const saveSettings = () => store.set(SET_KEY, { computers: settings.computers, level: settings.level, think: settings.think, games: settings.games, assistWin: settings.assistWin, assistBlock: settings.assistBlock, onlineCode: settings.onlineCode, played: gamesThisRun, running });
 
   let lastSay = "";
   function say(msg) { if (msg !== lastSay) { lastSay = msg; log(msg); } }
@@ -774,10 +790,34 @@
     if (lv === "climb") return { computers: comps[0], level: LEVELS[climb[comps[0]] || 0] };
     return { computers: comps[0], level: lv };
   }
-  const modeKey = (m) => `${m.computers} computer${m.computers === "1" ? "" : "s"} - ${m.level}`;
+  const modeKey = (m) => m.computers === "online" ? "online test" : `${m.computers} computer${m.computers === "1" ? "" : "s"} - ${m.level}`;
 
   const trace = [];
   const tr = (m) => { trace.push(Date.now() % 100000 + " " + m); if (trace.length > 40) trace.shift(); };
+  const online = { joined: false, done: false };
+  const onlineMode = () => !!(settings.onlineCode && String(settings.onlineCode).trim());
+  function deepQuery(sel) {
+    const walk = (root) => { const f = root.querySelector(sel); if (f) return f; for (const e of root.querySelectorAll("*")) if (e.shadowRoot) { const r = walk(e.shadowRoot); if (r) return r; } return null; };
+    return walk(document);
+  }
+  // who has four in a row on the board? (used when the result text is ambiguous)
+  function winnerFromBoard(ns) {
+    // the game ended right after our move that makes four in a row: we won
+    if (game && game.lastMoveWins !== undefined) return game.lastMoveWins ? "win" : "loss";
+    try {
+      const box = boardBox(ns), img = capture(), order = box && readOrder(ns, img);
+      if (!box || !order) return "loss";
+      const cells = readBoard(box, img, order.map((o) => o.color));
+      if (!cells) return "loss";
+      const w = Board.fromCells(cells, order.length, 0).winner();
+      if (w < 0) return "draw";
+      let me = -1;
+      if (myColor) { let bd = 1e9; order.forEach((o, i) => { const d = dist(o.color, myColor); if (d < bd) { bd = d; me = i; } }); }
+      if (me < 0) return "loss";
+      tr("winner from board: " + w + " me " + me);
+      return w === me ? "win" : "loss";
+    } catch (e) { return "loss"; }
+  }
   async function step() {
     const ns = nodes(), tx = texts(ns);
     tr("step " + tx.slice(0, 4).join("|").slice(0, 120));
@@ -790,7 +830,8 @@
     if (tx.some((t) => RX.tutorial.test(t))) { await tutorial(ns, tx); return; }
 
     // game over?
-    const res = parseResult(tx);
+    let res = parseResult(tx);
+    if (res === "board") res = (game && !game.done) ? winnerFromBoard(ns) : null;
     if (res && game && !game.done) { await finishGame(res); return; }
     if ((b = btn("Play again"))) {
       const want = nextMode();
@@ -801,6 +842,38 @@
       }
       return;
     }
+    // ---- temporary online test: join one private game by room code ----
+    if (onlineMode()) {
+      tr("online done=" + online.done + " joined=" + online.joined + " youTurn=" + tx.some((x) => RX.youTurn.test(x)));
+      if (online.done) { say(t("online test game finished", "online testpotje klaar")); return; }
+      if (btn("Against the computer") && (b = btn("Play online"))) { clickNode(b); await sleep(1500); return; }
+      const codeLabel = ns.find((n) => /kamercode|room code/i.test(n.label) && n.role !== "button" && !/^(privé|private)/i.test(n.label));
+      const join = ns.filter((n) => n.role === "button" && /^(meedoen|join)$/i.test(n.label)).pop();
+      if (codeLabel && join && !online.joined) {
+        const inp = deepQuery('input[aria-label="Kamercode"], input[aria-label="Room code"], input[aria-label*="code" i]');
+        if (!inp) {
+          // tap the code field so the game creates its text input
+          const field = ns.filter((n) => n.w > 150 && n.h >= 30 && n.h <= 70 && n.y > codeLabel.y && n.y < join.y).sort((a, c) => a.y - c.y)[0];
+          if (field) { const x = field.x + field.w / 2, y = field.y + field.h / 2; pointer("pointerdown", x, y, 1); await sleep(60); pointer("pointerup", x, y, 0); }
+          await sleep(800); return;
+        }
+        if (inp.value !== settings.onlineCode) {
+          inp.focus(); inp.value = settings.onlineCode;
+          inp.dispatchEvent(new InputEvent("input", { bubbles: true, data: settings.onlineCode, inputType: "insertText" }));
+          say(t(`room code ${settings.onlineCode} typed`, `kamercode ${settings.onlineCode} ingevuld`));
+          await sleep(800); return;
+        }
+        clickNode(join); online.joined = true;
+        startGame({ computers: "online", level: "test" });
+        say(t("joined the private game, waiting for the other player...", "meegedaan met het privé spel, wachten op de andere speler..."));
+        await sleep(2000); return;
+      }
+      // in the game: only move when the game says it's "(jij)/(you)"
+      if (tx.some((x) => RX.youTurn.test(x) || (RX.yourMove.test(x) && RX.you.test(x)))) { await myMove(ns); return; }
+      if (tx.some((x) => RX.yourMove.test(x))) say(t("online: waiting for the other player (sign out so I can see '(you)')", "online: wachten op de andere speler (log uit, dan zie ik '(jij)')"));
+      return;
+    }
+
     // menus
     if ((b = btn("Against the computer"))) { clickNode(b); await sleep(1200); return; }
     if (btn("1 computer")) {
@@ -828,13 +901,18 @@
   function parseResult(tx) {
     for (const t of tx) {
       const low = t.toLowerCase();
-      if (RX.win.test(low)) return RX.you.test(low) || !/computer\s*\d/i.test(low) ? "win" : "loss";
+      if (RX.win.test(low)) {
+        if (RX.you.test(low) || RX.youWin.test(low)) return "win";
+        if (onlineMode()) return "board";            // online: "Speler wint" doesn't say who - look at the board
+        return !/computer\s*\d/i.test(low) ? "win" : "loss";
+      }
       if (RX.draw.test(low)) return "draw";
     }
     return null;
   }
 
   function startGame(mode) {
+    myColor = null;
     // pick up what other tabs learned meanwhile
     const fresh = store.get(BRAIN_KEY, null);
     if (fresh) for (const k of ["games", "weights", "book", "fixes", "stats"]) if (fresh[k] !== undefined) brain[k] = fresh[k];
@@ -860,6 +938,7 @@
       streak[c] = 0;
     }
     if (settings.computers === "rotate" || settings.level === "rotate") { rotateIdx++; store.set("S4R_rot", rotateIdx); }
+    if (onlineMode()) { online.done = true; running = false; saveSettings(); }
     if (result === "loss") {
       log(t("lost - reviewing my moves to learn from mistakes...", "verloren - ik kijk mijn zetten na om van mijn fouten te leren..."));
       const n = await review(game);
@@ -897,7 +976,29 @@
     return new Engine(weightsFor(np)).analyse(b, me, settings.think * 1000);
   }
 
+  // Which colour is ours? Online the dots don't say, so use the board itself.
+  let myColor = null;   // colour of a piece we placed ourselves this game
+  function whoAmI(order, cells) {
+    const np = order.length;
+    if (onlineMode()) {
+      if (myColor) {
+        let bi = 0, bd = 1e9;
+        order.forEach((o, i) => { const d = dist(o.color, myColor); if (d < bd) { bd = d; bi = i; } });
+        if (bd < 90) return bi;
+      }
+      const cnt = new Array(np).fill(0); let n = 0;
+      for (let k = 0; k < cells.length; k++) if (cells[k] >= 0) { cnt[cells[k]]++; n++; }
+      // 2 players, odd number of pieces on our turn: the opponent has one more piece
+      if (np === 2 && n % 2 === 1) return cnt[0] < cnt[1] ? 0 : 1;
+      if (n === 0) return order.findIndex((o) => o.current === true) >= 0 ? order.findIndex((o) => o.current === true) : 0;
+    }
+    const i = order.findIndex((o) => o.current === true);
+    if (i >= 0) return i;
+    let n = 0; for (let k = 0; k < cells.length; k++) if (cells[k] >= 0) n++;
+    return n % np;
+  }
   async function myMove(ns) {
+    tr("myMove start");
     const box = boardBox(ns);
     if (!box) { tr("myMove: no board box"); say(t("my turn, but I can't find the board", "mijn beurt, maar ik vind het bord niet")); pointer("pointermove", innerWidth / 2, innerHeight * 0.55, 0); return; }
     // two identical reads in a row = the board is not animating
@@ -916,15 +1017,17 @@
       prev = c; await sleep(250);
     }
     if (!cells) { tr("myMove: unstable board"); say(t("reading the board...", "bord aan het lezen...")); return; }
-    const np = order.length, me = order.findIndex((o) => o.current);
+    const np = order.length, me = whoAmI(order, cells);
     if (me < 0) { tr("myMove: no current dot"); return; }
     if (!game || game.done) startGame(current || nextMode());
     game.np = np;
     const b = Board.fromCells(cells, np, me);
+    tr("myMove np=" + np + " me=" + me + " pieces=" + b.count);
     const { scores, depth } = await think(b, me, np);
-    if (!Object.keys(scores).length) return;
+    if (!Object.keys(scores).length) { tr("myMove: no scores"); return; }
     const pick = choose(b, me, scores);
     const s = pick.s, r = b.h[s];
+    game.lastMoveWins = b.isWinMove(me, s);
     log(t(`move ${b.count + 1}: slice ${s} (depth ${depth}, ${pick.why})`, `zet ${b.count + 1}: poot ${s} (${depth} zetten vooruit, ${{ "winning line": "winnende zet", "remembered fix": "uit geheugen: fout verbeterd", memory: "geheugen", search: "rekenen" }[pick.why] || pick.why})`));
     if (auto.debug) {
       const rows = [];
@@ -937,13 +1040,17 @@
     // Did our piece land? Look at the target cell itself: a fast computer can
     // answer so quickly that "your move" is already showing again, and tapping
     // twice would drop an extra piece.
-    const myColor = order[me].color;
+    const ourColor = order[me].color;
     const landed = () => {
       const c = sampleCell(capture(), box, s, r);
-      return dist(c, myColor) < 85;
+      const filled = order.some((o) => dist(c, o.color) < 85);
+      if (filled && onlineMode() && !myColor) myColor = c;   // learn our colour from our own piece
+      return filled;
     };
     for (let attempt = 0; attempt < 3; attempt++) {
-      const [x, y] = cellXY(box, s, r);
+      // tap halfway out along the slice: the game picks the slice by angle and
+      // drops the piece itself; the tiny inner cells next to the hub are easy to miss
+      const [x, y] = cellXY(box, s, r, Math.max(RING_POS[r], 0.5));
       await tap(x, y);
       for (let k = 0; k < 16; k++) {
         await sleep(250);
@@ -1047,6 +1154,7 @@
       <label>${t("Level", "Niveau")} <select id=l><option value=climb>${t("Climb (up after 3 wins)", "Klimmen (omhoog na 3 winst)")}</option><option value=Easy>${lvName("Easy")}</option><option value=Medium>${lvName("Medium")}</option><option value=Hard>${lvName("Hard")}</option><option value=Expert>Expert</option><option value=Impossible>${lvName("Impossible")}</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
       <label>${t("Think time", "Denktijd")} <select id=t><option value=0.5>0,5 s</option><option value=1>1 s</option><option value=1.5>${t("1.5 s", "1,5 s")}</option><option value=3>3 s</option><option value=5>5 s</option></select></label>
       <label>${t("Games (0 = nonstop)", "Aantal potjes (0 = nonstop)")} <input id=g type=number min=0 max=9999 inputmode=numeric></label>
+      <label>${t("Online test: room code", "Online test: kamercode")} <input id=oc type=text autocomplete=off autocapitalize=characters placeholder="${t("empty = vs computer", "leeg = tegen computer")}" style="width:9em;text-align:left"></label>
       <button class=main id=go>Start robot</button>
       <button class=assistbtn id=as>🛟 ${t("Assist", "Hulp")}</button>
       <div class=assist id=asbox>
@@ -1065,6 +1173,8 @@
     $("c").onchange = (e) => { settings.computers = e.target.value; saveSettings(); };
     $("l").onchange = (e) => { settings.level = e.target.value; saveSettings(); };
     $("t").onchange = (e) => { settings.think = parseFloat(e.target.value); saveSettings(); };
+    $("oc").value = settings.onlineCode || "";
+    $("oc").onchange = (e) => { settings.onlineCode = e.target.value.trim(); saveSettings(); };
     $("g").value = String(settings.games || 0);
     $("g").onchange = (e) => { settings.games = Math.max(0, parseInt(e.target.value, 10) || 0); e.target.value = String(settings.games); saveSettings(); renderStats(); };
     ui.pill.onclick = () => ui.panel.classList.toggle("open");
@@ -1074,7 +1184,7 @@
     $("aw").checked = !!settings.assistWin; $("ab").checked = !!settings.assistBlock; asRefresh();
     $("aw").onchange = (e) => { settings.assistWin = e.target.checked; saveSettings(); asRefresh(); };
     $("ab").onchange = (e) => { settings.assistBlock = e.target.checked; saveSettings(); asRefresh(); };
-    ui.go.onclick = () => { running = !running; if (running) gamesThisRun = 0; saveSettings(); log(running ? t("robot started", "robot gestart") : t("robot stopped", "robot gestopt")); renderStats(); };
+    ui.go.onclick = () => { running = !running; if (running) { gamesThisRun = 0; online.joined = false; online.done = false; } saveSettings(); log(running ? t("robot started", "robot gestart") : t("robot stopped", "robot gestopt")); renderStats(); };
     $("ex").onclick = () => {
       const blob = new Blob([JSON.stringify(brain)], { type: "application/json" });
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "spindel4-brain.json"; a.click();
@@ -1124,11 +1234,11 @@
     const box = boardBox(ns); if (!box) return clearAssist();
     const img = capture(), order = readOrder(ns, img);
     if (!order) return clearAssist();
-    const np = order.length, me = order.findIndex((o) => o.current);
-    if (me < 0) return clearAssist();
+    const np = order.length;
     if (!onlyComputers(tx, np)) { say(t("Assist only works against the computer.", "Hulp werkt alleen tegen de computer.")); return clearAssist(); }
     const cells = readBoard(box, img, order.map((o) => o.color));
     if (!cells) return;
+    const me = whoAmI(order, cells);
     const b = Board.fromCells(cells, np, me);
     const marks = [];
     for (let s = 0; s < S; s++) {
