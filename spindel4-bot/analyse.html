@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spindel 4 Analyse</title>
+<style>
+  :root {
+    --bg: #f6f1e7; --panel: #fffaf2; --ink: #2b211b; --muted: #7a6a5c; --line: #b59f86;
+    --cell: #fbf3e4; --accent: #c2410c; --good: #15803d; --bad: #b91c1c; --hl: #f59e0b;
+    --p0: #e5393a; --p1: #1e88e5; --p2: #2e9e4f; --p3: #8e44ad;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17120f; --panel: #221b16; --ink: #f3e9da; --muted: #a8988a; --line: #6b5643;
+      --cell: #2b221c; --accent: #fb923c; --good: #4ade80; --bad: #f87171; --hl: #fbbf24;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17120f; --panel: #221b16; --ink: #f3e9da; --muted: #a8988a; --line: #6b5643;
+    --cell: #2b221c; --accent: #fb923c; --good: #4ade80; --bad: #f87171; --hl: #fbbf24;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1180px; margin: 0 auto; padding: 16px; display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 12px; font-size: 13px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .boardwrap { position: relative; }
+  svg { width: 100%; height: auto; display: block; touch-action: manipulation; user-select: none; }
+  .cell { stroke: var(--line); stroke-width: .35; cursor: pointer; }
+  .hover { fill: var(--hl) !important; opacity: .55; }
+  .best { stroke: var(--hl); stroke-width: 1.6; }
+  .lbl { fill: var(--muted); font-size: 4.2px; text-anchor: middle; dominant-baseline: middle; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 8px 0; }
+  button, select, input { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+  button { cursor: pointer; } button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; vertical-align: -2px; border: 2px solid transparent; }
+  .turnbtn.on .dot { border-color: var(--ink); }
+  .turnbtn { padding: 4px 8px; }
+  .verdict { font-size: 19px; font-weight: 700; margin: 6px 0 2px; }
+  .verdict.win { color: var(--good); } .verdict.loss { color: var(--bad); }
+  .meta { color: var(--muted); font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
+  td, th { padding: 4px 6px; border-top: 1px solid var(--line); text-align: left; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.top td { font-weight: 700; }
+  textarea { width: 100%; height: 54px; font: 12px/1.3 ui-monospace, Consolas, monospace; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px; }
+  .bar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; margin-top: 6px; }
+  .bar > div { height: 100%; background: var(--accent); width: 50%; transition: width .3s; }
+  .help { font-size: 13px; color: var(--muted); }
+  .help b { color: var(--ink); }
+</style>
+</head>
+<body>
+<main>
+  <section>
+    <h1>Spindel 4 Analyse</h1>
+    <p class="sub">Zet een stand neer door op een poot te klikken. De engine rekent op de achtergrond de beste zet uit en zegt in hoeveel zetten iemand kan winnen.</p>
+    <div class="card boardwrap">
+      <svg id="board" viewBox="-100 -100 200 200" aria-label="Spelbord"></svg>
+    </div>
+  </section>
+
+  <aside>
+    <div class="card">
+      <div class="row">
+        <label>Spelers
+          <select id="np"><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
+        </label>
+        <button id="undo">↶ Terug</button>
+        <button id="reset">Leeg bord</button>
+      </div>
+      <div class="row" id="turnrow"><span class="meta">Aan zet:</span></div>
+
+      <div class="verdict" id="verdict">—</div>
+      <div class="meta" id="detail">Klik op een poot om te beginnen, of laat de engine de eerste zet kiezen.</div>
+      <div class="bar"><div id="evalbar"></div></div>
+
+      <div class="row">
+        <button class="primary" id="playbest">Speel beste zet</button>
+        <label>Rekentijd
+          <select id="time">
+            <option value="3000">3 s</option><option value="10000" selected>10 s</option>
+            <option value="30000">30 s</option><option value="120000">2 min</option><option value="0">onbeperkt</option>
+          </select>
+        </label>
+        <button id="stop">Stop</button>
+      </div>
+      <div class="meta" id="stats"></div>
+
+      <table>
+        <thead><tr><th>Poot</th><th>Oordeel</th><th class="num">Score</th></tr></thead>
+        <tbody id="moves"></tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="row" style="margin-top:0"><b>Standcode</b>
+        <button id="copy">Kopiëren</button><button id="load">Laden</button></div>
+      <textarea id="code" spellcheck="false" aria-label="Standcode"></textarea>
+      <p class="help">Klik op een <b>poot</b> om daar een steen te laten vallen voor de speler die aan zet is.
+        Met de gekleurde knoppen bij <b>Aan zet</b> kies je zelf wie er speelt (handig om een stand na te bouwen).
+        Poot 0 wijst naar rechts, de nummers lopen met de klok mee.
+        <br><b>Wint in N zetten</b> telt de zetten van de winnaar, inclusief de winnende zet, als iedereen perfect speelt.
+        Met 3 of 4 spelers rekent de engine alsof alle tegenstanders samenwerken.</p>
+    </div>
+  </aside>
+</main>
+
+<script id="engine-src" type="text/plain">
+// ENGINE-START
+  const S = 16, R = 7, N = S * R, WIN = 1000000;
+  const idx = (s, r) => (((s % S) + S) % S) * R + r;
+  const LINES = [];
+  (function () {
+    const seen = new Set();
+    const add = (cells) => {
+      const k = cells.slice().sort((a, b) => a - b).join(",");
+      if (!seen.has(k)) { seen.add(k); LINES.push(cells); }
+    };
+    for (let s = 0; s < S; s++) for (let r = 0; r < R; r++) {
+      add([0, 1, 2, 3].map((k) => idx(s + k, r)));
+      if (r + 3 < R) {
+        add([0, 1, 2, 3].map((k) => idx(s, r + k)));
+        add([0, 1, 2, 3].map((k) => idx(s + k, r + k)));
+        add([0, 1, 2, 3].map((k) => idx(s - k, r + k)));
+      }
+    }
+  })();
+  const LINES_AT = Array.from({ length: N }, () => []);
+  LINES.forEach((L, li) => L.forEach((c) => LINES_AT[c].push(li)));
+  const LA = LINES.map((L) => L[0]), LB = LINES.map((L) => L[1]),
+        LC = LINES.map((L) => L[2]), LD = LINES.map((L) => L[3]);
+
+  // zobrist hashing for the transposition table
+  const ZOB = [];
+  let seed = 12345;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed; };
+  for (let p = 0; p < 4; p++) { ZOB.push([]); for (let i = 0; i < N; i++) ZOB[p].push([rnd(), rnd()]); }
+
+  class Board {
+    constructor(np) {
+      this.np = np; this.cells = new Int8Array(N).fill(-1); this.h = new Int8Array(S);
+      this.lc = new Int8Array(LINES.length * 4); // pieces per player on every line
+      this.turn = 0; this.count = 0; this.z1 = 0; this.z2 = 0;
+    }
+    static fromCells(cells, np, turn) {
+      const b = new Board(np);
+      for (let i = 0; i < N; i++) if (cells[i] >= 0) {
+        b.cells[i] = cells[i]; b.count++;
+        for (const li of LINES_AT[i]) b.lc[li * 4 + cells[i]]++;
+        const s = (i / R) | 0, r = i % R; if (r + 1 > b.h[s]) b.h[s] = r + 1;
+        b.z1 ^= ZOB[cells[i]][i][0]; b.z2 ^= ZOB[cells[i]][i][1];
+      }
+      b.turn = turn; return b;
+    }
+    clone() { const b = Board.fromCells(this.cells, this.np, this.turn); return b; }
+    legal() { const m = []; for (let s = 0; s < S; s++) if (this.h[s] < R) m.push(s); return m; }
+    play(s) {
+      const i = s * R + this.h[s], p = this.turn;
+      this.cells[i] = p; this.h[s]++; this.count++;
+      const lc = this.lc; for (const li of LINES_AT[i]) lc[li * 4 + p]++;
+      this.z1 ^= ZOB[p][i][0]; this.z2 ^= ZOB[p][i][1];
+      this.turn = (p + 1) % this.np; return i;
+    }
+    undo(s) {
+      this.h[s]--; const i = s * R + this.h[s];
+      this.turn = (this.turn - 1 + this.np) % this.np; const p = this.turn;
+      this.cells[i] = -1; this.count--;
+      const lc = this.lc; for (const li of LINES_AT[i]) lc[li * 4 + p]--;
+      this.z1 ^= ZOB[p][i][0]; this.z2 ^= ZOB[p][i][1];
+    }
+    winsWith(p, i) { // would player p have four if he owned cell i?
+      if (this.cells[i] < 0) {
+        // i is empty, so a line through i with 3 of p's pieces is exactly a win
+        const lc = this.lc;
+        for (const li of LINES_AT[i]) if (lc[li * 4 + p] === 3) return true;
+        return false;
+      }
+      const c = this.cells;
+      for (const li of LINES_AT[i]) {
+        const a = LA[li], b = LB[li], d = LC[li], e = LD[li];
+        if ((a === i || c[a] === p) && (b === i || c[b] === p) && (d === i || c[d] === p) && (e === i || c[e] === p)) return true;
+      }
+      return false;
+    }
+    isWinMove(p, s) { return this.h[s] < R && this.winsWith(p, s * R + this.h[s]); }
+    winner() {
+      const c = this.cells;
+      for (let li = 0; li < LINES.length; li++) {
+        const p = c[LA[li]];
+        if (p >= 0 && c[LB[li]] === p && c[LC[li]] === p && c[LD[li]] === p) return p;
+      }
+      return -1;
+    }
+  }
+
+  const FEATURES = ["three_open", "two_open", "one_open", "threat_good", "threat_bad", "threat_stack", "inner"];
+  const DEFAULT_W = [0.55, 0.12, 0.02, 0.9, 0.35, 1.2, 0.03];
+
+  // feature vector from player `me`'s point of view (me minus all opponents)
+  function features(b, me) {
+    const c = b.cells, np = b.np, f = [0, 0, 0, 0, 0, 0, 0];
+    const thr = new Uint8Array(N); // bit p set: cell completes four for p
+    const lc = b.lc, NL = LINES.length;
+    for (let li = 0; li < NL; li++) {
+      const q = li * 4, a0 = lc[q], a1 = lc[q + 1], a2 = lc[q + 2], a3 = lc[q + 3];
+      let o, n;
+      if (a0) { if (a1 | a2 | a3) continue; o = 0; n = a0; }
+      else if (a1) { if (a2 | a3) continue; o = 1; n = a1; }
+      else if (a2) { if (a3) continue; o = 2; n = a2; }
+      else if (a3) { o = 3; n = a3; }
+      else continue;
+      const sg = o === me ? 1 : -1;
+      if (n === 3) {
+        f[0] += sg;
+        const empty = c[LA[li]] < 0 ? LA[li] : c[LB[li]] < 0 ? LB[li] : c[LC[li]] < 0 ? LC[li] : LD[li];
+        thr[empty] |= 1 << o;
+      } else if (n === 2) f[1] += sg;
+      else if (n === 1) f[2] += sg;
+    }
+    for (let i = 0; i < N; i++) {
+      const t = thr[i]; if (!t) continue;
+      const r = i % R;
+      for (let p = 0; p < np; p++) if (t >> p & 1) {
+        const sg = p === me ? 1 : -1;
+        // with 2 players, a threat on the right ring parity is worth more
+        const good = np !== 2 || (r % 2) === (p === 0 ? 0 : 1);
+        if (good) f[3] += sg; else f[4] += sg;
+        if (r + 1 < R && (thr[i + 1] >> p & 1)) f[5] += sg;
+      }
+    }
+    for (let s = 0; s < S; s++) for (let r = 0; r < 3; r++) {
+      const v = c[s * R + r]; if (v >= 0) f[6] += v === me ? 1 : -1;
+    }
+    return f;
+  }
+
+  class Engine {
+    constructor(weights) { this.w = weights.slice(); this.tt = new Map(); this.hist = new Int32Array(4 * S); }
+    evaluate(b) {
+      const f = features(b, this.me); let v = 0;
+      for (let k = 0; k < f.length; k++) v += this.w[k] * f[k];
+      return Math.round(1000 * v);
+    }
+    // "paranoid" search: every opponent plays against us
+    search(b, depth, alpha, beta, ply) {
+      if ((++this.nodes & 1023) === 0 && performance.now() > this.deadline) this.stop = true;
+      if (this.stop) return 0;
+      const me = this.me, p = b.turn, np = b.np, mine = p === me;
+      let moves = b.legal();
+      if (!moves.length) return 0;
+      for (const s of moves) if (b.isWinMove(p, s)) return mine ? WIN - ply : -(WIN - ply);
+      const nx = (p + 1) % np, nxMine = nx === me;
+      const nxWins = moves.filter((s) => b.isWinMove(nx, s));
+      if (nxWins.length) {
+        if (!mine && !nxMine) return -(WIN - ply - 1);       // opponents help each other
+        if (nxWins.length > 1) return nxMine ? WIN - ply - 1 : -(WIN - ply - 1);
+        moves = nxWins;                                     // forced block
+      } else if (mine !== nxMine) {
+        // don't play right under the next player's winning cell
+        const safe = moves.filter((s) => !(b.h[s] + 1 < R && b.winsWith(nx, s * R + b.h[s] + 1)));
+        if (safe.length) moves = safe;
+      }
+      if (depth <= 0) return this.evaluate(b);
+
+      const key = ((b.z1 & 0x7ffffff) * 4 + p) * 16777216 + (b.z2 & 0xffffff); // 53-bit number key
+      const ent = this.tt.get(key);
+      let ttMove = -1;
+      if (ent) {
+        ttMove = ent.m;
+        if (ent.d >= depth) {
+          if (ent.f === 0) return ent.v;
+          if (ent.f === 1 && ent.v >= beta) return ent.v;
+          if (ent.f === 2 && ent.v <= alpha) return ent.v;
+        }
+      }
+      const H = this.hist, base = p * S;
+      moves.sort((x, y) => (y === ttMove) - (x === ttMove) || H[base + y] - H[base + x]);
+      const a0 = alpha, b0 = beta;
+      let best = mine ? -Infinity : Infinity, bestM = moves[0];
+      for (const s of moves) {
+        b.play(s);
+        const v = this.search(b, depth - 1, alpha, beta, ply + 1);
+        b.undo(s);
+        if (this.stop) return 0;
+        if (mine) { if (v > best) { best = v; bestM = s; } if (v > alpha) alpha = v; }
+        else { if (v < best) { best = v; bestM = s; } if (v < beta) beta = v; }
+        if (alpha >= beta) { H[base + s] += depth * depth; break; }
+      }
+      const flag = best <= a0 ? 2 : best >= b0 ? 1 : 0;
+      this.tt.set(key, { d: depth, f: flag, v: best, m: bestM });
+      return best;
+    }
+    // scores for each of `me`'s moves; moves much worse than the best get only a bound
+    analyse(b, me, ms, margin = 60, onDepth = null, maxDepth = 40) {
+      this.me = me; this.deadline = performance.now() + ms; this.stop = false; this.nodes = 0;
+      if (this.tt.size > 1500000) this.tt.clear();
+      const moves = b.legal(); let result = {}; let reached = 0;
+      for (const s of moves) result[s] = 0;
+      for (const s of moves) if (b.isWinMove(me, s)) { const r = {}; for (const t of moves) r[t] = t === s ? WIN : -WIN; return { scores: r, depth: 1 }; }
+      for (let depth = 1; depth <= maxDepth; depth++) {
+        const sc = {}; let best = -Infinity;
+        const order = moves.slice().sort((x, y) => result[y] - result[x]);
+        for (const s of order) {
+          const alpha = best === -Infinity ? -Infinity : best - margin - 1;
+          b.play(s);
+          const v = this.search(b, depth - 1, alpha, Infinity, 1);
+          b.undo(s);
+          if (this.stop) break;
+          sc[s] = v; if (v > best) best = v;
+        }
+        if (this.stop) break;
+        const vals = Object.values(sc);
+        if (vals.every((v) => v <= -WIN + 200) && reached > 0) {
+          // every move loses if all opponents team up perfectly: keep the
+          // shallower scores so we still pick the most stubborn move
+          break;
+        }
+        result = sc; reached = depth;
+        if (onDepth) onDepth(reached, result, this.nodes);
+        if (Math.max(...vals) >= WIN - 200 || vals.every((v) => v <= -WIN + 200)) break;
+        if (b.count + depth >= N) break;
+      }
+      return { scores: result, depth: reached };
+    }
+  }
+  
+</script>
+
+<script>
+(function () {
+  "use strict";
+  const ENGINE_SRC = document.getElementById("engine-src").textContent;
+  const E = new Function(ENGINE_SRC + "\nreturn { S, R, N, WIN, Board, Engine, DEFAULT_W };")();
+  const { S, R, N, WIN, Board } = E;
+
+  const COLORS = ["var(--p0)", "var(--p1)", "var(--p2)", "var(--p3)"];
+  const NAMES = ["Rood", "Blauw", "Groen", "Paars"];
+
+  // ---------------- state
+  let np = 2;
+  let cells = new Int8Array(N).fill(-1);
+  let turn = 0;
+  let history = [];          // [{s, r, p, prevTurn}]
+  let lastResult = null;     // {depth, scores, nodes, ms, turn}
+  let worker = null, startTime = 0;
+
+  const h = (s) => { let k = 0; while (k < R && cells[s * R + k] >= 0) k++; return k; };
+  const board = () => Board.fromCells(cells, np, turn);
+
+  // ---------------- drawing
+  const svg = document.getElementById("board");
+  const RB = Array.from({ length: R + 1 }, (_, k) => 12 + k * 11); // ring borders
+  const deg = Math.PI / 180, STEP = 360 / S;
+  const pt = (rad, a) => [rad * Math.cos(a * deg), rad * Math.sin(a * deg)];
+  function sector(s, r) {
+    const a0 = (s - 0.5) * STEP, a1 = (s + 0.5) * STEP, r0 = RB[r], r1 = RB[r + 1];
+    const [x0, y0] = pt(r0, a0), [x1, y1] = pt(r1, a0), [x2, y2] = pt(r1, a1), [x3, y3] = pt(r0, a1);
+    return `M${x0},${y0}L${x1},${y1}A${r1},${r1} 0 0 1 ${x2},${y2}L${x3},${y3}A${r0},${r0} 0 0 0 ${x0},${y0}Z`;
+  }
+  const NS = "http://www.w3.org/2000/svg";
+  const cellEls = [];
+  (function build() {
+    for (let s = 0; s < S; s++) for (let r = 0; r < R; r++) {
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", sector(s, r)); p.setAttribute("class", "cell");
+      p.dataset.s = s; svg.appendChild(p); cellEls[s * R + r] = p;
+    }
+    const hub = document.createElementNS(NS, "circle");
+    hub.setAttribute("r", RB[0] - 0.6); hub.setAttribute("fill", "var(--line)"); svg.appendChild(hub);
+    for (let s = 0; s < S; s++) {
+      const [x, y] = pt(95, s * STEP);
+      const t = document.createElementNS(NS, "text");
+      t.setAttribute("x", x); t.setAttribute("y", y); t.setAttribute("class", "lbl"); t.textContent = s;
+      svg.appendChild(t);
+    }
+  })();
+
+  function sliceAt(evt) {
+    const r = svg.getBoundingClientRect();
+    const x = (evt.clientX - r.left) / r.width * 200 - 100, y = (evt.clientY - r.top) / r.height * 200 - 100;
+    let a = Math.atan2(y, x) / deg; if (a < 0) a += 360;
+    return Math.round(a / STEP) % S;
+  }
+  let hoverSlice = -1;
+  svg.addEventListener("pointermove", (e) => { hoverSlice = sliceAt(e); draw(); });
+  svg.addEventListener("pointerleave", () => { hoverSlice = -1; draw(); });
+  svg.addEventListener("click", (e) => play(sliceAt(e)));
+
+  function bestMove() {
+    if (!lastResult || lastResult.turn !== turn) return -1;
+    const sc = lastResult.scores; let best = -1;
+    for (const s in sc) if (best < 0 || sc[s] > sc[best]) best = +s;
+    return best;
+  }
+
+  function draw() {
+    const bm = bestMove();
+    for (let s = 0; s < S; s++) {
+      const hs = h(s);
+      for (let r = 0; r < R; r++) {
+        const el = cellEls[s * R + r], v = cells[s * R + r];
+        el.style.fill = v >= 0 ? COLORS[v] : "var(--cell)";
+        el.classList.toggle("hover", v < 0 && s === hoverSlice && r === hs && !gameOver());
+        el.classList.toggle("best", v < 0 && s === bm && r === hs);
+      }
+    }
+  }
+
+  // ---------------- game logic
+  function gameOver() { const b = board(); return b.winner() >= 0 || b.count >= N; }
+  function play(s) {
+    if (s < 0 || gameOver()) return;
+    const r = h(s); if (r >= R) return;
+    history.push({ s, r, p: turn, prevTurn: turn });
+    cells[s * R + r] = turn; turn = (turn + 1) % np;
+    changed();
+  }
+  document.getElementById("undo").onclick = () => {
+    const m = history.pop(); if (!m) return;
+    cells[m.s * R + m.r] = -1; turn = m.prevTurn; changed();
+  };
+  document.getElementById("reset").onclick = () => { cells.fill(-1); history = []; turn = 0; changed(); };
+  document.getElementById("np").onchange = (e) => { np = +e.target.value; cells.fill(-1); history = []; turn = 0; renderTurns(); changed(); };
+  document.getElementById("playbest").onclick = () => { const m = bestMove(); if (m >= 0) play(m); };
+
+  function renderTurns() {
+    const row = document.getElementById("turnrow");
+    row.innerHTML = '<span class="meta">Aan zet:</span>';
+    for (let p = 0; p < np; p++) {
+      const b = document.createElement("button");
+      b.className = "turnbtn" + (p === turn ? " on" : "");
+      b.innerHTML = `<span class="dot" style="background:${COLORS[p]}"></span> ${NAMES[p]}`;
+      b.onclick = () => { turn = p; changed(); };
+      row.appendChild(b);
+    }
+  }
+
+  // ---------------- position code: "2:0:" + 112 chars (. or 0-3)
+  function code() {
+    let c = np + ":" + turn + ":";
+    for (let i = 0; i < N; i++) c += cells[i] < 0 ? "." : cells[i];
+    return c;
+  }
+  document.getElementById("copy").onclick = () => { const t = document.getElementById("code"); t.select(); navigator.clipboard && navigator.clipboard.writeText(t.value); };
+  document.getElementById("load").onclick = () => {
+    const m = document.getElementById("code").value.trim().match(/^([234]):([0-3]):([.0-3]{112})$/);
+    if (!m) { setVerdict("Ongeldige standcode", "", ""); return; }
+    np = +m[1]; turn = +m[2] % np; document.getElementById("np").value = String(np);
+    for (let i = 0; i < N; i++) cells[i] = m[3][i] === "." ? -1 : +m[3][i];
+    // repair floating pieces: a cell can only be filled if the one below is
+    for (let s = 0; s < S; s++) { let gap = false; for (let r = 0; r < R; r++) { if (cells[s * R + r] < 0) gap = true; else if (gap) cells[s * R + r] = -1; } }
+    history = []; renderTurns(); changed();
+  };
+
+  // ---------------- analysis (in a background worker)
+  const WORKER_SRC = ENGINE_SRC + `
+    let eng = null;
+    onmessage = (e) => {
+      const { cells, np, turn, ms } = e.data;
+      const b = Board.fromCells(Int8Array.from(cells), np, turn);
+      eng = new Engine(DEFAULT_W);
+      const t0 = performance.now();
+      const res = eng.analyse(b, turn, ms > 0 ? ms : 1e12, 60, (depth, scores, nodes) => {
+        postMessage({ type: "depth", depth, scores, nodes, ms: performance.now() - t0 });
+      }, N - b.count);
+      postMessage({ type: "done", depth: res.depth, scores: res.scores, nodes: eng.nodes, ms: performance.now() - t0 });
+    };`;
+  const workerURL = URL.createObjectURL(new Blob([WORKER_SRC], { type: "text/javascript" }));
+
+  function stopWorker() { if (worker) { worker.terminate(); worker = null; } }
+  document.getElementById("stop").onclick = () => { stopWorker(); document.getElementById("stats").textContent += " — gestopt"; };
+
+  function analyse() {
+    stopWorker();
+    lastResult = null;
+    const b = board();
+    const w = b.winner();
+    if (w >= 0) { setVerdict(`${NAMES[w]} heeft gewonnen!`, "", "win"); fillTable(null); bar(w === 0 ? 1 : 0); return; }
+    if (b.count >= N) { setVerdict("Gelijkspel: het web is vol", "", ""); fillTable(null); return; }
+    setVerdict("Aan het rekenen…", "", "");
+    const ms = +document.getElementById("time").value;
+    const myTurn = turn;
+    worker = new Worker(workerURL);
+    startTime = performance.now();
+    worker.onmessage = (e) => {
+      const d = e.data;
+      if (myTurn !== turn) return;
+      lastResult = { depth: d.depth, scores: d.scores, nodes: d.nodes, ms: d.ms, turn: myTurn };
+      show(lastResult, d.type === "done");
+      if (d.type === "done") stopWorker();
+    };
+    worker.onerror = (e) => setVerdict("Fout in de engine", e.message || "", "loss");
+    worker.postMessage({ cells: Array.from(cells), np, turn, ms });
+  }
+
+  function movesToWin(score) { return Math.floor((WIN - score) / np) + 1; } // our moves incl. the winning one
+  function pliesToLose(score) { return WIN + score + 1; }                  // total moves until an opponent wins
+
+  function show(res, done) {
+    const sc = res.scores, keys = Object.keys(sc).map(Number);
+    if (!keys.length) return;
+    keys.sort((a, b) => sc[b] - sc[a]);
+    const best = keys[0], v = sc[best], me = NAMES[res.turn];
+    if (v >= WIN - 200) {
+      const n = movesToWin(v);
+      setVerdict(`${me} wint in ${n} ${n === 1 ? "zet" : "zetten"}`, `Speel poot ${best}. Dit is een gedwongen winst: wat de tegenstander${np > 2 ? "s" : ""} ook doe${np > 2 ? "n" : "t"}.`, "win");
+      bar(res.turn === 0 ? 1 : 0);
+    } else if (v <= -WIN + 200) {
+      const n = pliesToLose(v);
+      setVerdict(`${me} staat verloren`, `Bij perfect spel wint een tegenstander binnen ${n} zetten (totaal). Taaiste verdediging: poot ${best}.`, "loss");
+      bar(res.turn === 0 ? 0 : 1);
+    } else {
+      const ev = v / 1000;
+      setVerdict(`Beste zet: poot ${best}`, `Oordeel voor ${me}: ${ev >= 0 ? "+" : ""}${ev.toFixed(2)} (${describe(ev)}). Nog geen gedwongen winst gevonden binnen ${res.depth} zetten vooruit.`, "");
+      const p0 = res.turn === 0 ? ev : -ev;
+      bar(1 / (1 + Math.exp(-p0 * 1.2)));
+    }
+    const sec = res.ms / 1000;
+    document.getElementById("stats").textContent =
+      `${res.depth} zetten vooruit · ${(res.nodes / 1e6).toFixed(1)} mln standen · ${Math.round(res.nodes / Math.max(sec, 0.001) / 1000)}k/s · ${sec.toFixed(1)} s` + (done ? " · klaar" : " · rekent door…");
+    fillTable(res);
+    draw();
+  }
+  function describe(ev) {
+    const a = Math.abs(ev);
+    const side = ev >= 0 ? "jij" : "tegenstander";
+    if (a < 0.3) return "gelijkwaardig";
+    if (a < 1.2) return `licht voordeel ${side}`;
+    if (a < 3) return `duidelijk voordeel ${side}`;
+    return `groot voordeel ${side}`;
+  }
+  function fillTable(res) {
+    const tb = document.getElementById("moves"); tb.innerHTML = "";
+    if (!res) return;
+    const sc = res.scores, keys = Object.keys(sc).map(Number).sort((a, b) => sc[b] - sc[a]);
+    const top = sc[keys[0]];
+    keys.forEach((s, i) => {
+      const v = sc[s], tr = document.createElement("tr");
+      if (i === 0) tr.className = "top";
+      let label, num;
+      if (v >= WIN - 200) { label = `wint in ${movesToWin(v)}`; num = "#"; }
+      else if (v <= -WIN + 200) { label = `verliest (${pliesToLose(v)} zetten)`; num = "−#"; }
+      else if (top - v > 61 && i > 0) { label = "slechter"; num = "≤ " + (v / 1000).toFixed(2); }
+      else { label = i === 0 ? "beste" : "goed alternatief"; num = (v >= 0 ? "+" : "") + (v / 1000).toFixed(2); }
+      tr.innerHTML = `<td>${s}</td><td>${label}</td><td class="num">${num}</td>`;
+      tr.style.cursor = "pointer"; tr.onclick = () => play(s);
+      tb.appendChild(tr);
+    });
+  }
+  function setVerdict(t, d, cls) {
+    const v = document.getElementById("verdict"); v.textContent = t; v.className = "verdict " + (cls || "");
+    document.getElementById("detail").textContent = d;
+  }
+  function bar(f) { document.getElementById("evalbar").style.width = Math.round(Math.max(0.02, Math.min(0.98, f)) * 100) + "%"; }
+
+  function changed() {
+    renderTurns();
+    document.getElementById("code").value = code();
+    draw();
+    analyse();
+  }
+
+  renderTurns();
+  changed();
+})();
+</script>
+</body>
+</html>

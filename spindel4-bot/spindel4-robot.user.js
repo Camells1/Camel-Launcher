@@ -55,10 +55,12 @@
 
   // ===================================================================
   // 3. Game rules + engine (2, 3 or 4 players)
+  //    (copied into analyse.html by build_analyser.py: keep the ENGINE markers)
   //    16 slices around the hub, 7 rings each. A piece drops to the
   //    innermost free ring of a slice. Four in a row wins: straight
   //    (same slice), round (same ring) or diagonal.
   // ===================================================================
+  // ENGINE-START
   const S = 16, R = 7, N = S * R, WIN = 1000000;
   const idx = (s, r) => (((s % S) + S) % S) * R + r;
   const LINES = [];
@@ -243,13 +245,13 @@
       return best;
     }
     // scores for each of `me`'s moves; moves much worse than the best get only a bound
-    analyse(b, me, ms, margin = 60) {
+    analyse(b, me, ms, margin = 60, onDepth = null, maxDepth = 40) {
       this.me = me; this.deadline = performance.now() + ms; this.stop = false; this.nodes = 0;
       if (this.tt.size > 1500000) this.tt.clear();
       const moves = b.legal(); let result = {}; let reached = 0;
       for (const s of moves) result[s] = 0;
       for (const s of moves) if (b.isWinMove(me, s)) { const r = {}; for (const t of moves) r[t] = t === s ? WIN : -WIN; return { scores: r, depth: 1 }; }
-      for (let depth = 1; depth <= 40; depth++) {
+      for (let depth = 1; depth <= maxDepth; depth++) {
         const sc = {}; let best = -Infinity;
         const order = moves.slice().sort((x, y) => result[y] - result[x]);
         for (const s of order) {
@@ -268,12 +270,14 @@
           break;
         }
         result = sc; reached = depth;
+        if (onDepth) onDepth(reached, result, this.nodes);
         if (Math.max(...vals) >= WIN - 200 || vals.every((v) => v <= -WIN + 200)) break;
         if (b.count + depth >= N) break;
       }
       return { scores: result, depth: reached };
     }
   }
+  // ENGINE-END
 
   // ===================================================================
   // 4. Memory + learning (saved in this browser)

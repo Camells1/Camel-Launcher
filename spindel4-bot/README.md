@@ -30,6 +30,21 @@ Zet **Automatische vergrendeling** op **Nooit** en laat de telefoon aan de
 lader, dan blijft hij doorspelen. Is je iPhone in het Nederlands ingesteld,
 dan is de robot ook in het Nederlands.
 
+## Nederlands: Analyse-engine (localhost)
+
+Een eigen pagina waarop je elke stand neerzet (2, 3 of 4 spelers). De engine
+rekent op de achtergrond en laat zien:
+
+- de **beste zet** (omlijnd op het bord) en een oordeel per poot;
+- **"Rood wint in N zetten"** zodra hij een gedwongen winst vindt,
+  of hoe snel je verliest als de stand verloren is;
+- hoeveel zetten vooruit hij al rekent.
+
+Starten: dubbelklik **`analyse.html`**, of typ `python analyser.py`
+(opent http://localhost:8044, alleen bereikbaar vanaf je eigen PC).
+Met de **standcode** kun je een stand kopiëren en later weer laden.
+Na een wijziging in de engine: `python build_analyser.py`.
+
 ## Nederlands: PC (op de achtergrond, tot 10 potjes tegelijk)
 
 Installeer Python uit de **Microsoft Store**, open een opdrachtvenster in de map
