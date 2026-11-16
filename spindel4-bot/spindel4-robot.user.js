@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      2.0
+// @version      2.1
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -385,7 +385,36 @@
     });
   }
   const texts = (ns) => ns.map((n) => n.label).filter(Boolean);
-  const findBtn = (ns, ...labels) => ns.find((n) => n.role === "button" && labels.some((l) => n.label.toLowerCase() === l.toLowerCase() || n.label.toLowerCase().startsWith(l.toLowerCase())));
+  // the site is shown in English or Dutch depending on the phone's language
+  const WORDS = {
+    "Continue anonymously": ["Continue anonymously", "Anoniem verder", "Anoniem doorgaan"],
+    "Got it": ["Got it", "Begrepen", "Snap ik", "Oké", "Ok, verder", "Doorgaan"],
+    "Play again": ["Play again", "Nog een keer", "Opnieuw spelen", "Nog een potje", "Opnieuw"],
+    "Back": ["Back", "Terug"],
+    "Against the computer": ["Against the computer", "Tegen de computer"],
+    "1 computer": ["1 computer"],
+    "2 computers": ["2 computers"],
+    "3 computers": ["3 computers"],
+    "Easy": ["Easy", "Makkelijk"],
+    "Medium": ["Medium", "Gemiddeld"],
+    "Hard": ["Hard", "Moeilijk"],
+    "Expert": ["Expert"],
+  };
+  const RX = {
+    yourMove: /^(your move|jouw zet|jij bent aan zet|je bent aan zet|aan (de beurt|zet):.*\((you|jij)\))/i,
+    order: /^(order|volgorde)/i,
+    tutorial: /how to make a move|zo doe je een zet/i,
+    yourTurn: /^(your turn|nu jij|jouw beurt)/i,
+    step1: /marked spoke with|gemarkeerde poot aan, kijk|(point|tap) at the marked/i,
+    win: /\b(wins|won|wint|gewonnen|heeft gewonnen)\b/i,
+    you: /\((you|jij)\)/i,
+    draw: /\b(draw|tie|gelijkspel|gelijk spel|onbeslist)\b/i,
+  };
+  const findBtn = (ns, ...labels) => {
+    const alts = [];
+    for (const l of labels) for (const a of (WORDS[l] || [l])) alts.push(a.toLowerCase());
+    return ns.find((n) => n.role === "button" && alts.some((l) => n.label.toLowerCase() === l || n.label.toLowerCase().startsWith(l)));
+  };
   const clickNode = (n) => { n.el.click(); lastAction = Date.now(); };
 
   function boardBox(ns) {
@@ -436,7 +465,7 @@
 
   // the "Order:" dots under the status line give the players' colours in turn order
   function readOrder(ns, img) {
-    const lab = ns.find((n) => /^order/i.test(n.label));
+    const lab = ns.find((n) => RX.order.test(n.label));
     if (!lab) return null;
     const cy = lab.y + lab.h / 2;
     const dots = ns.filter((n) => n !== lab && n.w > 6 && n.w <= 30 && Math.abs(n.w - n.h) < 2 && Math.abs(n.y + n.h / 2 - cy) < 14 && n.x > lab.x)
@@ -479,7 +508,7 @@
   const auto = window.__S4R_CONFIG || {};
   const settings = Object.assign({ computers: "1", level: "climb", think: 1.5, running: false }, store.get(SET_KEY, {}), auto);
   let running = !!settings.running;
-  let game = null, current = null, rotateIdx = store.get("S4R_rot", 0), climb = store.get("S4R_climb", {}), streak = {}, lastAction = Date.now();
+  let game = null, current = null, rotateIdx = store.get("S4R_rot", 0), climb = store.get("S4R_climb", {}), streak = {}, lastAction = Date.now(), lastSig = "";
   let gamesThisRun = 0;
   const saveSettings = () => store.set(SET_KEY, { computers: settings.computers, level: settings.level, think: settings.think, running });
 
@@ -512,10 +541,13 @@
   async function step() {
     const ns = nodes(), tx = texts(ns);
     tr("step " + tx.slice(0, 4).join("|").slice(0, 120));
+    // anything changing on screen counts as progress for the watchdog
+    const sig = tx.join("|");
+    if (sig && sig !== lastSig) { lastSig = sig; lastAction = Date.now(); }
     const btn = (...l) => findBtn(ns, ...l);
     let b;
     if ((b = btn("Continue anonymously")) || (b = btn("Got it"))) { clickNode(b); await sleep(1200); return; }
-    if (tx.some((t) => /how to make a move/i.test(t))) { await tutorial(ns, tx); return; }
+    if (tx.some((t) => RX.tutorial.test(t))) { await tutorial(ns, tx); return; }
 
     // game over?
     const res = parseResult(tx);
@@ -541,15 +573,15 @@
       if (c) { clickNode(c); startGame(want); await sleep(1500); } return;
     }
     // our turn?
-    if (tx.some((t) => /^your move/i.test(t))) { await myMove(ns); return; }
+    if (tx.some((t) => RX.yourMove.test(t))) { await myMove(ns); return; }
     // otherwise: waiting for the computer
   }
 
   function parseResult(tx) {
     for (const t of tx) {
       const low = t.toLowerCase();
-      if (/\b(wins|won)\b/.test(low)) return low.includes("(you)") ? "win" : "loss";
-      if (/\b(draw|tie)\b/.test(low)) return "draw";
+      if (RX.win.test(low)) return RX.you.test(low) ? "win" : "loss";
+      if (RX.draw.test(low)) return "draw";
     }
     return null;
   }
@@ -588,20 +620,21 @@
 
   async function myMove(ns) {
     const box = boardBox(ns);
-    if (!box) return;
+    if (!box) { tr("myMove: no board box"); return; }
     // two identical reads in a row = the board is not animating
     let cells = null, order = null, prev = null;
     for (let i = 0; i < 6; i++) {
       const img = capture();
       order = readOrder(ns, img);
-      if (!order) { await sleep(300); continue; }
+      if (!order) { tr("myMove: no order dots"); await sleep(300); continue; }
       const c = readBoard(box, img, order.map((o) => o.color));
+      if (!c) tr("myMove: floating piece, colors " + JSON.stringify(order.map((o) => o.color)));
       if (c && prev && c.join() === prev.join()) { cells = c; break; }
       prev = c; await sleep(250);
     }
-    if (!cells) return;
+    if (!cells) { tr("myMove: unstable board"); return; }
     const np = order.length, me = order.findIndex((o) => o.current);
-    if (me < 0) return;
+    if (me < 0) { tr("myMove: no current dot"); return; }
     if (!game || game.done) startGame(current || nextMode());
     game.np = np;
     const b = Board.fromCells(cells, np, me);
@@ -626,7 +659,7 @@
       for (let k = 0; k < 16; k++) {
         await sleep(250);
         const t2 = texts(nodes());
-        if (!t2.some((t) => /^your move/i.test(t)) || parseResult(t2)) { lastAction = Date.now(); return; }
+        if (!t2.some((t) => RX.yourMove.test(t)) || parseResult(t2)) { lastAction = Date.now(); return; }
       }
     }
   }
@@ -636,10 +669,10 @@
     const box = boardBox(ns);
     tr("tutorial box " + (box && [box.x, box.y, box.w, box.h].map(Math.round).join(",")));
     if (!box) { pointer("pointermove", innerWidth / 2, innerHeight * 0.55, 0); await sleep(300); return; }
-    const your = tx.find((t) => /^your turn/i.test(t));
+    const your = tx.find((t) => RX.yourTurn.test(t));
     if (!your) return; // still showing the example
     const at = (slice) => cellXY(box, slice, 0, 0.8);
-    if (/marked spoke with/i.test(your) || /^your turn: (point|tap) at the marked/i.test(your)) {
+    if (RX.step1.test(your)) {
       log("tutorial step 1");
       const [x, y] = at(13); await tap(x, y); await sleep(1500);
     } else {
@@ -657,8 +690,10 @@
       if (running) {
         try { await step(); } catch (e) { console.error("[S4R]", e); }
         // watchdog: nothing happened for 150 s -> reload the page and carry on
+        if (document.hidden) lastAction = Date.now(); // phone locked / other app: just wait
         if (Date.now() - lastAction > 150000) {
           log("stuck - reloading the page");
+          console.log("[S4R] trace " + trace.slice(-6).join(" || "));
           saveSettings(); saveBrain();
           location.reload();
           await sleep(10000);
@@ -684,7 +719,8 @@
   }
   function buildUI() {
     const host = document.createElement("div");
-    host.style.cssText = "position:fixed;left:8px;bottom:8px;z-index:2147483647;";
+    host.style.cssText = "position:fixed;left:8px;bottom:calc(8px + env(safe-area-inset-bottom, 0px));z-index:2147483647;";
+    if (matchMedia("(pointer: coarse)").matches) host.style.bottom = "calc(96px + env(safe-area-inset-bottom, 0px))";
     const sh = host.attachShadow({ mode: "open" });
     sh.innerHTML = `<style>
       :host{all:initial} *{box-sizing:border-box;font:13px/1.35 -apple-system,system-ui,Segoe UI,Roboto,sans-serif}
