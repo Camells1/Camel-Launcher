@@ -119,7 +119,8 @@
 (function () {
   "use strict";
   const ENGINE_SRC = document.getElementById("engine-src").textContent;
-  const E = new Function(ENGINE_SRC + "\nreturn { S, R, N, WIN, Board, Engine, DEFAULT_W };")();
+  const E = new Function(ENGINE_SRC + "\nreturn spindelEngine();")();
+  const THREADS = Math.max(1, Math.min(12, (navigator.hardwareConcurrency || 4) - 1));
   const { S, R, N, WIN, Board } = E;
 
   const COLORS = ["var(--p0)", "var(--p1)", "var(--p2)", "var(--p3)"];
@@ -241,22 +242,9 @@
     history = []; renderTurns(); changed();
   };
 
-  // ---------------- analysis (in a background worker)
-  const WORKER_SRC = ENGINE_SRC + `
-    let eng = null;
-    onmessage = (e) => {
-      const { cells, np, turn, ms } = e.data;
-      const b = Board.fromCells(Int8Array.from(cells), np, turn);
-      eng = new Engine(DEFAULT_W);
-      const t0 = performance.now();
-      const res = eng.analyse(b, turn, ms > 0 ? ms : 1e12, 60, (depth, scores, nodes) => {
-        postMessage({ type: "depth", depth, scores, nodes, ms: performance.now() - t0 });
-      }, N - b.count);
-      postMessage({ type: "done", depth: res.depth, scores: res.scores, nodes: eng.nodes, ms: performance.now() - t0 });
-    };`;
-  const workerURL = URL.createObjectURL(new Blob([WORKER_SRC], { type: "text/javascript" }));
-
-  function stopWorker() { if (worker) { worker.terminate(); worker = null; } }
+  // ---------------- analysis (background threads, same engine as the robot)
+  let ps = null, runId = 0;
+  function stopWorker() { runId++; if (ps) { ps.terminate(); ps = null; } }
   document.getElementById("stop").onclick = () => { stopWorker(); document.getElementById("stats").textContent += " — gestopt"; };
 
   function analyse() {
@@ -267,19 +255,18 @@
     if (w >= 0) { setVerdict(`${NAMES[w]} heeft gewonnen!`, "", "win"); fillTable(null); bar(w === 0 ? 1 : 0); return; }
     if (b.count >= N) { setVerdict("Gelijkspel: het web is vol", "", ""); fillTable(null); return; }
     setVerdict("Aan het rekenen…", "", "");
-    const ms = +document.getElementById("time").value;
-    const myTurn = turn;
-    worker = new Worker(workerURL);
-    startTime = performance.now();
-    worker.onmessage = (e) => {
-      const d = e.data;
-      if (myTurn !== turn) return;
-      lastResult = { depth: d.depth, scores: d.scores, nodes: d.nodes, ms: d.ms, turn: myTurn };
-      show(lastResult, d.type === "done");
-      if (d.type === "done") stopWorker();
+    const ms = +document.getElementById("time").value || 1e12;
+    const myTurn = turn, id = runId, t0 = performance.now();
+    ps = new E.ParallelSearch(ENGINE_SRC, THREADS);
+    const mine = ps;
+    const report = (depth, scores, nodes, done) => {
+      if (id !== runId || myTurn !== turn) return;
+      lastResult = { depth, scores: Object.assign({}, scores), nodes, ms: performance.now() - t0, turn: myTurn };
+      show(lastResult, done);
     };
-    worker.onerror = (e) => setVerdict("Fout in de engine", e.message || "", "loss");
-    worker.postMessage({ cells: Array.from(cells), np, turn, ms });
+    ps.analyse(b, myTurn, ms, E.DEFAULT_W, 60, (d, sc, n) => report(d, sc, n, false), N - b.count)
+      .then((r) => { if (id === runId && lastResult) report(r.depth, r.scores, mine.nodes, true); if (ps === mine) stopWorker(); })
+      .catch((e) => { if (id === runId) setVerdict("Fout in de engine", String(e && e.message || e), "loss"); });
   }
 
   function movesToWin(score) { return Math.floor((WIN - score) / np) + 1; } // our moves incl. the winning one
@@ -306,7 +293,7 @@
     }
     const sec = res.ms / 1000;
     document.getElementById("stats").textContent =
-      `${res.depth} zetten vooruit · ${(res.nodes / 1e6).toFixed(1)} mln standen · ${Math.round(res.nodes / Math.max(sec, 0.001) / 1000)}k/s · ${sec.toFixed(1)} s` + (done ? " · klaar" : " · rekent door…");
+      `${THREADS} ${THREADS === 1 ? "kern" : "kernen"} · ${res.depth} zetten vooruit · ${(res.nodes / 1e6).toFixed(1)} mln standen · ${Math.round(res.nodes / Math.max(sec, 0.001) / 1000)}k/s · ${sec.toFixed(1)} s` + (done ? " · klaar" : " · rekent door…");
     fillTable(res);
     draw();
   }

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      3.2
+// @version      4.0
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -61,6 +61,9 @@
   //    (same slice), round (same ring) or diagonal.
   // ===================================================================
   // ENGINE-START
+  // The whole engine lives in this one function so it can also run in
+  // background threads (Web Workers): their code is spindelEngine.toString().
+  function spindelEngine() {
   const S = 16, R = 7, N = S * R, WIN = 1000000;
   const idx = (s, r) => (((s % S) + S) % S) * R + r;
   const LINES = [];
@@ -79,6 +82,7 @@
       }
     }
   })();
+  const NLINES = LINES.length;
   const LINES_AT = Array.from({ length: N }, () => []);
   LINES.forEach((L, li) => L.forEach((c) => LINES_AT[c].push(li)));
   const LA = LINES.map((L) => L[0]), LB = LINES.map((L) => L[1]),
@@ -188,66 +192,136 @@
     return f;
   }
 
+  const TT_BITS = 19, TT_SIZE = 1 << TT_BITS, TT_MASK = TT_SIZE - 1, INF = 2000000000;
   class Engine {
-    constructor(weights) { this.w = weights.slice(); this.tt = new Map(); this.hist = new Int32Array(4 * S); }
+    constructor(weights, opt) {
+      this.w = weights.slice(); this.opt = opt || {};
+      this.pvs = this.opt.pvs !== false;
+      // transposition table in flat typed arrays (no objects, no garbage)
+      this.ttK1 = new Int32Array(TT_SIZE); this.ttK2 = new Int32Array(TT_SIZE);
+      this.ttV = new Int32Array(TT_SIZE); this.ttD = new Int8Array(TT_SIZE).fill(-1);
+      this.ttF = new Int8Array(TT_SIZE); this.ttM = new Int8Array(TT_SIZE);
+      this.hist = new Int32Array(4 * S);
+      this.mv = []; this.mo = [];
+      for (let i = 0; i < N + 4; i++) { this.mv.push(new Int8Array(S)); this.mo.push(new Int32Array(S)); }
+      this.thr = new Uint8Array(N); this.touched = new Int16Array(N);
+    }
+    // same value as features() + weights, without allocating anything
     evaluate(b) {
-      const f = features(b, this.me); let v = 0;
-      for (let k = 0; k < f.length; k++) v += this.w[k] * f[k];
+      const me = this.me, c = b.cells, lc = b.lc, np = b.np, thr = this.thr, touched = this.touched;
+      let f0 = 0, f1 = 0, f2 = 0, f3 = 0, f4 = 0, f5 = 0, f6 = 0, nt = 0;
+      for (let li = 0, q = 0; li < NLINES; li++, q += 4) {
+        const a0 = lc[q], a1 = lc[q + 1], a2 = lc[q + 2], a3 = lc[q + 3];
+        let o, n;
+        if (a0) { if (a1 | a2 | a3) continue; o = 0; n = a0; }
+        else if (a1) { if (a2 | a3) continue; o = 1; n = a1; }
+        else if (a2) { if (a3) continue; o = 2; n = a2; }
+        else if (a3) { o = 3; n = a3; }
+        else continue;
+        const sg = o === me ? 1 : -1;
+        if (n === 3) {
+          f0 += sg;
+          const e = c[LA[li]] < 0 ? LA[li] : c[LB[li]] < 0 ? LB[li] : c[LC[li]] < 0 ? LC[li] : LD[li];
+          if (!thr[e]) touched[nt++] = e;
+          thr[e] |= 1 << o;
+        } else if (n === 2) f1 += sg;
+        else if (n === 1) f2 += sg;
+      }
+      for (let k = 0; k < nt; k++) {
+        const i = touched[k], t = thr[i], r = i % R;
+        for (let p = 0; p < np; p++) if (t >> p & 1) {
+          const sg = p === me ? 1 : -1;
+          if (np !== 2 || (r % 2) === (p === 0 ? 0 : 1)) f3 += sg; else f4 += sg;
+          if (r + 1 < R && (thr[i + 1] >> p & 1)) f5 += sg;
+        }
+      }
+      for (let k = 0; k < nt; k++) thr[touched[k]] = 0;
+      for (let s = 0, base = 0; s < S; s++, base += R) for (let r = 0; r < 3; r++) {
+        const v = c[base + r]; if (v >= 0) f6 += v === me ? 1 : -1;
+      }
+      const w = this.w;
+      let v = 0;
+      v += w[0] * f0; v += w[1] * f1; v += w[2] * f2; v += w[3] * f3; v += w[4] * f4; v += w[5] * f5; v += w[6] * f6;
       return Math.round(1000 * v);
     }
     // "paranoid" search: every opponent plays against us
     search(b, depth, alpha, beta, ply) {
-      if ((++this.nodes & 1023) === 0 && performance.now() > this.deadline) this.stop = true;
+      if ((++this.nodes & 2047) === 0 && performance.now() > this.deadline) this.stop = true;
       if (this.stop) return 0;
-      const me = this.me, p = b.turn, np = b.np, mine = p === me;
-      let moves = b.legal();
-      if (!moves.length) return 0;
-      for (const s of moves) if (b.isWinMove(p, s)) return mine ? WIN - ply : -(WIN - ply);
+      const me = this.me, p = b.turn, np = b.np, mine = p === me, h = b.h;
+      const list = this.mv[ply];
+      let n = 0;
+      for (let s = 0; s < S; s++) if (h[s] < R) {
+        if (b.winsWith(p, s * R + h[s])) return mine ? WIN - ply : -(WIN - ply);
+        list[n++] = s;
+      }
+      if (!n) return 0;
       const nx = (p + 1) % np, nxMine = nx === me;
-      const nxWins = moves.filter((s) => b.isWinMove(nx, s));
-      if (nxWins.length) {
-        if (!mine && !nxMine) return -(WIN - ply - 1);       // opponents help each other
-        if (nxWins.length > 1) return nxMine ? WIN - ply - 1 : -(WIN - ply - 1);
-        moves = nxWins;                                     // forced block
+      let nw = 0, nwMove = -1;
+      for (let i = 0; i < n; i++) { const s = list[i]; if (b.winsWith(nx, s * R + h[s])) { nw++; nwMove = s; } }
+      if (nw) {
+        if (!mine && !nxMine) return -(WIN - ply - 1);        // opponents help each other
+        if (nw > 1) return nxMine ? WIN - ply - 1 : -(WIN - ply - 1);
+        list[0] = nwMove; n = 1;                              // forced block
       } else if (mine !== nxMine) {
         // don't play right under the next player's winning cell
-        const safe = moves.filter((s) => !(b.h[s] + 1 < R && b.winsWith(nx, s * R + b.h[s] + 1)));
-        if (safe.length) moves = safe;
+        let m = 0;
+        for (let i = 0; i < n; i++) { const s = list[i]; if (!(h[s] + 1 < R && b.winsWith(nx, s * R + h[s] + 1))) list[m++] = s; }
+        if (m) n = m;
       }
       if (depth <= 0) return this.evaluate(b);
 
-      const key = ((b.z1 & 0x7ffffff) * 4 + p) * 16777216 + (b.z2 & 0xffffff); // 53-bit number key
-      const ent = this.tt.get(key);
+      // transposition table
+      const z1 = b.z1, k2 = (b.z2 * 4 + p) | 0, ti = (z1 ^ Math.imul(k2, 0x9E3779B1 | 0)) & TT_MASK;
       let ttMove = -1;
-      if (ent) {
-        ttMove = ent.m;
-        if (ent.d >= depth) {
-          if (ent.f === 0) return ent.v;
-          if (ent.f === 1 && ent.v >= beta) return ent.v;
-          if (ent.f === 2 && ent.v <= alpha) return ent.v;
+      if (this.ttD[ti] >= 0 && this.ttK1[ti] === z1 && this.ttK2[ti] === k2) {
+        ttMove = this.ttM[ti];
+        if (this.ttD[ti] >= depth) {
+          const f = this.ttF[ti], v = this.ttV[ti];
+          if (f === 0) return v;
+          if (f === 1 && v >= beta) return v;
+          if (f === 2 && v <= alpha) return v;
         }
       }
-      const H = this.hist, base = p * S;
-      moves.sort((x, y) => (y === ttMove) - (x === ttMove) || H[base + y] - H[base + x]);
+      // move ordering: table move first, then history
+      const H = this.hist, base = p * S, ord = this.mo[ply];
+      for (let i = 0; i < n; i++) { const s = list[i]; ord[i] = s === ttMove ? INF : H[base + s]; }
+      for (let i = 1; i < n; i++) {
+        const sv = list[i], ov = ord[i]; let j = i - 1;
+        while (j >= 0 && ord[j] < ov) { list[j + 1] = list[j]; ord[j + 1] = ord[j]; j--; }
+        list[j + 1] = sv; ord[j + 1] = ov;
+      }
       const a0 = alpha, b0 = beta;
-      let best = mine ? -Infinity : Infinity, bestM = moves[0];
-      for (const s of moves) {
+      let best = mine ? -INF : INF, bestM = list[0];
+      for (let i = 0; i < n; i++) {
+        const s = list[i];
         b.play(s);
-        const v = this.search(b, depth - 1, alpha, beta, ply + 1);
+        let v;
+        if (i === 0 || !this.pvs) v = this.search(b, depth - 1, alpha, beta, ply + 1);
+        else if (mine) {
+          // can this move beat the best so far? check cheaply first
+          v = this.search(b, depth - 1, alpha, alpha + 1, ply + 1);
+          if (v > alpha && v < beta && !this.stop) v = this.search(b, depth - 1, alpha, beta, ply + 1);
+        } else {
+          v = this.search(b, depth - 1, beta - 1, beta, ply + 1);
+          if (v < beta && v > alpha && !this.stop) v = this.search(b, depth - 1, alpha, beta, ply + 1);
+        }
         b.undo(s);
         if (this.stop) return 0;
         if (mine) { if (v > best) { best = v; bestM = s; } if (v > alpha) alpha = v; }
         else { if (v < best) { best = v; bestM = s; } if (v < beta) beta = v; }
         if (alpha >= beta) { H[base + s] += depth * depth; break; }
       }
-      const flag = best <= a0 ? 2 : best >= b0 ? 1 : 0;
-      this.tt.set(key, { d: depth, f: flag, v: best, m: bestM });
+      const prev = this.ttD[ti];
+      if (prev < 0 || prev <= depth || this.ttK1[ti] !== z1) {
+        this.ttK1[ti] = z1; this.ttK2[ti] = k2; this.ttV[ti] = best; this.ttD[ti] = depth;
+        this.ttF[ti] = best <= a0 ? 2 : best >= b0 ? 1 : 0; this.ttM[ti] = bestM;
+      }
       return best;
     }
     // scores for each of `me`'s moves; moves much worse than the best get only a bound
     analyse(b, me, ms, margin = 60, onDepth = null, maxDepth = 40) {
       this.me = me; this.deadline = performance.now() + ms; this.stop = false; this.nodes = 0;
-      if (this.tt.size > 1500000) this.tt.clear();
       const moves = b.legal(); let result = {}; let reached = 0;
       for (const s of moves) result[s] = 0;
       for (const s of moves) if (b.isWinMove(me, s)) { const r = {}; for (const t of moves) r[t] = t === s ? WIN : -WIN; return { scores: r, depth: 1 }; }
@@ -255,9 +329,9 @@
         const sc = {}; let best = -Infinity;
         const order = moves.slice().sort((x, y) => result[y] - result[x]);
         for (const s of order) {
-          const alpha = best === -Infinity ? -Infinity : best - margin - 1;
+          const alpha = best === -Infinity ? -INF : best - margin - 1;
           b.play(s);
-          const v = this.search(b, depth - 1, alpha, Infinity, 1);
+          const v = this.search(b, depth - 1, alpha, INF, 1);
           b.undo(s);
           if (this.stop) break;
           sc[s] = v; if (v > best) best = v;
@@ -277,7 +351,85 @@
       return { scores: result, depth: reached };
     }
   }
+  // Splits the moves at the top of the search over several threads.
+  // Gives the same kind of answer as Engine.analyse(), just faster.
+  const WORKER_MAIN = `
+    const E = spindelEngine(); let b = null, eng = null;
+    onmessage = (e) => {
+      const d = e.data;
+      if (d.type === "init") {
+        b = E.Board.fromCells(Int8Array.from(d.cells), d.np, d.turn);
+        eng = new E.Engine(d.weights); eng.me = d.me;
+      } else if (d.type === "search") {
+        eng.deadline = performance.now() + d.remaining; eng.stop = false; eng.nodes = 0;
+        b.play(d.s);
+        const v = eng.search(b, d.depth - 1, d.alpha, E.INF, 1);
+        b.undo(d.s);
+        postMessage({ s: d.s, v, nodes: eng.nodes, stopped: eng.stop });
+      }
+    };`;
+  class ParallelSearch {
+    constructor(factorySrc, threads) {
+      const url = URL.createObjectURL(new Blob([factorySrc + "\n" + WORKER_MAIN], { type: "text/javascript" }));
+      this.workers = [];
+      for (let i = 0; i < Math.max(1, threads); i++) this.workers.push(new Worker(url));
+      this.nodes = 0; this.cancelled = false;
+    }
+    terminate() { this.cancelled = true; for (const w of this.workers) w.terminate(); this.workers = []; }
+    _run(w, msg) { return new Promise((res) => { w.onmessage = (e) => res(e.data); w.postMessage(msg); }); }
+    async analyse(b, me, ms, weights, margin = 60, onDepth = null, maxDepth = 40) {
+      const moves = b.legal(); this.nodes = 0;
+      for (const s of moves) if (b.isWinMove(me, s)) { const r = {}; for (const t of moves) r[t] = t === s ? WIN : -WIN; return { scores: r, depth: 1 }; }
+      const init = { type: "init", cells: Array.from(b.cells), np: b.np, turn: b.turn, me, weights };
+      for (const w of this.workers) w.postMessage(init);
+      const deadline = Date.now() + ms;
+      let result = {}, reached = 0;
+      for (const s of moves) result[s] = 0;
+      for (let depth = 1; depth <= maxDepth; depth++) {
+        const order = moves.slice().sort((x, y) => result[y] - result[x]);
+        const prevBest = reached ? result[order[0]] : null;
+        // start every thread at once with a bound guessed from the previous round
+        let asp = (this.aspiration === true && prevBest !== null && Math.abs(prevBest) < WIN - 200) ? prevBest - 400 : null;
+        let sc = {}, best = -Infinity, stopped = false;
+        const one = async (w, s, floor) => {
+          let alpha = best === -Infinity ? -INF : best - margin - 1;
+          if (floor !== null && floor !== undefined && floor > alpha) alpha = floor;
+          const r = await this._run(w, { type: "search", s, depth, alpha, remaining: Math.max(1, deadline - Date.now()) });
+          this.nodes += r.nodes;
+          if (r.stopped) stopped = true; else { sc[s] = r.v; if (r.v > best) best = r.v; }
+        };
+        const runAll = async (list, floor) => {
+          const queue = list.slice();
+          await Promise.all(this.workers.map(async (w) => {
+            while (queue.length && !stopped && !this.cancelled) await one(w, queue.shift(), floor);
+          }));
+        };
+        if (asp !== null) {
+          await runAll(order, asp);
+          if (!stopped && best <= asp) { sc = {}; best = -Infinity; asp = null; }  // guess was too high: redo
+        }
+        if (asp === null && !stopped && !this.cancelled) {
+          // best move from the previous round first, alone, so the others get a bound to beat
+          await one(this.workers[0], order[0], null);
+          await runAll(order.slice(1), null);
+        }
+        if (stopped || this.cancelled || Object.keys(sc).length < moves.length) break;
+        const vals = Object.values(sc);
+        if (vals.every((v) => v <= -WIN + 200) && reached > 0) break;
+        result = sc; reached = depth;
+        if (onDepth) onDepth(reached, result, this.nodes);
+        if (Math.max(...vals) >= WIN - 200 || vals.every((v) => v <= -WIN + 200)) break;
+        if (b.count + depth >= N) break;
+        if (Date.now() >= deadline) break;
+      }
+      return { scores: result, depth: reached };
+    }
+  }
+  return { S, R, N, WIN, INF, LINES, NLINES, LINES_AT, Board, Engine, features, FEATURES, DEFAULT_W, ParallelSearch };
+  }
   // ENGINE-END
+  const { S, R, N, WIN, INF, LINES, Board, Engine, features, FEATURES, DEFAULT_W, ParallelSearch } = spindelEngine();
+  const ENGINE_SRC = spindelEngine.toString();
 
   // ===================================================================
   // 4. Memory + learning (saved in this browser)
@@ -703,6 +855,27 @@
     renderStats();
   }
 
+  // thinking happens in background threads (several CPU cores at once);
+  // if the browser doesn't allow that, fall back to one thread
+  let pool = null, poolFailed = false;
+  function threadCount() {
+    const cores = navigator.hardwareConcurrency || 4;
+    const want = +settings.threads || Math.max(1, Math.min(8, cores - 1));
+    return Math.max(1, Math.min(16, want));
+  }
+  async function think(b, me, np) {
+    if (!pool && !poolFailed) {
+      try { pool = new ParallelSearch(ENGINE_SRC, threadCount()); }
+      catch (e) { poolFailed = true; console.warn("[S4R] no threads, using one", e); }
+    }
+    if (pool) {
+      try { return await pool.analyse(b, me, settings.think * 1000, weightsFor(np)); }
+      catch (e) { poolFailed = true; try { pool.terminate(); } catch (e2) {} pool = null; }
+    }
+    await sleep(20);
+    return new Engine(weightsFor(np)).analyse(b, me, settings.think * 1000);
+  }
+
   async function myMove(ns) {
     const box = boardBox(ns);
     if (!box) { tr("myMove: no board box"); say(t("my turn, but I can't find the board", "mijn beurt, maar ik vind het bord niet")); pointer("pointermove", innerWidth / 2, innerHeight * 0.55, 0); return; }
@@ -727,9 +900,7 @@
     if (!game || game.done) startGame(current || nextMode());
     game.np = np;
     const b = Board.fromCells(cells, np, me);
-    const eng = new Engine(weightsFor(np));
-    await sleep(20);
-    const { scores, depth } = eng.analyse(b, me, settings.think * 1000);
+    const { scores, depth } = await think(b, me, np);
     if (!Object.keys(scores).length) return;
     const pick = choose(b, me, scores);
     const s = pick.s, r = b.h[s];
@@ -892,5 +1063,5 @@
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 
-  window.S4R = { trace, brain, settings, Board, Engine, features, LINES, get adsBlocked() { return adsBlocked; } };
+  window.S4R = { trace, brain, settings, Board, Engine, features, LINES, ParallelSearch, ENGINE_SRC, get adsBlocked() { return adsBlocked; } };
 })();

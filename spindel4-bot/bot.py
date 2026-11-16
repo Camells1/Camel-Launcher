@@ -58,6 +58,8 @@ def main():
         "think": args.think,
         "games": args.games,
         "lang": "en" if args.english else "nl",
+        # share the CPU cores fairly between the tabs
+        "threads": max(1, (os.cpu_count() or 4) // max(1, min(10, args.tabs))),
     }
     tabs = max(1, min(10, args.tabs))
     done = set()
