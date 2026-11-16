@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      2.3
+// @version      2.4
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
 // @noframes
+// @inject-into page
 // @grant        none
 // @downloadURL  https://raw.githubusercontent.com/Camells1/Camel-Launcher/claude/serene-cray-y4fb3b/spindel4-bot/spindel4-robot.user.js
 // @updateURL    https://raw.githubusercontent.com/Camells1/Camel-Launcher/claude/serene-cray-y4fb3b/spindel4-bot/spindel4-robot.user.js
@@ -523,6 +524,8 @@
   let gamesThisRun = 0;
   const saveSettings = () => store.set(SET_KEY, { computers: settings.computers, level: settings.level, think: settings.think, running });
 
+  let lastSay = "";
+  function say(msg) { if (msg !== lastSay) { lastSay = msg; log(msg); } }
   function log(msg) {
     console.log("[S4R] " + msg);
     if (ui) { ui.status.textContent = msg; }
@@ -585,7 +588,10 @@
     }
     // our turn?
     if (tx.some((t) => RX.yourMove.test(t))) { await myMove(ns); return; }
-    // otherwise: waiting for the computer
+    // otherwise: waiting
+    if (!tx.length) say(t("I can't read the game's buttons yet - waiting...", "ik kan de knoppen van het spel nog niet lezen - even wachten..."));
+    else if (tx.some((x) => RX.order.test(x))) say(t("waiting for the computer...", "wachten op de computer..."));
+    else say(t("waiting...", "wachten..."));
   }
 
   function parseResult(tx) {
@@ -631,19 +637,23 @@
 
   async function myMove(ns) {
     const box = boardBox(ns);
-    if (!box) { tr("myMove: no board box"); return; }
+    if (!box) { tr("myMove: no board box"); say(t("my turn, but I can't find the board", "mijn beurt, maar ik vind het bord niet")); pointer("pointermove", innerWidth / 2, innerHeight * 0.55, 0); return; }
     // two identical reads in a row = the board is not animating
     let cells = null, order = null, prev = null;
     for (let i = 0; i < 6; i++) {
       const img = capture();
       order = readOrder(ns, img);
       if (!order) { tr("myMove: no order dots"); await sleep(300); continue; }
+      if (order.every((o) => o.color[0] + o.color[1] + o.color[2] < 20)) {
+        say(t("I can't see the board (screen is black for me). Reinstall the script, version 2.4 or newer.", "ik kan het bord niet zien (scherm is zwart voor mij). Installeer het script opnieuw, versie 2.4 of nieuwer."));
+        return;
+      }
       const c = readBoard(box, img, order.map((o) => o.color));
       if (!c) tr("myMove: floating piece, colors " + JSON.stringify(order.map((o) => o.color)));
       if (c && prev && c.join() === prev.join()) { cells = c; break; }
       prev = c; await sleep(250);
     }
-    if (!cells) { tr("myMove: unstable board"); return; }
+    if (!cells) { tr("myMove: unstable board"); say(t("reading the board...", "bord aan het lezen...")); return; }
     const np = order.length, me = order.findIndex((o) => o.current);
     if (me < 0) { tr("myMove: no current dot"); return; }
     if (!game || game.done) startGame(current || nextMode());
@@ -672,6 +682,7 @@
         const t2 = texts(nodes());
         if (!t2.some((t) => RX.yourMove.test(t)) || parseResult(t2)) { lastAction = Date.now(); return; }
       }
+      say(t("the game didn't react to my tap, trying again", "het spel reageerde niet op mijn tik, ik probeer het opnieuw"));
     }
   }
 
