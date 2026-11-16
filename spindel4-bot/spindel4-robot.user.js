@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      4.0
+// @version      4.1
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -723,11 +723,11 @@
   // stats are stored as "2 computers - Hard"; show them in the right language
   const showMode = (k) => NL ? k.replace(/ - (\w+)$/, (m, l) => " - " + lvName(l)) : k;
   const auto = window.__S4R_CONFIG || {};
-  const settings = Object.assign({ computers: "1", level: "climb", think: 3, games: 0, running: false }, store.get(SET_KEY, {}), auto);
+  const settings = Object.assign({ computers: "1", level: "climb", think: 3, games: 0, assistWin: false, assistBlock: false, running: false }, store.get(SET_KEY, {}), auto);
   let running = !!settings.running;
   let game = null, current = null, rotateIdx = store.get("S4R_rot", 0), climb = store.get("S4R_climb", {}), streak = {}, lastAction = Date.now(), lastSig = "";
   let gamesThisRun = store.get(SET_KEY, {}).played || 0; // survives a page reload
-  const saveSettings = () => store.set(SET_KEY, { computers: settings.computers, level: settings.level, think: settings.think, games: settings.games, played: gamesThisRun, running });
+  const saveSettings = () => store.set(SET_KEY, { computers: settings.computers, level: settings.level, think: settings.think, games: settings.games, assistWin: settings.assistWin, assistBlock: settings.assistBlock, played: gamesThisRun, running });
 
   let lastSay = "";
   function say(msg) { if (msg !== lastSay) { lastSay = msg; log(msg); } }
@@ -1010,6 +1010,15 @@
       .status{min-height:2.6em;color:#e8d9bf;font-size:12px;margin:4px 0;word-break:break-word}
       table{width:100%;border-collapse:collapse;font-size:12px} td{padding:2px 4px;border-top:1px solid #4a3a2f} td.w{color:#7ddc7d} td.l{color:#ff8a80}
       .stats{max-height:150px;overflow:auto;margin:6px 0}
+      .assistbtn{width:100%;padding:8px;border:1px solid #6b5643;border-radius:8px;background:#41332a;color:#f7ead6;font-weight:600;font-size:14px;margin-bottom:6px}
+      .assistbtn.on{background:#2e7d4f;border-color:#2e7d4f}
+      .assist{display:none;background:#3a2d24;border-radius:8px;padding:8px;margin-bottom:6px}
+      .assist.open{display:block}
+      label.chk{display:flex;justify-content:flex-start;gap:8px;margin:4px 0;align-items:center}
+      label.chk input{width:auto;transform:scale(1.2)}
+      .ring{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:3px solid}
+      .ring.win{border-color:#22c55e} .ring.block{border-color:#f97316}
+      .note{font-size:11px;color:#c9b8a2;margin-top:4px}
     </style>
     <div class=panel>
       <h3>Spindel 4 Robot</h3>
@@ -1018,6 +1027,12 @@
       <label>${t("Think time", "Denktijd")} <select id=t><option value=0.5>0,5 s</option><option value=1>1 s</option><option value=1.5>${t("1.5 s", "1,5 s")}</option><option value=3>3 s</option><option value=5>5 s</option></select></label>
       <label>${t("Games (0 = nonstop)", "Aantal potjes (0 = nonstop)")} <input id=g type=number min=0 max=9999 inputmode=numeric></label>
       <button class=main id=go>Start robot</button>
+      <button class=assistbtn id=as>🛟 ${t("Assist", "Hulp")}</button>
+      <div class=assist id=asbox>
+        <label class=chk><input type=checkbox id=aw> <span><i class="ring win"></i>${t("Show where I can win right now", "Toon waar ik direct kan winnen")}</span></label>
+        <label class=chk><input type=checkbox id=ab> <span><i class="ring block"></i>${t("Show where I must block", "Toon waar ik moet blokkeren")}</span></label>
+        <div class=note>${t("Only in games against the computer, when it's your turn and the robot is stopped.", "Alleen in potjes tegen de computer, als jij aan de beurt bent en de robot stilstaat.")}</div>
+      </div>
       <div class=status id=st>${t("Ready.", "Klaar.")}</div>
       <div class=stats id=stats></div>
       <div class=row><button id=ex>${t("Export brain", "Geheugen opslaan")}</button><button id=im>${t("Import", "Laden")}</button><button id=rs>${t("Forget all", "Alles vergeten")}</button></div>
@@ -1032,6 +1047,12 @@
     $("g").value = String(settings.games || 0);
     $("g").onchange = (e) => { settings.games = Math.max(0, parseInt(e.target.value, 10) || 0); e.target.value = String(settings.games); saveSettings(); renderStats(); };
     ui.pill.onclick = () => ui.panel.classList.toggle("open");
+    const asBtn = $("as"), asBox = $("asbox");
+    const asRefresh = () => asBtn.classList.toggle("on", !!(settings.assistWin || settings.assistBlock));
+    asBtn.onclick = () => asBox.classList.toggle("open");
+    $("aw").checked = !!settings.assistWin; $("ab").checked = !!settings.assistBlock; asRefresh();
+    $("aw").onchange = (e) => { settings.assistWin = e.target.checked; saveSettings(); asRefresh(); };
+    $("ab").onchange = (e) => { settings.assistBlock = e.target.checked; saveSettings(); asRefresh(); };
     ui.go.onclick = () => { running = !running; if (running) gamesThisRun = 0; saveSettings(); log(running ? t("robot started", "robot gestart") : t("robot stopped", "robot gestopt")); renderStats(); };
     $("ex").onclick = () => {
       const blob = new Blob([JSON.stringify(brain)], { type: "application/json" });
@@ -1054,6 +1075,62 @@
     document.documentElement.appendChild(host);
     renderStats();
   }
+
+  // ===================================================================
+  // 8. Assist: rings on the board for your own games against the computer
+  // ===================================================================
+  let overlay = null, assistBusy = false;
+  function overlayEl() {
+    if (overlay) return overlay;
+    overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed;pointer-events:none;z-index:2147483646;display:none";
+    overlay.innerHTML = '<svg width="100%" height="100%" style="overflow:visible"></svg>';
+    document.documentElement.appendChild(overlay);
+    return overlay;
+  }
+  function clearAssist() { if (overlay) overlay.style.display = "none"; }
+  // against the computer every other player is called "Computer 1/2/3"
+  function onlyComputers(tx, np) {
+    const comps = new Set(tx.map((x) => x.trim()).filter((x) => /^computer\s*\d$/i.test(x)));
+    return comps.size >= np - 1;
+  }
+  async function assistStep() {
+    if (!(settings.assistWin || settings.assistBlock) || running) return clearAssist();
+    const ns = nodes(), tx = texts(ns);
+    if (!tx.some((x) => RX.yourMove.test(x))) return clearAssist();
+    const box = boardBox(ns); if (!box) return clearAssist();
+    const img = capture(), order = readOrder(ns, img);
+    if (!order) return clearAssist();
+    const np = order.length, me = order.findIndex((o) => o.current);
+    if (me < 0) return clearAssist();
+    if (!onlyComputers(tx, np)) { say(t("Assist only works against the computer.", "Hulp werkt alleen tegen de computer.")); return clearAssist(); }
+    const cells = readBoard(box, img, order.map((o) => o.color));
+    if (!cells) return;
+    const b = Board.fromCells(cells, np, me);
+    const marks = [];
+    for (let s = 0; s < S; s++) {
+      const r = b.h[s]; if (r >= R) continue;
+      if (settings.assistWin && b.isWinMove(me, s)) { marks.push({ s, r, kind: "win" }); continue; }
+      if (settings.assistBlock) for (let o = 0; o < np; o++) if (o !== me && b.isWinMove(o, s)) { marks.push({ s, r, kind: "block" }); break; }
+    }
+    const el = overlayEl();
+    el.style.left = box.x + "px"; el.style.top = box.y + "px"; el.style.width = box.w + "px"; el.style.height = box.h + "px";
+    const half = box.w / 2, svgEl = el.firstChild;
+    svgEl.innerHTML = marks.map((m) => {
+      const [x, y] = cellXY({ x: 0, y: 0, w: box.w, h: box.h }, m.s, m.r);
+      const rad = Math.max(8, half * (m.r === 0 ? 0.045 : 0.06));
+      const col = m.kind === "win" ? "#22c55e" : "#f97316";
+      return `<circle cx="${x}" cy="${y}" r="${rad}" fill="${col}33" stroke="${col}" stroke-width="${Math.max(3, rad * 0.28)}"><animate attributeName="r" values="${rad};${rad * 1.15};${rad}" dur="1.2s" repeatCount="indefinite"/></circle>`;
+    }).join("");
+    el.style.display = marks.length ? "block" : "none";
+    if (marks.length) say(marks.some((m) => m.kind === "win")
+      ? t("Green ring: you can win right there!", "Groene ring: daar kun je direct winnen!")
+      : t("Orange ring: block there or you lose!", "Oranje ring: blokkeer daar, anders verlies je!"));
+  }
+  setInterval(async () => {
+    if (assistBusy) return; assistBusy = true;
+    try { await assistStep(); } catch (e) { clearAssist(); } finally { assistBusy = false; }
+  }, 600);
 
   const boot = () => {
     buildUI();
