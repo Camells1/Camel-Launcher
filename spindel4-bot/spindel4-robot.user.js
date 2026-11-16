@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      3.0
+// @version      3.1
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -121,6 +121,12 @@
       this.z1 ^= ZOB[p][i][0]; this.z2 ^= ZOB[p][i][1];
     }
     winsWith(p, i) { // would player p have four if he owned cell i?
+      if (this.cells[i] < 0) {
+        // i is empty, so a line through i with 3 of p's pieces is exactly a win
+        const lc = this.lc;
+        for (const li of LINES_AT[i]) if (lc[li * 4 + p] === 3) return true;
+        return false;
+      }
       const c = this.cells;
       for (const li of LINES_AT[i]) {
         const a = LA[li], b = LB[li], d = LC[li], e = LD[li];
@@ -208,7 +214,7 @@
       }
       if (depth <= 0) return this.evaluate(b);
 
-      const key = (b.z1 * 4 + p) + "," + b.z2;
+      const key = ((b.z1 & 0x7ffffff) * 4 + p) * 16777216 + (b.z2 & 0xffffff); // 53-bit number key
       const ent = this.tt.get(key);
       let ttMove = -1;
       if (ent) {
