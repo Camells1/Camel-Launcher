@@ -40,7 +40,7 @@ def main():
     ap.add_argument("--level", default="climb",
                     choices=["climb", "Easy", "Medium", "Hard", "Expert", "all"],
                     help="difficulty (climb = move up after 3 wins, all = take turns)")
-    ap.add_argument("--think", type=float, default=1.5, help="seconds to think per move")
+    ap.add_argument("--think", type=float, default=3, help="seconds to think per move")
     ap.add_argument("--games", type=int, default=0, help="stop after this many games (0 = never)")
     ap.add_argument("--headless", action="store_true", help="hide the browser window")
     ap.add_argument("--english", action="store_true", help="English instead of Dutch")

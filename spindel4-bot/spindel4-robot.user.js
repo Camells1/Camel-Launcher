@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      2.8
+// @version      2.9
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -91,12 +91,14 @@
   class Board {
     constructor(np) {
       this.np = np; this.cells = new Int8Array(N).fill(-1); this.h = new Int8Array(S);
+      this.lc = new Int8Array(LINES.length * 4); // pieces per player on every line
       this.turn = 0; this.count = 0; this.z1 = 0; this.z2 = 0;
     }
     static fromCells(cells, np, turn) {
       const b = new Board(np);
       for (let i = 0; i < N; i++) if (cells[i] >= 0) {
         b.cells[i] = cells[i]; b.count++;
+        for (const li of LINES_AT[i]) b.lc[li * 4 + cells[i]]++;
         const s = (i / R) | 0, r = i % R; if (r + 1 > b.h[s]) b.h[s] = r + 1;
         b.z1 ^= ZOB[cells[i]][i][0]; b.z2 ^= ZOB[cells[i]][i][1];
       }
@@ -107,6 +109,7 @@
     play(s) {
       const i = s * R + this.h[s], p = this.turn;
       this.cells[i] = p; this.h[s]++; this.count++;
+      const lc = this.lc; for (const li of LINES_AT[i]) lc[li * 4 + p]++;
       this.z1 ^= ZOB[p][i][0]; this.z2 ^= ZOB[p][i][1];
       this.turn = (p + 1) % this.np; return i;
     }
@@ -114,6 +117,7 @@
       this.h[s]--; const i = s * R + this.h[s];
       this.turn = (this.turn - 1 + this.np) % this.np; const p = this.turn;
       this.cells[i] = -1; this.count--;
+      const lc = this.lc; for (const li of LINES_AT[i]) lc[li * 4 + p]--;
       this.z1 ^= ZOB[p][i][0]; this.z2 ^= ZOB[p][i][1];
     }
     winsWith(p, i) { // would player p have four if he owned cell i?
@@ -142,19 +146,21 @@
   function features(b, me) {
     const c = b.cells, np = b.np, f = [0, 0, 0, 0, 0, 0, 0];
     const thr = new Uint8Array(N); // bit p set: cell completes four for p
-    for (let li = 0; li < LINES.length; li++) {
-      let o = -1, n = 0, empty = -1, dead = false;
-      for (let k = 0; k < 4; k++) {
-        const cell = k === 0 ? LA[li] : k === 1 ? LB[li] : k === 2 ? LC[li] : LD[li];
-        const v = c[cell];
-        if (v < 0) { empty = cell; continue; }
-        if (o < 0) o = v; else if (v !== o) { dead = true; break; }
-        n++;
-      }
-      if (dead || n === 0) continue;
+    const lc = b.lc, NL = LINES.length;
+    for (let li = 0; li < NL; li++) {
+      const q = li * 4, a0 = lc[q], a1 = lc[q + 1], a2 = lc[q + 2], a3 = lc[q + 3];
+      let o, n;
+      if (a0) { if (a1 | a2 | a3) continue; o = 0; n = a0; }
+      else if (a1) { if (a2 | a3) continue; o = 1; n = a1; }
+      else if (a2) { if (a3) continue; o = 2; n = a2; }
+      else if (a3) { o = 3; n = a3; }
+      else continue;
       const sg = o === me ? 1 : -1;
-      if (n === 3) { f[0] += sg; thr[empty] |= 1 << o; }
-      else if (n === 2) f[1] += sg;
+      if (n === 3) {
+        f[0] += sg;
+        const empty = c[LA[li]] < 0 ? LA[li] : c[LB[li]] < 0 ? LB[li] : c[LC[li]] < 0 ? LC[li] : LD[li];
+        thr[empty] |= 1 << o;
+      } else if (n === 2) f[1] += sg;
       else if (n === 1) f[2] += sg;
     }
     for (let i = 0; i < N; i++) {
@@ -538,7 +544,7 @@
   // stats are stored as "2 computers - Hard"; show them in the right language
   const showMode = (k) => NL ? k.replace(/ - (\w+)$/, (m, l) => " - " + lvName(l)) : k;
   const auto = window.__S4R_CONFIG || {};
-  const settings = Object.assign({ computers: "1", level: "climb", think: 1.5, games: 0, running: false }, store.get(SET_KEY, {}), auto);
+  const settings = Object.assign({ computers: "1", level: "climb", think: 3, games: 0, running: false }, store.get(SET_KEY, {}), auto);
   let running = !!settings.running;
   let game = null, current = null, rotateIdx = store.get("S4R_rot", 0), climb = store.get("S4R_climb", {}), streak = {}, lastAction = Date.now(), lastSig = "";
   let gamesThisRun = store.get(SET_KEY, {}).played || 0; // survives a page reload
@@ -701,14 +707,24 @@
     const cz = pick.cz || canonical(b, me);
     const after = b.clone(); after.play(s);
     game.positions.push({ key: cz.key, cmove: toCanon(s, cz.k, cz.m), cells: Array.from(cells), np, me, move: s, f: features(after, me) });
+    // Did our piece land? Look at the target cell itself: a fast computer can
+    // answer so quickly that "your move" is already showing again, and tapping
+    // twice would drop an extra piece.
+    const myColor = order[me].color;
+    const landed = () => {
+      const c = sampleCell(capture(), box, s, r);
+      return dist(c, myColor) < 85;
+    };
     for (let attempt = 0; attempt < 3; attempt++) {
       const [x, y] = cellXY(box, s, r);
       await tap(x, y);
       for (let k = 0; k < 16; k++) {
         await sleep(250);
         const t2 = texts(nodes());
-        if (!t2.some((t) => RX.yourMove.test(t)) || parseResult(t2)) { lastAction = Date.now(); return; }
+        if (parseResult(t2) || !t2.some((t) => RX.yourMove.test(t)) || landed()) { lastAction = Date.now(); return; }
       }
+      // still our turn and the cell is still empty: the tap really was missed
+      if (landed()) return;
       say(t("the game didn't react to my tap, trying again", "het spel reageerde niet op mijn tik, ik probeer het opnieuw"));
     }
   }
