@@ -386,7 +386,7 @@
   }
   const texts = (ns) => ns.map((n) => n.label).filter(Boolean);
   const findBtn = (ns, ...labels) => ns.find((n) => n.role === "button" && labels.some((l) => n.label.toLowerCase() === l.toLowerCase() || n.label.toLowerCase().startsWith(l.toLowerCase())));
-  const clickNode = (n) => { n.el.click(); };
+  const clickNode = (n) => { n.el.click(); lastAction = Date.now(); };
 
   function boardBox(ns) {
     let best = null;
@@ -465,6 +465,7 @@
       pointerId: 1, pointerType: "mouse", isPrimary: true, button: 0, buttons, view: window }));
   }
   async function tap(x, y) {
+    lastAction = Date.now();
     pointer("pointermove", x, y, 0); await sleep(120);
     pointer("pointerdown", x, y, 1); await sleep(60);
     pointer("pointerup", x, y, 0); await sleep(60);
@@ -478,7 +479,7 @@
   const auto = window.__S4R_CONFIG || {};
   const settings = Object.assign({ computers: "1", level: "climb", think: 1.5, running: false }, store.get(SET_KEY, {}), auto);
   let running = !!settings.running;
-  let game = null, current = null, rotateIdx = store.get("S4R_rot", 0), climb = store.get("S4R_climb", {}), streak = {}, lastAction = 0;
+  let game = null, current = null, rotateIdx = store.get("S4R_rot", 0), climb = store.get("S4R_climb", {}), streak = {}, lastAction = Date.now();
   let gamesThisRun = 0;
   const saveSettings = () => store.set(SET_KEY, { computers: settings.computers, level: settings.level, think: settings.think, running });
 
@@ -541,10 +542,7 @@
     }
     // our turn?
     if (tx.some((t) => /^your move/i.test(t))) { await myMove(ns); return; }
-    if (Date.now() - lastAction > 90000 && !ns.some((n) => n.role === "button" && n.label === "Back") && btn("Back") === undefined) {
-      // nothing useful on screen for a long time
-      lastAction = Date.now();
-    }
+    // otherwise: waiting for the computer
   }
 
   function parseResult(tx) {
@@ -565,6 +563,7 @@
 
   async function finishGame(result) {
     game.done = true;
+    lastAction = Date.now();
     learn(game, result);
     gamesThisRun++;
     const st = brain.stats[game.mode];
@@ -657,7 +656,14 @@
     while (true) {
       if (running) {
         try { await step(); } catch (e) { console.error("[S4R]", e); }
-      }
+        // watchdog: nothing happened for 150 s -> reload the page and carry on
+        if (Date.now() - lastAction > 150000) {
+          log("stuck - reloading the page");
+          saveSettings(); saveBrain();
+          location.reload();
+          await sleep(10000);
+        }
+      } else lastAction = Date.now();
       await sleep(running ? 400 : 1000);
     }
   }
