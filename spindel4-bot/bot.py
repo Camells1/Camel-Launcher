@@ -74,16 +74,16 @@ def main():
         return handler
 
     with sync_playwright() as pw:
-        opts = dict(headless=args.headless, viewport={"width": 1000, "height": 800},
-                    # keep playing when the window is behind other windows
-                    args=["--disable-background-timer-throttling",
-                          "--disable-renderer-backgrounding",
-                          "--disable-backgrounding-occluded-windows"],
-                    locale="en-US" if args.english else "nl-NL", device_scale_factor=1)
+        common = dict(viewport={"width": 1000, "height": 800}, device_scale_factor=1,
+                      locale="en-US" if args.english else "nl-NL")
+        launch = dict(headless=args.headless,
+                      # keep playing when the window is behind other windows
+                      args=["--disable-background-timer-throttling",
+                            "--disable-renderer-backgrounding",
+                            "--disable-backgrounding-occluded-windows"])
         exe = os.environ.get("SPINDEL_CHROME")
         if exe:
-            opts["executable_path"] = exe
-        ctx = pw.chromium.launch_persistent_context(PROFILE, **opts)
+            launch["executable_path"] = exe
         blocked = [0]
 
         def route(r):
@@ -93,13 +93,46 @@ def main():
             else:
                 r.continue_()
 
-        ctx.route("**/*", route)
-        ctx.add_init_script("window.__S4R_CONFIG = %s;" % json.dumps(config))
-        ctx.add_init_script(path=SCRIPT)
-        pages = []
-        for n in range(1, tabs + 1):
-            page = ctx.pages[0] if (n == 1 and ctx.pages) else ctx.new_page()
-            page.on("console", on_console(n))
+        def prepare(ctx):
+            ctx.route("**/*", route)
+            ctx.add_init_script("window.__S4R_CONFIG = %s;" % json.dumps(config))
+            ctx.add_init_script(path=SCRIPT)
+
+        # The game only allows one open tab per browser session ("Spindel 4 is
+        # al open"), so with several tabs every tab gets its own session, like
+        # a separate device. Each tab's memory is kept in state/tab-N.json.
+        browser, contexts, pages = None, [], []
+        state_dir = os.path.join(HERE, "state")
+        if tabs == 1:
+            ctx = pw.chromium.launch_persistent_context(PROFILE, **launch, **common)
+            prepare(ctx)
+            contexts.append((ctx, None))
+        else:
+            os.makedirs(state_dir, exist_ok=True)
+            browser = pw.chromium.launch(**launch)
+            for n in range(1, tabs + 1):
+                path = os.path.join(state_dir, "tab-%d.json" % n)
+                ctx = browser.new_context(storage_state=path if os.path.exists(path) else None, **common)
+                prepare(ctx)
+                contexts.append((ctx, path))
+
+        def save_states():
+            for ctx, path in contexts:
+                if path:
+                    try:
+                        ctx.storage_state(path=path)
+                    except Exception:
+                        pass
+
+        for n, (ctx, _) in enumerate(contexts, 1):
+            page = ctx.pages[0] if ctx.pages else ctx.new_page()
+            handler = on_console(n)
+
+            def on_msg(msg, handler=handler):
+                handler(msg)
+                if "UITSLAG" in msg.text or "RESULT" in msg.text:
+                    save_states()   # keep what every tab learned so far
+            page.on("console", on_msg)
             log(("openen:" if not args.english else "opening"), URL,
                 ("(tab %d van %d)" % (n, tabs) if not args.english else "(tab %d of %d)" % (n, tabs)) if tabs > 1 else "",
                 "(advertenties geblokkeerd)" if not args.english else "(ad blocker on)")
@@ -114,12 +147,18 @@ def main():
             pass
         except Exception as e:  # browser window closed
             log("browser closed:", e.__class__.__name__)
+        save_states()
         log(("gestopt (geblokkeerde advertenties: %d)" if not args.english else "stopped (ads blocked: %d)") % blocked[0])
-        try:
-            ctx.close()
-        except Exception:
-            pass
-
+        for ctx, _ in contexts:
+            try:
+                ctx.close()
+            except Exception:
+                pass
+        if browser:
+            try:
+                browser.close()
+            except Exception:
+                pass
 
 if __name__ == "__main__":
     main()
