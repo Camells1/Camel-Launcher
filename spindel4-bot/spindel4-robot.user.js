@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      4.2
+// @version      4.3
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -617,7 +617,28 @@
     for (const l of labels) for (const a of (WORDS[l] || [l])) alts.push(a.toLowerCase());
     return ns.find((n) => n.role === "button" && alts.some((l) => n.label.toLowerCase() === l || n.label.toLowerCase().startsWith(l)));
   };
-  const clickNode = (n) => { n.el.click(); lastAction = Date.now(); };
+  // Press a game button. Some phones ignore the accessibility click, so if the
+  // same button has to be pressed again, alternate with a real tap on its spot.
+  let lastClickKey = "", clickRepeat = 0, lastClickTime = 0;
+  function clickNode(n) {
+    lastAction = Date.now();
+    const key = n.label;
+    // same button still there: give the game 2.5 s to react before pressing again
+    if (key === lastClickKey && Date.now() - lastClickTime < 2500) return;
+    if (key === lastClickKey) clickRepeat++; else { lastClickKey = key; clickRepeat = 0; }
+    lastClickTime = Date.now();
+    if (clickRepeat >= 1) say(t(`pressing: ${key} (try ${clickRepeat + 1})`, `ik druk op: ${key} (poging ${clickRepeat + 1})`));
+    if (clickRepeat % 2 === 1) {
+      const x = n.x + n.w / 2, y = n.y + n.h / 2;
+      const type = TOUCH ? "touch" : "mouse";
+      const target = document.querySelector("flutter-view") || document.querySelector("flt-glass-pane") || document.body;
+      const o = { bubbles: true, cancelable: true, composed: true, clientX: x, clientY: y, pointerId: 3, pointerType: type, isPrimary: true, button: 0, view: window };
+      target.dispatchEvent(new PointerEvent("pointerdown", Object.assign({ buttons: 1 }, o)));
+      setTimeout(() => target.dispatchEvent(new PointerEvent("pointerup", Object.assign({ buttons: 0 }, o))), 70);
+    } else {
+      n.el.click();
+    }
+  }
 
   function boardBox(ns) {
     let best = null;
