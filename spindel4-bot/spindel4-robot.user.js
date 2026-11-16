@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      2.7
+// @version      2.8
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -418,7 +418,7 @@
     "Expert": ["Expert"],
   };
   const RX = {
-    yourMove: /^(your move|jouw zet|jij bent aan zet|je bent aan zet|aan (de beurt|zet):.*\((you|jij)\))/i,
+    yourMove: /^(your move|your turn:|jouw zet|jij bent aan zet|je bent aan zet|aan (de beurt|zet):)(?!\s*computer\s*\d)/i,
     order: /^(order|volgorde)/i,
     tutorial: /how to make a move|zo doe je een zet/i,
     yourTurn: /^(your turn|nu jij|jouw beurt)/i,
@@ -608,13 +608,6 @@
     }
     // our turn?
     if (tx.some((t) => RX.yourMove.test(t))) { await myMove(ns); return; }
-    // signed in: the game shows the player's name instead of "(jij)/(you)"
-    const named = tx.find((x) => /^(aan de beurt|your move|your turn):/i.test(x) && !RX.you.test(x) && !/computer\s*\d/i.test(x));
-    if (named) {
-      say(t("You are signed in. The robot only plays anonymously so its wins don't go on the leaderboard: sign out (Profile / account) and start again.",
-            "Je bent ingelogd. De robot speelt alleen anoniem, zodat zijn winst niet op het leaderboard komt: log uit (Profiel / account) en start opnieuw."));
-      return;
-    }
     // otherwise: waiting
     if (!tx.length) say(t("I can't read the game's buttons yet - waiting...", "ik kan de knoppen van het spel nog niet lezen - even wachten..."));
     else if (tx.some((x) => RX.order.test(x))) say(t("waiting for the computer...", "wachten op de computer..."));
@@ -624,7 +617,7 @@
   function parseResult(tx) {
     for (const t of tx) {
       const low = t.toLowerCase();
-      if (RX.win.test(low)) return RX.you.test(low) ? "win" : "loss";
+      if (RX.win.test(low)) return RX.you.test(low) || !/computer\s*\d/i.test(low) ? "win" : "loss";
       if (RX.draw.test(low)) return "draw";
     }
     return null;
