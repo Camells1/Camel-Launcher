@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      2.1
+// @version      2.3
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
+// @noframes
 // @grant        none
 // @downloadURL  https://raw.githubusercontent.com/Camells1/Camel-Launcher/claude/serene-cray-y4fb3b/spindel4-bot/spindel4-robot.user.js
 // @updateURL    https://raw.githubusercontent.com/Camells1/Camel-Launcher/claude/serene-cray-y4fb3b/spindel4-bot/spindel4-robot.user.js
@@ -12,6 +13,8 @@
 
 (function () {
   "use strict";
+  // only in the game page itself, never in its hidden sign-in frames
+  try { if (window.top !== window) return; } catch (e) { return; }
   if (window.__S4R_LOADED) return;
   window.__S4R_LOADED = true;
 
@@ -361,7 +364,7 @@
         const cz = canonical(b, pos.me);
         brain.fixes[cz.key] = toCanon(bestS, cz.k, cz.m);
         found++;
-        log(`review: slice ${pos.move} was a mistake, ${bestS} is better (depth ${depth})`);
+        log(t(`review: slice ${pos.move} was a mistake, ${bestS} is better (depth ${depth})`, `terugblik: poot ${pos.move} was een fout, ${bestS} is beter (diepte ${depth})`));
       }
     }
     saveBrain();
@@ -505,6 +508,14 @@
   // 6. The robot's main loop
   // ===================================================================
   const LEVELS = ["Easy", "Medium", "Hard", "Expert"];
+  // Dutch when the phone/browser is set to Dutch (or the launcher asks for it)
+  const NL = (window.__S4R_CONFIG && window.__S4R_CONFIG.lang) ? window.__S4R_CONFIG.lang === "nl" : /^nl/i.test(navigator.language || "");
+  const t = (en, nl) => (NL ? nl : en);
+  const LEVEL_NL = { Easy: "Makkelijk", Medium: "Gemiddeld", Hard: "Moeilijk", Expert: "Expert" };
+  const lvName = (l) => t(l, LEVEL_NL[l] || l);
+  const RES_NL = { win: "GEWONNEN", draw: "GELIJKSPEL", loss: "VERLOREN" };
+  // stats are stored as "2 computers - Hard"; show them in the right language
+  const showMode = (k) => NL ? k.replace(/ - (\w+)$/, (m, l) => " - " + lvName(l)) : k;
   const auto = window.__S4R_CONFIG || {};
   const settings = Object.assign({ computers: "1", level: "climb", think: 1.5, running: false }, store.get(SET_KEY, {}), auto);
   let running = !!settings.running;
@@ -589,7 +600,7 @@
   function startGame(mode) {
     current = mode;
     game = { mode: modeKey(mode), modeObj: mode, positions: [], np: 0, done: false };
-    log(`new game: ${game.mode}`);
+    log(t(`new game: ${game.mode}`, `nieuw potje: ${showMode(game.mode)}`));
     lastAction = Date.now();
   }
 
@@ -599,23 +610,23 @@
     learn(game, result);
     gamesThisRun++;
     const st = brain.stats[game.mode];
-    log(`RESULT: ${result.toUpperCase()} (${game.mode}: ${st[0]} won, ${st[1]} draw, ${st[2]} lost)`);
+    log(t(`RESULT: ${result.toUpperCase()} (${game.mode}: ${st[0]} won, ${st[1]} draw, ${st[2]} lost)`, `UITSLAG: ${RES_NL[result]} (${showMode(game.mode)}: ${st[0]} gewonnen, ${st[1]} gelijk, ${st[2]} verloren)`));
     // climbing: 3 wins in a row moves up a level
     const c = game.modeObj.computers;
     streak[c] = result === "win" ? (streak[c] || 0) + 1 : 0;
     if (settings.level === "climb" && streak[c] >= 3) {
       const lv = climb[c] || 0;
-      if (lv < LEVELS.length - 1) { climb[c] = lv + 1; store.set("S4R_climb", climb); log(`3 wins in a row: moving up to ${LEVELS[lv + 1]}`); }
+      if (lv < LEVELS.length - 1) { climb[c] = lv + 1; store.set("S4R_climb", climb); log(t(`3 wins in a row: moving up to ${LEVELS[lv + 1]}`, `3 keer op rij gewonnen: door naar ${lvName(LEVELS[lv + 1])}`)); }
       streak[c] = 0;
     }
     if (settings.computers === "rotate" || settings.level === "rotate") { rotateIdx++; store.set("S4R_rot", rotateIdx); }
     if (result === "loss") {
-      log("lost - reviewing my moves to learn from mistakes...");
+      log(t("lost - reviewing my moves to learn from mistakes...", "verloren - ik kijk mijn zetten na om van mijn fouten te leren..."));
       const n = await review(game);
-      log(`learned ${n} fix${n === 1 ? "" : "es"} from that loss`);
+      log(t(`learned ${n} fix${n === 1 ? "" : "es"} from that loss`, `${n} ${n === 1 ? "verbetering" : "verbeteringen"} geleerd van dit verlies`));
     }
     renderStats();
-    if (auto.games && gamesThisRun >= auto.games) { running = false; log("DONE"); }
+    if (auto.games && gamesThisRun >= auto.games) { running = false; log("DONE"); renderStats(); }
   }
 
   async function myMove(ns) {
@@ -644,7 +655,7 @@
     if (!Object.keys(scores).length) return;
     const pick = choose(b, me, scores);
     const s = pick.s, r = b.h[s];
-    log(`move ${b.count + 1}: slice ${s} (depth ${depth}, ${pick.why})`);
+    log(t(`move ${b.count + 1}: slice ${s} (depth ${depth}, ${pick.why})`, `zet ${b.count + 1}: poot ${s} (${depth} zetten vooruit, ${{ "winning line": "winnende zet", "remembered fix": "uit geheugen: fout verbeterd", memory: "geheugen", search: "rekenen" }[pick.why] || pick.why})`));
     if (auto.debug) {
       const rows = [];
       for (let r = R - 1; r >= 0; r--) { let row = ""; for (let q = 0; q < S; q++) { const v = cells[q * R + r]; row += v < 0 ? "." : "ABCD"[v]; } rows.push(row); }
@@ -673,10 +684,10 @@
     if (!your) return; // still showing the example
     const at = (slice) => cellXY(box, slice, 0, 0.8);
     if (RX.step1.test(your)) {
-      log("tutorial step 1");
+      log(t("tutorial step 1", "uitleg stap 1"));
       const [x, y] = at(13); await tap(x, y); await sleep(1500);
     } else {
-      log("tutorial step 2");
+      log(t("tutorial step 2", "uitleg stap 2"));
       const [x0, y0] = at(12); pointer("pointermove", x0, y0, 0); await sleep(300);
       pointer("pointerdown", x0, y0, 1); await sleep(100);
       for (const s of [12.5, 13, 13.5, 14, 14.5, 15, 15.5, 16]) { const [x, y] = at(s); pointer("pointermove", x, y, 1); await sleep(80); }
@@ -692,7 +703,7 @@
         // watchdog: nothing happened for 150 s -> reload the page and carry on
         if (document.hidden) lastAction = Date.now(); // phone locked / other app: just wait
         if (Date.now() - lastAction > 150000) {
-          log("stuck - reloading the page");
+          log(t("stuck - reloading the page", "vastgelopen - pagina wordt herladen"));
           console.log("[S4R] trace " + trace.slice(-6).join(" || "));
           saveSettings(); saveBrain();
           location.reload();
@@ -711,10 +722,10 @@
     if (!ui) return;
     const rows = Object.entries(brain.stats).sort();
     ui.stats.innerHTML = rows.length
-      ? "<table>" + rows.map(([k, v]) => `<tr><td>${k}</td><td class=w>${v[0]}</td><td>${v[1]}</td><td class=l>${v[2]}</td></tr>`).join("") + "</table>"
-      : "<i>No games yet</i>";
-    ui.go.textContent = running ? "Stop robot" : "Start robot";
-    ui.go.className = running ? "stop" : "";
+      ? "<table><tr><td></td><td class=w>" + t("W", "W") + "</td><td>" + t("D", "G") + "</td><td class=l>" + t("L", "V") + "</td></tr>" + rows.map(([k, v]) => `<tr><td>${showMode(k)}</td><td class=w>${v[0]}</td><td>${v[1]}</td><td class=l>${v[2]}</td></tr>`).join("") + "</table>"
+      : "<i>" + t("No games yet", "Nog geen potjes gespeeld") + "</i>";
+    ui.go.textContent = running ? t("Stop robot", "Stop robot") : t("Start robot", "Start robot");
+    ui.go.className = running ? "main stop" : "main";
     ui.pill.textContent = running ? "🕷 Robot ●" : "🕷 Robot";
   }
   function buildUI() {
@@ -728,7 +739,7 @@
       .panel{display:none;width:min(300px,calc(100vw - 16px));background:#2b211bee;color:#f7ead6;border-radius:12px;padding:12px;margin-bottom:6px;box-shadow:0 4px 16px #0007}
       .panel.open{display:block} h3{margin:0 0 8px;font-size:15px;color:#f1be3c}
       label{display:flex;justify-content:space-between;align-items:center;margin:6px 0;gap:8px}
-      select{background:#41332a;color:#f7ead6;border:1px solid #6b5643;border-radius:6px;padding:4px;font-size:14px}
+      select{-webkit-appearance:none;appearance:none;background:#41332a;color:#f7ead6;-webkit-text-fill-color:#f7ead6;border:1px solid #6b5643;border-radius:6px;padding:6px 10px;font-size:15px;max-width:62%}
       button.main{width:100%;margin:8px 0 6px;padding:10px;border:0;border-radius:8px;background:#e9443f;color:#fff;font-weight:700;font-size:15px}
       button.main.stop{background:#6b5643}
       .row{display:flex;gap:6px} .row button{flex:1;padding:6px;border:1px solid #6b5643;border-radius:6px;background:#41332a;color:#f7ead6;font-size:12px}
@@ -738,13 +749,13 @@
     </style>
     <div class=panel>
       <h3>Spindel 4 Robot</h3>
-      <label>Computers <select id=c><option value=1>1 computer</option><option value=2>2 computers</option><option value=3>3 computers</option><option value=rotate>All (take turns)</option></select></label>
-      <label>Level <select id=l><option value=climb>Climb (up after 3 wins)</option><option>Easy</option><option>Medium</option><option>Hard</option><option>Expert</option><option value=rotate>All (take turns)</option></select></label>
-      <label>Think time <select id=t><option value=0.5>0.5 s</option><option value=1>1 s</option><option value=1.5>1.5 s</option><option value=3>3 s</option><option value=5>5 s</option></select></label>
+      <label>${t("Computers", "Computers")} <select id=c><option value=1>1 computer</option><option value=2>2 computers</option><option value=3>3 computers</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
+      <label>${t("Level", "Niveau")} <select id=l><option value=climb>${t("Climb (up after 3 wins)", "Klimmen (omhoog na 3 winst)")}</option><option value=Easy>${lvName("Easy")}</option><option value=Medium>${lvName("Medium")}</option><option value=Hard>${lvName("Hard")}</option><option value=Expert>Expert</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
+      <label>${t("Think time", "Denktijd")} <select id=t><option value=0.5>0,5 s</option><option value=1>1 s</option><option value=1.5>${t("1.5 s", "1,5 s")}</option><option value=3>3 s</option><option value=5>5 s</option></select></label>
       <button class=main id=go>Start robot</button>
-      <div class=status id=st>Ready.</div>
+      <div class=status id=st>${t("Ready.", "Klaar.")}</div>
       <div class=stats id=stats></div>
-      <div class=row><button id=ex>Export brain</button><button id=im>Import</button><button id=rs>Forget all</button></div>
+      <div class=row><button id=ex>${t("Export brain", "Geheugen opslaan")}</button><button id=im>${t("Import", "Laden")}</button><button id=rs>${t("Forget all", "Alles vergeten")}</button></div>
     </div>
     <button class=pill id=pill>🕷 Robot</button>`;
     const $ = (id) => sh.getElementById(id);
@@ -754,7 +765,7 @@
     $("l").onchange = (e) => { settings.level = e.target.value; saveSettings(); };
     $("t").onchange = (e) => { settings.think = parseFloat(e.target.value); saveSettings(); };
     ui.pill.onclick = () => ui.panel.classList.toggle("open");
-    ui.go.onclick = () => { running = !running; saveSettings(); log(running ? "robot started" : "robot stopped"); renderStats(); };
+    ui.go.onclick = () => { running = !running; saveSettings(); log(running ? t("robot started", "robot gestart") : t("robot stopped", "robot gestopt")); renderStats(); };
     $("ex").onclick = () => {
       const blob = new Blob([JSON.stringify(brain)], { type: "application/json" });
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "spindel4-brain.json"; a.click();
@@ -762,14 +773,14 @@
     $("im").onclick = () => {
       const inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json,application/json";
       inp.onchange = async () => {
-        try { const d = JSON.parse(await inp.files[0].text()); Object.assign(brain, d); saveBrain(); renderStats(); log("brain imported"); }
-        catch (e) { log("could not read that file"); }
+        try { const d = JSON.parse(await inp.files[0].text()); Object.assign(brain, d); saveBrain(); renderStats(); log(t("brain imported", "geheugen geladen")); }
+        catch (e) { log(t("could not read that file", "dat bestand kon niet gelezen worden")); }
       };
       inp.click();
     };
     $("rs").onclick = () => {
-      if (!confirm("Make the robot forget everything it learned?")) return;
-      Object.assign(brain, { games: 0, weights: {}, book: {}, fixes: {}, stats: {} }); saveBrain(); renderStats(); log("memory cleared");
+      if (!confirm(t("Make the robot forget everything it learned?", "Moet de robot alles vergeten wat hij geleerd heeft?"))) return;
+      Object.assign(brain, { games: 0, weights: {}, book: {}, fixes: {}, stats: {} }); saveBrain(); renderStats(); log(t("memory cleared", "geheugen gewist"));
     };
     const st = document.createElement("style"); st.textContent = adCss;
     (document.head || document.documentElement).appendChild(st);
@@ -780,7 +791,7 @@
   const boot = () => {
     buildUI();
     if (auto.autostart) { running = true; renderStats(); }
-    log(running ? "robot running" : "tap Start robot to begin");
+    log(running ? t("robot running", "robot speelt") : t("tap Start robot to begin", "tik op Start robot om te beginnen"));
     loop();
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();

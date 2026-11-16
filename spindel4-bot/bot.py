@@ -43,6 +43,7 @@ def main():
     ap.add_argument("--think", type=float, default=1.5, help="seconds to think per move")
     ap.add_argument("--games", type=int, default=0, help="stop after this many games (0 = never)")
     ap.add_argument("--headless", action="store_true", help="hide the browser window")
+    ap.add_argument("--english", action="store_true", help="English instead of Dutch")
     args = ap.parse_args()
 
     from playwright.sync_api import sync_playwright
@@ -53,6 +54,7 @@ def main():
         "level": "rotate" if args.level == "all" else args.level,
         "think": args.think,
         "games": args.games,
+        "lang": "en" if args.english else "nl",
     }
     done = {"flag": False}
 
@@ -65,7 +67,7 @@ def main():
 
     with sync_playwright() as pw:
         opts = dict(headless=args.headless, viewport={"width": 1000, "height": 800},
-                    locale="en-US", device_scale_factor=1)
+                    locale="en-US" if args.english else "nl-NL", device_scale_factor=1)
         exe = os.environ.get("SPINDEL_CHROME")
         if exe:
             opts["executable_path"] = exe
@@ -84,7 +86,7 @@ def main():
         ctx.add_init_script(path=SCRIPT)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         page.on("console", on_console)
-        log("opening", URL, "(ad blocker on)")
+        log("openen:" if not args.english else "opening", URL, "(advertenties geblokkeerd)" if not args.english else "(ad blocker on)")
         page.goto(URL, wait_until="domcontentloaded", timeout=90000)
         try:
             while not done["flag"] and not page.is_closed():
@@ -93,7 +95,7 @@ def main():
             pass
         except Exception as e:  # browser window closed
             log("browser closed:", e.__class__.__name__)
-        log("stopped (ads blocked: %d)" % blocked[0])
+        log(("gestopt (geblokkeerde advertenties: %d)" if not args.english else "stopped (ads blocked: %d)") % blocked[0])
         try:
             ctx.close()
         except Exception:

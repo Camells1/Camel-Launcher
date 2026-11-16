@@ -1,5 +1,40 @@
 # Spindel 4 robot 🕷️
 
+> **Nederlands** staat hieronder. *English version further down.*
+
+## Nederlands: iPhone
+
+**Eenmalig instellen (± 3 minuten):**
+
+1. Installeer de gratis app **Userscripts** (van Justin Wasack) uit de App Store.
+2. Open de app, tik op **Set Userscripts Directory** en kies een map, bijvoorbeeld
+   *Op mijn iPhone → Userscripts*.
+3. Ga naar **Instellingen → Apps → Safari → Extensies → Userscripts**, zet hem
+   **aan** en zet *Alle websites* (of play.spindel4.com) op **Sta toe**.
+4. Open in **Safari** deze link:
+   `https://raw.githubusercontent.com/Camells1/Camel-Launcher/claude/serene-cray-y4fb3b/spindel4-bot/spindel4-robot.user.js`
+   Tik op het **puzzelstukje** links in de adresbalk → **Userscripts** → **Install**
+   (of **Update**).
+
+**Spelen:**
+
+1. Ga naar **play.spindel4.com**.
+2. Tik linksonder (net boven de adresbalk) op **🕷 Robot**.
+3. Kies het aantal **computers** (1, 2, 3 of *Allemaal*) en het **niveau**
+   (*Klimmen* begint op Makkelijk en gaat omhoog na 3 keer op rij winnen).
+4. Tik op **Start robot**. Hij speelt nu zelf, zonder te stoppen.
+
+Zet **Automatische vergrendeling** op **Nooit** en laat de telefoon aan de
+lader, dan blijft hij doorspelen. Is je iPhone in het Nederlands ingesteld,
+dan is de robot ook in het Nederlands.
+
+## Nederlands: PC
+
+Installeer Python (vink **Add Python to PATH** aan), dubbelklik **install.bat**
+(één keer) en daarna **start.bat**. De robot speelt dan in het Nederlands.
+
+---
+
 A self-learning robot that plays **play.spindel4.com** against the game's
 computer opponents, on your **iPhone** or your **PC**.
 
