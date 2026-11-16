@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      2.6
+// @version      2.7
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -608,6 +608,13 @@
     }
     // our turn?
     if (tx.some((t) => RX.yourMove.test(t))) { await myMove(ns); return; }
+    // signed in: the game shows the player's name instead of "(jij)/(you)"
+    const named = tx.find((x) => /^(aan de beurt|your move|your turn):/i.test(x) && !RX.you.test(x) && !/computer\s*\d/i.test(x));
+    if (named) {
+      say(t("You are signed in. The robot only plays anonymously so its wins don't go on the leaderboard: sign out (Profile / account) and start again.",
+            "Je bent ingelogd. De robot speelt alleen anoniem, zodat zijn winst niet op het leaderboard komt: log uit (Profiel / account) en start opnieuw."));
+      return;
+    }
     // otherwise: waiting
     if (!tx.length) say(t("I can't read the game's buttons yet - waiting...", "ik kan de knoppen van het spel nog niet lezen - even wachten..."));
     else if (tx.some((x) => RX.order.test(x))) say(t("waiting for the computer...", "wachten op de computer..."));
