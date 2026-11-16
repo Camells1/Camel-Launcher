@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      3.1
+// @version      3.2
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -448,6 +448,7 @@
     "Medium": ["Medium", "Gemiddeld"],
     "Hard": ["Hard", "Moeilijk"],
     "Expert": ["Expert"],
+    "Impossible": ["Impossible", "Onmogelijk"],
   };
   const RX = {
     yourMove: /^(your move|your turn:|jouw zet|jij bent aan zet|je bent aan zet|aan (de beurt|zet):)(?!\s*computer\s*\d)/i,
@@ -560,11 +561,11 @@
   // ===================================================================
   // 6. The robot's main loop
   // ===================================================================
-  const LEVELS = ["Easy", "Medium", "Hard", "Expert"];
+  const LEVELS = ["Easy", "Medium", "Hard", "Expert", "Impossible"];
   // Dutch when the phone/browser is set to Dutch (or the launcher asks for it)
   const NL = (window.__S4R_CONFIG && window.__S4R_CONFIG.lang) ? window.__S4R_CONFIG.lang === "nl" : /^nl/i.test(navigator.language || "");
   const t = (en, nl) => (NL ? nl : en);
-  const LEVEL_NL = { Easy: "Makkelijk", Medium: "Gemiddeld", Hard: "Moeilijk", Expert: "Expert" };
+  const LEVEL_NL = { Easy: "Makkelijk", Medium: "Gemiddeld", Hard: "Moeilijk", Expert: "Expert", Impossible: "Onmogelijk" };
   const lvName = (l) => t(l, LEVEL_NL[l] || l);
   const RES_NL = { win: "GEWONNEN", draw: "GELIJKSPEL", loss: "VERLOREN" };
   // stats are stored as "2 computers - Hard"; show them in the right language
@@ -635,7 +636,12 @@
       const c = btn(lab); if (c) { clickNode(c); await sleep(1200); } return;
     }
     if (btn("Easy") && btn("Expert")) {
-      const want = nextMode(); const c = btn(want.level);
+      const want = nextMode(); let c = btn(want.level);
+      if (!c && want.level === "Impossible" && (c = btn("Expert"))) {
+        // the game doesn't have this level (yet): play the hardest one there is
+        say(t("this game has no 'Impossible' level yet - playing Expert", "dit spel heeft (nog) geen niveau 'Onmogelijk' - ik speel Expert"));
+        want.level = "Expert";
+      }
       if (c) { clickNode(c); startGame(want); await sleep(1500); } return;
     }
     // our turn?
@@ -837,7 +843,7 @@
     <div class=panel>
       <h3>Spindel 4 Robot</h3>
       <label>${t("Computers", "Computers")} <select id=c><option value=1>1 computer</option><option value=2>2 computers</option><option value=3>3 computers</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
-      <label>${t("Level", "Niveau")} <select id=l><option value=climb>${t("Climb (up after 3 wins)", "Klimmen (omhoog na 3 winst)")}</option><option value=Easy>${lvName("Easy")}</option><option value=Medium>${lvName("Medium")}</option><option value=Hard>${lvName("Hard")}</option><option value=Expert>Expert</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
+      <label>${t("Level", "Niveau")} <select id=l><option value=climb>${t("Climb (up after 3 wins)", "Klimmen (omhoog na 3 winst)")}</option><option value=Easy>${lvName("Easy")}</option><option value=Medium>${lvName("Medium")}</option><option value=Hard>${lvName("Hard")}</option><option value=Expert>Expert</option><option value=Impossible>${lvName("Impossible")}</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
       <label>${t("Think time", "Denktijd")} <select id=t><option value=0.5>0,5 s</option><option value=1>1 s</option><option value=1.5>${t("1.5 s", "1,5 s")}</option><option value=3>3 s</option><option value=5>5 s</option></select></label>
       <label>${t("Games (0 = nonstop)", "Aantal potjes (0 = nonstop)")} <input id=g type=number min=0 max=9999 inputmode=numeric></label>
       <button class=main id=go>Start robot</button>

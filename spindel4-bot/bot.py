@@ -38,7 +38,7 @@ def main():
     ap.add_argument("--computers", default="1", choices=["1", "2", "3", "all"],
                     help="how many computer opponents (all = take turns)")
     ap.add_argument("--level", default="climb",
-                    choices=["climb", "Easy", "Medium", "Hard", "Expert", "all"],
+                    choices=["climb", "Easy", "Medium", "Hard", "Expert", "Impossible", "all"],
                     help="difficulty (climb = move up after 3 wins, all = take turns)")
     ap.add_argument("--think", type=float, default=3, help="seconds to think per move")
     ap.add_argument("--games", type=int, default=0, help="stop after this many games (0 = never)")
