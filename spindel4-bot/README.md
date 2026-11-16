@@ -30,7 +30,27 @@ Zet **Automatische vergrendeling** op **Nooit** en laat de telefoon aan de
 lader, dan blijft hij doorspelen. Is je iPhone in het Nederlands ingesteld,
 dan is de robot ook in het Nederlands.
 
-## Nederlands: PC
+## Nederlands: PC (op de achtergrond, tot 10 potjes tegelijk)
+
+Installeer Python uit de **Microsoft Store**, open een opdrachtvenster in de map
+`spindel4-bot` en typ (eerste keer):
+
+```
+python -m pip install -r requirements.txt
+python -m playwright install chromium
+```
+
+Daarna, om 10 potjes tegelijk op de achtergrond te spelen:
+
+```
+python bot.py --headless --tabs 10
+```
+
+`--headless` = geen venster, hij speelt door terwijl je iets anders doet.
+`--tabs 10` = 10 potjes tegelijk (alle tabs delen één geheugen).
+Extra opties: `--computers 1|2|3|all`, `--level Easy|Medium|Hard|Expert|climb|all`,
+`--think 3`, `--games 20` (per tab).
+
 
 Installeer Python (vink **Add Python to PATH** aan), dubbelklik **install.bat**
 (één keer) en daarna **start.bat**. De robot speelt dan in het Nederlands.

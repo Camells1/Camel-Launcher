@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      2.9
+// @version      3.0
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -320,7 +320,16 @@
     }
     const entry = brain.book[cz.key] || {};
     let cands = Object.keys(scores).map(Number).filter((s) => scores[s] >= best - 60);
-    if (best <= -WIN + 200) cands = Object.keys(scores).map(Number);
+    if (best <= -WIN + 200) {
+      // every move loses against perfect play: resist as long as possible and
+      // always block a win that is available right now
+      cands = Object.keys(scores).map(Number).filter((s) => scores[s] === best);
+      const nx = (me + 1) % b.np;
+      const blocks = cands.filter((s) => b.isWinMove(nx, s));
+      const anyBlock = Object.keys(scores).map(Number).filter((s) => b.isWinMove(nx, s));
+      if (blocks.length) cands = blocks; else if (anyBlock.length) cands = anyBlock;
+      return { s: cands[Math.floor(Math.random() * cands.length)], why: "search", cz };
+    }
     let pick = cands[0], pv = -Infinity;
     for (const s of cands) {
       let adj = 0; const st = entry[toCanon(s, cz.k, cz.m)];
@@ -331,7 +340,15 @@
     return { s: pick, why: cands.length > 1 && Object.keys(entry).length ? "memory" : "search", cz };
   }
 
-  function learn(game, result) {
+  // several tabs may share one memory: always start from what is saved now
+  function updateBrain(fn) {
+    const fresh = Object.assign({ games: 0, weights: {}, book: {}, fixes: {}, stats: {} }, store.get(BRAIN_KEY, {}));
+    for (const k of ["games", "weights", "book", "fixes", "stats"]) brain[k] = fresh[k];
+    fn();
+    saveBrain();
+  }
+  function learn(game, result) { updateBrain(() => learnInto(game, result)); }
+  function learnInto(game, result) {
     brain.games++;
     const st = brain.stats[game.mode] || (brain.stats[game.mode] = [0, 0, 0]);
     const slot = result === "win" ? 0 : result === "draw" ? 1 : 2;
@@ -352,7 +369,6 @@
         for (let k = 0; k < w.length; k++) w[k] = Math.max(0, Math.min(3, w[k] + 0.003 * g * Math.max(-5, Math.min(5, pos.f[k])) / 5));
       });
     }
-    saveBrain();
   }
 
   // after a loss: look at our last moves again with a much deeper search
@@ -369,12 +385,12 @@
       const bestS = +Object.keys(scores).reduce((a, c) => scores[c] > scores[a] ? c : a);
       if (bestS !== pos.move && scores[bestS] > scores[pos.move] + 40) {
         const cz = canonical(b, pos.me);
-        brain.fixes[cz.key] = toCanon(bestS, cz.k, cz.m);
+        const fx = toCanon(bestS, cz.k, cz.m);
+        updateBrain(() => { brain.fixes[cz.key] = fx; });
         found++;
         log(t(`review: slice ${pos.move} was a mistake, ${bestS} is better (depth ${depth})`, `terugblik: poot ${pos.move} was een fout, ${bestS} is beter (diepte ${depth})`));
       }
     }
-    saveBrain();
     return found;
   }
 
@@ -630,6 +646,9 @@
   }
 
   function startGame(mode) {
+    // pick up what other tabs learned meanwhile
+    const fresh = store.get(BRAIN_KEY, null);
+    if (fresh) for (const k of ["games", "weights", "book", "fixes", "stats"]) if (fresh[k] !== undefined) brain[k] = fresh[k];
     current = mode;
     game = { mode: modeKey(mode), modeObj: mode, positions: [], np: 0, done: false };
     log(t(`new game: ${game.mode}`, `nieuw potje: ${showMode(game.mode)}`));
@@ -760,7 +779,7 @@
         if (Date.now() - lastAction > 150000) {
           log(t("stuck - reloading the page", "vastgelopen - pagina wordt herladen"));
           console.log("[S4R] trace " + trace.slice(-6).join(" || "));
-          saveSettings(); saveBrain();
+          saveSettings();
           location.reload();
           await sleep(10000);
         }

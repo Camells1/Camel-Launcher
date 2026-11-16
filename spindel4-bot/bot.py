@@ -42,7 +42,10 @@ def main():
                     help="difficulty (climb = move up after 3 wins, all = take turns)")
     ap.add_argument("--think", type=float, default=3, help="seconds to think per move")
     ap.add_argument("--games", type=int, default=0, help="stop after this many games (0 = never)")
-    ap.add_argument("--headless", action="store_true", help="hide the browser window")
+    ap.add_argument("--headless", action="store_true",
+                    help="no browser window: keeps playing while you use the PC for other things")
+    ap.add_argument("--tabs", type=int, default=1,
+                    help="games at the same time, 1-10 (they share one memory)")
     ap.add_argument("--english", action="store_true", help="English instead of Dutch")
     args = ap.parse_args()
 
@@ -56,17 +59,24 @@ def main():
         "games": args.games,
         "lang": "en" if args.english else "nl",
     }
-    done = {"flag": False}
+    tabs = max(1, min(10, args.tabs))
+    done = set()
 
-    def on_console(msg):
-        t = msg.text
-        if t.startswith("[S4R]"):
-            log(t[6:])
-            if t.strip() == "[S4R] DONE":
-                done["flag"] = True
+    def on_console(n):
+        def handler(msg):
+            t = msg.text
+            if t.startswith("[S4R]"):
+                log(("[tab %d] " % n if tabs > 1 else "") + t[6:])
+                if t.strip() == "[S4R] DONE":
+                    done.add(n)
+        return handler
 
     with sync_playwright() as pw:
         opts = dict(headless=args.headless, viewport={"width": 1000, "height": 800},
+                    # keep playing when the window is behind other windows
+                    args=["--disable-background-timer-throttling",
+                          "--disable-renderer-backgrounding",
+                          "--disable-backgrounding-occluded-windows"],
                     locale="en-US" if args.english else "nl-NL", device_scale_factor=1)
         exe = os.environ.get("SPINDEL_CHROME")
         if exe:
@@ -84,13 +94,20 @@ def main():
         ctx.route("**/*", route)
         ctx.add_init_script("window.__S4R_CONFIG = %s;" % json.dumps(config))
         ctx.add_init_script(path=SCRIPT)
-        page = ctx.pages[0] if ctx.pages else ctx.new_page()
-        page.on("console", on_console)
-        log("openen:" if not args.english else "opening", URL, "(advertenties geblokkeerd)" if not args.english else "(ad blocker on)")
-        page.goto(URL, wait_until="domcontentloaded", timeout=90000)
+        pages = []
+        for n in range(1, tabs + 1):
+            page = ctx.pages[0] if (n == 1 and ctx.pages) else ctx.new_page()
+            page.on("console", on_console(n))
+            log(("openen:" if not args.english else "opening"), URL,
+                ("(tab %d van %d)" % (n, tabs) if not args.english else "(tab %d of %d)" % (n, tabs)) if tabs > 1 else "",
+                "(advertenties geblokkeerd)" if not args.english else "(ad blocker on)")
+            page.goto(URL, wait_until="domcontentloaded", timeout=90000)
+            pages.append(page)
+            if n < tabs:
+                pages[0].wait_for_timeout(4000)  # don't start every tab at once
         try:
-            while not done["flag"] and not page.is_closed():
-                page.wait_for_timeout(1000)
+            while len(done) < tabs and not all(p.is_closed() for p in pages):
+                pages[0].wait_for_timeout(1000)
         except KeyboardInterrupt:
             pass
         except Exception as e:  # browser window closed
