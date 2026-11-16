@@ -22,7 +22,9 @@
 2. Tik linksonder (net boven de adresbalk) op **🕷 Robot**.
 3. Kies het aantal **computers** (1, 2, 3 of *Allemaal*) en het **niveau**
    (*Klimmen* begint op Makkelijk en gaat omhoog na 3 keer op rij winnen).
-4. Tik op **Start robot**. Hij speelt nu zelf, zonder te stoppen.
+4. Kies bij **Aantal potjes** hoeveel potjes hij moet spelen (**0 = nonstop**).
+5. Tik op **Start robot**. Hij gaat zelf naar het spel en speelt. Na het
+   gekozen aantal stopt hij vanzelf; **Stop robot** stopt hem meteen.
 
 Zet **Automatische vergrendeling** op **Nooit** en laat de telefoon aan de
 lader, dan blijft hij doorspelen. Is je iPhone in het Nederlands ingesteld,

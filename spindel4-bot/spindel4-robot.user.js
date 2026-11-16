@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      2.4
+// @version      2.6
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -376,9 +376,22 @@
   // 5. Talking to the game (Flutter accessibility tree + screen pixels)
   // ===================================================================
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  function nodes() {
+  // Flutter only builds its accessibility tree (which we read) after a tap on
+  // the centre of its hidden placeholder. On iPhones a tap elsewhere counts as
+  // a failed attempt, and after a few failures the placeholder is removed.
+  let lastEnable = 0;
+  function enableSemantics() {
     const ph = document.querySelector("flt-semantics-placeholder");
-    if (ph) ph.click(); // turns on Flutter's accessibility tree
+    if (!ph || Date.now() - lastEnable < 2500) return;
+    lastEnable = Date.now();
+    const r = ph.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+    const o = { bubbles: true, cancelable: true, composed: true, clientX: x, clientY: y, pointerId: 7, pointerType: "touch", isPrimary: true };
+    ph.dispatchEvent(new PointerEvent("pointerdown", o));
+    ph.dispatchEvent(new PointerEvent("pointerup", o));
+    ph.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, composed: true, clientX: x, clientY: y }));
+  }
+  function nodes() {
+    enableSemantics();
     return Array.from(document.querySelectorAll("flt-semantics")).map((e) => {
       const r = e.getBoundingClientRect();
       const label = (e.getAttribute("aria-label") || "").trim();
@@ -409,7 +422,7 @@
     order: /^(order|volgorde)/i,
     tutorial: /how to make a move|zo doe je een zet/i,
     yourTurn: /^(your turn|nu jij|jouw beurt)/i,
-    step1: /marked spoke with|gemarkeerde poot aan, kijk|(point|tap) at the marked/i,
+    step1: /marked spoke with|marked spoke, see|finger on the marked|gemarkeerde poot aan, kijk|vinger op de gemarkeerde poot|(point|tap) at the marked|net niet de gemarkeerde|not quite the marked/i,
     win: /\b(wins|won|wint|gewonnen|heeft gewonnen)\b/i,
     you: /\((you|jij)\)/i,
     draw: /\b(draw|tie|gelijkspel|gelijk spel|onbeslist)\b/i,
@@ -492,13 +505,20 @@
     return cells;
   }
 
+  const TOUCH = (navigator.maxTouchPoints || 0) > 0 && matchMedia("(pointer: coarse)").matches;
   function pointer(type, x, y, buttons) {
     const t = document.querySelector("flutter-view") || document.querySelector("flt-glass-pane") || document.body;
     t.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true, composed: true, clientX: x, clientY: y,
-      pointerId: 1, pointerType: "mouse", isPrimary: true, button: 0, buttons, view: window }));
+      pointerId: 1, pointerType: TOUCH ? "touch" : "mouse", isPrimary: true, button: 0, buttons, view: window }));
   }
   async function tap(x, y) {
     lastAction = Date.now();
+    if (TOUCH) {          // finger: press, hold a moment, release
+      pointer("pointerdown", x, y, 1); await sleep(80);
+      pointer("pointermove", x + 0.5, y, 1); await sleep(250);
+      pointer("pointerup", x, y, 0); await sleep(60);
+      return;
+    }
     pointer("pointermove", x, y, 0); await sleep(120);
     pointer("pointerdown", x, y, 1); await sleep(60);
     pointer("pointerup", x, y, 0); await sleep(60);
@@ -518,11 +538,11 @@
   // stats are stored as "2 computers - Hard"; show them in the right language
   const showMode = (k) => NL ? k.replace(/ - (\w+)$/, (m, l) => " - " + lvName(l)) : k;
   const auto = window.__S4R_CONFIG || {};
-  const settings = Object.assign({ computers: "1", level: "climb", think: 1.5, running: false }, store.get(SET_KEY, {}), auto);
+  const settings = Object.assign({ computers: "1", level: "climb", think: 1.5, games: 0, running: false }, store.get(SET_KEY, {}), auto);
   let running = !!settings.running;
   let game = null, current = null, rotateIdx = store.get("S4R_rot", 0), climb = store.get("S4R_climb", {}), streak = {}, lastAction = Date.now(), lastSig = "";
-  let gamesThisRun = 0;
-  const saveSettings = () => store.set(SET_KEY, { computers: settings.computers, level: settings.level, think: settings.think, running });
+  let gamesThisRun = store.get(SET_KEY, {}).played || 0; // survives a page reload
+  const saveSettings = () => store.set(SET_KEY, { computers: settings.computers, level: settings.level, think: settings.think, games: settings.games, played: gamesThisRun, running });
 
   let lastSay = "";
   function say(msg) { if (msg !== lastSay) { lastSay = msg; log(msg); } }
@@ -632,7 +652,14 @@
       log(t(`learned ${n} fix${n === 1 ? "" : "es"} from that loss`, `${n} ${n === 1 ? "verbetering" : "verbeteringen"} geleerd van dit verlies`));
     }
     renderStats();
-    if (auto.games && gamesThisRun >= auto.games) { running = false; log("DONE"); renderStats(); }
+    saveSettings();
+    const limit = +settings.games || 0;
+    if (limit && gamesThisRun >= limit) {
+      running = false; saveSettings();
+      log(t(`finished: played ${gamesThisRun} game${gamesThisRun === 1 ? "" : "s"}`, `klaar: ${gamesThisRun} ${gamesThisRun === 1 ? "potje" : "potjes"} gespeeld`));
+      console.log("[S4R] DONE");
+    }
+    renderStats();
   }
 
   async function myMove(ns) {
@@ -702,8 +729,9 @@
       const [x0, y0] = at(12); pointer("pointermove", x0, y0, 0); await sleep(300);
       pointer("pointerdown", x0, y0, 1); await sleep(100);
       for (const s of [12.5, 13, 13.5, 14, 14.5, 15, 15.5, 16]) { const [x, y] = at(s); pointer("pointermove", x, y, 1); await sleep(80); }
-      const [x1, y1] = at(0); pointer("pointerup", x1, y1, 0); await sleep(200);
-      await tap(x1, y1); await sleep(2000);
+      const [x1, y1] = at(0); await sleep(300); pointer("pointerup", x1, y1, 0); await sleep(200);
+      if (!TOUCH) await tap(x1, y1);
+      await sleep(2000);
     }
   }
 
@@ -738,6 +766,8 @@
     ui.go.textContent = running ? t("Stop robot", "Stop robot") : t("Start robot", "Start robot");
     ui.go.className = running ? "main stop" : "main";
     ui.pill.textContent = running ? "🕷 Robot ●" : "🕷 Robot";
+    const lim = +settings.games || 0;
+    if (running) ui.go.textContent = t("Stop robot", "Stop robot") + (lim ? ` (${gamesThisRun}/${lim})` : ` (${gamesThisRun} ${t("played", "gespeeld")})`);
   }
   function buildUI() {
     const host = document.createElement("div");
@@ -750,6 +780,7 @@
       .panel{display:none;width:min(300px,calc(100vw - 16px));background:#2b211bee;color:#f7ead6;border-radius:12px;padding:12px;margin-bottom:6px;box-shadow:0 4px 16px #0007}
       .panel.open{display:block} h3{margin:0 0 8px;font-size:15px;color:#f1be3c}
       label{display:flex;justify-content:space-between;align-items:center;margin:6px 0;gap:8px}
+      input{width:5.5em;background:#41332a;color:#f7ead6;-webkit-text-fill-color:#f7ead6;border:1px solid #6b5643;border-radius:6px;padding:6px 10px;font-size:16px;text-align:right}
       select{-webkit-appearance:none;appearance:none;background:#41332a;color:#f7ead6;-webkit-text-fill-color:#f7ead6;border:1px solid #6b5643;border-radius:6px;padding:6px 10px;font-size:15px;max-width:62%}
       button.main{width:100%;margin:8px 0 6px;padding:10px;border:0;border-radius:8px;background:#e9443f;color:#fff;font-weight:700;font-size:15px}
       button.main.stop{background:#6b5643}
@@ -763,6 +794,7 @@
       <label>${t("Computers", "Computers")} <select id=c><option value=1>1 computer</option><option value=2>2 computers</option><option value=3>3 computers</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
       <label>${t("Level", "Niveau")} <select id=l><option value=climb>${t("Climb (up after 3 wins)", "Klimmen (omhoog na 3 winst)")}</option><option value=Easy>${lvName("Easy")}</option><option value=Medium>${lvName("Medium")}</option><option value=Hard>${lvName("Hard")}</option><option value=Expert>Expert</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
       <label>${t("Think time", "Denktijd")} <select id=t><option value=0.5>0,5 s</option><option value=1>1 s</option><option value=1.5>${t("1.5 s", "1,5 s")}</option><option value=3>3 s</option><option value=5>5 s</option></select></label>
+      <label>${t("Games (0 = nonstop)", "Aantal potjes (0 = nonstop)")} <input id=g type=number min=0 max=9999 inputmode=numeric></label>
       <button class=main id=go>Start robot</button>
       <div class=status id=st>${t("Ready.", "Klaar.")}</div>
       <div class=stats id=stats></div>
@@ -775,8 +807,10 @@
     $("c").onchange = (e) => { settings.computers = e.target.value; saveSettings(); };
     $("l").onchange = (e) => { settings.level = e.target.value; saveSettings(); };
     $("t").onchange = (e) => { settings.think = parseFloat(e.target.value); saveSettings(); };
+    $("g").value = String(settings.games || 0);
+    $("g").onchange = (e) => { settings.games = Math.max(0, parseInt(e.target.value, 10) || 0); e.target.value = String(settings.games); saveSettings(); renderStats(); };
     ui.pill.onclick = () => ui.panel.classList.toggle("open");
-    ui.go.onclick = () => { running = !running; saveSettings(); log(running ? t("robot started", "robot gestart") : t("robot stopped", "robot gestopt")); renderStats(); };
+    ui.go.onclick = () => { running = !running; if (running) gamesThisRun = 0; saveSettings(); log(running ? t("robot started", "robot gestart") : t("robot stopped", "robot gestopt")); renderStats(); };
     $("ex").onclick = () => {
       const blob = new Blob([JSON.stringify(brain)], { type: "application/json" });
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "spindel4-brain.json"; a.click();
@@ -801,7 +835,7 @@
 
   const boot = () => {
     buildUI();
-    if (auto.autostart) { running = true; renderStats(); }
+    if (auto.autostart) { running = true; gamesThisRun = 0; renderStats(); }
     log(running ? t("robot running", "robot speelt") : t("tap Start robot to begin", "tik op Start robot om te beginnen"));
     loop();
   };
