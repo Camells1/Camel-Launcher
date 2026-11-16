@@ -429,12 +429,15 @@
     }
     terminate() { this.cancelled = true; for (const w of this.workers) w.terminate(); this.workers = []; }
     _run(w, msg) { return new Promise((res) => { w.onmessage = (e) => res(e.data); w.postMessage(msg); }); }
-    async analyse(b, me, ms, weights, margin = 60, onDepth = null, maxDepth = 40) {
+    // ms = normal think time; opts.minDepth = keep going until this many moves
+    // ahead (up to opts.hardMs at most)
+    async analyse(b, me, ms, weights, margin = 60, onDepth = null, maxDepth = 40, opts = {}) {
       const moves = b.legal(); this.nodes = 0;
       for (const s of moves) if (b.isWinMove(me, s)) { const r = {}; for (const t of moves) r[t] = t === s ? WIN : -WIN; return { scores: r, depth: 1 }; }
       const init = { type: "init", cells: Array.from(b.cells), np: b.np, turn: b.turn, me, weights };
       for (const w of this.workers) w.postMessage(init);
-      const deadline = Date.now() + ms;
+      const t0 = Date.now(), minDepth = opts.minDepth || 0;
+      const deadline = t0 + Math.max(ms, opts.hardMs || 0);
       let result = {}, reached = 0;
       for (const s of moves) result[s] = 0;
       for (let depth = 1; depth <= maxDepth; depth++) {
@@ -473,6 +476,7 @@
         if (Math.max(...vals) >= WIN - 200 || vals.every((v) => v <= -WIN + 200)) break;
         if (b.count + depth >= N) break;
         if (Date.now() >= deadline) break;
+        if (Date.now() - t0 >= ms && reached >= minDepth) break;   // thought long and deep enough
       }
       return { scores: result, depth: reached };
     }

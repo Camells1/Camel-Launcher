@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      4.7
+// @version      4.9
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -377,12 +377,15 @@
     }
     terminate() { this.cancelled = true; for (const w of this.workers) w.terminate(); this.workers = []; }
     _run(w, msg) { return new Promise((res) => { w.onmessage = (e) => res(e.data); w.postMessage(msg); }); }
-    async analyse(b, me, ms, weights, margin = 60, onDepth = null, maxDepth = 40) {
+    // ms = normal think time; opts.minDepth = keep going until this many moves
+    // ahead (up to opts.hardMs at most)
+    async analyse(b, me, ms, weights, margin = 60, onDepth = null, maxDepth = 40, opts = {}) {
       const moves = b.legal(); this.nodes = 0;
       for (const s of moves) if (b.isWinMove(me, s)) { const r = {}; for (const t of moves) r[t] = t === s ? WIN : -WIN; return { scores: r, depth: 1 }; }
       const init = { type: "init", cells: Array.from(b.cells), np: b.np, turn: b.turn, me, weights };
       for (const w of this.workers) w.postMessage(init);
-      const deadline = Date.now() + ms;
+      const t0 = Date.now(), minDepth = opts.minDepth || 0;
+      const deadline = t0 + Math.max(ms, opts.hardMs || 0);
       let result = {}, reached = 0;
       for (const s of moves) result[s] = 0;
       for (let depth = 1; depth <= maxDepth; depth++) {
@@ -421,6 +424,7 @@
         if (Math.max(...vals) >= WIN - 200 || vals.every((v) => v <= -WIN + 200)) break;
         if (b.count + depth >= N) break;
         if (Date.now() >= deadline) break;
+        if (Date.now() - t0 >= ms && reached >= minDepth) break;   // thought long and deep enough
       }
       return { scores: result, depth: reached };
     }
@@ -595,6 +599,7 @@
     "Against the computer": ["Against the computer", "Tegen de computer"],
     "Play online": ["Play online", "Online spelen"],
     "Join": ["Join", "Meedoen"],
+    "Rematch": ["Ja, nog een potje", "Yes, another game", "Yes, play again", "Rematch"],
     "1 computer": ["1 computer"],
     "2 computers": ["2 computers"],
     "3 computers": ["3 computers"],
@@ -760,11 +765,11 @@
   // stats are stored as "2 computers - Hard"; show them in the right language
   const showMode = (k) => NL ? k.replace(/ - (\w+)$/, (m, l) => " - " + lvName(l)) : k;
   const auto = window.__S4R_CONFIG || {};
-  const settings = Object.assign({ computers: "1", level: "climb", think: 3, games: 0, assistWin: false, assistBlock: false, onlineCode: "", running: false }, store.get(SET_KEY, {}), auto);
+  const settings = Object.assign({ computers: "1", level: "climb", think: 3, games: 0, assistWin: false, assistBlock: false, onlineCode: "", minDepth: 0, running: false }, store.get(SET_KEY, {}), auto);
   let running = !!settings.running;
   let game = null, current = null, rotateIdx = store.get("S4R_rot", 0), climb = store.get("S4R_climb", {}), streak = {}, lastAction = Date.now(), lastSig = "";
   let gamesThisRun = store.get(SET_KEY, {}).played || 0; // survives a page reload
-  const saveSettings = () => store.set(SET_KEY, { computers: settings.computers, level: settings.level, think: settings.think, games: settings.games, assistWin: settings.assistWin, assistBlock: settings.assistBlock, onlineCode: settings.onlineCode, played: gamesThisRun, running });
+  const saveSettings = () => store.set(SET_KEY, { computers: settings.computers, level: settings.level, think: settings.think, games: settings.games, assistWin: settings.assistWin, assistBlock: settings.assistBlock, onlineCode: settings.onlineCode, minDepth: settings.minDepth, played: gamesThisRun, running });
 
   let lastSay = "";
   function say(msg) { if (msg !== lastSay) { lastSay = msg; log(msg); } }
@@ -830,7 +835,11 @@
     if (tx.some((t) => RX.tutorial.test(t))) { await tutorial(ns, tx); return; }
 
     // game over?
+    // only count a result once this game has really started (a rematch keeps
+    // showing the old "wint" text for a moment)
+    if (game && tx.some((x) => RX.yourMove.test(x) || RX.youTurn.test(x) || /is aan de beurt|denkt na|is thinking|'s turn/i.test(x))) game.seenTurn = true;
     let res = parseResult(tx);
+    if (res && game && !game.done && !game.seenTurn) res = null;
     if (res === "board") res = (game && !game.done) ? winnerFromBoard(ns) : null;
     if (res && game && !game.done) { await finishGame(res); return; }
     if ((b = btn("Play again"))) {
@@ -846,6 +855,11 @@
     if (onlineMode()) {
       tr("online done=" + online.done + " joined=" + online.joined + " youTurn=" + tx.some((x) => RX.youTurn.test(x)));
       if (online.done) { say(t("online test game finished", "online testpotje klaar")); return; }
+      if (online.joined && (b = btn("Rematch"))) {
+        clickNode(b); startGame({ computers: "online", level: "test" });
+        say(t("rematch accepted, next game...", "nog een potje: ja! volgende potje..."));
+        await sleep(2000); return;
+      }
       if (btn("Against the computer") && (b = btn("Play online"))) { clickNode(b); await sleep(1500); return; }
       const codeLabel = ns.find((n) => /kamercode|room code/i.test(n.label) && n.role !== "button" && !/^(privé|private)/i.test(n.label));
       const join = ns.filter((n) => n.role === "button" && /^(meedoen|join)$/i.test(n.label)).pop();
@@ -938,7 +952,7 @@
       streak[c] = 0;
     }
     if (settings.computers === "rotate" || settings.level === "rotate") { rotateIdx++; store.set("S4R_rot", rotateIdx); }
-    if (onlineMode()) { online.done = true; running = false; saveSettings(); }
+    // online: keep playing rematches in the same room (stops only at the games limit)
     if (result === "loss") {
       log(t("lost - reviewing my moves to learn from mistakes...", "verloren - ik kijk mijn zetten na om van mijn fouten te leren..."));
       const n = await review(game);
@@ -963,17 +977,76 @@
     const want = +settings.threads || Math.max(1, Math.min(8, cores - 1));
     return Math.max(1, Math.min(16, want));
   }
-  async function think(b, me, np) {
-    if (!pool && !poolFailed) {
-      try { pool = new ParallelSearch(ENGINE_SRC, threadCount()); }
-      catch (e) { poolFailed = true; console.warn("[S4R] no threads, using one", e); }
+  // ---- "thinking" overlay: big circle round the board + green dot on the best move so far
+  let thinkEl = null;
+  function showThinking(box, b, info) {
+    if (!thinkEl) {
+      thinkEl = document.createElement("div");
+      thinkEl.style.cssText = "position:fixed;pointer-events:none;z-index:2147483645;display:none";
+      thinkEl.innerHTML = '<svg width="100%" height="100%" style="overflow:visible"></svg><div style="position:absolute;left:50%;top:-8px;transform:translate(-50%,-100%);background:#14532d;color:#fff;font:600 13px/1.2 -apple-system,system-ui,sans-serif;padding:6px 10px;border-radius:12px;white-space:nowrap;box-shadow:0 2px 6px #0005"></div>';
+      document.documentElement.appendChild(thinkEl);
     }
-    if (pool) {
-      try { return await pool.analyse(b, me, settings.think * 1000, weightsFor(np)); }
-      catch (e) { poolFailed = true; try { pool.terminate(); } catch (e2) {} pool = null; }
+    Object.assign(thinkEl.style, { left: box.x + "px", top: box.y + "px", width: box.w + "px", height: box.h + "px", display: "block" });
+    const half = box.w / 2, cx = half, cy = box.h / 2;
+    let dot = "";
+    if (info.best >= 0 && b.h[info.best] < R) {
+      const [x, y] = cellXY({ x: 0, y: 0, w: box.w, h: box.h }, info.best, b.h[info.best]);
+      const rad = Math.max(9, half * 0.055);
+      dot = `<circle cx="${x}" cy="${y}" r="${rad * 1.9}" fill="#22c55e33"/><circle cx="${x}" cy="${y}" r="${rad}" fill="#22c55e" stroke="#fff" stroke-width="2.5"/>`;
     }
-    await sleep(20);
-    return new Engine(weightsFor(np)).analyse(b, me, settings.think * 1000);
+    const prog = info.minDepth ? Math.min(1, info.depth / info.minDepth) : Math.min(1, info.secs / Math.max(0.5, info.think));
+    const R0 = half * 0.86, C = 2 * Math.PI * R0;
+    thinkEl.firstChild.innerHTML =
+      `<circle cx="${cx}" cy="${cy}" r="${R0}" fill="none" stroke="#22c55e44" stroke-width="${Math.max(6, half * 0.035)}"/>` +
+      `<circle cx="${cx}" cy="${cy}" r="${R0}" fill="none" stroke="#22c55e" stroke-width="${Math.max(6, half * 0.035)}" stroke-linecap="round" stroke-dasharray="${C * prog} ${C}" transform="rotate(-90 ${cx} ${cy})"/>` + dot;
+    thinkEl.lastChild.textContent = t(
+      `thinking: ${info.depth} moves ahead${info.minDepth ? " (min " + info.minDepth + ")" : ""} · ${(info.nps / 1e6).toFixed(2)} M/s · ${info.secs.toFixed(0)} s`,
+      `denkt: ${info.depth} zetten vooruit${info.minDepth ? " (min. " + info.minDepth + ")" : ""} · ${(info.nps / 1e6).toFixed(2)} mln/s · ${info.secs.toFixed(0)} s`);
+  }
+  function hideThinking() { if (thinkEl) thinkEl.style.display = "none"; }
+
+  // online games have a turn timer: never think longer than the time that is left
+  function turnTimeLeft(tx) {
+    for (const x of tx) { const m = /^(\d{1,3})\s*s$/.exec(x.trim()); if (m) return +m[1]; }
+    return null;
+  }
+
+  async function think(b, me, np, box, tx) {
+    const thinkMs = settings.think * 1000, minDepth = +settings.minDepth || 0;
+    let hardMs = minDepth ? Math.max(thinkMs, 300000) : thinkMs;      // max 5 min to reach the minimum depth
+    const left = tx ? turnTimeLeft(tx) : null;
+    if (left !== null) hardMs = Math.min(hardMs, Math.max(1500, (left - 4) * 1000));
+    const softMs = Math.min(thinkMs, hardMs);
+    const t0 = performance.now();
+    let best = -1, lastDepth = 0;
+    if (box) showThinking(box, b, { best, depth: 0, minDepth, nps: 0, secs: 0, think: settings.think });
+    const onDepth = (depth, scores, nodes) => {
+      lastDepth = depth;
+      let bs = -1; for (const k in scores) if (bs < 0 || scores[k] > scores[bs]) bs = +k;
+      best = bs;
+      const secs = (performance.now() - t0) / 1000;
+      if (box) showThinking(box, b, { best, depth, minDepth, nps: nodes / Math.max(secs, 0.001), secs, think: settings.think });
+    };
+    // keep the circle filling while a deep step is running
+    const ticker = box ? setInterval(() => {
+      const secs = (performance.now() - t0) / 1000;
+      showThinking(box, b, { best, depth: lastDepth, minDepth, nps: (pool ? pool.nodes : 0) / Math.max(secs, 0.001), secs, think: settings.think });
+    }, 500) : null;
+    try {
+      if (!pool && !poolFailed) {
+        try { pool = new ParallelSearch(ENGINE_SRC, threadCount()); }
+        catch (e) { poolFailed = true; console.warn("[S4R] no threads, using one", e); }
+      }
+      if (pool) {
+        try { return await pool.analyse(b, me, softMs, weightsFor(np), 60, onDepth, 40, { minDepth, hardMs }); }
+        catch (e) { poolFailed = true; try { pool.terminate(); } catch (e2) {} pool = null; }
+      }
+      await sleep(20);
+      return new Engine(weightsFor(np)).analyse(b, me, softMs, 60, onDepth);
+    } finally {
+      if (ticker) clearInterval(ticker);
+      hideThinking();
+    }
   }
 
   // Which colour is ours? Online the dots don't say, so use the board itself.
@@ -1023,7 +1096,7 @@
     game.np = np;
     const b = Board.fromCells(cells, np, me);
     tr("myMove np=" + np + " me=" + me + " pieces=" + b.count);
-    const { scores, depth } = await think(b, me, np);
+    const { scores, depth } = await think(b, me, np, box, texts(nodes()));
     if (!Object.keys(scores).length) { tr("myMove: no scores"); return; }
     const pick = choose(b, me, scores);
     const s = pick.s, r = b.h[s];
@@ -1152,7 +1225,8 @@
       <h3>Spindel 4 Robot</h3>
       <label>${t("Computers", "Computers")} <select id=c><option value=1>1 computer</option><option value=2>2 computers</option><option value=3>3 computers</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
       <label>${t("Level", "Niveau")} <select id=l><option value=climb>${t("Climb (up after 3 wins)", "Klimmen (omhoog na 3 winst)")}</option><option value=Easy>${lvName("Easy")}</option><option value=Medium>${lvName("Medium")}</option><option value=Hard>${lvName("Hard")}</option><option value=Expert>Expert</option><option value=Impossible>${lvName("Impossible")}</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
-      <label>${t("Think time", "Denktijd")} <select id=t><option value=0.5>0,5 s</option><option value=1>1 s</option><option value=1.5>${t("1.5 s", "1,5 s")}</option><option value=3>3 s</option><option value=5>5 s</option></select></label>
+      <label>${t("Think time", "Denktijd")} <select id=t><option value=0.5>0,5 s</option><option value=1>1 s</option><option value=1.5>${t("1.5 s", "1,5 s")}</option><option value=3>3 s</option><option value=5>5 s</option><option value=10>10 s</option><option value=30>30 s</option><option value=60>60 s</option></select></label>
+      <label>${t("Min. moves ahead", "Min. zetten vooruit")} <select id=md><option value=0>${t("off", "uit")}</option><option value=8>8</option><option value=10>10</option><option value=12>12</option></select></label>
       <label>${t("Games (0 = nonstop)", "Aantal potjes (0 = nonstop)")} <input id=g type=number min=0 max=9999 inputmode=numeric></label>
       <label>${t("Online test: room code", "Online test: kamercode")} <input id=oc type=text autocomplete=off autocapitalize=characters placeholder="${t("empty = vs computer", "leeg = tegen computer")}" style="width:9em;text-align:left"></label>
       <button class=main id=go>Start robot</button>
@@ -1173,8 +1247,10 @@
     $("c").onchange = (e) => { settings.computers = e.target.value; saveSettings(); };
     $("l").onchange = (e) => { settings.level = e.target.value; saveSettings(); };
     $("t").onchange = (e) => { settings.think = parseFloat(e.target.value); saveSettings(); };
+    $("md").value = String(settings.minDepth || 0);
+    $("md").onchange = (e) => { settings.minDepth = +e.target.value; saveSettings(); };
     $("oc").value = settings.onlineCode || "";
-    $("oc").onchange = (e) => { settings.onlineCode = e.target.value.trim(); saveSettings(); };
+    $("oc").onchange = (e) => { settings.onlineCode = e.target.value.trim().toUpperCase(); e.target.value = settings.onlineCode; saveSettings(); };
     $("g").value = String(settings.games || 0);
     $("g").onchange = (e) => { settings.games = Math.max(0, parseInt(e.target.value, 10) || 0); e.target.value = String(settings.games); saveSettings(); renderStats(); };
     ui.pill.onclick = () => ui.panel.classList.toggle("open");
