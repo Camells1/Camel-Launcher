@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      4.1
+// @version      4.2
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -1084,7 +1084,9 @@
     if (overlay) return overlay;
     overlay = document.createElement("div");
     overlay.style.cssText = "position:fixed;pointer-events:none;z-index:2147483646;display:none";
-    overlay.innerHTML = '<svg width="100%" height="100%" style="overflow:visible"></svg>';
+    overlay.innerHTML = '<svg width="100%" height="100%" style="overflow:visible"></svg>' +
+      '<div style="position:absolute;left:50%;bottom:-6px;transform:translate(-50%,100%);background:#2e7d4f;color:#fff;' +
+      'font:600 13px/1 -apple-system,system-ui,sans-serif;padding:6px 10px;border-radius:12px;white-space:nowrap;box-shadow:0 2px 6px #0004"></div>';
     document.documentElement.appendChild(overlay);
     return overlay;
   }
@@ -1122,7 +1124,13 @@
       const col = m.kind === "win" ? "#22c55e" : "#f97316";
       return `<circle cx="${x}" cy="${y}" r="${rad}" fill="${col}33" stroke="${col}" stroke-width="${Math.max(3, rad * 0.28)}"><animate attributeName="r" values="${rad};${rad * 1.15};${rad}" dur="1.2s" repeatCount="indefinite"/></circle>`;
     }).join("");
-    el.style.display = marks.length ? "block" : "none";
+    // always show that assist is on, so it's clear it is working even without rings
+    const wins = marks.filter((m) => m.kind === "win").length, blocks = marks.length - wins;
+    el.lastChild.textContent = "🛟 " + (wins ? t(`Hulp: you can win (${wins})`, `Hulp: je kunt winnen (${wins})`)
+      : blocks ? t(`Hulp: block! (${blocks})`, `Hulp: blokkeren! (${blocks})`)
+      : t("Assist on - no win or danger right now", "Hulp aan - nu geen winkans of gevaar"));
+    el.lastChild.style.background = wins ? "#2e7d4f" : blocks ? "#c2410c" : "#41332a";
+    el.style.display = "block";
     if (marks.length) say(marks.some((m) => m.kind === "win")
       ? t("Green ring: you can win right there!", "Groene ring: daar kun je direct winnen!")
       : t("Orange ring: block there or you lose!", "Oranje ring: blokkeer daar, anders verlies je!"));
