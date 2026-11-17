@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      6.2
+// @version      6.3
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -422,7 +422,7 @@
     // ms = normal think time; opts.minDepth = keep going until this many moves
     // ahead (up to opts.hardMs at most)
     async analyse(b, me, ms, weights, margin = 60, onDepth = null, maxDepth = 40, opts = {}) {
-      const moves = b.legal(); this.nodes = 0;
+      const moves = b.legal(); this.nodes = 0; this.cancelled = false;
       for (const s of moves) if (b.isWinMove(me, s)) { const r = {}; for (const t of moves) r[t] = t === s ? WIN : -WIN; return { scores: r, depth: 1 }; }
       const init = { type: "init", cells: Array.from(b.cells), np: b.np, turn: b.turn, me, weights, wasm: this.useWasm !== false };
       for (const w of this.workers) w.postMessage(init);
@@ -874,6 +874,7 @@
     const sig = tx.join("|");
     if (sig && sig !== lastSig) { lastSig = sig; lastAction = Date.now(); }
     const btn = (...l) => findBtn(ns, ...l);
+    if (!boardBox(ns)) hideThinking();
     let b;
     if ((b = btn("Continue anonymously")) || (b = btn("Got it"))) { clickNode(b); await sleep(1200); return; }
     if (tx.some((t) => RX.tutorial.test(t))) { await tutorial(ns, tx); return; }
@@ -1088,6 +1089,11 @@
     };
     // keep the circle filling while a deep step is running
     const ticker = box ? setInterval(() => {
+      // left the game (main menu, other screen)? hide the circle and stop thinking
+      const ns2 = nodes(), tx2 = texts(ns2);
+      if (!boardBox(ns2) || !tx2.some((x) => RX.yourMove.test(x) || RX.youTurn.test(x))) {
+        hideThinking(); if (pool) pool.cancelled = true; return;
+      }
       const secs = (performance.now() - t0) / 1000;
       showThinking(box, b, { best, depth: lastDepth, minDepth, nps: (pool ? pool.nodes : 0) / Math.max(secs, 0.001), secs, think: settings.think });
     }, 700) : null;
@@ -1157,6 +1163,12 @@
     tr("myMove np=" + np + " me=" + me + " pieces=" + b.count);
     const { scores, depth } = await think(b, me, np, box, texts(nodes()));
     if (!Object.keys(scores).length) { tr("myMove: no scores"); return; }
+    {
+      const ns3 = nodes(), tx3 = texts(ns3);
+      if (!boardBox(ns3) || !tx3.some((x) => RX.yourMove.test(x) || RX.youTurn.test(x))) {
+        hideThinking(); tr("myMove: left the game while thinking"); return;   // never tap on another screen
+      }
+    }
     const pick = choose(b, me, scores);
     const s = pick.s, r = b.h[s];
     game.lastMoveWins = b.isWinMove(me, s);
