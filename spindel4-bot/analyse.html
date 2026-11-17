@@ -249,6 +249,9 @@
     constructor(weights, opt) {
       this.w = weights.slice(); this.opt = opt || {};
       this.pvs = this.opt.pvs !== false;
+      this.lmr = this.opt.lmr === true;             // (tested: weaker in this game, so off)
+      this.killers = this.opt.killers !== false;    // moves that refuted other lines go early
+      this.killer = new Int8Array((N + 4) * 2).fill(-1);
       // transposition table in flat typed arrays (no objects, no garbage)
       this.ttK1 = new Int32Array(TT_SIZE); this.ttK2 = new Int32Array(TT_SIZE);
       this.ttV = new Int32Array(TT_SIZE); this.ttD = new Int8Array(TT_SIZE).fill(-1);
@@ -337,7 +340,11 @@
       }
       // move ordering: table move first, then history
       const H = this.hist, base = p * S, ord = this.mo[ply];
-      for (let i = 0; i < n; i++) { const s = list[i]; ord[i] = s === ttMove ? INF : H[base + s]; }
+      const km1 = this.killers ? this.killer[ply * 2] : -1, km2 = this.killers ? this.killer[ply * 2 + 1] : -1;
+      for (let i = 0; i < n; i++) {
+        const s = list[i];
+        ord[i] = s === ttMove ? INF : s === km1 ? INF - 1 : s === km2 ? INF - 2 : H[base + s];
+      }
       for (let i = 1; i < n; i++) {
         const sv = list[i], ov = ord[i]; let j = i - 1;
         while (j >= 0 && ord[j] < ov) { list[j + 1] = list[j]; ord[j + 1] = ord[j]; j--; }
@@ -349,7 +356,12 @@
         const s = list[i];
         b.play(s);
         let v;
+        // late moves (not the first few, not forced): try them 1 move shallower;
+        // only if they look interesting, search them fully
+        const reduce = this.lmr && i >= 3 && depth >= 3 && n > 3;
         if (i === 0 || !this.pvs) v = this.search(b, depth - 1, alpha, beta, ply + 1);
+        else if (reduce && mine && (v = this.search(b, depth - 2, alpha, alpha + 1, ply + 1)) <= alpha) { /* still not better: done */ }
+        else if (reduce && !mine && (v = this.search(b, depth - 2, beta - 1, beta, ply + 1)) >= beta) { /* still not better for them: done */ }
         else if (mine) {
           // can this move beat the best so far? check cheaply first
           v = this.search(b, depth - 1, alpha, alpha + 1, ply + 1);
@@ -362,7 +374,11 @@
         if (this.stop) return 0;
         if (mine) { if (v > best) { best = v; bestM = s; } if (v > alpha) alpha = v; }
         else { if (v < best) { best = v; bestM = s; } if (v < beta) beta = v; }
-        if (alpha >= beta) { H[base + s] += depth * depth; break; }
+        if (alpha >= beta) {
+          H[base + s] += depth * depth;
+          if (this.killers && this.killer[ply * 2] !== s) { this.killer[ply * 2 + 1] = this.killer[ply * 2]; this.killer[ply * 2] = s; }
+          break;
+        }
       }
       const prev = this.ttD[ti];
       if (prev < 0 || prev <= depth || this.ttK1[ti] !== z1) {

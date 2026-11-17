@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      5.0
+// @version      5.1
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -199,6 +199,9 @@
     constructor(weights, opt) {
       this.w = weights.slice(); this.opt = opt || {};
       this.pvs = this.opt.pvs !== false;
+      this.lmr = this.opt.lmr === true;             // (tested: weaker in this game, so off)
+      this.killers = this.opt.killers !== false;    // moves that refuted other lines go early
+      this.killer = new Int8Array((N + 4) * 2).fill(-1);
       // transposition table in flat typed arrays (no objects, no garbage)
       this.ttK1 = new Int32Array(TT_SIZE); this.ttK2 = new Int32Array(TT_SIZE);
       this.ttV = new Int32Array(TT_SIZE); this.ttD = new Int8Array(TT_SIZE).fill(-1);
@@ -287,7 +290,11 @@
       }
       // move ordering: table move first, then history
       const H = this.hist, base = p * S, ord = this.mo[ply];
-      for (let i = 0; i < n; i++) { const s = list[i]; ord[i] = s === ttMove ? INF : H[base + s]; }
+      const km1 = this.killers ? this.killer[ply * 2] : -1, km2 = this.killers ? this.killer[ply * 2 + 1] : -1;
+      for (let i = 0; i < n; i++) {
+        const s = list[i];
+        ord[i] = s === ttMove ? INF : s === km1 ? INF - 1 : s === km2 ? INF - 2 : H[base + s];
+      }
       for (let i = 1; i < n; i++) {
         const sv = list[i], ov = ord[i]; let j = i - 1;
         while (j >= 0 && ord[j] < ov) { list[j + 1] = list[j]; ord[j + 1] = ord[j]; j--; }
@@ -299,7 +306,12 @@
         const s = list[i];
         b.play(s);
         let v;
+        // late moves (not the first few, not forced): try them 1 move shallower;
+        // only if they look interesting, search them fully
+        const reduce = this.lmr && i >= 3 && depth >= 3 && n > 3;
         if (i === 0 || !this.pvs) v = this.search(b, depth - 1, alpha, beta, ply + 1);
+        else if (reduce && mine && (v = this.search(b, depth - 2, alpha, alpha + 1, ply + 1)) <= alpha) { /* still not better: done */ }
+        else if (reduce && !mine && (v = this.search(b, depth - 2, beta - 1, beta, ply + 1)) >= beta) { /* still not better for them: done */ }
         else if (mine) {
           // can this move beat the best so far? check cheaply first
           v = this.search(b, depth - 1, alpha, alpha + 1, ply + 1);
@@ -312,7 +324,11 @@
         if (this.stop) return 0;
         if (mine) { if (v > best) { best = v; bestM = s; } if (v > alpha) alpha = v; }
         else { if (v < best) { best = v; bestM = s; } if (v < beta) beta = v; }
-        if (alpha >= beta) { H[base + s] += depth * depth; break; }
+        if (alpha >= beta) {
+          H[base + s] += depth * depth;
+          if (this.killers && this.killer[ply * 2] !== s) { this.killer[ply * 2 + 1] = this.killer[ply * 2]; this.killer[ply * 2] = s; }
+          break;
+        }
       }
       const prev = this.ttD[ti];
       if (prev < 0 || prev <= depth || this.ttK1[ti] !== z1) {
@@ -983,30 +999,44 @@
     return Math.max(1, Math.min(16, want));
   }
   // ---- "thinking" overlay: big circle round the board + green dot on the best move so far
-  let thinkEl = null;
+  let thinkEl = null, tk = null;
   function showThinking(box, b, info) {
+    const NSV = "http://www.w3.org/2000/svg";
     if (!thinkEl) {
+      // built once; afterwards only attributes change (smooth, no flicker, little work)
       thinkEl = document.createElement("div");
       thinkEl.style.cssText = "position:fixed;pointer-events:none;z-index:2147483645;display:none";
-      thinkEl.innerHTML = '<svg width="100%" height="100%" style="overflow:visible"></svg><div style="position:absolute;left:50%;top:-8px;transform:translate(-50%,-100%);background:#14532d;color:#fff;font:600 13px/1.2 -apple-system,system-ui,sans-serif;padding:6px 10px;border-radius:12px;white-space:nowrap;box-shadow:0 2px 6px #0005"></div>';
+      thinkEl.innerHTML =
+        '<svg width="100%" height="100%" style="overflow:visible">' +
+        '<defs><filter id="s4rglow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+        '<linearGradient id="s4rgrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4ade80"/><stop offset="1" stop-color="#16a34a"/></linearGradient></defs>' +
+        '<circle class="track" fill="none" stroke="#22c55e2e"/>' +
+        '<circle class="prog" fill="none" stroke="url(#s4rgrad)" stroke-linecap="round" filter="url(#s4rglow)" style="transition:stroke-dasharray .45s ease"/>' +
+        '<g class="best" style="transition:transform .35s ease"><circle class="halo" fill="#22c55e33"><animate attributeName="r" dur="1.4s" repeatCount="indefinite"/></circle>' +
+        '<circle class="dot" fill="#22c55e" stroke="#fff" stroke-width="2.5" filter="url(#s4rglow)"/></g></svg>' +
+        '<div class="lbl" style="position:absolute;left:50%;top:-10px;transform:translate(-50%,-100%);display:flex;gap:8px;align-items:center;' +
+        'background:rgba(20,40,28,.92);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#ecfdf5;border:1px solid #22c55e66;' +
+        'font:700 13px/1.2 -apple-system,system-ui,sans-serif;padding:7px 12px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 18px #0006"></div>';
       document.documentElement.appendChild(thinkEl);
+      const q = (c) => thinkEl.querySelector("." + c);
+      tk = { track: q("track"), prog: q("prog"), best: q("best"), halo: q("halo"), anim: thinkEl.querySelector("animate"), dot: q("dot"), lbl: q("lbl") };
     }
     Object.assign(thinkEl.style, { left: box.x + "px", top: box.y + "px", width: box.w + "px", height: box.h + "px", display: "block" });
-    const half = box.w / 2, cx = half, cy = box.h / 2;
-    let dot = "";
+    const half = box.w / 2, cx = half, cy = box.h / 2, R0 = half * 0.86, C = 2 * Math.PI * R0, sw = Math.max(6, half * 0.035);
+    for (const c of [tk.track, tk.prog]) { c.setAttribute("cx", cx); c.setAttribute("cy", cy); c.setAttribute("r", R0); c.setAttribute("stroke-width", sw); }
+    tk.prog.setAttribute("transform", `rotate(-90 ${cx} ${cy})`);
+    const prog = info.minDepth ? Math.min(1, info.depth / info.minDepth) : Math.min(1, info.secs / Math.max(0.5, info.think));
+    tk.prog.setAttribute("stroke-dasharray", `${C * prog} ${C}`);
     if (info.best >= 0 && b.h[info.best] < R) {
       const [x, y] = cellXY({ x: 0, y: 0, w: box.w, h: box.h }, info.best, b.h[info.best]);
       const rad = Math.max(9, half * 0.055);
-      dot = `<circle cx="${x}" cy="${y}" r="${rad * 1.9}" fill="#22c55e33"/><circle cx="${x}" cy="${y}" r="${rad}" fill="#22c55e" stroke="#fff" stroke-width="2.5"/>`;
-    }
-    const prog = info.minDepth ? Math.min(1, info.depth / info.minDepth) : Math.min(1, info.secs / Math.max(0.5, info.think));
-    const R0 = half * 0.86, C = 2 * Math.PI * R0;
-    thinkEl.firstChild.innerHTML =
-      `<circle cx="${cx}" cy="${cy}" r="${R0}" fill="none" stroke="#22c55e44" stroke-width="${Math.max(6, half * 0.035)}"/>` +
-      `<circle cx="${cx}" cy="${cy}" r="${R0}" fill="none" stroke="#22c55e" stroke-width="${Math.max(6, half * 0.035)}" stroke-linecap="round" stroke-dasharray="${C * prog} ${C}" transform="rotate(-90 ${cx} ${cy})"/>` + dot;
-    thinkEl.lastChild.textContent = t(
-      `thinking: ${info.depth} moves ahead${info.minDepth ? " (min " + info.minDepth + ")" : ""} · ${(info.nps / 1e6).toFixed(2)} M/s · ${info.secs.toFixed(0)} s`,
-      `denkt: ${info.depth} zetten vooruit${info.minDepth ? " (min. " + info.minDepth + ")" : ""} · ${(info.nps / 1e6).toFixed(2)} mln/s · ${info.secs.toFixed(0)} s`);
+      tk.best.style.display = ""; tk.best.style.transform = `translate(${x}px,${y}px)`;
+      tk.dot.setAttribute("r", rad); tk.halo.setAttribute("r", rad * 1.8);
+      tk.anim.setAttribute("values", `${rad * 1.4};${rad * 2.2};${rad * 1.4}`);
+    } else tk.best.style.display = "none";
+    tk.lbl.textContent = t(
+      `🧠 ${info.depth} moves ahead${info.minDepth ? " / " + info.minDepth : ""} · ${(info.nps / 1e6).toFixed(2)} M/s · ${info.secs.toFixed(0)} s`,
+      `🧠 ${info.depth} zetten vooruit${info.minDepth ? " / " + info.minDepth : ""} · ${(info.nps / 1e6).toFixed(2)} mln/s · ${info.secs.toFixed(0)} s`);
   }
   function hideThinking() { if (thinkEl) thinkEl.style.display = "none"; }
 
@@ -1036,7 +1066,7 @@
     const ticker = box ? setInterval(() => {
       const secs = (performance.now() - t0) / 1000;
       showThinking(box, b, { best, depth: lastDepth, minDepth, nps: (pool ? pool.nodes : 0) / Math.max(secs, 0.001), secs, think: settings.think });
-    }, 500) : null;
+    }, 700) : null;
     try {
       if (!pool && !poolFailed) {
         try { pool = new ParallelSearch(ENGINE_SRC, threadCount()); }
@@ -1130,8 +1160,8 @@
       // drops the piece itself; the tiny inner cells next to the hub are easy to miss
       const [x, y] = cellXY(box, s, r, Math.max(RING_POS[r], 0.5));
       await tap(x, y);
-      for (let k = 0; k < 16; k++) {
-        await sleep(250);
+      for (let k = 0; k < 12; k++) {
+        await sleep(350);
         const t2 = texts(nodes());
         if (parseResult(t2) || !t2.some((t) => RX.yourMove.test(t)) || landed()) { lastAction = Date.now(); return; }
       }
@@ -1177,7 +1207,7 @@
           await sleep(10000);
         }
       } else lastAction = Date.now();
-      await sleep(running ? 400 : 1000);
+      await sleep(!running ? 1000 : lastSay.startsWith(t("waiting", "wachten")) ? 700 : 400);   // check less often while waiting
     }
   }
 
@@ -1193,7 +1223,9 @@
       : "<i>" + t("No games yet", "Nog geen potjes gespeeld") + "</i>";
     ui.go.textContent = running ? t("Stop robot", "Stop robot") : t("Start robot", "Start robot");
     ui.go.className = running ? "main stop" : "main";
-    ui.pill.textContent = running ? "🕷 Robot ●" : "🕷 Robot";
+    ui.pill.classList.toggle("on", running);
+    const chip = ui.panel.querySelector("#chip");
+    if (chip) { chip.textContent = running ? t("playing", "speelt") : t("idle", "stil"); chip.classList.toggle("on", running); }
     const lim = +settings.games || 0;
     if (running) ui.go.textContent = t("Stop robot", "Stop robot") + (lim ? ` (${gamesThisRun}/${lim})` : ` (${gamesThisRun} ${t("played", "gespeeld")})`);
   }
@@ -1203,49 +1235,74 @@
     if (matchMedia("(pointer: coarse)").matches) host.style.bottom = "calc(96px + env(safe-area-inset-bottom, 0px))";
     const sh = host.attachShadow({ mode: "open" });
     sh.innerHTML = `<style>
-      :host{all:initial} *{box-sizing:border-box;font:13px/1.35 -apple-system,system-ui,Segoe UI,Roboto,sans-serif}
-      .pill{background:#2b211b;color:#f1be3c;border:0;border-radius:18px;padding:8px 12px;font-weight:600;box-shadow:0 2px 8px #0005;cursor:pointer}
-      .panel{display:none;width:min(300px,calc(100vw - 16px));background:#2b211bee;color:#f7ead6;border-radius:12px;padding:12px;margin-bottom:6px;box-shadow:0 4px 16px #0007}
-      .panel.open{display:block} h3{margin:0 0 8px;font-size:15px;color:#f1be3c}
-      label{display:flex;justify-content:space-between;align-items:center;margin:6px 0;gap:8px}
-      input{width:5.5em;background:#41332a;color:#f7ead6;-webkit-text-fill-color:#f7ead6;border:1px solid #6b5643;border-radius:6px;padding:6px 10px;font-size:16px;text-align:right}
-      select{-webkit-appearance:none;appearance:none;background:#41332a;color:#f7ead6;-webkit-text-fill-color:#f7ead6;border:1px solid #6b5643;border-radius:6px;padding:6px 10px;font-size:15px;max-width:62%}
-      button.main{width:100%;margin:8px 0 6px;padding:10px;border:0;border-radius:8px;background:#e9443f;color:#fff;font-weight:700;font-size:15px}
-      button.main.stop{background:#6b5643}
-      .row{display:flex;gap:6px} .row button{flex:1;padding:6px;border:1px solid #6b5643;border-radius:6px;background:#41332a;color:#f7ead6;font-size:12px}
-      .status{min-height:2.6em;color:#e8d9bf;font-size:12px;margin:4px 0;word-break:break-word}
-      table{width:100%;border-collapse:collapse;font-size:12px} td{padding:2px 4px;border-top:1px solid #4a3a2f} td.w{color:#7ddc7d} td.l{color:#ff8a80}
-      .stats{max-height:150px;overflow:auto;margin:6px 0}
-      .assistbtn{width:100%;padding:8px;border:1px solid #6b5643;border-radius:8px;background:#41332a;color:#f7ead6;font-weight:600;font-size:14px;margin-bottom:6px}
-      .assistbtn.on{background:#2e7d4f;border-color:#2e7d4f}
-      .assist{display:none;background:#3a2d24;border-radius:8px;padding:8px;margin-bottom:6px}
+      :host{all:initial}
+      *{box-sizing:border-box;font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+      .pill{display:flex;align-items:center;gap:8px;background:linear-gradient(180deg,#3a2c22,#241b15);color:#f6c445;border:1px solid #5a4636;border-radius:22px;padding:9px 14px;font-weight:700;letter-spacing:.2px;box-shadow:0 6px 18px #0006,inset 0 1px 0 #ffffff14;cursor:pointer}
+      .pill .dot{width:9px;height:9px;border-radius:50%;background:#7a6a5c}
+      .pill.on .dot{background:#22c55e;box-shadow:0 0 0 0 #22c55e88;animation:pulse 1.6s infinite}
+      @keyframes pulse{0%{box-shadow:0 0 0 0 #22c55e88}70%{box-shadow:0 0 0 8px #22c55e00}100%{box-shadow:0 0 0 0 #22c55e00}}
+      .panel{display:none;width:min(320px,calc(100vw - 16px));max-height:min(72vh,640px);overflow:auto;-webkit-overflow-scrolling:touch;
+        background:rgba(30,23,18,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#f5ead9;border:1px solid #4d3c30;border-radius:16px;padding:14px;margin-bottom:8px;box-shadow:0 14px 40px #000a}
+      .panel.open{display:block;animation:pop .16s ease-out}
+      @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
+      .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+      h3{margin:0;font-size:16px;font-weight:800;color:#f6c445;letter-spacing:.2px}
+      .chip{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:#3a2d24;color:#c9b8a2}
+      .chip.on{background:#14532d;color:#bbf7d0}
+      .sec{background:#2a2019;border:1px solid #3e3027;border-radius:12px;padding:6px 10px;margin:8px 0}
+      .sec .t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#a8927c;margin:4px 0 2px}
+      label{display:flex;justify-content:space-between;align-items:center;margin:7px 0;gap:10px;color:#eadcc7}
+      input,select{background:#3a2d24;color:#f7ead6;-webkit-text-fill-color:#f7ead6;border:1px solid #5a4636;border-radius:9px;padding:7px 10px;font-size:15px;outline:none}
+      input:focus,select:focus{border-color:#f6c445;box-shadow:0 0 0 3px #f6c44533}
+      input{width:6em;text-align:right}
+      select{-webkit-appearance:none;appearance:none;max-width:62%;padding-right:28px;background-image:linear-gradient(45deg,transparent 50%,#c9b8a2 50%),linear-gradient(135deg,#c9b8a2 50%,transparent 50%);background-position:calc(100% - 15px) 52%,calc(100% - 10px) 52%;background-size:5px 5px;background-repeat:no-repeat}
+      button.main{width:100%;margin:2px 0 6px;padding:12px;border:0;border-radius:12px;background:linear-gradient(180deg,#f0544f,#d93a35);color:#fff;font-weight:800;font-size:16px;box-shadow:0 6px 16px #d93a3555,inset 0 1px 0 #ffffff33;cursor:pointer}
+      button.main.stop{background:linear-gradient(180deg,#5c4a3c,#4a3a2e);box-shadow:inset 0 1px 0 #ffffff1a}
+      .assistbtn{width:100%;padding:10px;border:1px solid #5a4636;border-radius:12px;background:#33271f;color:#f5ead9;font-weight:700;font-size:14px;margin:2px 0 6px;cursor:pointer}
+      .assistbtn.on{background:linear-gradient(180deg,#2f8a57,#246b44);border-color:#2f8a57}
+      .assist{display:none;background:#2a2019;border:1px solid #3e3027;border-radius:12px;padding:8px 10px;margin-bottom:6px}
       .assist.open{display:block}
-      label.chk{display:flex;justify-content:flex-start;gap:8px;margin:4px 0;align-items:center}
-      label.chk input{width:auto;transform:scale(1.2)}
+      label.chk{justify-content:flex-start;gap:10px;margin:8px 0;cursor:pointer}
+      label.chk input{position:absolute;opacity:0;width:0;height:0}
+      .sw{flex:none;width:40px;height:24px;border-radius:12px;background:#4a3a2e;position:relative;transition:background .2s}
+      .sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#f5ead9;box-shadow:0 1px 3px #0006;transition:transform .2s}
+      label.chk input:checked + .sw{background:#22c55e} label.chk input:checked + .sw::after{transform:translateX(16px)}
       .ring{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:3px solid}
       .ring.win{border-color:#22c55e} .ring.block{border-color:#f97316}
-      .note{font-size:11px;color:#c9b8a2;margin-top:4px}
+      .note{font-size:11px;color:#a8927c;margin-top:4px}
+      .status{min-height:2.4em;color:#eadcc7;font-size:12.5px;margin:6px 2px;word-break:break-word}
+      .stats{max-height:160px;overflow:auto;margin:4px 0 8px}
+      table{width:100%;border-collapse:collapse;font-size:12.5px} td{padding:4px 6px;border-top:1px solid #3e3027} tr:first-child td{border-top:0;color:#a8927c;font-weight:700}
+      td.w{color:#86efac;text-align:right} td.l{color:#fca5a5;text-align:right} td:nth-child(3){text-align:right}
+      .row{display:flex;gap:6px} .row button{flex:1;padding:8px 4px;border:1px solid #5a4636;border-radius:10px;background:#33271f;color:#eadcc7;font-size:12px;cursor:pointer}
+      i{font-style:normal}
     </style>
     <div class=panel>
-      <h3>Spindel 4 Robot</h3>
-      <label>${t("Computers", "Computers")} <select id=c><option value=1>1 computer</option><option value=2>2 computers</option><option value=3>3 computers</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
-      <label>${t("Level", "Niveau")} <select id=l><option value=climb>${t("Climb (up after 3 wins)", "Klimmen (omhoog na 3 winst)")}</option><option value=Easy>${lvName("Easy")}</option><option value=Medium>${lvName("Medium")}</option><option value=Hard>${lvName("Hard")}</option><option value=Expert>Expert</option><option value=Impossible>${lvName("Impossible")}</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
-      <label>${t("Think time", "Denktijd")} <select id=t><option value=0.5>0,5 s</option><option value=1>1 s</option><option value=1.5>${t("1.5 s", "1,5 s")}</option><option value=3>3 s</option><option value=5>5 s</option><option value=10>10 s</option><option value=30>30 s</option><option value=60>60 s</option></select></label>
-      <label>${t("Min. moves ahead", "Min. zetten vooruit")} <select id=md><option value=0>${t("off", "uit")}</option><option value=8>8</option><option value=10>10</option><option value=12>12</option></select></label>
-      <label>${t("Games (0 = nonstop)", "Aantal potjes (0 = nonstop)")} <input id=g type=number min=0 max=9999 inputmode=numeric></label>
-      <label>${t("Online test: room code", "Online test: kamercode")} <input id=oc type=text autocomplete=off autocapitalize=characters placeholder="${t("empty = vs computer", "leeg = tegen computer")}" style="width:9em;text-align:left"></label>
+      <div class=head><h3>🕷 Spindel 4 Robot</h3><span class=chip id=chip>${t("idle", "stil")}</span></div>
       <button class=main id=go>Start robot</button>
+      <div class=sec><div class=t>${t("Game", "Spel")}</div>
+        <label>${t("Computers", "Computers")} <select id=c><option value=1>1 computer</option><option value=2>2 computers</option><option value=3>3 computers</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
+        <label>${t("Level", "Niveau")} <select id=l><option value=climb>${t("Climb (up after 3 wins)", "Klimmen (omhoog na 3 winst)")}</option><option value=Easy>${lvName("Easy")}</option><option value=Medium>${lvName("Medium")}</option><option value=Hard>${lvName("Hard")}</option><option value=Expert>Expert</option><option value=Impossible>${lvName("Impossible")}</option><option value=rotate>${t("All (take turns)", "Allemaal (om de beurt)")}</option></select></label>
+      </div>
+      <div class=sec><div class=t>${t("Thinking", "Denken")}</div>
+        <label>${t("Think time", "Denktijd")} <select id=t><option value=0.5>0,5 s</option><option value=1>1 s</option><option value=1.5>${t("1.5 s", "1,5 s")}</option><option value=3>3 s</option><option value=5>5 s</option><option value=10>10 s</option><option value=30>30 s</option><option value=60>60 s</option></select></label>
+        <label>${t("Min. moves ahead", "Min. zetten vooruit")} <select id=md><option value=0>${t("off", "uit")}</option><option value=8>8</option><option value=10>10</option><option value=12>12</option></select></label>
+      </div>
+      <div class=sec><div class=t>${t("Games", "Potjes")}</div>
+        <label>${t("Games (0 = nonstop)", "Aantal (0 = nonstop)")} <input id=g type=number min=0 max=9999 inputmode=numeric></label>
+        <label>${t("Online test: room code", "Online test: kamercode")} <input id=oc type=text autocomplete=off autocapitalize=characters placeholder="${t("empty", "leeg")}" style="width:7em;text-align:left"></label>
+      </div>
       <button class=assistbtn id=as>🛟 ${t("Assist", "Hulp")}</button>
       <div class=assist id=asbox>
-        <label class=chk><input type=checkbox id=aw> <span><i class="ring win"></i>${t("Show where I can win right now", "Toon waar ik direct kan winnen")}</span></label>
-        <label class=chk><input type=checkbox id=ab> <span><i class="ring block"></i>${t("Show where I must block", "Toon waar ik moet blokkeren")}</span></label>
+        <label class=chk><input type=checkbox id=aw><span class=sw></span><span><i class="ring win"></i>${t("Show where I can win right now", "Toon waar ik direct kan winnen")}</span></label>
+        <label class=chk><input type=checkbox id=ab><span class=sw></span><span><i class="ring block"></i>${t("Show where I must block", "Toon waar ik moet blokkeren")}</span></label>
         <div class=note>${t("Only in games against the computer, when it's your turn and the robot is stopped.", "Alleen in potjes tegen de computer, als jij aan de beurt bent en de robot stilstaat.")}</div>
       </div>
       <div class=status id=st>${t("Ready.", "Klaar.")}</div>
       <div class=stats id=stats></div>
       <div class=row><button id=ex>${t("Export brain", "Geheugen opslaan")}</button><button id=im>${t("Import", "Laden")}</button><button id=rs>${t("Forget all", "Alles vergeten")}</button></div>
     </div>
-    <button class=pill id=pill>🕷 Robot</button>`;
+    <button class=pill id=pill><span class=dot></span><span>Robot</span></button>`;
     const $ = (id) => sh.getElementById(id);
     ui = { pill: $("pill"), go: $("go"), status: $("st"), stats: $("stats"), panel: sh.querySelector(".panel") };
     $("c").value = settings.computers; $("l").value = settings.level; $("t").value = String(settings.think);
@@ -1337,7 +1394,8 @@
       const [x, y] = cellXY({ x: 0, y: 0, w: box.w, h: box.h }, m.s, m.r);
       const rad = Math.max(8, half * (m.r === 0 ? 0.045 : 0.06));
       const col = m.kind === "win" ? "#22c55e" : "#f97316";
-      return `<circle cx="${x}" cy="${y}" r="${rad}" fill="${col}33" stroke="${col}" stroke-width="${Math.max(3, rad * 0.28)}"><animate attributeName="r" values="${rad};${rad * 1.15};${rad}" dur="1.2s" repeatCount="indefinite"/></circle>`;
+      return `<circle cx="${x}" cy="${y}" r="${rad * 1.5}" fill="none" stroke="${col}55" stroke-width="2"><animate attributeName="r" values="${rad * 1.2};${rad * 1.8};${rad * 1.2}" dur="1.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0.2;1" dur="1.4s" repeatCount="indefinite"/></circle>` +
+        `<circle cx="${x}" cy="${y}" r="${rad}" fill="${col}38" stroke="${col}" stroke-width="${Math.max(3, rad * 0.3)}" style="filter:drop-shadow(0 0 5px ${col})"/>`;
     }).join("");
     // always show that assist is on, so it's clear it is working even without rings
     const wins = marks.filter((m) => m.kind === "win").length, blocks = marks.length - wins;
