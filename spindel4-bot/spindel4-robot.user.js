@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      6.0
+// @version      6.1
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -1310,7 +1310,7 @@
       </div>
       <div class=sec><div class=t>${t("Thinking", "Denken")}</div>
         <label>${t("Think time", "Denktijd")} <select id=t><option value=0.5>0,5 s</option><option value=1>1 s</option><option value=1.5>${t("1.5 s", "1,5 s")}</option><option value=3>3 s</option><option value=5>5 s</option><option value=10>10 s</option><option value=30>30 s</option><option value=60>60 s</option></select></label>
-        <label>${t("Min. moves ahead", "Min. zetten vooruit")} <select id=md><option value=0>${t("off", "uit")}</option><option value=8>8</option><option value=10>10</option><option value=12>12</option></select></label>
+        <label>${t("Min. moves ahead", "Min. zetten vooruit")} <select id=md><option value=0>${t("off", "uit")}</option><option value=8>8</option><option value=10>10</option><option value=12>12</option><option value=14>14</option><option value=15>15</option></select></label>
       </div>
       <div class=sec><div class=t>${t("Games", "Potjes")}</div>
         <label>${t("Games (0 = nonstop)", "Aantal (0 = nonstop)")} <input id=g type=number min=0 max=9999 inputmode=numeric></label>
