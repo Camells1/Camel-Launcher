@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      6.1
+// @version      6.2
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -1354,7 +1354,30 @@
     $("im").onclick = () => {
       const inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json,application/json";
       inp.onchange = async () => {
-        try { const d = JSON.parse(await inp.files[0].text()); Object.assign(brain, d); saveBrain(); renderStats(); log(t("brain imported", "geheugen geladen")); }
+        try {
+          const d = JSON.parse(await inp.files[0].text());
+          // merge instead of replace, so what this device learned is kept
+          let added = 0;
+          updateBrain(() => {
+            for (const [key, moves] of Object.entries(d.book || {})) {
+              const e = brain.book[key] || (brain.book[key] = {});
+              for (const [mv, r] of Object.entries(moves)) {
+                const cur = e[mv] || (e[mv] = [0, 0, 0]);
+                for (let k = 0; k < 3; k++) cur[k] += +r[k] || 0;
+                added++;
+              }
+            }
+            for (const [key, mv] of Object.entries(d.fixes || {})) if (!(key in brain.fixes)) brain.fixes[key] = mv;
+            for (const [mode, st] of Object.entries(d.stats || {})) {
+              const cur = brain.stats[mode] || (brain.stats[mode] = [0, 0, 0]);
+              for (let k = 0; k < 3; k++) cur[k] += +st[k] || 0;
+            }
+            if (d.weights && !Object.keys(brain.weights).length) brain.weights = d.weights;
+            brain.games += +d.games || 0;
+          });
+          renderStats();
+          log(t(`memory loaded: ${added} moves added`, `geheugen geladen: ${added} zetten toegevoegd`));
+        }
         catch (e) { log(t("could not read that file", "dat bestand kon niet gelezen worden")); }
       };
       inp.click();
