@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      4.9
+// @version      5.0
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -22,8 +22,10 @@
   // ===================================================================
   // 1. Make the game's canvas readable (must run before the game loads)
   // ===================================================================
+  // Only Safari (iPhone/Mac) needs this; elsewhere it would just slow the game down.
+  const NEEDS_READABLE_CANVAS = /Apple/i.test(navigator.vendor || "");
   const origGetContext = HTMLCanvasElement.prototype.getContext;
-  HTMLCanvasElement.prototype.getContext = function (type, attrs) {
+  if (NEEDS_READABLE_CANVAS) HTMLCanvasElement.prototype.getContext = function (type, attrs) {
     if (type && String(type).indexOf("webgl") === 0) {
       attrs = Object.assign({}, attrs || {}, { preserveDrawingBuffer: true });
     }
@@ -663,8 +665,10 @@
     return out;
   }
   let capCanvas = null;
+  // copy the screen at a reduced size: plenty to read colours, much less work
   function capture() {
-    const W = Math.ceil(innerWidth), H = Math.ceil(innerHeight);
+    const k = Math.min(1, 700 / Math.max(innerWidth, innerHeight));
+    const W = Math.ceil(innerWidth * k), H = Math.ceil(innerHeight * k);
     if (!capCanvas) capCanvas = document.createElement("canvas");
     if (capCanvas.width !== W || capCanvas.height !== H) { capCanvas.width = W; capCanvas.height = H; }
     const g = capCanvas.getContext("2d", { willReadFrequently: true });
@@ -672,11 +676,11 @@
     for (const c of flutterCanvases()) {
       const r = c.getBoundingClientRect();
       if (r.width < 1 || r.height < 1) continue;
-      try { g.drawImage(c, r.x, r.y, r.width, r.height); } catch (e) {}
+      try { g.drawImage(c, r.x * k, r.y * k, r.width * k, r.height * k); } catch (e) {}
     }
     const data = g.getImageData(0, 0, W, H).data;
     return {
-      px(x, y) { x = Math.max(0, Math.min(W - 1, Math.round(x))); y = Math.max(0, Math.min(H - 1, Math.round(y))); const o = (y * W + x) * 4; return [data[o], data[o + 1], data[o + 2]]; },
+      px(x, y) { x = Math.max(0, Math.min(W - 1, Math.round(x * k))); y = Math.max(0, Math.min(H - 1, Math.round(y * k))); const o = (y * W + x) * 4; return [data[o], data[o + 1], data[o + 2]]; },
     };
   }
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
@@ -974,7 +978,8 @@
   let pool = null, poolFailed = false;
   function threadCount() {
     const cores = navigator.hardwareConcurrency || 4;
-    const want = +settings.threads || Math.max(1, Math.min(8, cores - 1));
+    // leave cores free so the game and the screen stay smooth
+    const want = +settings.threads || (TOUCH ? Math.max(1, Math.min(3, cores - 2)) : Math.max(1, Math.min(6, cores - 2)));
     return Math.max(1, Math.min(16, want));
   }
   // ---- "thinking" overlay: big circle round the board + green dot on the best move so far
@@ -1303,9 +1308,12 @@
     const comps = new Set(tx.map((x) => x.trim()).filter((x) => /^computer\s*\d$/i.test(x)));
     return comps.size >= np - 1;
   }
+  let assistSig = "";
   async function assistStep() {
-    if (!(settings.assistWin || settings.assistBlock) || running) return clearAssist();
+    if (!(settings.assistWin || settings.assistBlock) || running) { assistSig = ""; return clearAssist(); }
     const ns = nodes(), tx = texts(ns);
+    const sig = tx.join("|") + (settings.assistWin ? "w" : "") + (settings.assistBlock ? "b" : "");
+    if (sig === assistSig && overlay && overlay.style.display === "block") return;   // nothing changed
     if (!tx.some((x) => RX.yourMove.test(x))) return clearAssist();
     const box = boardBox(ns); if (!box) return clearAssist();
     const img = capture(), order = readOrder(ns, img);
@@ -1338,6 +1346,7 @@
       : t("Assist on - no win or danger right now", "Hulp aan - nu geen winkans of gevaar"));
     el.lastChild.style.background = wins ? "#2e7d4f" : blocks ? "#c2410c" : "#41332a";
     el.style.display = "block";
+    assistSig = sig;
     if (marks.length) say(marks.some((m) => m.kind === "win")
       ? t("Green ring: you can win right there!", "Groene ring: daar kun je direct winnen!")
       : t("Orange ring: block there or you lose!", "Oranje ring: blokkeer daar, anders verlies je!"));
@@ -1345,7 +1354,7 @@
   setInterval(async () => {
     if (assistBusy) return; assistBusy = true;
     try { await assistStep(); } catch (e) { clearAssist(); } finally { assistBusy = false; }
-  }, 600);
+  }, 1000);
 
   const boot = () => {
     buildUI();
