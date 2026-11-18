@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      6.7
+// @version      6.8
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -1137,7 +1137,11 @@
   function saveLog(result) {
     const all = store.get("S4R_logs", []);
     all.push({ when: new Date().toISOString(), mode: game ? game.mode : "", result, moves: gameLog });
-    while (all.length > 3) all.shift();     // keep the last 3 games
+    // keep the last 3 games plus up to 10 lost games (those are the ones worth studying)
+    const keep = new Set(all.slice(-3));
+    all.filter((g) => g.result === "loss").slice(-10).forEach((g) => keep.add(g));
+    const trimmed = all.filter((g) => keep.has(g));
+    all.length = 0; trimmed.forEach((g) => all.push(g));
     store.set("S4R_logs", all);
   }
   function whoAmI(order, cells) {
