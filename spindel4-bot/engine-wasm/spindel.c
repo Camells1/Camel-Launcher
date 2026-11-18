@@ -165,6 +165,7 @@ static i32 hist[2 * S];
 static signed char killer[MAXPLY * 2];
 
 static double deadline; static int stopflag; static double nodes;
+static int OPT_EXT = 0;   // 1 = a forced move (only one sensible reply) doesn't use up depth
 
 // ---------------------------------------------------------------- search (same as JS Engine.search, 2 players)
 static i32 search(int depth, i32 alpha, i32 beta, int ply) {
@@ -191,6 +192,8 @@ static i32 search(int depth, i32 alpha, i32 beta, int ply) {
     if (m) n = m;
   }
   if (depth <= 0) return evaluate();
+  // forced move: follow it without spending depth (threat sequences are seen much deeper)
+  const int nd = (OPT_EXT && n == 1 && ply < MAXPLY - 8) ? depth : depth - 1;
 
   u64 key = z ^ (u64)(p + 1) * 0x9E3779B97F4A7C15ULL;
   int ti = (int)(key & (TT_SIZE - 1));
@@ -217,13 +220,13 @@ static i32 search(int depth, i32 alpha, i32 beta, int ply) {
     int s = list[i];
     play(s);
     i32 v;
-    if (i == 0) v = search(depth - 1, alpha, beta, ply + 1);
+    if (i == 0) v = search(nd, alpha, beta, ply + 1);
     else if (mine) {
-      v = search(depth - 1, alpha, alpha + 1, ply + 1);
-      if (v > alpha && v < beta && !stopflag) v = search(depth - 1, alpha, beta, ply + 1);
+      v = search(nd, alpha, alpha + 1, ply + 1);
+      if (v > alpha && v < beta && !stopflag) v = search(nd, alpha, beta, ply + 1);
     } else {
-      v = search(depth - 1, beta - 1, beta, ply + 1);
-      if (v < beta && v > alpha && !stopflag) v = search(depth - 1, alpha, beta, ply + 1);
+      v = search(nd, beta - 1, beta, ply + 1);
+      if (v < beta && v > alpha && !stopflag) v = search(nd, alpha, beta, ply + 1);
     }
     undo(s);
     if (stopflag) return 0;
@@ -278,4 +281,5 @@ __attribute__((export_name("root_search"))) i32 root_search(int s, int depth, i3
 }
 __attribute__((export_name("get_nodes"))) double get_nodes(void) { return nodes; }
 __attribute__((export_name("get_stopped"))) int get_stopped(void) { return stopflag; }
+__attribute__((export_name("set_option"))) void set_option(int k, int v) { if (k == 0) OPT_EXT = v; }
 __attribute__((export_name("line_count"))) int line_count(void) { return NL; }
