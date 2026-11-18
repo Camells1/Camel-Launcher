@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      6.6
+// @version      6.7
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -530,6 +530,19 @@
       if (s in scores && scores[s] > -WIN + 200 && scores[s] >= best - 400) return { s, why: "remembered fix", cz };
     }
     const entry = brain.book[cz.key] || {};
+    // Known winning line: in exactly this position a move once led to a win and
+    // never to a loss. Against an opponent that always answers the same way,
+    // replaying it repeats the won game. Only skipped if the search sees real danger.
+    {
+      let known = -1, kw = 0;
+      for (const [cm, st] of Object.entries(entry)) {
+        if (!(st[0] >= 1 && st[2] === 0)) continue;
+        const s = fromCanon(+cm, cz.k, cz.m);
+        if (!(s in scores) || scores[s] <= -WIN + 200 || scores[s] < best - 400) continue;
+        if (st[0] > kw) { kw = st[0]; known = s; }
+      }
+      if (known >= 0) return { s: known, why: "known win", cz };
+    }
     let cands = Object.keys(scores).map(Number).filter((s) => scores[s] >= best - 60);
     if (best <= -WIN + 200) {
       // every move loses against perfect play: resist as long as possible and
@@ -1216,7 +1229,7 @@
     };
     gameLog.push(logEntry);
     game.lastMoveWins = b.isWinMove(me, s);
-    log(t(`move ${b.count + 1}: slice ${s} (depth ${depth}, ${pick.why})`, `zet ${b.count + 1}: poot ${s} (${depth} zetten vooruit, ${{ "winning line": "winnende zet", "remembered fix": "uit geheugen: fout verbeterd", memory: "geheugen", search: "rekenen" }[pick.why] || pick.why})`));
+    log(t(`move ${b.count + 1}: slice ${s} (depth ${depth}, ${pick.why})`, `zet ${b.count + 1}: poot ${s} (${depth} zetten vooruit, ${{ "winning line": "winnende zet", "known win": "bekende winst herhalen", "forced block": "verplicht blokkeren", "remembered fix": "uit geheugen: fout verbeterd", memory: "geheugen", search: "rekenen" }[pick.why] || pick.why})`));
     if (auto.debug) {
       const rows = [];
       for (let r = R - 1; r >= 0; r--) { let row = ""; for (let q = 0; q < S; q++) { const v = cells[q * R + r]; row += v < 0 ? "." : "ABCD"[v]; } rows.push(row); }
