@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      6.3
+// @version      6.4
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -971,7 +971,7 @@
   }
 
   function startGame(mode) {
-    myColor = null;
+    myColor = null; gameLog = [];
     // pick up what other tabs learned meanwhile
     const fresh = store.get(BRAIN_KEY, null);
     if (fresh) for (const k of ["games", "weights", "book", "fixes", "stats"]) if (fresh[k] !== undefined) brain[k] = fresh[k];
@@ -983,6 +983,7 @@
 
   async function finishGame(result) {
     game.done = true;
+    try { saveLog(result); } catch (e) {}
     lastAction = Date.now();
     learn(game, result);
     gamesThisRun++;
@@ -1116,6 +1117,13 @@
 
   // Which colour is ours? Online the dots don't say, so use the board itself.
   let myColor = null;   // colour of a piece we placed ourselves this game
+  let gameLog = [];
+  function saveLog(result) {
+    const all = store.get("S4R_logs", []);
+    all.push({ when: new Date().toISOString(), mode: game ? game.mode : "", result, moves: gameLog });
+    while (all.length > 3) all.shift();     // keep the last 3 games
+    store.set("S4R_logs", all);
+  }
   function whoAmI(order, cells) {
     const np = order.length;
     if (onlineMode()) {
@@ -1170,7 +1178,25 @@
       }
     }
     const pick = choose(b, me, scores);
-    const s = pick.s, r = b.h[s];
+    let s = pick.s;
+    // safety net: take a win that's there, and never leave the next player an immediate four
+    {
+      const legal = b.legal(), nx = (me + 1) % np;
+      const winNow = legal.filter((m) => b.isWinMove(me, m));
+      const mustBlock = legal.filter((m) => b.isWinMove(nx, m));
+      if (winNow.length && !winNow.includes(s)) { tr("safety: took the win"); s = winNow[0]; pick.why = "winning line"; }
+      else if (!winNow.length && mustBlock.length && !mustBlock.includes(s)) { tr("safety: forced block"); s = mustBlock[0]; pick.why = "forced block"; }
+    }
+    const r = b.h[s];
+    // game log (exported with the "Log" button) to see exactly what the robot saw and did
+    const logEntry = {
+      move: b.count + 1, me, np, slice: s, ring: r, depth, why: pick.why,
+      board: Array.from(cells).map((v) => (v < 0 ? "." : String(v))).join(""),
+      colors: order.map((o) => o.color.map(Math.round)),
+      top: Object.keys(scores).map(Number).sort((x, y) => scores[y] - scores[x]).slice(0, 4).map((m) => [m, scores[m]]),
+      oppWinsNext: b.legal().filter((m) => b.isWinMove((me + 1) % np, m)),
+    };
+    gameLog.push(logEntry);
     game.lastMoveWins = b.isWinMove(me, s);
     log(t(`move ${b.count + 1}: slice ${s} (depth ${depth}, ${pick.why})`, `zet ${b.count + 1}: poot ${s} (${depth} zetten vooruit, ${{ "winning line": "winnende zet", "remembered fix": "uit geheugen: fout verbeterd", memory: "geheugen", search: "rekenen" }[pick.why] || pick.why})`));
     if (auto.debug) {
@@ -1199,7 +1225,7 @@
       for (let k = 0; k < 12; k++) {
         await sleep(350);
         const t2 = texts(nodes());
-        if (parseResult(t2) || !t2.some((t) => RX.yourMove.test(t)) || landed()) { lastAction = Date.now(); return; }
+        if (parseResult(t2) || !t2.some((t) => RX.yourMove.test(t)) || landed()) { logEntry.tapped = attempt + 1; lastAction = Date.now(); return; }
       }
       // still our turn and the cell is still empty: the tap really was missed
       if (landed()) return;
@@ -1336,7 +1362,7 @@
       </div>
       <div class=status id=st>${t("Ready.", "Klaar.")}</div>
       <div class=stats id=stats></div>
-      <div class=row><button id=ex>${t("Export brain", "Geheugen opslaan")}</button><button id=im>${t("Import", "Laden")}</button><button id=rs>${t("Forget all", "Alles vergeten")}</button></div>
+      <div class=row><button id=ex>${t("Export brain", "Geheugen opslaan")}</button><button id=im>${t("Import", "Laden")}</button><button id=rs>${t("Forget all", "Alles vergeten")}</button><button id=lg>Log</button></div>
     </div>
     <button class=pill id=pill><span class=dot></span><span>Robot</span></button>`;
     const $ = (id) => sh.getElementById(id);
@@ -1359,6 +1385,10 @@
     $("aw").onchange = (e) => { settings.assistWin = e.target.checked; saveSettings(); asRefresh(); };
     $("ab").onchange = (e) => { settings.assistBlock = e.target.checked; saveSettings(); asRefresh(); };
     ui.go.onclick = () => { running = !running; if (running) { gamesThisRun = 0; online.joined = false; online.done = false; } saveSettings(); log(running ? t("robot started", "robot gestart") : t("robot stopped", "robot gestopt")); renderStats(); };
+    $("lg").onclick = () => {
+      const blob = new Blob([JSON.stringify(store.get("S4R_logs", []), null, 1)], { type: "application/json" });
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "spindel4-log.json"; a.click();
+    };
     $("ex").onclick = () => {
       const blob = new Blob([JSON.stringify(brain)], { type: "application/json" });
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "spindel4-brain.json"; a.click();
