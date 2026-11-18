@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spindel 4 Robot
 // @namespace    spindel4-robot
-// @version      6.5
+// @version      6.6
 // @description  Self-learning robot that plays Spindel 4 against the computer (1, 2 or 3 computers, every level). Hides ads.
 // @match        https://play.spindel4.com/*
 // @run-at       document-start
@@ -1166,7 +1166,22 @@
       prev = c; await sleep(250);
     }
     if (!cells) { tr("myMove: unstable board"); say(t("reading the board...", "bord aan het lezen...")); return; }
-    const np = order.length, me = whoAmI(order, cells);
+    const np = order.length;
+    let me = whoAmI(order, cells);
+    // The game's "Volgorde" list rotates: the player to move is always listed
+    // first. The colours we read are numbered in that rotated order, but the
+    // engine needs 0 = whoever moved FIRST (that decides which rings are good
+    // for whom). Against computers nobody skips a turn, so the number of
+    // pieces tells us exactly where we are in the turn order.
+    if (!onlineMode()) {
+      let n = 0; for (let k = 0; k < cells.length; k++) if (cells[k] >= 0) n++;
+      const meAbs = n % np, cur = me;
+      if (meAbs !== cur) {
+        for (let k = 0; k < cells.length; k++) if (cells[k] >= 0) cells[k] = (meAbs + ((cells[k] - cur + np) % np)) % np;
+        order = order.map((_, k) => order[(cur + ((k - meAbs + np) % np)) % np]);
+        me = meAbs;
+      }
+    }
     if (me < 0) { tr("myMove: no current dot"); return; }
     if (!game || game.done) startGame(current || nextMode());
     game.np = np;
