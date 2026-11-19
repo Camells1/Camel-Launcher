@@ -11,49 +11,112 @@ const KEY = 'chaosArcade_v1';
 const inGames = /\/games\/[^/]*$/.test(location.pathname);
 const ROOT = inGames ? '../' : '';
 
-/* ---------- Game catalogue (set ready:true when a game file is uploaded) ---------- */
-const GAMES = [
-  {id:'crafting',  n:1,  file:'game1.html',  t:'Cursed Crafting Quiz',    e:'🛠️', d:'medium', tag:'QUIZ',     ready:true,
+/* ---------- Game catalogue ----------
+   cat: block | action | reflex | puzzle | brain | luck | words | sports
+   Block World games have their own page; all others run in games/play.html#id */
+const CATS = {
+  block:{n:'Block World', e:'⛏️'}, action:{n:'Action', e:'💥'}, reflex:{n:'Reflex', e:'⚡'}, puzzle:{n:'Puzzle', e:'🧩'},
+  brain:{n:'Brain', e:'🧠'}, luck:{n:'Luck', e:'🎰'}, words:{n:'Words', e:'🔤'}, sports:{n:'Sports', e:'🏆'}
+};
+const CAT_BG = {
+  action:['#2a1458','#3a1f7a','#1f0f44','#5a2fb0'], reflex:['#0f3a4a','#145a6a','#0a2a38','#1f8aa0'],
+  puzzle:['#1a3a1a','#24502a','#122a12','#3a8a3a'], brain:['#4a1a3a','#6a2450','#341028','#a03a7a'],
+  luck:['#4a3a0a','#6a5410','#342806','#b08a1a'], words:['#1a2a5a','#24387a','#101c40','#3a5ac0'],
+  sports:['#5a2a0a','#7a3a10','#401c06','#c0601a']
+};
+const BLOCK_GAMES = [
+  {id:'crafting',  file:'game1.html',  t:'Cursed Crafting Quiz',    e:'🛠️', d:'medium', tag:'QUIZ',
    desc:'Real or cursed? Guess what the 3×3 grid crafts before the creeper blows.', bg:['#866043','#6c4b33','#9a7451','#5b3d26'], icon:'table'},
-  {id:'mlg',       n:2,  file:'game2.html',  t:'MLG Water Bucket Drop',   e:'🪣', d:'hard',   tag:'REFLEX',   ready:true,
+  {id:'mlg',       file:'game2.html',  t:'MLG Water Bucket Drop',   e:'🪣', d:'hard',   tag:'REFLEX',
    desc:'Fall from insane heights. Place water at the last possible millisecond.', bg:['#6fa8ff','#5b95f0','#86b9ff','#4a82dd'], icon:'bucket'},
-  {id:'sweeper',   n:3,  file:'game3.html',  t:'Creeper Minesweeper',     e:'💥', d:'medium', tag:'PUZZLE',   ready:true,
+  {id:'sweeper',   file:'game3.html',  t:'Creeper Minesweeper',     e:'💥', d:'medium', tag:'PUZZLE',
    desc:'Dig the grass, flag creepers with cats, and do NOT wake the family.', bg:['#5fbf3a','#4fa82f','#76d14e','#3f9a2e'], icon:'creeper'},
-  {id:'villager',  n:4,  file:'game4.html',  t:'Villager Scam Simulator', e:'🧑‍🌾', d:'medium', tag:'TRADING', ready:true,
+  {id:'villager',  file:'game4.html',  t:'Villager Scam Simulator', e:'🧑‍🌾', d:'medium', tag:'TRADING',
    desc:'Haggle 1 dirt into a Mending book before the villager locks you out.', bg:['#b98a6a','#a87a5a','#c99a7a','#8a6a4a'], icon:'villager'},
-  {id:'obsidian',  n:5,  file:'game5.html',  t:'Obsidian Speed-Mine',     e:'⛏️', d:'easy',   tag:'CLICKER',  ready:true,
+  {id:'obsidian',  file:'game5.html',  t:'Obsidian Speed-Mine',     e:'⛏️', d:'easy',   tag:'CLICKER',
    desc:'Tap-frenzy through obsidian with escalating, increasingly cursed tools.', bg:['#140f1f','#241a36','#1a1426','#3b2a57'], icon:'obsidian'},
-  {id:'wordle',    n:6,  file:'game6.html',  t:'Block Wordle',            e:'🔤', d:'medium', tag:'WORDS',    ready:true,
+  {id:'wordle',    file:'game6.html',  t:'Block Wordle',            e:'🔤', d:'medium', tag:'WORDS',
    desc:'Guess the 5-letter block, mob or item in 6 tries.', bg:['#7a7a7a','#6a6a6a','#8a8a8a','#5a5a5a'], icon:'wordle'},
-  {id:'nether2048',n:7,  file:'game7.html',  t:'2048: Nether Edition',    e:'🔥', d:'medium', tag:'MERGE',    ready:true,
+  {id:'nether2048',file:'game7.html',  t:'2048: Nether Edition',    e:'🔥', d:'medium', tag:'MERGE',
    desc:'Merge Netherrack all the way up to a Netherite Ingot.', bg:['#5a1f1f','#6b2a2a','#4a1818','#7d3535'], icon:'netherite'},
-  {id:'redstone',  n:8,  file:'game8.html',  t:'Redstone Memory Matrix',  e:'🔴', d:'hard',   tag:'MEMORY',   ready:true,
+  {id:'redstone',  file:'game8.html',  t:'Redstone Memory Matrix',  e:'🔴', d:'hard',   tag:'MEMORY',
    desc:'Repeat the glowing lamp sequence. Note blocks included.', bg:['#3a2a20','#2a1d15','#4a3528','#1f150f'], icon:'lamp'},
-  {id:'potion',    n:9,  file:'game9.html',  t:'Potion Brewer Roulette',  e:'🧪', d:'chaos',  tag:'LUCK',     ready:true,
+  {id:'potion',    file:'game9.html',  t:'Potion Brewer Roulette',  e:'🧪', d:'chaos',  tag:'LUCK',
    desc:'Brew weird ingredients and survive whatever effect you get.', bg:['#3a1f4a','#2a1438','#4a2a5a','#1f0f2a'], icon:'potion'},
-  {id:'runner',    n:10, file:'game10.html', t:'Mob Dodge Runner',        e:'🏃', d:'hard',   tag:'RUNNER',   ready:true,
+  {id:'runner',    file:'game10.html', t:'Mob Dodge Runner',        e:'🏃', d:'hard',   tag:'RUNNER',
    desc:'Endless runner: jump creepers, dodge arrows, avoid lava.', bg:['#87c4ff','#76b5f5','#98d0ff','#5fa0e8'], icon:'arrow'}
-];
+].map(g => Object.assign(g, { cat:'block' }));
+// [id, title, emoji, difficulty, category, description]
+const NEW_GAMES = [
+  ['snake','Neon Snake','🐍','easy','action','Eat, grow, speed up. Golden apples are worth 5x.'],
+  ['breakout','Brick Smash','🧱','easy','action','Smash every brick. Catch power-ups for multiball and laser chaos.'],
+  ['flappy','Jetpack Bird','🐤','hard','action','Tap to flap through the pipes. One touch and it is over.'],
+  ['invaders','Alien Rush','👾','medium','action','Blast waves of descending aliens before they land.'],
+  ['spacedodge','Rock Blaster','☄️','medium','action','Steer your ship, auto-fire, and split the space rocks.'],
+  ['pong','Pong Panic','🏓','easy','action','Beat the robot paddle. The ball gets faster every hit.'],
+  ['blockdrop','Block Drop','🟪','medium','action','Falling block puzzle. Clear lines, chain combos, go fast.'],
+  ['stacker','Tower Stack','🏗️','easy','action','Drop each floor perfectly. Miss and your tower shrinks.'],
+  ['skyhopper','Sky Hopper','🦘','medium','action','Bounce up endless platforms. Do not look down.'],
+  ['crosser','Road Crosser','🐸','medium','action','Hop across roads and rivers. Cars do not brake.'],
+  ['citydefense','City Defense','🏙️','medium','action','Tap the sky to blow up missiles before they hit your city.'],
+  ['slice','Slice Frenzy','🍉','easy','action','Swipe to slice flying fruit. Never slice the bombs.'],
+  ['lightcycle','Light Cycle','🏍️','hard','action','Neon bike duel. Trap the robot inside your trail.'],
+  ['puck','Puck Wars','🏒','medium','action','Air hockey against a cheating robot. First to 7.'],
+  ['whack','Whack-a-Mole','🔨','easy','action','Bonk the moles, spare the bunnies, chase the golden mole.'],
+  ['eggcatch','Egg Catcher','🥚','easy','action','Catch the eggs, dodge the bombs, keep your basket alive.'],
+  ['aim','Aim Trainer','⭕','medium','reflex','Click targets before they vanish. They keep getting smaller.'],
+  ['tiles','Piano Tiles','🎹','hard','reflex','Tap only the black tiles. Speed goes up. Do not miss.'],
+  ['gravity','Gravity Flip','🔄','hard','reflex','Tap to flip gravity and dodge the spikes.'],
+  ['reaction','Reaction Test','🚦','easy','reflex','Wait for green, then tap. How many milliseconds are you?'],
+  ['slide15','Slide Puzzle','🔢','medium','puzzle','Slide the tiles into order in as few moves as possible.'],
+  ['lightsout','Lights Out','💡','medium','puzzle','Each tap flips a plus shape. Turn every light off.'],
+  ['pairs','Emoji Pairs','🃏','easy','puzzle','Flip two cards, find matching emoji, beat the clock.'],
+  ['codebreaker','Code Breaker','🔐','medium','puzzle','Crack the secret 4-color code in 8 guesses.'],
+  ['floodit','Flood It','🌊','medium','puzzle','Flood the whole board with one color in limited moves.'],
+  ['connect4','Connect Four','🔴','medium','puzzle','Drop discs and connect four before the robot does.'],
+  ['tictactoe','Tic-Tac-Boom','❌','easy','puzzle','Tic-tac-toe vs a robot with three difficulty moods.'],
+  ['maze','Maze Escape','🌀','easy','puzzle','Escape random mazes against the clock. They keep growing.'],
+  ['sudoku','Sudoku Sprint','9️⃣','hard','puzzle','Fresh sudoku every game. Fill the grid, fewer mistakes = more points.'],
+  ['mathsprint','Math Sprint','➗','medium','brain','Solve as many sums as you can in 60 seconds.'],
+  ['stroop','Color Chaos','🎨','medium','brain','Tap the COLOR of the word, not what it says. Brain melts.'],
+  ['numbermemory','Number Memory','🧠','hard','brain','Memorize the number. It gets one digit longer every round.'],
+  ['chimp','Chimp Test','🐒','hard','brain','Remember where the numbers were, then tap them in order.'],
+  ['typing','Type Racer','⌨️','medium','brain','Type the words as fast as you can. Words per minute counts.'],
+  ['higherlower','Higher or Lower','📈','easy','brain','Will the next card be higher or lower? Build a streak.'],
+  ['oddemoji','Odd One Out','👀','medium','brain','Find the one emoji that is different. Fast.'],
+  ['blackjack','Blackjack 21','♠️','medium','luck','Beat the dealer to 21. Turn 100 chips into a fortune.'],
+  ['slots','Chaos Slots','🎰','chaos','luck','Spin the reels, chase jackpots, avoid going broke.'],
+  ['plinko','Plinko Drop','🟡','easy','luck','Drop balls through the pegs and pray for the edges.'],
+  ['rocket','Rocket Cashout','🚀','chaos','luck','The multiplier climbs. Cash out before the rocket explodes.'],
+  ['hangman','Hangman Panic','😵','easy','words','Guess the word letter by letter before the stick figure falls.'],
+  ['scramble','Word Scramble','🔀','medium','words','Unscramble as many words as you can in 60 seconds.'],
+  ['emojiriddle','Emoji Riddles','🤔','medium','words','Guess the movie, song or thing from the emoji clue.'],
+  ['hoops','Hoop Shot','🏀','medium','sports','Flick the ball into the moving hoop. Swish for bonus.'],
+  ['penalty','Penalty Kick','⚽','easy','sports','Aim, power, shoot. The goalie gets smarter each round.'],
+  ['minigolf','Mini Golf','⛳','medium','sports','Drag and shoot through 9 tricky holes. Count your strokes.'],
+  ['darts','Dart Toss','🎯','medium','sports','Time your throw on the wobbling aim. Bullseye pays big.']
+].map(([id, t, e, d, cat, desc]) => ({ id, t, e, d, cat, desc, file:'play.html#' + id, tag:CATS[cat].n.toUpperCase(), bg:CAT_BG[cat] }));
+const GAMES = BLOCK_GAMES.concat(NEW_GAMES).map((g, i) => Object.assign(g, { n:i + 1, ready:true }));
 
 const RANKS = [
-  {xp:0,     t:'Wooden Pickaxe',   i:'🪵', c:'#a8792f'},
-  {xp:150,   t:'Stone Pickaxe',    i:'🪨', c:'#9a9a9a'},
-  {xp:450,   t:'Iron Pickaxe',     i:'⚙️', c:'#e0e0e0'},
-  {xp:1000,  t:'Golden Pickaxe',   i:'🥇', c:'#f5d73a'},
-  {xp:2000,  t:'Diamond Pickaxe',  i:'💎', c:'#4aedd9'},
-  {xp:3500,  t:'Netherite Pickaxe',i:'⬛', c:'#6b5a6a'},
-  {xp:6000,  t:'Redstone Wizard',  i:'🔴', c:'#ff3a2a'},
-  {xp:10000, t:'Netherite Menace', i:'😈', c:'#b05ad6'}
+  {xp:0,     t:'Button Masher',     i:'🕹️', c:'#c8c8c8'},
+  {xp:150,   t:'Coin-Op Rookie',    i:'🪙', c:'#f5d73a'},
+  {xp:450,   t:'High Score Hunter', i:'🎯', c:'#ff7a5a'},
+  {xp:1000,  t:'Combo Machine',     i:'⚡', c:'#ffff55'},
+  {xp:2000,  t:'Arcade Ace',        i:'💎', c:'#4aedd9'},
+  {xp:3500,  t:'Pixel Wizard',      i:'👾', c:'#b05ad6'},
+  {xp:6000,  t:'Final Boss',        i:'👑', c:'#ffaa00'},
+  {xp:10000, t:'Chaos God',         i:'😈', c:'#ff55ff'}
 ];
 
 /* ---------- Storage ---------- */
-function blank(){ return { xp:0, name:'', muted:false, games:{}, plays:0, wins:0, lastChest:'', chestStreak:0, lastVisit:'', ach:{} }; }
+function blank(){ return { xp:0, name:'', muted:false, games:{}, plays:0, wins:0, lastChest:'', chestStreak:0, lastVisit:'', ach:{}, pid:'', tops:{}, day:null }; }
 let state;
 function load(){
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e){}
   state = Object.assign(blank(), saved);
-  state.games = saved.games || {}; state.ach = saved.ach || {};
+  state.games = saved.games || {}; state.ach = saved.ach || {}; state.tops = saved.tops || {};
 }
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
 load();
@@ -89,7 +152,7 @@ function addXP(amount, reason){
   if (!amount) return 0;
   load();
   const before = rankInfo().idx;
-  state.xp += amount; save();
+  state.xp += amount; today().xp += amount; save();
   const after = rankInfo();
   toast('+' + amount + ' XP' + (reason ? ' · ' + reason : ''));
   if (after.idx > before){
@@ -114,14 +177,24 @@ function report(id, opts){
   const feat = featuredGame().id === id;
   if (feat) xp *= 2;
   g.xp += xp;
+  if (typeof opts.score === 'number' && opts.score > 0){
+    const t = (state.tops[id] || []).concat([{ s:Math.round(opts.score), l:opts.label || '', d:dayKey() }]);
+    t.sort((a, b) => b.s - a.s); state.tops[id] = t.slice(0, 10);
+  }
+  const day = today(); day.plays++; day.games[id] = 1; if (opts.win) day.wins++;
+  const gm = gameById(id); if (gm) day.cats[gm.cat] = (day.cats[gm.cat] || 0) + 1;
   save();
   const granted = addXP(xp, feat ? '⭐ 2x Game of the Day' : (newBest ? '🏆 New best!' : ''));
+  checkQuests();
+  const lbp = (typeof opts.score === 'number' && opts.score > 0) ? lbSubmit(id, Math.round(opts.score)) : Promise.resolve(null);
+  lbp.catch(() => {});
+  clearTimeout(xpSubmitT); xpSubmitT = setTimeout(() => { lbSubmit('xp', state.xp).catch(() => {}); }, 5000);
   // arcade-wide milestones
   const tried = GAMES.filter(x => state.games[x.id] && state.games[x.id].plays).length;
   if (tried >= 3) unlock('explorer', '🧭', 'Arcade Explorer');
   if (tried >= 10) unlock('completionist', '🏅', 'Tried Every Game');
   if (state.plays >= 25) unlock('regular', '🎮', 'Arcade Regular');
-  return { xp:granted, newBest, featured:feat };
+  return { xp:granted, newBest, featured:feat, lb:lbp };
 }
 function unlock(id, icon, name){
   if (state.ach[id]) return;
@@ -129,6 +202,89 @@ function unlock(id, icon, name){
   setTimeout(() => { achToast(icon, 'Advancement Made!', name); Sfx.ach(); }, 1200);
 }
 function gameStats(id){ load(); return state.games[id] || { best:0, bestLabel:'', plays:0, wins:0, xp:0 }; }
+
+/* ---------- Daily quests ---------- */
+let xpSubmitT = 0;
+function today(){
+  if (!state.day || state.day.date !== dayKey()) state.day = { date:dayKey(), plays:0, games:{}, wins:0, xp:0, cats:{}, done:{} };
+  return state.day;
+}
+function quests(){
+  const r = mulberry32(hashStr('quests|' + dayKey()));
+  const cats = Object.keys(CATS).filter(c => c !== 'block');
+  const cat = cats[Math.floor(r() * cats.length)], feat = featuredGame();
+  const pool = [
+    {id:'plays',    t:'Play 5 runs of anything',            goal:5,   get:d => d.plays,                 xp:80},
+    {id:'distinct', t:'Play 4 different games',             goal:4,   get:d => Object.keys(d.games).length, xp:120},
+    {id:'wins',     t:'Win 3 runs',                         goal:3,   get:d => d.wins,                  xp:120},
+    {id:'cat',      t:'Play 3 ' + CATS[cat].n + ' games',   goal:3,   get:d => d.cats[cat] || 0,        xp:100},
+    {id:'xp',       t:'Earn 400 XP today',                  goal:400, get:d => d.xp,                    xp:100},
+    {id:'feat',     t:'Play the Game of the Day (' + feat.t + ')', goal:1, get:d => d.games[feat.id] ? 1 : 0, xp:60},
+    {id:'block',    t:'Play 2 Block World games',           goal:2,   get:d => d.cats.block || 0,       xp:90}
+  ];
+  const picked = [];
+  while (picked.length < 3){ const q = pool[Math.floor(r() * pool.length)]; if (!picked.includes(q)) picked.push(q); }
+  const d = today();
+  return picked.map(q => ({ id:q.id, t:q.t, goal:q.goal, xp:q.xp, have:Math.min(q.goal, q.get(d)), done:!!d.done[q.id] }));
+}
+function checkQuests(){
+  const d = today();
+  quests().forEach(q => {
+    if (!q.done && q.have >= q.goal){
+      d.done[q.id] = true; save();
+      setTimeout(() => { achToast('📜', 'Quest complete! +' + q.xp + ' XP', q.t); Sfx.ach(); addXP(q.xp, 'Daily quest'); }, 1600);
+    }
+  });
+}
+
+/* ---------- Leaderboards (scores.php on your host; device-only fallback) ---------- */
+const LB_URL = ROOT + 'scores.php';
+function playerId(){
+  if (!state.pid){
+    const a = new Uint32Array(4);
+    try { crypto.getRandomValues(a); } catch(e){ for (let i=0;i<4;i++) a[i] = Math.floor(Math.random() * 4294967296); }
+    state.pid = Array.from(a).map(n => n.toString(36).padStart(7,'0')).join('').slice(0, 28); save();
+  }
+  return state.pid;
+}
+let lbDown = !/^https?:/.test(location.protocol);
+async function lbCall(params, body){
+  if (lbDown) throw new Error('offline');
+  const ctrl = window.AbortController ? new AbortController() : null;
+  const to = setTimeout(() => { if (ctrl) ctrl.abort(); }, 7000);
+  try {
+    const opts = body ? { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) } : { cache:'no-store' };
+    if (ctrl) opts.signal = ctrl.signal;
+    const res = await fetch(LB_URL + '?' + new URLSearchParams(params), opts);
+    let j = null; try { j = await res.json(); } catch(e){ lbDown = true; throw new Error('leaderboard not installed'); }
+    if (!res.ok || !j || !j.ok) throw new Error(j && j.error ? j.error : 'error ' + res.status);
+    return j;
+  } finally { clearTimeout(to); }
+}
+function lbSubmit(board, score){
+  if (!state.name) return Promise.reject(new Error('noname'));
+  const body = { board, pid:playerId(), name:state.name, score:Math.round(score) };
+  load(); state.pending = state.pending || {}; state.pending[board] = Math.max(state.pending[board] || 0, body.score); body.score = state.pending[board]; save();
+  const send = (tries) => lbCall({ board, pid:playerId() }, body).catch(err => {
+    if (tries > 0 && /slow down/.test(err.message)) return new Promise(r => setTimeout(r, 4500)).then(() => send(tries - 1));
+    throw err;
+  });
+  return send(2)
+    .then(j => { load(); if (state.pending && state.pending[board] <= body.score){ delete state.pending[board]; save(); } if (j.you && j.you.rank <= 3 && board !== 'xp') unlock('podium', '🏆', 'Podium finish on a global leaderboard'); return j; });
+}
+function lbGet(board){ return lbCall({ board, pid:playerId() }); }
+/* send any scores that could not be delivered last time (rate limit, closed tab, offline) */
+function flushPending(){
+  if (lbDown || !state.name || !state.pending) return;
+  const boards = Object.keys(state.pending); if (!boards.length) return;
+  let i = 0;
+  (function nextOne(){ if (i >= boards.length) return; const bd = boards[i++]; lbSubmit(bd, state.pending[bd]).catch(() => {}).then(() => setTimeout(nextOne, 4600)); })();
+}
+setTimeout(flushPending, 2500);
+function localTop(board){
+  if (board === 'xp') return [{ s:state.xp, l:'XP', d:dayKey() }];
+  return (state.tops[board] || []).slice();
+}
 
 /* ---------- 8-bit sound (Web Audio API) ---------- */
 const Sfx = {
@@ -198,7 +354,7 @@ function textureURL(pal, seed, size){
     return c.toDataURL();
   } catch(e){ return ''; }
 }
-function paintBody(pal){ const u = textureURL(pal || ['#3a281b','#2f2015','#47321f','#251810'], 99, 16); if (u) document.body.style.backgroundImage = 'url(' + u + ')'; }
+function paintBody(pal){ const u = textureURL(pal || ['#1a1230','#150f28','#221838','#100a20'], 99, 16); if (u) document.body.style.backgroundImage = 'url(' + u + ')'; }
 
 const ICONS = {
   table:{m:['llllllll','lcclccdl','lcclccdl','llllllll','lccdlccl','lccdlccl','lddllddl','llllllll'], p:{l:'#5c3d1e',c:'#b5874a',d:'#8a6232'}},
@@ -248,7 +404,7 @@ function burst(x, y, colors, n){
 function confetti(){ for (let k=0;k<5;k++) setTimeout(() => burst(innerWidth*(.15+Math.random()*.7), innerHeight*(.2+Math.random()*.3), ['#55ff55','#ffff55','#ff55ff','#55ffff','#ffaa00','#ff5555'], 24), k*170); }
 
 /* ---------- Sharing ---------- */
-function pageURL(){ return /^https?:/.test(location.protocol) ? location.origin + location.pathname : ''; }
+function pageURL(){ return /^https?:/.test(location.protocol) ? location.origin + location.pathname + (/play\.html$/.test(location.pathname) ? location.hash : '') : ''; }
 function hubURL(){ return /^https?:/.test(location.protocol) ? new URL(ROOT || './', location.href).href : ''; }
 function copy(text, msg){
   const done = () => { toast(msg || '✔ Copied! Paste it in Discord or TikTok.'); Sfx.coin(); };
@@ -265,7 +421,7 @@ function copy(text, msg){
 /* Standard share text for any game */
 function shareText(gameId, lines){
   const g = gameById(gameId), r = rankInfo().rank, link = pageURL();
-  return '🕹️ CHAOS ARCADE · ' + g.e + ' ' + g.t + (state.name ? ' — ' + state.name : '') + '\n' + lines.join('\n') + '\n' + r.i + ' Arcade rank: ' + r.t + (link ? '\n' + link : '');
+  return '🕹️ CHAOS ARCADE · ' + (g ? g.e + ' ' + g.t : '') + (state.name ? ' — ' + state.name : '') + '\n' + lines.join('\n') + '\n' + r.i + ' Arcade rank: ' + r.t + (link ? '\n' + link : '');
 }
 
 /* ---------- Game page top bar ---------- */
@@ -293,7 +449,7 @@ function fallingBlocks(){
   const c = document.createElement('canvas'); c.id = 'bgBlocks'; document.body.prepend(c);
   const x = c.getContext('2d'); let W, H;
   const resize = () => { W = c.width = innerWidth; H = c.height = innerHeight; }; resize(); addEventListener('resize', resize);
-  const pals = [['#5fbf3a','#866043'],['#7a7a7a','#5e5e5e'],['#4aedd9','#2aa596'],['#f5d73a','#c29d14'],['#db2b1f','#eeeeee'],['#b8945f','#7a5e36'],['#3b2a57','#140f1f']];
+  const pals = [['#ff55ff','#9a2a9a'],['#55ffff','#1a8a8a'],['#ffff55','#a0a020'],['#55ff55','#1f8a1f'],['#ff5555','#8a1a1a'],['#5fbf3a','#866043'],['#5577ff','#22337a']];
   const blocks = Array.from({length: Math.min(26, Math.round(innerWidth/45))}, () => mk(true));
   function mk(init){ return { x:Math.random()*innerWidth, y:init ? Math.random()*innerHeight : -40, s:14 + Math.random()*22, v:.25 + Math.random()*.7, r:Math.random()*6, vr:(Math.random()-.5)*.02, p:rnd(pals) }; }
   (function loop(){
@@ -312,7 +468,7 @@ function fallingBlocks(){
 
 /* ---------- Public API ---------- */
 window.Arcade = {
-  GAMES, RANKS, ROOT,
+  GAMES, RANKS, ROOT, CATS, CAT_BG,
   get state(){ return state; },
   save, load, dayKey, hashStr, mulberry32, h2, rnd, esc,
   rankInfo, featuredGame, gameById, gameStats, addXP, report, unlock,
@@ -321,6 +477,7 @@ window.Arcade = {
   toast, achToast, flash, bigText, shake, burst, confetti,
   copy, shareText, pageURL, hubURL,
   mountBar, updateBar, fallingBlocks,
+  quests, today, lb:{ submit:lbSubmit, get:lbGet, local:localTop, get down(){ return lbDown; } }, playerId,
   setName(n){ load(); state.name = String(n||'').replace(/[^\p{L}\p{N} _\-.!]/gu,'').slice(0,16); save(); }
 };
 })();

@@ -235,3 +235,56 @@ a{color:var(--aqua)}
   .hero .splash{position:static;display:inline-block;margin-top:8px;transform:rotate(-4deg)}
   @keyframes splash{from{transform:rotate(-4deg) scale(1)}to{transform:rotate(-4deg) scale(1.08)}}
 }
+
+/* =========================================================
+   GAME KIT (games/play.html)
+   ========================================================= */
+.kit-hud{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;justify-content:center;min-height:38px}
+.kit-hud .chip{font-size:13px;padding:5px 9px}
+.kit-hud .chip b{color:var(--yellow);font-size:15px}
+.kit-hud .chip.combo{color:var(--gold);animation:pop .2s steps(2)}
+.kit-hud .chip.low{color:var(--red);animation:blinkk .4s steps(2) infinite}
+.kit-hud .chip.dim{opacity:.75}
+@keyframes blinkk{50%{opacity:.4}}
+.kit-stage{position:relative;display:flex;justify-content:center;align-items:flex-start;min-height:300px;touch-action:manipulation}
+.kit-canvas{display:block;border:3px solid #000;box-shadow:0 0 0 3px #2a1a4a, 0 8px 0 rgba(0,0,0,.4), 0 0 30px rgba(170,80,255,.25);image-rendering:pixelated;background:#0d0a18;touch-action:none;max-width:100%}
+.kit-dom{width:100%;min-height:300px}
+.kit-ov{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;text-align:center;background:rgba(10,6,24,.86);border:3px solid #000;overflow-y:auto}
+.kit-ov.hide{display:none}
+.kit-ov h2{margin:0;font-size:clamp(20px,6vw,30px);text-shadow:3px 3px 0 #000}
+.kit-ov p{margin:0;font-size:13px;line-height:1.5;max-width:380px;color:#ddd}
+.kit-icon{font-size:56px;line-height:1;animation:bob .6s steps(2) infinite alternate}
+.kit-best{font-size:13px;color:#ddd}
+.kit-best b{color:var(--yellow)}
+.kit-hint{font-size:11px;color:#999}
+.kit-quip{font-size:clamp(20px,6vw,28px);color:var(--gold);text-shadow:3px 3px 0 #000;animation:pop .3s steps(4)}
+.kit-score{font-size:clamp(40px,12vw,64px);color:var(--yellow);text-shadow:4px 4px 0 #3f3f00;line-height:1}
+.kit-lines{font-size:13px;line-height:1.6;color:#eee}
+.kit-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(400px,100%)}
+.kit-btns .btn{font-size:14px;padding:10px 6px}
+.kit-lb{width:min(400px,100%);font-size:12.5px}
+.kit-lb .lbt{color:var(--aqua);margin:4px 0;letter-spacing:1px}
+.kit-lb .lbr{display:grid;grid-template-columns:40px 1fr auto;gap:8px;padding:5px 8px;background:rgba(255,255,255,.07);border:2px solid #000;margin-bottom:3px;text-align:left}
+.kit-lb .lbr.me{background:#2f6a1f;border-color:#55ff55}
+.kit-lb .lbr .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kit-lb .lbe{color:#aaa;font-size:11.5px;padding:4px}
+.kit-name{display:flex;gap:6px}
+.kit-name input{flex:1;min-width:0;padding:8px;border:3px solid #000;background:#fff;color:#000;font-weight:700}
+.kit-name .btn{min-height:40px;font-size:13px}
+.kit-pad{display:grid;gap:8px;margin-top:10px}
+.kit-pad:empty{display:none}
+.kit-pad .btn{min-height:60px;font-size:18px;touch-action:none}
+.kit-how{margin-top:12px;font-size:12px;line-height:1.6}
+.kit-how b{color:var(--yellow)}
+.kit-pop{position:fixed;pointer-events:none;z-index:60;font-size:18px;text-shadow:2px 2px 0 #000;transform:translate(-50%,-50%);animation:kpop .9s ease-out forwards;font-weight:700}
+@keyframes kpop{to{transform:translate(-50%,-140%);opacity:0}}
+/* shared bits for DOM games */
+.kgrid{display:grid;gap:6px;margin:0 auto}
+.kcell{appearance:none;border:3px solid #000;font:inherit;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#2a2244;box-shadow:inset 3px 3px 0 rgba(255,255,255,.18), inset -3px -3px 0 rgba(0,0,0,.35);touch-action:manipulation;transition:transform .06s;padding:0;text-shadow:2px 2px 0 #000}
+.kcell:active{transform:scale(.95)}
+.kbig{font-size:clamp(28px,9vw,48px);text-align:center;text-shadow:3px 3px 0 #000;margin:10px 0}
+.kmsg{text-align:center;font-size:14px;color:#ddd;min-height:22px;margin:8px 0}
+.krow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.kcard{width:clamp(52px,16vw,72px);aspect-ratio:5/7;background:#fff;color:#111;border:3px solid #000;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:clamp(16px,5vw,22px);box-shadow:3px 3px 0 rgba(0,0,0,.4);animation:pop .25s steps(3)}
+.kcard.red{color:#c0201a}
+.kcard.back{background:repeating-linear-gradient(45deg,#5a2fb0 0 6px,#3a1f7a 6px 12px);color:transparent}
