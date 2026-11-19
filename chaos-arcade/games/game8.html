@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f150f">
+<title>Redstone Memory Matrix · Chaos Arcade</title>
+<meta name="description" content="Watch the redstone lamps light up, then repeat the sequence. Simon Says with note blocks and glowing lamps.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%236b3a1e'/%3E%3Crect x='1' y='1' width='6' height='6' fill='%23ffd27a'/%3E%3Crect x='3' y='3' width='2' height='2' fill='%23f5a020'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../style.css">
+<style>
+  .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+  .modes .btn{font-size:12px;flex-direction:column;gap:2px;min-height:48px;padding:6px}
+  .modes .btn small{font-size:9.5px;opacity:.85}
+  .hud{display:flex;gap:6px;margin-bottom:10px}
+  .hud .chip{flex:1;justify-content:center;font-size:13px}
+  .hud b{color:#ff5555}
+  .status{text-align:center;font-size:15px;margin-bottom:10px;min-height:22px;text-shadow:2px 2px 0 #000}
+  .status.watch{color:var(--gold)} .status.go{color:var(--green)} .status.bad{color:var(--red)}
+  .rig{position:relative;width:min(92vw,420px);aspect-ratio:1;margin:0 auto;padding:14px;background:#3a2a20;border:4px solid #000;box-shadow:inset 0 0 0 3px #5a4030, 0 6px 0 rgba(0,0,0,.4)}
+  .wires{position:absolute;inset:0;pointer-events:none}
+  .wires i{position:absolute;background:#5a0a0a;box-shadow:0 0 0 2px #2a0505}
+  .wires.on i{background:#ff2a1a;box-shadow:0 0 8px #ff3a2a, 0 0 0 2px #7a0a0a}
+  .lamps{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;height:100%}
+  .lamp{border:4px solid #000;cursor:pointer;touch-action:manipulation;position:relative;background-size:cover;image-rendering:pixelated;transition:filter .08s;padding:0}
+  .lamp.off{background-image:var(--off);filter:brightness(.85)}
+  .lamp.lit{background-image:var(--on);filter:brightness(1.15);box-shadow:0 0 22px #ffcf6a, 0 0 46px rgba(255,170,40,.6);z-index:2;animation:pulse .12s steps(2)}
+  @keyframes pulse{50%{transform:scale(1.06)}}
+  .lamp .n{position:absolute;left:4px;top:2px;font-size:11px;color:rgba(255,255,255,.55);text-shadow:1px 1px 0 #000}
+  .lamp.wrong{background:#ff2a1a !important;animation:shakesm .3s steps(6)}
+  .rig.locked .lamp{cursor:default}
+  .rig.short{animation:shake .4s steps(8)}
+  .overlay{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(20,10,5,.82);text-align:center;padding:16px}
+  .overlay.hide{display:none}
+  .overlay h2{margin:0;font-size:clamp(20px,6vw,28px);text-shadow:3px 3px 0 #000}
+  .overlay p{font-size:12.5px;line-height:1.5;margin:0;max-width:320px;color:#ddd}
+  .overlay .btns{display:grid;gap:8px;width:min(280px,90%)}
+  .progress{display:flex;gap:4px;justify-content:center;margin-top:10px;flex-wrap:wrap;min-height:16px}
+  .progress i{width:12px;height:12px;background:#3a1010;border:2px solid #000}
+  .progress i.d{background:#ff3a2a;box-shadow:0 0 6px #ff3a2a}
+  .bests{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px;text-align:center}
+  .bests .panel{padding:7px 2px;font-size:10px;color:#555}
+  .bests b{display:block;font-size:17px;color:#333}
+  .tips{margin-top:12px;font-size:12px;line-height:1.6}
+  .tips b{color:var(--yellow)}
+</style>
+</head>
+<body>
+<div class="wrap narrow">
+  <div id="arcadeBar"></div>
+  <div class="modes" id="modes">
+    <button class="btn" data-m="classic">🔴 CLASSIC<small>Repeat it</small></button>
+    <button class="btn" data-m="speed">⚡ REPEATER<small>Gets faster</small></button>
+    <button class="btn" data-m="reverse">🔁 INVERTED<small>Play it backwards</small></button>
+  </div>
+  <div class="hud">
+    <div class="chip">SEQUENCE <b id="lvl">0</b></div>
+    <div class="chip">🎵 SCORE <b id="score" style="color:var(--yellow)">0</b></div>
+  </div>
+  <div class="status" id="status">Press START to power the circuit</div>
+  <div class="rig" id="rig">
+    <div class="wires" id="wires"></div>
+    <div class="lamps" id="lamps"></div>
+    <div class="overlay" id="overlay">
+      <h2 id="ovT">🔴 REDSTONE MEMORY</h2>
+      <p id="ovP">Watch the lamps light up, then tap them in the same order. Each round adds one more signal.</p>
+      <div class="btns">
+        <button class="btn green big" id="startBtn">▶ START</button>
+        <button class="btn gold" id="shareBtn" style="display:none">📋 COPY SCORE TO SHARE</button>
+        <a class="btn" href="../index.html" id="backBtn" style="display:none">⬅ ARCADE</a>
+      </div>
+    </div>
+  </div>
+  <div class="progress" id="progress"></div>
+  <div class="bests" id="bests"></div>
+  <div class="dark-panel tips">
+    <b>HOW TO PLAY:</b> The circuit flashes a sequence of lamps, each with its own <b>note block</b> sound. Repeat it by tapping (or keys <b>1–9</b> / numpad). <b>⚡ Repeater</b> mode speeds up every round. <b>🔁 Inverted</b> mode: enter the sequence backwards. One wrong lamp and the circuit shorts out.
+  </div>
+  <div class="legal">Fan-made parody game. Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</div>
+</div>
+
+<script src="../arcade.js"></script>
+<script>
+(() => {
+'use strict';
+const A = Arcade, $ = (s) => document.querySelector(s);
+const GAME_ID = 'redstone', LKEY = 'chaosArcade_redstone';
+A.paintBody(['#2a1d15','#1f150f','#3a2a20','#140d08']);
+A.mountBar(GAME_ID);
+
+/* lamp textures */
+const root = document.documentElement.style;
+root.setProperty('--off', 'url(' + A.textureURL(['#6b3a1e','#5a2e16','#7a4a2a','#3f1f0f'], 61, 12) + ')');
+root.setProperty('--on', 'url(' + A.textureURL(['#ffd27a','#f5a020','#fff0b0','#e88a10'], 62, 12) + ')');
+
+/* note block "pling" — pentatonic scale per lamp */
+const NOTES = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.5, 1174.7, 1318.5, 1568.0];
+function pling(i, len){
+  const S = A.Sfx; if (!S.ctx) return;
+  S.tone(NOTES[i], len || .35, 'triangle', .14); S.tone(NOTES[i] * 2, (len || .35) * .5, 'sine', .05); S.tone(NOTES[i] / 2, .08, 'square', .03);
+}
+
+let L = { best:{classic:0, speed:0, reverse:0}, plays:0, mode:'classic' };
+try { L = Object.assign(L, JSON.parse(localStorage.getItem(LKEY) || '{}')); L.best = Object.assign({classic:0,speed:0,reverse:0}, L.best); } catch(e){}
+const saveL = () => { try { localStorage.setItem(LKEY, JSON.stringify(L)); } catch(e){} };
+
+/* build lamps + wires */
+$('#lamps').innerHTML = Array.from({length:9}, (_, i) => '<button class="lamp off" data-i="' + i + '" aria-label="Lamp ' + (i+1) + '"><span class="n">' + (i+1) + '</span></button>').join('');
+const lamps = [...document.querySelectorAll('.lamp')];
+$('#wires').innerHTML = [16.6, 50, 83.3].map(p => '<i style="left:' + p + '%;top:4%;bottom:4%;width:4px;margin-left:-2px"></i><i style="top:' + p + '%;left:4%;right:4%;height:4px;margin-top:-2px"></i>').join('');
+
+let G = { mode:L.mode, seq:[], pos:0, input:false, score:0, running:false };
+function setMode(m){ G.mode = m; L.mode = m; saveL(); document.querySelectorAll('#modes .btn').forEach(b => b.classList.toggle('on', b.dataset.m === m)); renderBests(); }
+function renderBests(){ $('#bests').innerHTML = [['classic','🔴 CLASSIC'],['speed','⚡ REPEATER'],['reverse','🔁 INVERTED']].map(([k,n]) => '<div class="panel"><b>' + L.best[k] + '</b>' + n + ' BEST</div>').join(''); }
+function status(t, cls){ const s = $('#status'); s.textContent = t; s.className = 'status ' + (cls || ''); }
+function progress(){ $('#progress').innerHTML = G.seq.map((_, i) => '<i class="' + (i < G.pos ? 'd' : '') + '"></i>').join(''); }
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+function light(i, ms){
+  lamps[i].classList.remove('off'); lamps[i].classList.add('lit'); $('#wires').classList.add('on'); pling(i, ms / 1000 + .1);
+  return sleep(ms).then(() => { lamps[i].classList.remove('lit'); lamps[i].classList.add('off'); $('#wires').classList.remove('on'); });
+}
+function speed(){ const n = G.seq.length; return G.mode === 'speed' ? Math.max(130, 480 - n * 32) : Math.max(260, 520 - n * 14); }
+async function playSeq(){
+  G.input = false; $('#rig').classList.add('locked');
+  status('👀 WATCH THE CIRCUIT… (' + G.seq.length + ')', 'watch');
+  await sleep(500);
+  for (const i of G.seq){ if (!G.running) return; await light(i, speed()); await sleep(speed() * .35); }
+  G.pos = 0; G.input = true; $('#rig').classList.remove('locked');
+  status(G.mode === 'reverse' ? '🔁 YOUR TURN — BACKWARDS!' : '🟢 YOUR TURN!', 'go');
+  progress();
+}
+function nextRound(){
+  let n; do { n = Math.floor(Math.random() * 9); } while (G.seq.length && n === G.seq[G.seq.length - 1] && Math.random() < .6);
+  G.seq.push(n);
+  $('#lvl').textContent = G.seq.length;
+  progress(); playSeq();
+}
+function start(){
+  A.Sfx.init(); A.Sfx.click();
+  G.seq = []; G.pos = 0; G.score = 0; G.running = true;
+  $('#score').textContent = 0;
+  $('#overlay').classList.add('hide');
+  nextRound();
+}
+async function tap(i){
+  if (!G.running || !G.input) return;
+  const expected = G.mode === 'reverse' ? G.seq[G.seq.length - 1 - G.pos] : G.seq[G.pos];
+  if (i !== expected){ fail(i); return; }
+  light(i, 180); A.buzz(10);
+  G.pos++; progress();
+  if (G.pos >= G.seq.length){
+    G.input = false;
+    const n = G.seq.length;
+    G.score += n * 10 * (G.mode === 'classic' ? 1 : 2);
+    $('#score').textContent = G.score;
+    status(['✔ NICE','✔ CLEAN SIGNAL','✔ REDSTONE GENIUS','✔ COMPARATOR BRAIN'][Math.min(3, Math.floor(n / 5))] + '!', 'go');
+    if (n % 5 === 0){ A.Sfx.success(); A.bigText('🔴 SEQUENCE ' + n + '!'); }
+    await sleep(700); nextRound();
+  }
+}
+function fail(i){
+  G.running = false; G.input = false;
+  lamps[i].classList.add('wrong'); setTimeout(() => lamps[i].classList.remove('wrong'), 600);
+  const rig = $('#rig'); rig.classList.remove('short'); void rig.offsetWidth; rig.classList.add('short');
+  A.Sfx.noise(.5,.4,0,'highpass',2000,8000); A.Sfx.fail(); A.buzz([150,60,150]);
+  status('⚡ SHORT CIRCUIT!', 'bad');
+  const reached = G.seq.length - 1;
+  L.plays++; const newBest = reached > L.best[G.mode]; if (newBest) L.best[G.mode] = reached; saveL(); renderBests();
+  A.report(GAME_ID, { score: reached, xp: reached * 6 + (G.mode === 'classic' ? 0 : reached * 3), win: reached >= 10, label: reached + ' (' + G.mode + ')' });
+  if (reached >= 15) A.unlock('red_15', '🔴', 'Redstone Engineer (sequence 15)');
+  // replay the correct sequence quickly as a "you should have pressed…"
+  setTimeout(() => {
+    const titles = [[0,'💡 Lamp Dimmer'],[5,'🔌 Torch Tinkerer'],[9,'🔁 Repeater Rookie'],[13,'🧠 Comparator Brain'],[18,'⚡ Redstone Wizard']];
+    const t = titles.filter(x => reached >= x[0]).pop()[1];
+    $('#ovT').textContent = t;
+    $('#ovP').innerHTML = 'You remembered <b style="color:#ff5555">' + reached + '</b> signal' + (reached === 1 ? '' : 's') + ' in ' + ({classic:'Classic',speed:'Repeater',reverse:'Inverted'})[G.mode] + ' mode.' + (newBest ? '<br>🏆 New best!' : '');
+    $('#startBtn').textContent = '♻ RETRY';
+    $('#shareBtn').style.display = ''; $('#backBtn').style.display = '';
+    $('#overlay').classList.remove('hide');
+    if (newBest && reached) A.confetti();
+  }, 900);
+}
+$('#lamps').addEventListener('pointerdown', e => { const b = e.target.closest('.lamp'); if (b){ e.preventDefault(); A.Sfx.init(); tap(+b.dataset.i); } });
+addEventListener('keydown', e => {
+  const n = parseInt(e.key, 10);
+  if (n >= 1 && n <= 9){ const map = /Numpad/.test(e.code) ? [6,7,8,3,4,5,0,1,2][n-1] : n - 1; tap(map); }
+  else if ((e.key === 'Enter' || e.code === 'Space') && !G.running){ e.preventDefault(); start(); }
+});
+$('#startBtn').addEventListener('click', start);
+$('#modes').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (!b || G.running) { if (b) A.toast('Finish this run first!'); return; } A.Sfx.click(); setMode(b.dataset.m); });
+$('#shareBtn').addEventListener('click', () => {
+  const reached = Math.max(0, G.seq.length - 1);
+  const lamps = '🟥'.repeat(Math.min(10, reached)) + (reached > 10 ? '+' + (reached - 10) : '');
+  A.copy(A.shareText(GAME_ID, ['🔴 Remembered ' + reached + ' signals · ' + ({classic:'Classic',speed:'⚡ Repeater',reverse:'🔁 Inverted'})[G.mode] + ' mode', lamps || '💡 (instant short circuit)', '🎵 ' + G.score + ' pts']));
+});
+setMode(L.mode in L.best ? L.mode : 'classic');
+})();
+</script>
+</body>
+</html>

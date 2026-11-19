@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f0f2a">
+<title>Potion Brewer Roulette · Chaos Arcade</title>
+<meta name="description" content="Brew weird ingredients, drink the result and survive whatever status effect you get. A chaotic Minecraft-inspired luck game.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect x='3' y='0' width='2' height='2' fill='%238a5a2b'/%3E%3Crect x='1' y='3' width='6' height='4' fill='%23c03ad8'/%3E%3Crect x='2' y='2' width='4' height='1' fill='%23cfeef7'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../style.css">
+<style>
+  #game{transition:transform .6s ease-in-out, filter .4s}
+  .hud{display:flex;gap:6px;margin-bottom:10px;align-items:stretch}
+  .hud .chip{justify-content:center;font-size:13px}
+  .hearts{flex:1;display:flex;gap:2px;flex-wrap:wrap;align-items:center;justify-content:center;background:rgba(0,0,0,.6);border:3px solid #000;padding:5px}
+  .hearts svg{width:18px;height:18px}
+  #score{color:var(--yellow)}
+  .stand{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+  .slots{display:flex;gap:8px;justify-content:center}
+  .slot.ing{width:64px;height:64px;display:flex;align-items:center;justify-content:center;font-size:32px;cursor:pointer;position:relative}
+  .slot.ing.empty::after{content:"+";color:#666;font-size:24px}
+  .slot.ing small{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:9px;color:#444;white-space:nowrap}
+  .bottle{width:92px;height:110px;position:relative}
+  .bottle svg{width:100%;height:100%;display:block}
+  .bubbles{position:absolute;left:20%;right:20%;bottom:15%;top:35%;pointer-events:none;overflow:hidden}
+  .bubbles i{position:absolute;bottom:0;width:6px;height:6px;background:rgba(255,255,255,.7);animation:bub 1s linear infinite}
+  @keyframes bub{to{transform:translateY(-60px);opacity:0}}
+  .brewbar{height:12px;border:3px solid #000;background:#222;margin-top:10px;position:relative}
+  .brewbar i{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#ffaa00,#ff55ff)}
+  .base{font-size:11.5px;color:#555;text-align:center;margin-top:18px}
+  .hand{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+  .card-i{flex-direction:column;gap:2px;font-size:11.5px;min-height:76px;padding:6px 4px;line-height:1.2}
+  .card-i .ie{font-size:26px}
+  .card-i small{font-size:9.5px;opacity:.85}
+  .card-i.cursed{background:#5a1475;box-shadow:inset 3px 3px 0 #b05ad6, inset -3px -4px 0 #2a0638}
+  .card-i.picked{opacity:.35}
+  .actions{display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-top:10px}
+  .result{margin-top:12px;display:none}
+  .result.show{display:block;animation:pop .3s steps(4)}
+  .result .eff{font-size:20px;margin-bottom:4px}
+  .result .good{color:var(--green)} .result .bad{color:var(--red)} .result .cur{color:var(--purple)}
+  .book{margin-top:12px}
+  .book h3{margin:0 0 8px;font-size:14px}
+  .bookgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+  .bookgrid span{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:20px;background:#e0cf9d;border:2px solid #6b4a1e}
+  .bookgrid span.no{filter:grayscale(1) brightness(.5);font-size:14px}
+  .end{display:none;margin-top:12px}
+  .end.show{display:block;animation:pop .3s steps(4)}
+  .tips{margin-top:12px;font-size:12px;line-height:1.6}
+  .tips b{color:var(--yellow)}
+  /* status effect visuals */
+  .fx-nausea #game{animation:naus 1.2s ease-in-out infinite}
+  @keyframes naus{0%,100%{transform:rotate(-3deg) skewX(4deg)}50%{transform:rotate(3deg) skewX(-4deg)}}
+  .fx-lev #game{transform:translateY(-40px)}
+  .fx-slowfall #game{animation:sfall 2s ease-in-out infinite}
+  @keyframes sfall{50%{transform:translateY(14px)}}
+  .fx-upside #game{transform:rotate(180deg)}
+  .fx-tiny #game{transform:scale(.72)}
+  .fx-rainbow #game{animation:rainbow 1s linear infinite}
+  @keyframes rainbow{to{filter:hue-rotate(360deg)}}
+  .fx-speed #game{animation:zoom .25s steps(2) infinite}
+  @keyframes zoom{50%{transform:translateX(3px)}}
+  .fx-jump #game{animation:jump .6s ease-in-out infinite}
+  @keyframes jump{50%{transform:translateY(-22px)}}
+  .fx-hiccup #game{animation:hic 1.4s steps(1) infinite}
+  @keyframes hic{0%,80%{transform:none}85%{transform:translateY(-16px)}}
+  .fx-night #game{filter:brightness(1.4) saturate(1.4)}
+  #fxOverlay{position:fixed;inset:0;pointer-events:none;z-index:40;opacity:0;transition:opacity .4s}
+  .fx-blind #fxOverlay{opacity:.88;background:#000}
+  .fx-poison #fxOverlay{opacity:.35;background:#3a8a1a}
+  .fx-wither #fxOverlay{opacity:.45;background:#111}
+  .fx-fire #fxOverlay{opacity:.3;background:#ff6a00}
+</style>
+</head>
+<body>
+<div id="fxOverlay"></div>
+<div class="wrap narrow">
+  <div id="arcadeBar"></div>
+  <div id="game">
+    <div class="hud">
+      <div class="hearts" id="hearts"></div>
+      <div class="chip">🧪 <span id="brews">0</span></div>
+      <div class="chip">★ <span id="score">0</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="stand">
+        <div>
+          <div class="slots" id="slots"></div>
+          <div class="base">Base: 💧 Water Bottle · up to 3 ingredients</div>
+        </div>
+        <div class="bottle" id="bottle"><div class="bubbles" id="bubbles"></div></div>
+      </div>
+      <div class="brewbar"><i id="brewFill"></i></div>
+    </div>
+
+    <div class="hand" id="hand"></div>
+    <div class="actions">
+      <button class="btn purple big" id="brewBtn">🔥 BREW &amp; DRINK</button>
+      <button class="btn" id="rerollBtn">🔄 NEW HAND</button>
+    </div>
+
+    <div class="dark-panel result" id="result"></div>
+
+    <div class="end" id="end">
+      <div class="panel result-card">
+        <div class="big-emoji" id="endEmoji">💀</div>
+        <div class="label">YOU DIED</div>
+        <div class="title" id="endTitle">Reckless Alchemist</div>
+        <div class="quip" id="endQuip"></div>
+      </div>
+      <div class="big-score" id="endScore">0</div>
+      <div class="marks" id="endMarks" style="margin:6px 0 10px"></div>
+      <button class="btn gold big block" id="shareBtn">📋 COPY SCORE TO SHARE</button>
+      <div class="grid2" style="margin-top:8px">
+        <button class="btn green" id="againBtn">♻ RESPAWN</button>
+        <a class="btn" href="../index.html">⬅ ARCADE</a>
+      </div>
+    </div>
+
+    <div class="book-wrap" style="margin-top:12px">
+      <div class="book">
+        <h3>📖 BREWING BOOK · <span id="found">0</span> / <span id="total">0</span> effects discovered</h3>
+        <div class="bookgrid" id="bookgrid"></div>
+      </div>
+    </div>
+
+    <div class="dark-panel tips">
+      <b>HOW TO PLAY:</b> Tap up to 3 ingredients from your hand, then <b>BREW &amp; DRINK</b>. Real ingredients push toward real effects (Sugar → Speed, Ghast Tear → Regeneration…). <b>Fermented Spider Eye</b> corrupts good effects into bad ones. <b>Glowstone</b> makes effects stronger, <b>Redstone</b> makes them last longer. <b style="color:#ff55ff">Cursed ingredients</b> pay big points but unlock… weird outcomes. Lose all hearts and it's over. Every new effect goes in your Brewing Book.
+    </div>
+    <div class="legal">Fan-made parody game. Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</div>
+  </div>
+</div>
+
+<script src="../arcade.js"></script>
+<script>
+(() => {
+'use strict';
+const A = Arcade, $ = (s) => document.querySelector(s);
+const GAME_ID = 'potion', LKEY = 'chaosArcade_potion', MAXHP = 10;
+A.paintBody(['#2a1438','#1f0f2a','#3a1f4a','#140a1c']);
+A.mountBar(GAME_ID);
+
+/* ---------- Effects ---------- */
+const FX = {
+  speed:    {n:'Speed', i:'💨', t:'good', hp:0, pts:80, cls:'fx-speed', c:'#7cafc6', msg:'You are zooming. Everything is a blur.'},
+  jump:     {n:'Leaping', i:'🐇', t:'good', hp:0, pts:70, cls:'fx-jump', c:'#22ff4c', msg:'Boing. Boing. Boing.'},
+  night:    {n:'Night Vision', i:'👁️', t:'good', hp:0, pts:70, cls:'fx-night', c:'#1f1fa1', msg:'You can see in the dark. Creepers can see you too.'},
+  regen:    {n:'Regeneration', i:'💖', t:'good', hp:3, pts:60, c:'#cd5cab', msg:'Hearts slowly come back.'},
+  heal:     {n:'Instant Health', i:'❤️', t:'good', hp:4, pts:50, c:'#f82423', msg:'Big heal. Very nice.'},
+  fire:     {n:'Fire Resistance', i:'🔥', t:'good', hp:1, pts:70, c:'#e49a3a', msg:'You could swim in lava. Please do not.'},
+  water:    {n:'Water Breathing', i:'🐠', t:'good', hp:0, pts:60, c:'#2e5299', msg:'Gills unlocked.'},
+  slowfall: {n:'Slow Falling', i:'🪶', t:'good', hp:0, pts:70, cls:'fx-slowfall', c:'#f3cfb9', msg:'You float gently like a sad feather.'},
+  strength: {n:'Strength', i:'💪', t:'good', hp:1, pts:100, c:'#932423', msg:'You could punch a tree in one hit.'},
+  turtle:   {n:'Turtle Master', i:'🐢', t:'good', hp:2, pts:120, c:'#6b5f8a', msg:'Very tanky. Very slow.'},
+  luck:     {n:'Luck', i:'🍀', t:'good', hp:1, pts:150, c:'#339900', msg:'The rarest brew. Buy a lottery ticket.'},
+  poison:   {n:'Poison', i:'🤢', t:'bad', hp:-3, pts:20, cls:'fx-poison', c:'#4e9331', msg:'Your hearts turn green. That is bad.'},
+  harm:     {n:'Instant Damage', i:'💔', t:'bad', hp:-4, pts:10, c:'#430a09', msg:'Ouch. Straight to the face.'},
+  weak:     {n:'Weakness', i:'🥀', t:'bad', hp:-1, pts:20, c:'#484d48', msg:'You cannot even open a jar.'},
+  slow:     {n:'Slowness', i:'🐌', t:'bad', hp:-1, pts:20, c:'#5a6c81', msg:'Everything takes… for… ever.'},
+  nausea:   {n:'Nausea', i:'🌀', t:'bad', hp:-1, pts:30, cls:'fx-nausea', c:'#551d4a', msg:'The world is spinning. Do not look at the screen.'},
+  blind:    {n:'Blindness', i:'🕶️', t:'bad', hp:-1, pts:30, cls:'fx-blind', c:'#1f1f23', msg:'Who turned off the sun?'},
+  hunger:   {n:'Hunger', i:'🍗', t:'bad', hp:-1, pts:20, c:'#587653', msg:'You could eat a whole cow. Raw.'},
+  lev:      {n:'Levitation', i:'🎈', t:'bad', hp:-2, pts:40, cls:'fx-lev', c:'#ceffff', msg:'You float up… and up… and then fall.'},
+  wither:   {n:'Wither', i:'🖤', t:'bad', hp:-4, pts:30, cls:'fx-wither', c:'#352a27', msg:'Your hearts turn black. Very bad.'},
+  chicken:  {n:'Turned Into a Chicken', i:'🐔', t:'cur', hp:0, pts:120, c:'#ffffff', msg:'Bawk. You are now a chicken. You feel no fall damage.'},
+  dinner:   {n:'Dinnerbone', i:'🙃', t:'cur', hp:0, pts:130, cls:'fx-upside', c:'#ffd27a', msg:'You are upside down. Like a named mob.'},
+  tiny:     {n:'Tiny Mode', i:'🤏', t:'cur', hp:0, pts:110, cls:'fx-tiny', c:'#ff9ff0', msg:'You shrank. Baby zombies look huge now.'},
+  rainbow:  {n:'jeb_ Mode', i:'🌈', t:'cur', hp:0, pts:140, cls:'fx-rainbow', c:'#ff55ff', msg:'You are a rainbow sheep now. Congratulations.'},
+  hiccup:   {n:'Hiccups', i:'😵', t:'cur', hp:-1, pts:90, cls:'fx-hiccup', c:'#a0d0ff', msg:'Hic! Hic! Every few seconds you teleport an inch.'},
+  combust:  {n:'Spontaneous Combustion', i:'💥', t:'cur', hp:-5, pts:150, cls:'fx-fire', c:'#ff4400', msg:'You exploded. A creeper would be proud.'},
+  villager: {n:'Villager Voice', i:'🧑‍🌾', t:'cur', hp:0, pts:100, c:'#b98a6a', msg:'Hrmm. Hrmm hrmm. You can only say hrmm now.'},
+  nothing:  {n:'Mundane Potion', i:'💧', t:'bad', hp:0, pts:5, c:'#385dc6', msg:'It does absolutely nothing. Mojang calls it "Mundane". Accurate.'}
+};
+const GOOD_TO_BAD = { speed:'slow', jump:'slow', night:'blind', regen:'poison', heal:'harm', strength:'weak', water:'harm', fire:'slow', slowfall:'lev', turtle:'slow', luck:'hunger' };
+
+/* ---------- Ingredients ---------- */
+const ING = [
+  {id:'sugar', i:'🍬', n:'Sugar', fx:'speed'}, {id:'rabbit', i:'🐇', n:"Rabbit's Foot", fx:'jump'},
+  {id:'carrot', i:'🥕', n:'Golden Carrot', fx:'night'}, {id:'ghast', i:'💧', n:'Ghast Tear', fx:'regen'},
+  {id:'melon', i:'🍉', n:'Glistering Melon', fx:'heal'}, {id:'magma', i:'🟠', n:'Magma Cream', fx:'fire'},
+  {id:'puffer', i:'🐡', n:'Pufferfish', fx:'water'}, {id:'phantom', i:'🦇', n:'Phantom Membrane', fx:'slowfall'},
+  {id:'blaze', i:'🔥', n:'Blaze Powder', fx:'strength'}, {id:'turtle', i:'🐢', n:'Turtle Shell', fx:'turtle'},
+  {id:'spider', i:'🕷️', n:'Spider Eye', fx:'poison'}, {id:'ferm', i:'🟤', n:'Fermented Spider Eye', mod:'corrupt'},
+  {id:'glow', i:'✨', n:'Glowstone', mod:'amp'}, {id:'red', i:'🔴', n:'Redstone', mod:'ext'},
+  {id:'dirt', i:'🟫', n:'Dirt', cursed:true}, {id:'sock', i:'🧦', n:'Used Sock', cursed:true}, {id:'cookie', i:'🍪', n:'Parrot Cookie', cursed:true},
+  {id:'flesh', i:'🥩', n:'Rotten Flesh', cursed:true, fx:'hunger'}, {id:'cake', i:'🍰', n:'A Lie (Cake)', cursed:true},
+  {id:'tear', i:'👁️', n:"Herobrine's Tear", cursed:true}, {id:'goo', i:'🟢', n:'Mystery Goo', cursed:true}, {id:'gunp', i:'💨', n:'Gunpowder', cursed:true, fx:'combust'}
+];
+const CURSED_FX = ['chicken','dinner','tiny','rainbow','hiccup','combust','villager'];
+
+let L = { found:{}, best:0, bestBrews:0, plays:0 };
+try { L = Object.assign(L, JSON.parse(localStorage.getItem(LKEY) || '{}')); L.found = L.found || {}; } catch(e){}
+const saveL = () => { try { localStorage.setItem(LKEY, JSON.stringify(L)); } catch(e){} };
+
+const HEART = A.px(['.rr.rr..','rhrrrrr.','rrrrrrr.','rrrrrrr.','.rrrrr..','..rrr...','...r....','........'], {r:'#e0201a',h:'#ffb0a8'});
+const HEART_H = A.px(['.rr.kk..','rhr.k.k.','rrr...k.','rrr...k.','.rr..k..','..r.k...','...k....','........'], {r:'#e0201a',h:'#ffb0a8',k:'#1a1a1a'});
+const HEART_E = A.px(['.kk.kk..','k..k..k.','k.....k.','k.....k.','.k...k..','..k.k...','...k....','........'], {k:'#1a1a1a'});
+function bottleSvg(color){
+  return A.px(['...cc...','...gg...','..g..g..','.gllllg.','glhllllg','gllllllg','.gllllg.','..gggg..'], {g:'#cfeef7', c:'#8a5a2b', l:color || '#385dc6', h:'#ffffffaa'});
+}
+
+let G;
+function newGame(){
+  G = { hp:MAXHP, score:0, brews:0, picked:[], hand:[], busy:false, log:[], over:false, rerolls:2 };
+  dealHand(); renderAll();
+  $('#result').classList.remove('show'); $('#end').classList.remove('show');
+  clearFx();
+}
+function dealHand(){
+  const real = ING.filter(x => !x.cursed), cur = ING.filter(x => x.cursed);
+  const pick = (arr, n) => { const a = arr.slice(); for (let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a.slice(0, n); };
+  G.hand = pick(real, 4).concat(pick(cur, 2)).sort(() => Math.random() - .5);
+  G.picked = [];
+}
+function renderAll(){
+  let h = ''; for (let i=0;i<MAXHP;i+=1) h += G.hp >= i + 1 ? HEART : G.hp > i ? HEART_H : HEART_E;
+  $('#hearts').innerHTML = h;
+  $('#brews').textContent = G.brews; $('#score').textContent = G.score;
+  $('#slots').innerHTML = [0,1,2].map(i => { const ing = G.picked[i] != null ? G.hand[G.picked[i]] : null; return '<div class="slot ing' + (ing ? '' : ' empty') + '" data-s="' + i + '">' + (ing ? ing.i + '<small>' + ing.n + '</small>' : '') + '</div>'; }).join('');
+  $('#hand').innerHTML = G.hand.map((x, i) => '<button class="btn card-i' + (x.cursed ? ' cursed' : '') + (G.picked.includes(i) ? ' picked' : '') + '" data-i="' + i + '"><span class="ie">' + x.i + '</span>' + x.n + (x.cursed ? '<small>☠ cursed</small>' : x.mod ? '<small>modifier</small>' : '') + '</button>').join('');
+  if (!G.busy) $('#bottle').innerHTML = bottleSvg() + '<div class="bubbles" id="bubbles"></div>';
+  $('#brewBtn').disabled = G.busy || G.over;
+  $('#rerollBtn').textContent = '🔄 NEW HAND (' + G.rerolls + ')'; $('#rerollBtn').disabled = G.busy || G.over || !G.rerolls;
+  const keys = Object.keys(FX);
+  $('#found').textContent = keys.filter(k => L.found[k]).length; $('#total').textContent = keys.length;
+  $('#bookgrid').innerHTML = keys.map(k => '<span class="' + (L.found[k] ? '' : 'no') + '" title="' + (L.found[k] ? FX[k].n : '???') + '">' + (L.found[k] ? FX[k].i : '❓') + '</span>').join('');
+}
+$('#hand').addEventListener('click', e => {
+  const b = e.target.closest('[data-i]'); if (!b || G.busy || G.over) return;
+  const i = +b.dataset.i, at = G.picked.indexOf(i);
+  if (at >= 0) G.picked.splice(at, 1);
+  else if (G.picked.length < 3){ G.picked.push(i); A.Sfx.tone(500 + G.picked.length * 120, .06, 'square', .06); }
+  else { A.toast('The brewing stand only has 3 slots!'); return; }
+  renderAll();
+});
+$('#slots').addEventListener('click', e => { const s = e.target.closest('[data-s]'); if (!s || G.busy) return; const k = +s.dataset.s; if (G.picked[k] != null){ G.picked.splice(k, 1); A.Sfx.click(); renderAll(); } });
+$('#rerollBtn').addEventListener('click', () => { if (!G.rerolls || G.busy) return; G.rerolls--; A.Sfx.click(); dealHand(); renderAll(); });
+
+/* ---------- Brewing logic ---------- */
+function decide(ings){
+  let fx = null, corrupt = false, amp = false, ext = false, cursed = 0;
+  ings.forEach(x => {
+    if (x.mod === 'corrupt') corrupt = true; else if (x.mod === 'amp') amp = true; else if (x.mod === 'ext') ext = true;
+    if (x.cursed) cursed++;
+    if (x.fx && !fx && !x.cursed) fx = x.fx;
+  });
+  const cursedFx = ings.filter(x => x.cursed && x.fx).map(x => x.fx);
+  // roulette
+  const roll = Math.random();
+  if (cursed && roll < .3 + cursed * .2) fx = Math.random() < .35 && cursedFx.length ? A.rnd(cursedFx) : A.rnd(CURSED_FX);
+  else if (!fx && !cursed) fx = Math.random() < .5 ? 'nothing' : A.rnd(Object.keys(FX).filter(k => FX[k].t !== 'cur'));
+  else if (!fx) fx = A.rnd(Object.keys(FX));
+  else if (Math.random() < .18) fx = A.rnd(Object.keys(FX).filter(k => k !== 'nothing'));  // the "roulette" part
+  if (corrupt && GOOD_TO_BAD[fx]) fx = GOOD_TO_BAD[fx];
+  return { fx, amp, ext, cursed };
+}
+let fxTimer = 0;
+function clearFx(){ document.body.className = document.body.className.split(' ').filter(c => !c.startsWith('fx-')).join(' '); }
+function brew(){
+  if (G.busy || G.over) return;
+  if (!G.picked.length){ A.toast('Add at least one ingredient first!'); A.Sfx.fail(); return; }
+  A.Sfx.init(); G.busy = true; renderAll();
+  const ings = G.picked.map(i => G.hand[i]);
+  const out = decide(ings);
+  const f = FX[out.fx];
+  // brewing animation
+  $('#bottle').innerHTML = bottleSvg('#8a6ad8') + '<div class="bubbles" id="bubbles">' + Array.from({length:8}, (_, i) => '<i style="left:' + (i*12) + '%;animation-delay:' + (i*.13) + 's"></i>').join('') + '</div>';
+  const fill = $('#brewFill'); fill.style.transition = 'none'; fill.style.width = '0'; void fill.offsetWidth; fill.style.transition = 'width 2.2s linear'; fill.style.width = '100%';
+  let k = 0; const bubT = setInterval(() => { A.Sfx.tone(200 + Math.random()*300, .05, 'sine', .05); if (++k > 18) clearInterval(bubT); }, 120);
+  setTimeout(() => {
+    clearInterval(bubT);
+    $('#bottle').innerHTML = bottleSvg(f.c) + '<div class="bubbles" id="bubbles"></div>';
+    [0,1,2,3].forEach(i => A.Sfx.tone(260 + i*40, .09, 'sine', .12, i*.1, 180 + i*30)); // glug glug
+    setTimeout(() => drink(f, out, ings), 500);
+  }, 2300);
+}
+function drink(f, out, ings){
+  const mult = out.amp ? 1.6 : 1, dur = out.ext ? 9000 : 5000;
+  let dhp = Math.round(f.hp * (f.hp > 0 ? mult : out.amp ? 1.5 : 1));
+  let pts = Math.round(f.pts * mult * (out.ext ? 1.3 : 1) * (1 + out.cursed * .5));
+  const isNew = !L.found[out.fx];
+  if (isNew){ pts += 100; L.found[out.fx] = Date.now(); saveL(); }
+  G.hp = Math.max(0, Math.min(MAXHP, G.hp + dhp));
+  G.score += pts; G.brews++;
+  G.log.push(f.i);
+  clearFx(); clearTimeout(fxTimer);
+  if (f.cls){ document.body.classList.add(f.cls); fxTimer = setTimeout(clearFx, dur); }
+  if (f.t === 'good'){ A.Sfx.success(); A.burst(innerWidth/2, innerHeight*.35, [f.c, '#ffffff', '#ffff55'], 18); }
+  else if (out.fx === 'combust'){ A.Sfx.boom(); A.flash(); A.shake(document.body, true); }
+  else if (f.t === 'bad'){ A.Sfx.fail(); if (dhp < 0) A.shake($('#game')); A.buzz([80,40,80]); }
+  else { A.Sfx.ach(); A.burst(innerWidth/2, innerHeight*.35, ['#ff55ff','#55ffff','#ffff55','#55ff55'], 24); }
+  if (out.fx === 'chicken') A.Sfx.tone(900,.08,'square',.06,0,1400);
+  if (out.fx === 'villager'){ A.Sfx.tone(190,.18,'sawtooth',.06,0,150); A.Sfx.tone(160,.22,'sawtooth',.05,.16,140); }
+  A.bigText(f.i + ' ' + f.n.toUpperCase(), f.t === 'good' ? '#55ff55' : f.t === 'bad' ? '#ff5555' : '#ff55ff');
+  const cls = f.t === 'good' ? 'good' : f.t === 'bad' ? 'bad' : 'cur';
+  $('#result').innerHTML = '<div class="eff ' + cls + '">' + f.i + ' ' + f.n + (out.amp ? ' II' : '') + (out.ext ? ' (extended)' : '') + (isNew ? ' <span style="color:#ffff55">✦ NEW!</span>' : '') + '</div>' +
+    '<div style="font-size:13px;line-height:1.45">' + (out.fx === 'villager' ? 'Hrmm. Hrmm hrmm. (' + f.msg + ')' : f.msg) + '</div>' +
+    '<div style="font-size:12px;color:#bbb;margin-top:6px">Brewed from ' + ings.map(x => x.i + ' ' + x.n).join(' + ') + ' · ' + (dhp ? (dhp > 0 ? '+' : '') + dhp + ' ❤ · ' : '') + '+' + pts + ' pts' + (isNew ? ' (incl. +100 discovery)' : '') + '</div>';
+  $('#result').classList.add('show');
+  if (Object.keys(FX).every(k => L.found[k])) A.unlock('potion_all', '📖', 'Master Brewer (all effects found)');
+  G.busy = false;
+  if (G.hp <= 0){ setTimeout(die, 900); renderAll(); return; }
+  dealHand(); renderAll();
+}
+function die(){
+  G.over = true; clearFx(); renderAll();
+  A.Sfx.fanfare(false);
+  L.plays++; const newBest = G.score > L.best; if (newBest) L.best = G.score; if (G.brews > L.bestBrews) L.bestBrews = G.brews; saveL();
+  A.report(GAME_ID, { score:G.score, xp: Math.round(G.score / 25) + G.brews * 3, win: G.brews >= 8, label: G.score + ' (' + G.brews + ' brews)' });
+  const T = [[0,'💀','Reckless Alchemist','You drank the first thing you made. Bold.'],[4,'🧪','Potion Taster','Your liver has seen things.'],[8,'⚗️','Mad Brewer','The witch hut wants to hire you.'],[14,'🧙','Witch Supreme','Nothing can kill you. Except, apparently, that.']];
+  const t = T.filter(x => G.brews >= x[0]).pop();
+  $('#endEmoji').textContent = t[1]; $('#endTitle').textContent = t[2];
+  $('#endQuip').textContent = t[3] + ' Survived ' + G.brews + ' brew' + (G.brews === 1 ? '' : 's') + (newBest ? '. 🏆 New best!' : '.');
+  $('#endScore').textContent = G.score;
+  $('#endMarks').textContent = G.log.join('');
+  $('#end').classList.add('show');
+  if (newBest) A.confetti();
+  setTimeout(() => $('#end').scrollIntoView({ behavior:'smooth', block:'nearest' }), 150);
+}
+$('#brewBtn').addEventListener('click', brew);
+$('#againBtn').addEventListener('click', () => { A.Sfx.click(); newGame(); scrollTo({ top:0, behavior:'smooth' }); });
+$('#shareBtn').addEventListener('click', () => {
+  const found = Object.keys(FX).filter(k => L.found[k]).length;
+  A.copy(A.shareText(GAME_ID, ['🧪 Survived ' + G.brews + ' brews · ' + G.score + ' pts', G.log.slice(0, 20).join('') + (G.log.length > 20 ? '…' : ''), '📖 Brewing Book: ' + found + '/' + Object.keys(FX).length + ' effects']));
+});
+newGame();
+})();
+</script>
+</body>
+</html>

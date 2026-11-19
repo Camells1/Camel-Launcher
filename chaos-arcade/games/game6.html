@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b1d12">
+<title>Block Wordle · Chaos Arcade</title>
+<meta name="description" content="Guess the 5-letter Minecraft block, mob or item in 6 tries. New daily word for everyone, plus endless mode.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%235fbf3a'/%3E%3Crect x='4' width='4' height='4' fill='%23e6c21a'/%3E%3Crect y='4' width='4' height='4' fill='%237a7a7a'/%3E%3Crect x='4' y='4' width='4' height='4' fill='%235fbf3a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../style.css">
+<style>
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+  .modes .btn{font-size:13px;flex-direction:column;gap:2px;min-height:48px;padding:8px}
+  .modes .btn small{font-size:10px;opacity:.85}
+  .hint{text-align:center;font-size:13px;margin-bottom:10px;color:#eee}
+  .hint b{color:var(--yellow)}
+  .board{display:grid;grid-template-rows:repeat(6,1fr);gap:6px;width:min(330px,86vw);margin:0 auto 14px}
+  .row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .row.shake{animation:shakesm .3s steps(6)}
+  .tile{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:clamp(22px,7vw,32px);color:#fff;text-shadow:2px 2px 0 #222;background:#1d1d1d;border:3px solid #3a3a3a;text-transform:uppercase}
+  .tile.filled{border-color:#8b8b8b;animation:tpop .1s steps(2)}
+  @keyframes tpop{50%{transform:scale(1.1)}}
+  .tile.flip{animation:flip .45s steps(6) backwards}
+  @keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+  .tile.g{background:#3f9a2e;border-color:#000;box-shadow:inset 3px 3px 0 #86e06c, inset -3px -3px 0 #1f5c14}
+  .tile.y{background:#c9930e;border-color:#000;box-shadow:inset 3px 3px 0 #ffe27a, inset -3px -3px 0 #7a5a00}
+  .tile.x{background:#4a4a4a;border-color:#000;box-shadow:inset 3px 3px 0 #6e6e6e, inset -3px -3px 0 #2a2a2a}
+  .tile.win{animation:bounce .4s steps(4) backwards}
+  @keyframes bounce{40%{transform:translateY(-14px)}}
+  .kb{display:flex;flex-direction:column;gap:6px;user-select:none}
+  .kb .kr{display:flex;gap:4px;justify-content:center}
+  .key{flex:1;max-width:44px;min-height:52px;padding:0;font-size:15px;text-transform:uppercase}
+  .key.wide{max-width:70px;flex:1.6;font-size:12px}
+  .key.g{background:#3f9a2e;box-shadow:inset 3px 3px 0 #86e06c, inset -3px -4px 0 #1f5c14}
+  .key.y{background:#c9930e;box-shadow:inset 3px 3px 0 #ffe27a, inset -3px -4px 0 #7a5a00}
+  .key.x{background:#3a3a3a;box-shadow:inset 3px 3px 0 #555, inset -3px -4px 0 #222;color:#888}
+  .end{display:none;margin-top:12px}
+  .end.show{display:block;animation:pop .3s steps(4)}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;text-align:center}
+  .stats .panel{padding:7px 2px;font-size:10px;color:#555}
+  .stats b{display:block;font-size:17px;color:#333}
+  .tips{margin-top:12px;font-size:12px;line-height:1.6}
+  .tips b{color:var(--yellow)}
+</style>
+</head>
+<body>
+<div class="wrap narrow">
+  <div id="arcadeBar"></div>
+
+  <div class="modes">
+    <button class="btn" data-m="daily">📅 DAILY WORD<small id="dailyLbl">Same for everyone</small></button>
+    <button class="btn" data-m="endless">♾ ENDLESS<small>Unlimited words</small></button>
+  </div>
+  <div class="hint" id="hint"></div>
+  <div class="board" id="board"></div>
+  <div class="kb" id="kb"></div>
+
+  <div class="end" id="end">
+    <div class="panel result-card">
+      <div class="big-emoji" id="endEmoji">🟩</div>
+      <div class="label" id="endLabel">SOLVED</div>
+      <div class="title" id="endWord">STONE</div>
+      <div class="quip" id="endFact"></div>
+    </div>
+    <button class="btn gold big block" id="shareBtn" style="margin-top:10px">📋 COPY SCORE TO SHARE</button>
+    <div class="grid2" style="margin-top:8px">
+      <button class="btn green" id="nextBtn">♾ NEXT WORD</button>
+      <a class="btn" href="../index.html">⬅ ARCADE</a>
+    </div>
+    <div class="center shadow-dark" id="cd" style="font-size:12.5px;margin-top:8px"></div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="dark-panel tips">
+    <b>HOW TO PLAY:</b> Guess the 5-letter Minecraft word in 6 tries. <b style="color:#55ff55">Green</b> = right letter, right spot. <b style="color:#e6c21a">Yellow</b> = in the word, wrong spot. <b style="color:#aaa">Grey</b> = not in the word. The hint tells you if it's a block, mob, item or place. Any 5-letter guess with a vowel is allowed.
+  </div>
+  <div class="legal">Fan-made parody game. Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</div>
+</div>
+
+<script src="../arcade.js"></script>
+<script>
+(() => {
+'use strict';
+const A = Arcade, $ = (s) => document.querySelector(s);
+const GAME_ID = 'wordle', LKEY = 'chaosArcade_wordle';
+A.paintBody(['#4a4a4a','#3f3f3f','#555','#353535']);
+A.mountBar(GAME_ID);
+
+/* word, category, fun fact */
+const WORDS = [
+  ['STONE','block','The most common block underground. Smelts into smooth stone.'],['CHEST','block','Two chests side by side make a large chest.'],
+  ['TORCH','block','Torches stop most mobs from spawning nearby.'],['SWORD','item','Swords get a sweeping attack when you swing at full charge.'],
+  ['STICK','item','Two planks make four sticks. The stick economy is real.'],['BREAD','item','Three wheat in a row. Classic starter food.'],
+  ['SHEEP','mob','Shear them for 1–3 wool. Name one jeb_ for a rainbow.'],['SLIME','mob','Big slimes split into smaller slimes when hit.'],
+  ['BLAZE','mob','Drops blaze rods, the fuel of brewing.'],['GHAST','mob','Hit its fireball back to send it home.'],
+  ['WITCH','mob','Throws potions and drinks healing when hurt.'],['LAPIS','item','Needed to enchant. Comes from lapis ore.'],
+  ['ANVIL','block','Repairs and renames items. Breaks down over time.'],['ARROW','item','Shot from bows, crossbows and skeletons.'],
+  ['BRICK','item','Smelt clay balls to make bricks.'],['GLASS','block','Smelt sand. Silk Touch picks it up without breaking.'],
+  ['PLANK','block','Every log becomes four planks.'],['GRASS','block','Spreads to nearby dirt in the light.'],
+  ['FENCE','block','Mobs cannot jump over a fence. It counts as 1.5 blocks tall.'],['MAGMA','block','Magma blocks hurt you unless you sneak.'],
+  ['CLOCK','item','Gold + redstone. Shows the time of day.'],['SQUID','mob','Drops ink sacs. Glow squids drop glow ink.'],
+  ['LLAMA','mob','Spits at enemies. Can carry chests.'],['PANDA','mob','Has personalities like lazy, playful and aggressive.'],
+  ['HORSE','mob','Tame it by riding until it stops bucking you off.'],['CAMEL','mob','Two players can ride one camel at once.'],
+  ['LEVER','block','A simple on/off switch for redstone.'],['WHEAT','item','Grown from seeds. Feed it to cows and sheep.'],
+  ['MELON','block','Breaks into melon slices. Grows from a stem.'],['CORAL','block','Dies if not touching water.'],
+  ['BIRCH','block','A pale wood type from birch forests.'],['TAIGA','place','A spruce forest biome. Foxes live here.'],
+  ['FLINT','item','Dropped from gravel sometimes. Makes arrows.'],['SKULL','item','Wither skeleton skulls summon the Wither.'],
+  ['GOLEM','mob','Iron golems protect villages. Snow golems throw snowballs.'],['BIOME','place','Every area of the world belongs to a biome.'],
+  ['SWAMP','place','Home of witch huts, slimes and frogs.'],['CHAIN','block','Made from iron nuggets and an iron ingot.'],
+  ['HONEY','item','Collect it from full beehives with a glass bottle.'],['ALLAY','mob','Collects items that match the one you give it.'],
+  ['SHARD','item','Echo shards are found in Ancient Cities.'],['ENDER','word','Ender pearls, ender chests, Endermen and the Ender Dragon.'],
+  ['PEARL','item','Throw an ender pearl to teleport.'],['WATER','block','The MLG bucket legend. Also good for farming.'],
+  ['RAILS','block','Minecarts ride on them. Powered rails boost speed.'],['CRAFT','word','The whole point of the crafting table.'],
+  ['SPAWN','place','Where you appear in a new world or after dying without a bed.'],['BEACH','place','Sandy shores next to the ocean. Turtles nest here.'],
+  ['TRIAL','place','Trial chambers are full of breezes and vaults.'],['VAULT','block','Opened with trial keys inside trial chambers.'],
+  ['ARMOR','item','Leather, chain, iron, gold, diamond or netherite.'],['BLOCK','block','Everything is a block. Even you, sort of.'],
+  ['OCEAN','place','Oceans hide monuments, shipwrecks and ruins.'],['NOTES','block','Note blocks play notes. Instrument depends on the block below.'],
+  ['BONES','item','Skeletons drop bones. Bone meal grows plants.'],['ELDER','mob','Elder guardians give you Mining Fatigue.'],
+  ['SNOUT','item','The Snout banner pattern is found in bastion remnants.']
+];
+
+/* ---------- Storage ---------- */
+let L = { daily:{}, streak:0, maxStreak:0, lastWin:'', played:0, wins:0, dist:[0,0,0,0,0,0], endlessStreak:0 };
+try { L = Object.assign(L, JSON.parse(localStorage.getItem(LKEY) || '{}')); } catch(e){}
+const saveL = () => { try { localStorage.setItem(LKEY, JSON.stringify(L)); } catch(e){} };
+const yKey = () => { const d = new Date(); d.setDate(d.getDate()-1); return A.dayKey(d); };
+const dayNo = () => { const d = new Date(); return Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2026,0,1)) / 864e5) + 1; };
+function dailyWord(){ const r = A.mulberry32(A.hashStr('blockwordle|' + A.dayKey())); return WORDS[Math.floor(r() * WORDS.length)]; }
+
+/* ---------- State ---------- */
+let G;
+function start(mode){
+  const word = mode === 'daily' ? dailyWord() : WORDS[Math.floor(Math.random() * WORDS.length)];
+  G = { mode, word:word[0], cat:word[1], fact:word[2], rows:[], cur:'', over:false, won:false };
+  if (mode === 'daily' && L.daily[A.dayKey()]){ const s = L.daily[A.dayKey()]; G.rows = s.rows.slice(); G.over = true; G.won = s.won; }
+  document.querySelectorAll('.modes .btn').forEach(b => b.classList.toggle('on', b.dataset.m === mode));
+  $('#hint').innerHTML = 'Hint: it\'s a' + (/^[aeiou]/.test(G.cat) ? 'n' : '') + ' <b>' + G.cat.toUpperCase() + '</b>' + (mode === 'daily' ? ' · Daily #' + dayNo() : ' · Endless streak: <b>' + L.endlessStreak + '</b>');
+  $('#end').classList.remove('show');
+  buildBoard(); buildKb(); renderAll(false);
+  if (G.over) showEnd(true);
+}
+function score(guess, word){
+  const res = Array(5).fill('x'), pool = {};
+  for (let i=0;i<5;i++){ if (guess[i] === word[i]) res[i] = 'g'; else pool[word[i]] = (pool[word[i]]||0) + 1; }
+  for (let i=0;i<5;i++){ if (res[i] !== 'g' && pool[guess[i]]){ res[i] = 'y'; pool[guess[i]]--; } }
+  return res;
+}
+function buildBoard(){
+  $('#board').innerHTML = Array.from({length:6}, () => '<div class="row">' + '<div class="tile"></div>'.repeat(5) + '</div>').join('');
+}
+const KB = ['QWERTYUIOP','ASDFGHJKL','>ZXCVBNM<'];
+function buildKb(){
+  $('#kb').innerHTML = KB.map(r => '<div class="kr">' + [...r].map(k => k === '>' ? '<button class="btn key wide" data-k="ENTER">ENTER</button>' : k === '<' ? '<button class="btn key wide" data-k="DEL">⌫</button>' : '<button class="btn key" data-k="' + k + '">' + k + '</button>').join('') + '</div>').join('');
+}
+function renderAll(animateLast){
+  const rows = document.querySelectorAll('.row');
+  G.rows.forEach((g, ri) => {
+    const res = score(g, G.word), tiles = rows[ri].children;
+    for (let i=0;i<5;i++){
+      tiles[i].textContent = g[i];
+      tiles[i].className = 'tile ' + res[i] + (animateLast && ri === G.rows.length - 1 ? ' flip' : '');
+      if (animateLast && ri === G.rows.length - 1) tiles[i].style.animationDelay = (i * 0.18) + 's';
+    }
+  });
+  if (!G.over && G.rows.length < 6){
+    const tiles = rows[G.rows.length].children;
+    for (let i=0;i<5;i++){ tiles[i].textContent = G.cur[i] || ''; tiles[i].className = 'tile' + (G.cur[i] ? ' filled' : ''); }
+  }
+  // keyboard colors
+  const best = {};
+  G.rows.forEach(g => score(g, G.word).forEach((r, i) => { const k = g[i], rank = {g:3,y:2,x:1}[r]; if (!best[k] || rank > best[k]) best[k] = rank; }));
+  document.querySelectorAll('.key[data-k]').forEach(b => { const r = best[b.dataset.k]; b.classList.remove('g','y','x'); if (r) b.classList.add({3:'g',2:'y',1:'x'}[r]); });
+}
+function press(k){
+  if (!G || G.over) return;
+  A.Sfx.init();
+  if (k === 'ENTER') return submit();
+  if (k === 'DEL'){ G.cur = G.cur.slice(0, -1); A.Sfx.tone(300,.04,'square',.05); renderAll(false); return; }
+  if (/^[A-Z]$/.test(k) && G.cur.length < 5){ G.cur += k; A.Sfx.tone(600 + G.cur.length * 60,.04,'square',.05); renderAll(false); }
+}
+function shakeRow(msg){ const r = document.querySelectorAll('.row')[G.rows.length]; r.classList.remove('shake'); void r.offsetWidth; r.classList.add('shake'); A.Sfx.fail(); A.toast(msg); }
+function submit(){
+  if (G.cur.length < 5) return shakeRow('Not enough letters. Needs 5!');
+  if (!/[AEIOUY]/.test(G.cur)) return shakeRow('That is not a word. Even in villager.');
+  G.rows.push(G.cur); const guess = G.cur; G.cur = '';
+  renderAll(true);
+  const res = score(guess, G.word);
+  res.forEach((r, i) => setTimeout(() => A.Sfx.tone(r === 'g' ? 880 : r === 'y' ? 660 : 330, .08, 'square', .06), i * 180));
+  if (guess === G.word){ G.over = true; G.won = true; setTimeout(winFx, 1000); }
+  else if (G.rows.length >= 6){ G.over = true; G.won = false; setTimeout(() => { A.Sfx.boom(); A.shake(document.body, true); finish(); }, 1000); }
+}
+function winFx(){
+  const row = document.querySelectorAll('.row')[G.rows.length - 1];
+  [...row.children].forEach((t, i) => { t.classList.add('win'); t.style.animationDelay = (i * .08) + 's'; });
+  A.Sfx.fanfare(true); A.confetti();
+  A.bigText(['GENIUS!','MAGNIFICENT!','IMPRESSIVE!','SPLENDID!','GREAT!','PHEW!'][G.rows.length - 1], '#55ff55');
+  finish();
+}
+function finish(){
+  const n = G.rows.length;
+  if (G.mode === 'daily'){
+    L.daily[A.dayKey()] = { rows:G.rows.slice(), won:G.won };
+    L.played++;
+    if (G.won){ L.wins++; L.dist[n-1]++; L.streak = L.lastWin === yKey() ? L.streak + 1 : 1; L.lastWin = A.dayKey(); L.maxStreak = Math.max(L.maxStreak, L.streak); }
+    else L.streak = 0;
+  } else {
+    L.endlessStreak = G.won ? L.endlessStreak + 1 : 0;
+  }
+  saveL();
+  const pts = G.won ? (7 - n) * 100 : 0;
+  A.report(GAME_ID, { score: G.mode === 'daily' ? pts : L.endlessStreak, xp: G.won ? (7 - n) * 12 + (G.mode === 'daily' ? 20 : 0) : 6, win:G.won, label: G.mode === 'daily' ? (G.won ? n + '/6 daily' : 'X/6') : 'streak ' + L.endlessStreak });
+  if (G.won && n === 1) A.unlock('wordle_one', '🔮', 'First Try?! (Block Wordle in 1)');
+  if (L.endlessStreak >= 10) A.unlock('wordle_10', '📚', 'Walking Wiki (10 endless in a row)');
+  showEnd(false);
+}
+let cdT = 0;
+function showEnd(revisit){
+  $('#endEmoji').textContent = G.won ? ['🔮','🧠','💎','🟩','😅','😮‍💨'][G.rows.length - 1] : '💀';
+  $('#endLabel').textContent = G.won ? (revisit ? 'ALREADY SOLVED TODAY · ' : 'SOLVED IN ') + G.rows.length + '/6' : 'THE WORD WAS';
+  $('#endWord').textContent = G.word;
+  $('#endFact').textContent = G.fact;
+  $('#nextBtn').textContent = G.mode === 'daily' ? '♾ PLAY ENDLESS' : '♾ NEXT WORD';
+  $('#end').classList.add('show'); renderStats();
+  clearInterval(cdT);
+  if (G.mode === 'daily'){
+    const tick = () => { const n = new Date(), m = new Date(n); m.setHours(24,0,0,0); const s = Math.floor((m - n)/1000); $('#cd').textContent = 'Next daily word in ' + String(Math.floor(s/3600)).padStart(2,'0') + ':' + String(Math.floor(s%3600/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); };
+    tick(); cdT = setInterval(tick, 1000);
+  } else $('#cd').textContent = '';
+  setTimeout(() => $('#end').scrollIntoView({ behavior:'smooth', block:'nearest' }), 150);
+}
+function renderStats(){
+  const pct = L.played ? Math.round(100 * L.wins / L.played) : 0;
+  $('#stats').innerHTML = [[L.played,'DAILY PLAYED'],[pct + '%','WIN %'],[L.streak + '🔥','STREAK'],[L.maxStreak,'MAX STREAK']].map(x => '<div class="panel"><b>' + x[0] + '</b>' + x[1] + '</div>').join('');
+  $('#dailyLbl').textContent = L.daily[A.dayKey()] ? '✅ Done today' : 'Daily #' + dayNo();
+}
+$('#shareBtn').addEventListener('click', () => {
+  const grid = G.rows.map(g => score(g, G.word).map(r => r === 'g' ? '🟩' : r === 'y' ? '🟨' : '⬛').join('')).join('\n');
+  const head = G.mode === 'daily' ? 'Daily #' + dayNo() + ' ' + (G.won ? G.rows.length : 'X') + '/6' + (L.streak > 1 ? ' · 🔥' + L.streak : '') : 'Endless ' + (G.won ? G.rows.length : 'X') + '/6 · streak ' + L.endlessStreak;
+  A.copy(A.shareText(GAME_ID, [head, grid]));
+});
+$('#kb').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (b) press(b.dataset.k); });
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'Enter'){ e.preventDefault(); if (G.over && G.mode === 'endless') start('endless'); else press('ENTER'); }
+  else if (e.key === 'Backspace') press('DEL');
+  else if (/^[a-z]$/i.test(e.key)) press(e.key.toUpperCase());
+});
+document.querySelector('.modes').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (b){ A.Sfx.click(); start(b.dataset.m); } });
+$('#nextBtn').addEventListener('click', () => { A.Sfx.click(); start('endless'); scrollTo({ top:0, behavior:'smooth' }); });
+
+renderStats();
+start(L.daily[A.dayKey()] ? 'endless' : 'daily');
+})();
+</script>
+</body>
+</html>

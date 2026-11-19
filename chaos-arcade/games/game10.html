@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b1d12">
+<title>Mob Dodge Runner · Chaos Arcade</title>
+<meta name="description" content="Endless pixel runner: jump over creepers and lava pits, duck under skeleton arrows, grab emeralds. How far can you run?">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect y='6' width='8' height='2' fill='%235fbf3a'/%3E%3Crect x='3' y='1' width='2' height='5' fill='%23ff8a1a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../style.css">
+<style>
+  .stage{position:relative;width:100%;aspect-ratio:16/10;max-height:62vh;border:3px solid #000;box-shadow:0 6px 0 rgba(0,0,0,.35);overflow:hidden;touch-action:none;cursor:pointer;background:#87c4ff}
+  #cv{position:absolute;inset:0;width:100%;height:100%;display:block;image-rendering:pixelated}
+  .hud{position:absolute;left:8px;right:8px;top:8px;display:flex;gap:6px;justify-content:space-between;pointer-events:none;z-index:2}
+  .hud .chip{font-size:13px}
+  #dist{color:var(--yellow)} #ems{color:#41f384}
+  .ov{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:14px;background:rgba(0,0,0,.45)}
+  .ov.hide{display:none}
+  .ov h2{margin:0;font-size:clamp(22px,7vw,36px);text-shadow:3px 3px 0 #000}
+  .ov p{margin:0;font-size:12.5px;line-height:1.5;max-width:380px}
+  .ov.dead{background:linear-gradient(rgba(140,0,0,.55),rgba(60,0,0,.85))}
+  .ov .btns{display:grid;gap:8px;width:min(300px,90%)}
+  .pad{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .pad .btn{font-size:20px;min-height:64px;touch-action:none}
+  .bests{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px;text-align:center}
+  .bests .panel{padding:7px 2px;font-size:10px;color:#555}
+  .bests b{display:block;font-size:17px;color:#333}
+  .tips{margin-top:12px;font-size:12px;line-height:1.6}
+  .tips b{color:var(--yellow)}
+</style>
+</head>
+<body>
+<div class="wrap narrow">
+  <div id="arcadeBar"></div>
+  <div class="stage" id="stage">
+    <canvas id="cv"></canvas>
+    <div class="hud">
+      <span class="chip">🏃 <span id="dist">0</span>m</span>
+      <span class="chip">💚 <span id="ems">0</span></span>
+      <span class="chip" id="spd">x1.0</span>
+    </div>
+    <div class="ov" id="ov">
+      <h2 id="ovT">🏃 MOB DODGE RUNNER</h2>
+      <p id="ovP">Tap / SPACE / ↑ to <b>jump</b> (hold for higher). Swipe down / ↓ / DUCK button to <b>duck</b>. Jump creepers &amp; lava, duck skeleton arrows, grab 💚 emeralds.</p>
+      <div class="btns">
+        <button class="btn green big" id="startBtn">▶ RUN!</button>
+        <button class="btn gold" id="shareBtn" style="display:none">📋 COPY SCORE TO SHARE</button>
+        <a class="btn" href="../index.html" id="backBtn" style="display:none">⬅ ARCADE</a>
+      </div>
+    </div>
+  </div>
+  <div class="pad">
+    <button class="btn green" id="jumpBtn">⬆ JUMP</button>
+    <button class="btn" id="duckBtn">⬇ DUCK</button>
+  </div>
+  <div class="bests">
+    <div class="panel"><b id="bDist">0</b>BEST METERS</div>
+    <div class="panel"><b id="bEms">0</b>BEST EMERALDS</div>
+    <div class="panel"><b id="bRuns">0</b>RUNS</div>
+  </div>
+  <div class="dark-panel tips">
+    <b>HOW TO PLAY:</b> You run automatically and keep getting faster. <b>🟩 Creepers</b> and <b>🟧 lava pits</b>: jump. <b>➶ Skeleton arrows</b> flying at head height: duck (or jump if they're low). <b>🦇 Phantoms</b> swoop later in the run. Emeralds are worth 10m each. Night falls after 500m. Good luck.
+  </div>
+  <div class="legal">Fan-made parody game. Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</div>
+</div>
+
+<script src="../arcade.js"></script>
+<script>
+(() => {
+'use strict';
+const A = Arcade, $ = (s) => document.querySelector(s);
+const GAME_ID = 'runner', LKEY = 'chaosArcade_runner';
+A.paintBody(['#3a281b','#2f2015','#47321f','#251810']);
+A.mountBar(GAME_ID);
+
+let L = { bestDist:0, bestEms:0, runs:0 };
+try { L = Object.assign(L, JSON.parse(localStorage.getItem(LKEY) || '{}')); } catch(e){}
+const saveL = () => { try { localStorage.setItem(LKEY, JSON.stringify(L)); } catch(e){} };
+function renderBests(){ $('#bDist').textContent = L.bestDist; $('#bEms').textContent = L.bestEms; $('#bRuns').textContent = L.runs; }
+
+/* ---------- Canvas ---------- */
+const stage = $('#stage'), cvs = $('#cv'), ctx = cvs.getContext('2d');
+let W, H, U; // U = 1 block in px
+function resize(){
+  const r = stage.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
+  W = r.width; H = r.height; cvs.width = Math.round(W*dpr); cvs.height = Math.round(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.imageSmoothingEnabled = false; U = H / 9;
+}
+addEventListener('resize', resize);
+function tile(pal, seed, top){
+  const c = document.createElement('canvas'); c.width = 16; c.height = 16; const x = c.getContext('2d');
+  for (let i=0;i<16;i++) for (let j=0;j<16;j++){ const v = A.h2(i,j,seed); let p = (top && (j < 3 || (j === 3 && v < .5))) ? top : pal; x.fillStyle = p[v<.45?0:v<.75?1:v<.9?2:3]; x.fillRect(i,j,1,1); }
+  return c;
+}
+const T = {
+  grass: tile(['#866043','#6c4b33','#9a7451','#5b3d26'], 7, ['#5fbf3a','#4fa82f','#76d14e','#3f9a2e']),
+  dirt: tile(['#866043','#6c4b33','#9a7451','#5b3d26'], 8),
+  lava: tile(['#ff6a00','#ff8a1a','#ffb030','#d84a00'], 9)
+};
+const sprite = (rows, pal) => { const c = document.createElement('canvas'); c.width = rows[0].length; c.height = rows.length; const x = c.getContext('2d'); rows.forEach((r, y) => [...r].forEach((ch, i) => { if (ch !== '.'){ x.fillStyle = pal[ch]; x.fillRect(i, y, 1, 1); } })); return c; };
+const PAL = {h:'#3a2a1a',s:'#e0b08a',k:'#222',o:'#ff8a1a',p:'#3a4a6a',b:'#555'};
+const RUN1 = sprite(['.hhhh.','hhhhhh','ssssss','sksskk','ssssss','oooooo','soooos','soooos','pppppp','pp..pp','p....p','bb..bb'], PAL);
+const RUN2 = sprite(['.hhhh.','hhhhhh','ssssss','sksskk','ssssss','oooooo','oooooo','soooos','pppppp','.pppp.','.p..p.','.bb.bb'], PAL);
+const DUCK = sprite(['.hhhh..','hhhhhh.','sksskk.','ssssss.','oooooos','pppppp.','bb..bb.'], PAL);
+const CREEPER = sprite(['gGggg','ggGgG','kgggk','kgGgk','ggkgg','gkkkg','gkgkg','ggggg','GgggG','ggggg','gg.gg','kk.kk'], {g:'#5fbf3a',G:'#8fe06a',k:'#111'});
+const PHANTOM = sprite(['b......b','bb....bb','.bbbbbb.','..bggb..','...bb...'], {b:'#3a4a8a',g:'#7fff4f'});
+const EMERALD = sprite(['..gg..','.gGgg.','gGgggg','gggggd','.gggd.','..dd..'], {g:'#17dd62',G:'#a8ffc8',d:'#0a8a3a'});
+
+/* ---------- State ---------- */
+let G, raf = 0, last = 0;
+const GRAV = 46, JUMP_V = 16.5;
+function newState(){
+  return { running:false, dead:false, t:0, dist:0, ems:0, speed:7, y:0, vy:0, onGround:true, duck:false, holdJump:false, jumpT:0,
+    obs:[], gems:[], nextObs:2.2, nextGem:1.5, parts:[], deathBy:'', hissT:0, combo:0, flash:0 };
+}
+function start(){
+  A.Sfx.init();
+  G = newState(); G.running = true;
+  $('#ov').classList.add('hide');
+  last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
+  A.Sfx.tone(400,.1,'square',.08,0,800);
+}
+function jump(){
+  if (!G || !G.running) return;
+  if (G.onGround){ G.vy = JUMP_V; G.onGround = false; G.holdJump = true; G.jumpT = 0; G.duck = false; A.Sfx.tone(350,.1,'square',.07,0,700); }
+}
+function releaseJump(){ if (G) G.holdJump = false; }
+function duck(on){ if (!G || !G.running) return; G.duck = on; if (on && !G.onGround) G.vy = Math.min(G.vy, -22); }
+
+/* spawn obstacles in "blocks" units; x measured from the left edge */
+function spawn(){
+  const lvl = G.dist;
+  const kinds = ['creeper','creeper','lava','arrow'];
+  if (lvl > 250) kinds.push('arrowLow','double');
+  if (lvl > 450) kinds.push('phantom');
+  G.spawned = (G.spawned || 0) + 1;
+  const k = G.spawned <= 2 ? 'creeper' : A.rnd(kinds), x = W / U + 1;
+  if (k === 'creeper') G.obs.push({ k, x, y:0, w:.8, h:1.7 });
+  else if (k === 'double'){ G.obs.push({ k:'creeper', x, y:0, w:.8, h:1.7 }); G.obs.push({ k:'creeper', x:x + 1, y:0, w:.8, h:1.7 }); }
+  else if (k === 'lava') G.obs.push({ k, x, y:-1, w: 1.6 + Math.random() * (lvl > 300 ? 1.2 : .5), h:1, pit:true });
+  else if (k === 'arrow') G.obs.push({ k, x, y:1.35, w:1.1, h:.25, vx:-6 });
+  else if (k === 'arrowLow') G.obs.push({ k:'arrow', x, y:.35, w:1.1, h:.25, vx:-5 });
+  else if (k === 'phantom') G.obs.push({ k, x, y:2.6, w:1.6, h:.6, vx:-3, swoop:Math.random() * 6 });
+}
+function loop(now){
+  const dt = Math.min(.04, (now - last) / 1000); last = now;
+  if (G.running) update(dt);
+  draw(now / 1000);
+  if (G.running || G.parts.length || G.flash > 0) raf = requestAnimationFrame(loop);
+}
+function update(dt){
+  G.t += dt;
+  G.speed = Math.min(19, 7 + G.t * .16);
+  const dx = G.speed * dt;
+  G.dist += dx;
+  // player physics
+  let g = GRAV;
+  if (G.holdJump && G.vy > 0 && G.jumpT < .22) g = GRAV * .45;
+  G.jumpT += dt;
+  if (!G.onGround){ G.vy -= g * dt; G.y += G.vy * dt; if (G.y <= 0){ G.y = 0; G.vy = 0; G.onGround = true; A.Sfx.noise(.05,.12,0,'lowpass',600,200); } }
+  // spawn
+  G.nextObs -= dx;
+  if (G.nextObs <= 0){ spawn(); G.nextObs = Math.max(4.2, 9 - G.t * .05) + Math.random() * 5; }
+  G.nextGem -= dx;
+  if (G.nextGem <= 0){ G.gems.push({ x:W / U + 1, y: Math.random() < .5 ? .5 : 2.2 }); G.nextGem = 4 + Math.random() * 6; }
+  // move world
+  const px = 2.2, pw = .6, ph = G.duck && G.onGround ? .85 : 1.6;
+  G.obs.forEach(o => {
+    o.x -= dx + (o.vx ? -o.vx * dt : 0);
+    if (o.k === 'phantom'){ o.swoop += dt * 3; o.y = 1.9 + Math.sin(o.swoop) * 1.1; }
+  });
+  G.gems.forEach(e => e.x -= dx);
+  // creeper hiss when close
+  const near = G.obs.find(o => o.k === 'creeper' && o.x - px < 3 && o.x > px);
+  if (near && G.t - G.hissT > .8){ G.hissT = G.t; A.Sfx.noise(.25,.05,0,'highpass',3500,6000); }
+  // collisions
+  for (const o of G.obs){
+    if (o.pit){
+      // fall into the pit if feet are over it while on the ground
+      if (G.onGround && px + pw*.5 > o.x + .15 && px + pw*.5 < o.x + o.w - .15){ return die(o); }
+      continue;
+    }
+    const hit = px < o.x + o.w - .1 && px + pw > o.x + .1 && G.y < o.y + o.h && G.y + ph > o.y + .05;
+    if (hit) return die(o);
+  }
+  G.gems = G.gems.filter(e => {
+    if (Math.abs(e.x - px) < .7 && Math.abs((e.y + .3) - (G.y + ph/2)) < .9){ G.ems++; G.dist += 10; A.Sfx.coin(); G.parts.push({ x:e.x, y:e.y, t:0, txt:'+10m' }); return false; }
+    return e.x > -2;
+  });
+  // passed obstacles → little combo
+  G.obs = G.obs.filter(o => { if (!o.passed && o.x + o.w < px){ o.passed = true; G.combo++; if (G.combo % 10 === 0){ A.bigText('🔥 ' + G.combo + ' DODGES!'); A.Sfx.success(); } } return o.x > -4; });
+  G.parts.forEach(p => p.t += dt); G.parts = G.parts.filter(p => p.t < 1);
+  $('#dist').textContent = Math.floor(G.dist); $('#ems').textContent = G.ems; $('#spd').textContent = 'x' + (G.speed / 7).toFixed(1);
+  if (Math.floor(G.dist / 100) > Math.floor((G.dist - dx) / 100)) A.Sfx.tone(1047,.08,'square',.05);
+}
+const DEATHS = {
+  creeper:['was blown up by Creeper','hugged a Creeper. It hugged back. Explosively.'],
+  lava:['tried to swim in lava','discovered lava is hot'],
+  arrow:['was shot by Skeleton','took an arrow to the knee'],
+  phantom:['was slain by Phantom','should have slept last night']
+};
+function die(o){
+  G.running = false; G.dead = true; G.deathBy = o.k;
+  if (o.k === 'creeper'){ A.Sfx.hiss(); setTimeout(() => { A.Sfx.boom(); A.flash(); }, 250); }
+  else if (o.k === 'lava'){ A.Sfx.noise(.6,.4,0,'lowpass',1200,200); A.Sfx.fail(); }
+  else { A.Sfx.crunch(); A.Sfx.fail(); }
+  A.shake(stage, true); A.buzz([200,80,200]);
+  const dist = Math.floor(G.dist);
+  L.runs++; const newBest = dist > L.bestDist; if (newBest) L.bestDist = dist; if (G.ems > L.bestEms) L.bestEms = G.ems; saveL(); renderBests();
+  A.report(GAME_ID, { score:dist, xp: Math.round(dist / 12) + G.ems * 2, win: dist >= 500, label: dist + 'm' });
+  if (dist >= 1000) A.unlock('run_1k', '🏃', 'Marathon (1000m)');
+  setTimeout(() => {
+    const name = A.state.name || 'Steve';
+    $('#ovT').textContent = 'YOU DIED!';
+    $('#ovP').innerHTML = name + ' ' + A.rnd(DEATHS[o.k]) + '<br><b style="color:#ffff55;font-size:20px">' + dist + 'm</b> · 💚 ' + G.ems + ' emeralds' + (newBest ? '<br>🏆 NEW BEST!' : '');
+    $('#startBtn').textContent = '♻ RESPAWN';
+    $('#shareBtn').style.display = ''; $('#backBtn').style.display = '';
+    $('#ov').classList.add('dead'); $('#ov').classList.remove('hide');
+    if (newBest && dist > 50) A.confetti();
+  }, 700);
+}
+function draw(t){
+  if (!W) resize();
+  const night = G ? Math.min(1, Math.max(0, (G.dist - 500) / 300)) : 0;
+  const sky = ctx.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0, night ? 'rgb(' + Math.round(135 - 115*night) + ',' + Math.round(196 - 170*night) + ',' + Math.round(255 - 195*night) + ')' : '#87c4ff');
+  sky.addColorStop(1, night ? '#3a3a6a' : '#cfe8ff');
+  ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
+  const d = G ? G.dist : 0;
+  // sun / moon
+  ctx.fillStyle = night > .5 ? '#e8e8f0' : '#fff27a'; ctx.fillRect(W*.78, H*.12, U*.9, U*.9);
+  if (night > .3){ ctx.fillStyle = 'rgba(255,255,255,' + night + ')'; for (let i=0;i<30;i++) ctx.fillRect(A.h2(i,1,2)*W, A.h2(i,2,2)*H*.5, 2, 2); }
+  // parallax hills & clouds
+  ctx.fillStyle = 'rgba(255,255,255,.8)';
+  for (let i=0;i<4;i++){ const cx = ((A.h2(i,3,1)*W*2 - d*U*.1) % (W + 200) + W + 200) % (W + 200) - 100; ctx.fillRect(cx, H*(.1 + i*.06), U*2.4, U*.45); }
+  ctx.fillStyle = night ? '#2a4a2a' : '#6ab04a';
+  for (let i=-1;i<8;i++){ const hx = ((i * U * 3 - d*U*.3) % (W + U*6) + W + U*6) % (W + U*6) - U*3; const hh = U * (1.2 + A.h2(i,5,5) * 1.4); ctx.fillRect(hx, H - U*2 - hh, U*3, hh); }
+  // ground
+  const gy = H - U * 2, off = ((d * U) % U + U) % U;
+  const pits = G ? G.obs.filter(o => o.pit) : [];
+  for (let x = -off; x < W; x += U){
+    const bx = (x + U/2) / U;
+    const inPit = pits.some(p => bx > p.x && bx < p.x + p.w);
+    if (inPit){ ctx.drawImage(T.lava, x, gy + U*.3, U + .5, U*.7 + .5); ctx.drawImage(T.lava, x, gy + U, U + .5, U + .5); }
+    else { ctx.drawImage(T.grass, x, gy, U + .5, U + .5); ctx.drawImage(T.dirt, x, gy + U, U + .5, U + .5); }
+  }
+  if (night){ ctx.fillStyle = 'rgba(10,10,40,' + (night*.35) + ')'; ctx.fillRect(0,0,W,H); }
+  if (!G) return;
+  // gems
+  G.gems.forEach(e => ctx.drawImage(EMERALD, e.x * U, gy - (e.y + .6) * U + Math.sin(t*5 + e.x) * 3, U*.6, U*.6));
+  // obstacles
+  G.obs.forEach(o => {
+    if (o.k === 'creeper'){ const fl = (o.x - 2.2 < 2.5 && Math.floor(t*8) % 2) ? .5 : 0; ctx.drawImage(CREEPER, o.x*U, gy - o.h*U, o.w*U, o.h*U); if (fl){ ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillRect(o.x*U, gy - o.h*U, o.w*U, o.h*U); } }
+    else if (o.k === 'arrow'){ const ay = gy - (o.y + o.h) * U; ctx.fillStyle = '#8a5a2b'; ctx.fillRect(o.x*U + U*.2, ay + U*.08, o.w*U*.75, U*.09); ctx.fillStyle = '#ccc'; ctx.fillRect(o.x*U, ay, U*.25, U*.25); ctx.fillStyle = '#eee'; ctx.fillRect(o.x*U + o.w*U*.8, ay - 2, U*.22, U*.3); }
+    else if (o.k === 'phantom'){ ctx.drawImage(PHANTOM, o.x*U, gy - (o.y + o.h) * U + Math.sin(t*20)*2, o.w*U, o.h*U*1.3); }
+  });
+  // player
+  const ph = G.duck && G.onGround ? .85 : 1.6, pyy = gy - (G.y + ph) * U;
+  const spr = G.duck && G.onGround ? DUCK : (!G.onGround ? RUN1 : (Math.floor(t * 10) % 2 ? RUN1 : RUN2));
+  if (!(G.dead && G.deathBy === 'lava')) ctx.drawImage(spr, 2.2*U - (spr === DUCK ? U*.15 : 0), pyy, (spr === DUCK ? .9 : .6) * U, ph * U);
+  else { ctx.fillStyle = 'rgba(255,80,0,.8)'; ctx.fillRect(2.2*U, gy - U*.4, U*.6, U*.4); }
+  // floating texts
+  ctx.font = 'bold ' + Math.round(U*.35) + 'px monospace'; ctx.fillStyle = '#41f384';
+  G.parts.forEach(p => { if (p.txt) ctx.fillText(p.txt, p.x*U, gy - (p.y + 1 + p.t) * U); });
+}
+
+/* ---------- Input ---------- */
+let touchY = null;
+stage.addEventListener('pointerdown', e => {
+  if (e.target.closest('.ov')) return;
+  e.preventDefault(); touchY = e.clientY;
+  if (G && G.running) jump();
+});
+stage.addEventListener('pointermove', e => { if (touchY != null && e.clientY - touchY > 30 && G && G.running){ duck(true); touchY = null; } });
+stage.addEventListener('pointerup', () => { touchY = null; releaseJump(); setTimeout(() => duck(false), 380); });
+$('#jumpBtn').addEventListener('pointerdown', e => { e.preventDefault(); if (G && G.running) jump(); else if (!$('#ov').classList.contains('hide')) start(); });
+$('#jumpBtn').addEventListener('pointerup', releaseJump);
+$('#duckBtn').addEventListener('pointerdown', e => { e.preventDefault(); duck(true); });
+['pointerup','pointerleave','pointercancel'].forEach(ev => $('#duckBtn').addEventListener(ev, () => duck(false)));
+addEventListener('keydown', e => {
+  if (['Space','ArrowUp','KeyW'].includes(e.code)){ e.preventDefault(); if (e.repeat) return; if (G && G.running) jump(); else if (!$('#ov').classList.contains('hide')) start(); }
+  if (['ArrowDown','KeyS'].includes(e.code)){ e.preventDefault(); duck(true); }
+});
+addEventListener('keyup', e => {
+  if (['Space','ArrowUp','KeyW'].includes(e.code)) releaseJump();
+  if (['ArrowDown','KeyS'].includes(e.code)) duck(false);
+});
+$('#startBtn').addEventListener('click', start);
+$('#shareBtn').addEventListener('click', () => {
+  if (!G) return;
+  const dist = Math.floor(G.dist), icons = { creeper:'💥 Creeper', lava:'🌋 Lava', arrow:'🏹 Skeleton', phantom:'🦇 Phantom' };
+  const bar = '🟩'.repeat(Math.min(10, Math.floor(dist / 100))) + '⬛'.repeat(Math.max(0, 10 - Math.floor(dist / 100)));
+  A.copy(A.shareText(GAME_ID, ['🏃 Ran ' + dist + 'm · 💚 ' + G.ems + ' emeralds · ' + G.combo + ' dodges', bar, '☠ Killed by: ' + icons[G.deathBy]]));
+});
+
+resize(); renderBests();
+G = newState(); draw(0);
+})();
+</script>
+</body>
+</html>

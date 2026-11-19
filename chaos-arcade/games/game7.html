@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3a0f0f">
+<title>2048: Nether Edition · Chaos Arcade</title>
+<meta name="description" content="Merge Netherrack all the way up to a Netherite Ingot. 2048 with a Minecraft Nether twist and the occasional ghast.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%236b2a2a'/%3E%3Crect x='1' y='3' width='6' height='3' fill='%234a4148'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../style.css">
+<style>
+  .hud{display:flex;gap:6px;margin-bottom:8px}
+  .hud .chip{flex:1;justify-content:center;font-size:13px;flex-direction:column;gap:1px;line-height:1.2}
+  .hud .chip b{font-size:18px;color:var(--yellow)}
+  .ghast{text-align:center;font-size:12px;margin-bottom:8px;color:#ffb0a0;text-shadow:2px 2px 0 #000}
+  .board{position:relative;width:min(92vw,440px);aspect-ratio:1;margin:0 auto;background:#3a1010;border:4px solid #000;box-shadow:inset 0 0 0 3px #5a2020, 0 6px 0 rgba(0,0,0,.4);touch-action:none;--gap:8px;padding:var(--gap)}
+  .cells{position:absolute;inset:var(--gap);display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:var(--gap)}
+  .cells div{background:rgba(0,0,0,.35);box-shadow:inset 2px 2px 0 rgba(0,0,0,.4)}
+  .tile{position:absolute;width:calc((100% - var(--gap) * 5) / 4);height:calc((100% - var(--gap) * 5) / 4);transition:transform .11s ease-out;z-index:2}
+  .tile .in{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background-size:cover;image-rendering:pixelated;border:3px solid #000;box-shadow:inset 3px 3px 0 rgba(255,255,255,.25), inset -3px -3px 0 rgba(0,0,0,.35);text-align:center;overflow:hidden}
+  .tile .ic{font-size:clamp(18px,6vw,30px);line-height:1;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.6))}
+  .tile .nm{font-size:clamp(7.5px,2.1vw,10px);color:#fff;text-shadow:1px 1px 0 #000, -1px -1px 0 #000;margin-top:3px;line-height:1.1;padding:0 2px}
+  .tile .vl{position:absolute;right:4px;top:3px;font-size:clamp(8px,2.2vw,11px);color:#fff;text-shadow:1px 1px 0 #000}
+  .tile.new .in{animation:appear .18s steps(3)}
+  @keyframes appear{from{transform:scale(0)}to{transform:scale(1)}}
+  .tile.merged .in{animation:merge .2s steps(3)}
+  @keyframes merge{50%{transform:scale(1.18)}}
+  .tile.fire .in{animation:burn .5s steps(4) forwards}
+  @keyframes burn{0%{filter:brightness(3)}100%{transform:scale(0) rotate(90deg);opacity:0}}
+  .tile.top .in{box-shadow:inset 3px 3px 0 rgba(255,255,255,.35), inset -3px -3px 0 rgba(0,0,0,.35), 0 0 16px #ffd84a}
+  .over{position:absolute;inset:0;z-index:10;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(40,0,0,.78);text-align:center;padding:14px}
+  .over.show{display:flex;animation:pop .3s steps(4)}
+  .over h2{margin:0;font-size:clamp(22px,7vw,32px);text-shadow:3px 3px 0 #000}
+  .over .btns{display:grid;gap:8px;width:min(280px,90%)}
+  .ctrls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+  .ctrls .btn{font-size:13px}
+  .chain{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:12px}
+  .chain span{font-size:10px;background:rgba(0,0,0,.6);border:2px solid #000;padding:3px 5px;display:inline-flex;gap:4px;align-items:center;opacity:.45}
+  .chain span.got{opacity:1;border-color:#ffaa00}
+  .tips{margin-top:12px;font-size:12px;line-height:1.6}
+  .tips b{color:var(--yellow)}
+</style>
+</head>
+<body>
+<div class="wrap narrow">
+  <div id="arcadeBar"></div>
+  <div class="hud">
+    <div class="chip">SCORE<b id="score">0</b></div>
+    <div class="chip">BEST<b id="best">0</b></div>
+    <div class="chip">TOP BLOCK<b id="top">🟥</b></div>
+  </div>
+  <div class="ghast" id="ghast">👻 Ghast attack in 25 moves</div>
+  <div class="board" id="board">
+    <div class="cells"></div>
+    <div class="over" id="over">
+      <h2 id="overT">GAME OVER</h2>
+      <div id="overS" style="font-size:14px"></div>
+      <div class="btns">
+        <button class="btn gold" id="shareBtn">📋 COPY SCORE TO SHARE</button>
+        <button class="btn green" id="againBtn">🔄 NEW GAME</button>
+        <button class="btn" id="contBtn" style="display:none">🔥 KEEP GOING</button>
+        <a class="btn" href="../index.html">⬅ ARCADE</a>
+      </div>
+    </div>
+  </div>
+  <div class="ctrls">
+    <button class="btn" id="undoBtn">🗿 UNDO (1)</button>
+    <button class="btn green" id="newBtn">🔄 NEW</button>
+    <button class="btn" id="shareBtn2">📋 SHARE</button>
+  </div>
+  <div class="chain" id="chain"></div>
+  <div class="dark-panel tips">
+    <b>HOW TO PLAY:</b> Swipe or use the <b>arrow keys / WASD</b> to slide every block. Two identical blocks merge into the next tier. Reach the <b>Netherite Ingot (2048)</b> to win, then keep going for a Nether Star. Every 25 moves a <b>👻 ghast</b> fires at a random low-tier block and blows it up. One <b>🗿 Totem undo</b> per game.
+  </div>
+  <div class="legal">Fan-made parody game. Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</div>
+</div>
+
+<script src="../arcade.js"></script>
+<script>
+(() => {
+'use strict';
+const A = Arcade, $ = (s) => document.querySelector(s);
+const GAME_ID = 'nether2048', LKEY = 'chaosArcade_2048', N = 4;
+A.paintBody(['#5a1f1f','#4a1818','#6b2a2a','#331010']);
+A.mountBar(GAME_ID);
+$('.cells').innerHTML = '<div></div>'.repeat(16);
+
+const TIERS = [
+  null,
+  {n:'Netherrack',      e:'🟥', pal:['#7d3535','#6b2a2a','#a04545','#5a1f1f'], sq:'🟥'},
+  {n:'Soul Sand',       e:'👻', pal:['#5a4434','#4a3628','#6a5444','#3a2a1e'], sq:'🟫'},
+  {n:'Nether Bricks',   e:'🧱', pal:['#3a1a1e','#2c1216','#4a2228','#1f0c0f'], sq:'🟫'},
+  {n:'Magma Block',     e:'🌋', pal:['#8a2a10','#5a1a0a','#ff7a1a','#ffb030'], sq:'🟧'},
+  {n:'Glowstone',       e:'💡', pal:['#d8a050','#f0c070','#ffe090','#a87030'], sq:'🟨'},
+  {n:'Nether Quartz',   e:'💠', pal:['#e8e0d8','#d8d0c8','#f8f4f0','#b8a8a0'], sq:'⬜'},
+  {n:'Crying Obsidian', e:'😢', pal:['#1a0f2f','#2a1a46','#6a2ad8','#a855ff'], sq:'🟪'},
+  {n:'Gold Block',      e:'🥇', pal:['#f5d73a','#e8c42a','#fff39a','#c29d14'], sq:'🟨'},
+  {n:'Blaze Rod',       e:'🔥', pal:['#ff9a1a','#ffcc33','#ff6a00','#c04a00'], sq:'🟧'},
+  {n:'Ancient Debris',  e:'🪨', pal:['#5a4038','#4a322a','#6e5046','#3a2620'], sq:'🟫'},
+  {n:'Netherite Ingot', e:'⬛', pal:['#4a4148','#3a3238','#6a5f66','#241f23'], sq:'⬛'},
+  {n:'Netherite Block', e:'🛡️', pal:['#3a3238','#2a2428','#5a5056','#1a1618'], sq:'⬛'},
+  {n:'Nether Star',     e:'⭐', pal:['#f8f8ff','#e0e0ff','#ffffff','#c0c0ff'], sq:'⭐'}
+];
+const tex = TIERS.map((t, i) => t ? A.textureURL(t.pal, 40 + i, 12) : '');
+const tier = (v) => Math.min(TIERS.length - 1, Math.round(Math.log2(v)));
+
+let L = { best:0, bestTile:0, plays:0, saved:null };
+try { L = Object.assign(L, JSON.parse(localStorage.getItem(LKEY) || '{}')); } catch(e){}
+const saveL = () => { try { localStorage.setItem(LKEY, JSON.stringify(L)); } catch(e){} };
+
+let G, nextId = 1, els = {};
+function empty(){ const out = []; for (let r=0;r<N;r++) for (let c=0;c<N;c++) if (!G.grid[r][c]) out.push([r,c]); return out; }
+function spawn(){ const e = empty(); if (!e.length) return; const [r,c] = A.rnd(e); G.grid[r][c] = { id:nextId++, v: Math.random() < .9 ? 2 : 4, isNew:true }; }
+function newGame(fromSave){
+  G = { grid:Array.from({length:N}, () => Array(N).fill(null)), score:0, moves:0, undo:1, prev:null, won:false, keepGoing:false, over:false, reported:false };
+  if (fromSave && L.saved){ try { G = Object.assign(G, JSON.parse(JSON.stringify(L.saved))); G.grid.forEach(row => row.forEach(t => { if (t){ t.id = nextId++; } })); } catch(e){ spawn(); spawn(); } }
+  else { spawn(); spawn(); }
+  Object.values(els).forEach(e => e.remove()); els = {};
+  $('#over').classList.remove('show');
+  render();
+}
+function snapshot(){ return JSON.parse(JSON.stringify({ grid:G.grid, score:G.score, moves:G.moves })); }
+function move(dir){
+  if (G.over && !G.keepGoing) return;
+  if ($('#over').classList.contains('show')) return;
+  const before = snapshot();
+  let moved = false, gained = 0;
+  const merged = [];
+  const vec = { left:[0,-1], right:[0,1], up:[-1,0], down:[1,0] }[dir];
+  const rows = [...Array(N).keys()], cols = [...Array(N).keys()];
+  if (vec[0] === 1) rows.reverse(); if (vec[1] === 1) cols.reverse();
+  G.grid.forEach(row => row.forEach(t => { if (t){ t.isNew = false; t.merged = false; } }));
+  for (const r of rows) for (const c of cols){
+    const t = G.grid[r][c]; if (!t) continue;
+    let nr = r, nc = c;
+    while (true){
+      const tr = nr + vec[0], tc = nc + vec[1];
+      if (tr < 0 || tc < 0 || tr >= N || tc >= N) break;
+      const o = G.grid[tr][tc];
+      if (!o){ nr = tr; nc = tc; continue; }
+      if (o.v === t.v && !o.merged){ nr = tr; nc = tc; break; }
+      break;
+    }
+    if (nr === r && nc === c) continue;
+    const o = G.grid[nr][nc];
+    G.grid[r][c] = null;
+    if (o){
+      o.v *= 2; o.merged = true; gained += o.v; merged.push(o.v);
+      t.dead = o; G.dying = (G.dying || []).concat([[t, nr, nc]]);
+    } else G.grid[nr][nc] = t;
+    moved = true;
+  }
+  if (!moved){ A.Sfx.tone(140,.05,'square',.04); return; }
+  G.prev = before; G.score += gained; G.moves++;
+  A.Sfx.noise(.06,.15,0,'lowpass',700,200);
+  if (merged.length){
+    const topM = Math.max.apply(null, merged), tt = tier(topM);
+    A.Sfx.tone(220 + tt * 70, .1, 'square', .07); A.buzz(10);
+    if (tt >= 8) A.Sfx.success();
+    if (topM > L.bestTile){ L.bestTile = topM; saveL(); if (topM >= 64) A.bigText(TIERS[tt].e + ' ' + TIERS[tt].n.toUpperCase() + '!'); }
+  }
+  spawn();
+  if (G.moves % 25 === 0) ghastAttack();
+  render();
+  persist();
+  if (!G.won && maxTile() >= 2048){ G.won = true; win(); }
+  else if (!canMove()) lose();
+}
+function maxTile(){ let m = 0; G.grid.forEach(row => row.forEach(t => { if (t && t.v > m) m = t.v; })); return m; }
+function canMove(){
+  if (empty().length) return true;
+  for (let r=0;r<N;r++) for (let c=0;c<N;c++){ const v = G.grid[r][c].v; if ((c < N-1 && G.grid[r][c+1].v === v) || (r < N-1 && G.grid[r+1][c].v === v)) return true; }
+  return false;
+}
+function ghastAttack(){
+  const cand = []; G.grid.forEach((row, r) => row.forEach((t, c) => { if (t && t.v <= 8) cand.push([r,c,t]); }));
+  if (cand.length < 3) return;
+  const [r, c, t] = A.rnd(cand);
+  A.Sfx.tone(700,.3,'sawtooth',.06,0,200); setTimeout(() => A.Sfx.boom(), 250);
+  A.toast('👻 A ghast fired at your ' + TIERS[tier(t.v)].n + '!');
+  const el = els[t.id]; if (el){ el.classList.add('fire'); setTimeout(() => { el.remove(); delete els[t.id]; }, 500); }
+  G.grid[r][c] = null; G.prev = null;
+  setTimeout(() => A.shake($('#board')), 250);
+}
+function pos(r, c){ return 'translate(calc(' + c + ' * (100% + var(--gap)) + var(--gap) * 0), calc(' + r + ' * (100% + var(--gap))))'; }
+function render(){
+  const board = $('#board'), live = {};
+  const place = (t, r, c) => {
+    let el = els[t.id];
+    if (!el){ el = document.createElement('div'); el.className = 'tile'; el.style.left = 'var(--gap)'; el.style.top = 'var(--gap)'; board.appendChild(el); els[t.id] = el; el.style.transform = pos(r, c); }
+    return el;
+  };
+  G.grid.forEach((row, r) => row.forEach((t, c) => {
+    if (!t) return;
+    const el = place(t, r, c); live[t.id] = true;
+    const ti = tier(t.v), T = TIERS[ti];
+    el.innerHTML = '<div class="in" style="background-image:url(' + tex[ti] + ')"><span class="vl">' + t.v + '</span><span class="ic">' + T.e + '</span><span class="nm">' + T.n + '</span></div>';
+    el.className = 'tile' + (t.isNew ? ' new' : '') + (t.merged ? ' merged' : '') + (t.v === maxTile() && t.v >= 64 ? ' top' : '');
+    el.style.zIndex = t.merged ? 3 : 2;
+    requestAnimationFrame(() => { el.style.transform = pos(r, c); });
+  }));
+  (G.dying || []).forEach(([t, r, c]) => { const el = els[t.id]; if (el){ el.style.zIndex = 1; el.style.transform = pos(r, c); setTimeout(() => { el.remove(); }, 120); delete els[t.id]; } });
+  G.dying = [];
+  Object.keys(els).forEach(id => { if (!live[id]){ const e = els[id]; if (!e.classList.contains('fire')){ e.remove(); delete els[id]; } } });
+  $('#score').textContent = G.score;
+  if (G.score > L.best){ L.best = G.score; saveL(); }
+  $('#best').textContent = L.best;
+  const mt = maxTile(); $('#top').textContent = mt ? TIERS[tier(mt)].e : '—';
+  $('#ghast').textContent = '👻 Ghast attack in ' + (25 - G.moves % 25) + ' move' + (25 - G.moves % 25 === 1 ? '' : 's');
+  $('#undoBtn').textContent = '🗿 UNDO (' + G.undo + ')'; $('#undoBtn').disabled = !G.undo || !G.prev;
+  $('#chain').innerHTML = TIERS.slice(1).map((T, i) => '<span class="' + (Math.pow(2, i+1) <= Math.max(mt, L.bestTile) ? 'got' : '') + '">' + T.e + ' ' + Math.pow(2, i+1) + '</span>').join('');
+}
+function persist(){ L.saved = G.over ? null : { grid:G.grid.map(row => row.map(t => t ? { v:t.v } : null)), score:G.score, moves:G.moves, undo:G.undo, won:G.won, keepGoing:G.keepGoing }; saveL(); }
+function report(win){
+  if (G.reported) return; G.reported = true;
+  const mt = maxTile();
+  A.report(GAME_ID, { score:G.score, xp: Math.round(G.score / 60) + tier(mt) * 3, win, label: G.score + ' ' + TIERS[tier(mt)].e });
+}
+function win(){
+  A.Sfx.fanfare(true); A.confetti(); A.bigText('⬛ NETHERITE INGOT!', '#ffaa00');
+  A.unlock('nether_2048', '⬛', 'Netherite Achieved (2048)');
+  report(true);
+  $('#overT').textContent = '⬛ NETHERITE INGOT!';
+  $('#overS').textContent = 'You hit 2048 with ' + G.score + ' points. Keep going for a Nether Star?';
+  $('#contBtn').style.display = '';
+  $('#over').classList.add('show');
+}
+function lose(){
+  G.over = true; persist();
+  A.Sfx.fail(); A.shake($('#board'), true);
+  report(maxTile() >= 2048);
+  const mt = maxTile();
+  $('#overT').textContent = '💀 NO MOVES LEFT';
+  $('#overS').textContent = 'Score ' + G.score + ' · best block: ' + TIERS[tier(mt)].e + ' ' + TIERS[tier(mt)].n;
+  $('#contBtn').style.display = 'none';
+  $('#over').classList.add('show');
+}
+function share(){
+  const mt = maxTile();
+  const grid = G.grid.map(row => row.map(t => t ? TIERS[tier(t.v)].sq : '⬛').join('')).join('\n');
+  A.copy(A.shareText(GAME_ID, ['🔥 ' + G.score + ' pts · top block: ' + TIERS[tier(mt)].e + ' ' + TIERS[tier(mt)].n + ' (' + mt + ')', grid]));
+}
+
+/* ---------- Input ---------- */
+addEventListener('keydown', e => {
+  const m = { ArrowLeft:'left', ArrowRight:'right', ArrowUp:'up', ArrowDown:'down', a:'left', d:'right', w:'up', s:'down' }[e.key];
+  if (m){ e.preventDefault(); A.Sfx.init(); move(m); }
+});
+let sx = 0, sy = 0, swiping = false;
+$('#board').addEventListener('pointerdown', e => { if (e.target.closest('.over')) return; swiping = true; sx = e.clientX; sy = e.clientY; A.Sfx.init(); });
+$('#board').addEventListener('pointerup', e => {
+  if (!swiping) return; swiping = false;
+  const dx = e.clientX - sx, dy = e.clientY - sy;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+  move(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+});
+$('#board').addEventListener('touchmove', e => e.preventDefault(), { passive:false });
+$('#undoBtn').addEventListener('click', () => {
+  if (!G.undo || !G.prev) return;
+  A.Sfx.ach(); G.undo--;
+  Object.values(els).forEach(e => e.remove()); els = {};
+  G.grid = G.prev.grid.map(row => row.map(t => t ? { id:nextId++, v:t.v } : null)); G.score = G.prev.score; G.moves = G.prev.moves; G.prev = null; G.over = false;
+  $('#over').classList.remove('show');
+  A.toast('🗿 Totem of Undying! One move undone.');
+  render(); persist();
+});
+const restart = () => { if (!G.over && G.moves > 5) report(maxTile() >= 2048); A.Sfx.click(); newGame(false); };
+$('#newBtn').addEventListener('click', restart);
+$('#againBtn').addEventListener('click', restart);
+$('#contBtn').addEventListener('click', () => { G.keepGoing = true; $('#over').classList.remove('show'); A.Sfx.click(); });
+$('#shareBtn').addEventListener('click', share);
+$('#shareBtn2').addEventListener('click', share);
+
+newGame(!!L.saved);
+})();
+</script>
+</body>
+</html>

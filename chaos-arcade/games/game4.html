@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b1d12">
+<title>Villager Scam Simulator · Chaos Arcade</title>
+<meta name="description" content="Haggle with a greedy villager and try to trade 1 dirt for a Mending book before he locks you out.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%23b98a6a'/%3E%3Crect y='0' width='8' height='1' fill='%235a3a1e'/%3E%3Crect x='3' y='3' width='2' height='4' fill='%23a0705a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../style.css">
+<style>
+  .scene{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center}
+  .vface{width:120px;height:144px;border:3px solid #000;background:#7aa8d8;position:relative;overflow:hidden}
+  .vface svg{width:100%;height:100%;display:block}
+  .vface.talk svg{animation:nod .25s steps(2) 3}
+  @keyframes nod{50%{transform:translateY(4px)}}
+  .vface.angry{animation:shakesm .3s steps(6)}
+  .bubble{position:relative;background:#fff;color:#222;border:3px solid #000;padding:10px 12px;font-size:14px;line-height:1.4;min-height:66px}
+  .bubble::before{content:"";position:absolute;left:-12px;top:22px;border:6px solid transparent;border-right-color:#000}
+  .bubble small{display:block;color:#7a5a00;font-size:11px;margin-bottom:4px}
+  .meters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px}
+  .meter{background:rgba(0,0,0,.6);border:3px solid #000;padding:6px 8px;font-size:11px;text-align:center}
+  .meter b{display:block;font-size:18px;margin-top:2px}
+  .bar{height:8px;border:2px solid #000;background:#222;margin-top:4px;position:relative}
+  .bar i{position:absolute;inset:0 auto 0 0;transition:width .4s steps(8)}
+  .trade{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .tslot{width:64px;height:64px;display:flex;align-items:center;justify-content:center;font-size:34px;position:relative}
+  .tslot .cnt{position:absolute;right:4px;bottom:2px;font-size:13px;color:#fff;text-shadow:2px 2px 0 #3f3f3f}
+  .price{font-size:13px;color:#2c6e1a;text-align:center}
+  .price b{font-size:20px;display:block}
+  .tarrow{font-size:28px;color:#555}
+  .locked-x{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:44px;color:#ff2020;text-shadow:2px 2px 0 #000}
+  .trade.locked .locked-x{display:flex}
+  .tactics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .tactics .btn{font-size:13px;line-height:1.3;text-align:left;justify-content:flex-start;min-height:62px;padding:10px}
+  .tactics .btn .ti{font-size:22px;flex:none}
+  .tactics .btn small{display:block;font-size:10px;opacity:.85;margin-top:2px}
+  @media (max-width:380px){.tactics{grid-template-columns:1fr}}
+  .log{margin-top:12px;font-size:12px;line-height:1.55;max-height:150px;overflow:auto}
+  .log div{padding:3px 0;border-bottom:1px dashed #444}
+  .log .g{color:var(--green)} .log .r{color:var(--red)} .log .y{color:var(--yellow)} .log .p{color:var(--purple)}
+  .end{display:none;margin-top:12px}
+  .end.show{display:block;animation:pop .3s steps(4)}
+  .seal{margin-top:12px;display:none}
+  .seal.show{display:block}
+  .tips{margin-top:12px;font-size:12px;line-height:1.6}
+  .tips b{color:var(--yellow)}
+</style>
+</head>
+<body>
+<div class="wrap narrow">
+  <div id="arcadeBar"></div>
+
+  <div class="panel">
+    <div class="scene">
+      <div class="vface" id="vface"></div>
+      <div class="bubble" id="bubble"><small>LIBRARIAN HRMMBERT</small><span id="say">Hrmm.</span></div>
+    </div>
+    <div class="trade" id="trade">
+      <div class="tslot slot">🟫<span class="cnt">1</span></div>
+      <div class="tarrow">➜</div>
+      <div class="price"><b id="priceBig">💚 64</b>emeralds wanted</div>
+      <div class="tarrow">➜</div>
+      <div class="tslot slot">📕<span class="locked-x">✖</span></div>
+    </div>
+  </div>
+
+  <div class="meters">
+    <div class="meter">💚 PRICE<b id="mPrice">64</b><div class="bar"><i id="bPrice" style="background:#41f384;width:100%"></i></div></div>
+    <div class="meter">😤 PATIENCE<b id="mPat">100</b><div class="bar"><i id="bPat" style="background:#ffaa00;width:100%"></i></div></div>
+    <div class="meter">☀️ TURNS<b id="mTurn">12</b><div class="bar"><i id="bTurn" style="background:#ffff55;width:100%"></i></div></div>
+  </div>
+
+  <div class="tactics" id="tactics"></div>
+  <div class="seal" id="seal"><button class="btn gold big block" id="sealBtn">🤝 SEAL THE DEAL: 1 DIRT → MENDING</button></div>
+
+  <div class="end" id="end">
+    <div class="panel result-card">
+      <div class="big-emoji" id="endEmoji">📕</div>
+      <div class="label" id="endLabel">DEAL CLOSED</div>
+      <div class="title" id="endTitle">Master Scammer</div>
+      <div class="quip" id="endQuip"></div>
+    </div>
+    <div class="big-score" id="endScore">0</div>
+    <div class="marks" id="endMarks" style="margin:6px 0 10px"></div>
+    <button class="btn gold big block" id="shareBtn">📋 COPY SCORE TO SHARE</button>
+    <div class="grid2" style="margin-top:8px">
+      <button class="btn green" id="againBtn">🔄 NEW VILLAGER</button>
+      <a class="btn" href="../index.html">⬅ ARCADE</a>
+    </div>
+  </div>
+
+  <div class="dark-panel log" id="log"></div>
+
+  <div class="dark-panel tips">
+    <b>HOW TO PLAY:</b> You own exactly <b>1 dirt</b>. Hrmmbert owns a <b>Mending book</b>. Pick a tactic each turn to push his <b>price</b> down to 1 emerald, then seal the deal. Pushy tactics work better but burn his <b>patience</b>. Hit 0 patience and he <b>locks his trades</b>. Run out of turns and he goes to bed. Repeating the same trick twice in a row rarely works.
+  </div>
+  <div class="legal">Fan-made parody game. Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</div>
+</div>
+
+<script src="../arcade.js"></script>
+<script>
+(() => {
+'use strict';
+const A = Arcade, $ = (s) => document.querySelector(s);
+const GAME_ID = 'villager', LKEY = 'chaosArcade_villager';
+A.paintBody(['#5a7a3a','#4a6a2f','#6a8a45','#3f5a28']);
+A.mountBar(GAME_ID);
+
+let L = { wins:0, plays:0, best:0, fastest:0 };
+try { L = Object.assign(L, JSON.parse(localStorage.getItem(LKEY) || '{}')); } catch(e){}
+const saveL = () => { try { localStorage.setItem(LKEY, JSON.stringify(L)); } catch(e){} };
+
+/* ---------- Villager face (moods) ---------- */
+const FACE_ROWS = {
+  happy: ['hhhhhhhhhh','hhhhhhhhhh','hssssssssh','sbbbssbbbs','swksssskws','ssssnnssss','ssssnnssss','sssnnnnsss','smsnnnnsms','ssmmssmmss','ssssssssss','rrrrrrrrrr'],
+  meh:   ['hhhhhhhhhh','hhhhhhhhhh','hssssssssh','sbbbbbbbbs','swksssskws','ssssnnssss','ssssnnssss','sssnnnnsss','sssnnnnsss','sssmmmmsss','ssssssssss','rrrrrrrrrr'],
+  angry: ['hhhhhhhhhh','hhhhhhhhhh','sbbssssbbs','ssbbssbbss','swksssskws','ssssnnssss','ssssnnssss','sssnnnnsss','sssnnnnsss','ssmmmmmmss','smssssssms','rrrrrrrrrr'],
+  shock: ['hhhhhhhhhh','hhhhhhhhhh','sbbssssbbs','ssssssssss','wwksssskww','ssssnnssss','ssssnnssss','sssnnnnsss','sssnnnnsss','ssssmmssss','ssssmmssss','rrrrrrrrrr']
+};
+function face(mood, pat){
+  const skin = pat < 25 ? '#d8705a' : pat < 55 ? '#c98a6a' : '#b98a6a';
+  return A.px(FACE_ROWS[mood], {h:'#5a3a1e', s:skin, b:'#3a2010', w:'#ffffff', k:'#2a8a2a', n:'#a0705a', m:'#6a4030', r:'#eeeeee'});
+}
+function setFace(mood){ $('#vface').innerHTML = face(mood, G.pat); }
+
+/* ---------- Sounds ---------- */
+function hrmm(mood){
+  const S = A.Sfx;
+  if (mood === 'happy'){ S.tone(170,.18,'sawtooth',.06,0,230); S.tone(230,.2,'sawtooth',.05,.17,260); }
+  else if (mood === 'angry'){ S.tone(150,.25,'sawtooth',.08,0,95); S.tone(120,.3,'sawtooth',.07,.2,80); }
+  else { S.tone(190,.18,'sawtooth',.06,0,150); S.tone(160,.22,'sawtooth',.05,.16,140); }
+}
+
+/* ---------- Tactics ---------- */
+const T = [
+  {id:'dirt',   i:'🟫', n:'Offer 1 dirt (with confidence)', h:'Bold. Risky.', ch:.38, p:[-8,-14], pat:[0,0], fp:[0,0], fpat:[-12,-16],
+   ok:['Hrmm… this dirt has… a certain shine.','Rare dirt? From the Overworld? Hrmm…'], bad:['Hrmm. That is dirt.','You offer… dirt. To me. A librarian.']},
+  {id:'nose',   i:'👃', n:'Compliment his magnificent nose', h:'Safe flattery', ch:.62, p:[-3,-7], pat:[4,8], fp:[0,0], fpat:[-6,-9],
+   ok:['Hrmm! Finally, someone notices.','It IS a good nose. Hrmm.'], bad:['He knows you are lying about the nose.']},
+  {id:'zombie', i:'🧟', n:'Threaten him with a zombie', h:'Big drop, big anger', ch:.48, p:[-12,-20], pat:[-18,-22], fp:[3,6], fpat:[-26,-32],
+   ok:['HRMM! Fine! Fine! Cheaper!','Please no zombie. Hrmm. Discount.'], bad:['He rings the bell. The iron golem looks at you.']},
+  {id:'biome',  i:'🗺️', n:'Claim dirt is rare in your biome', h:'Medium gamble', ch:.42, p:[-6,-12], pat:[-3,-6], fp:[0,0], fpat:[-10,-14],
+   ok:['A dirt-poor biome? Hrmm, tragic.','Hrmm. Imported dirt. Exotic.'], bad:['Every biome has dirt. Hrmm.']},
+  {id:'lectern',i:'📚', n:'Bang loudly on his lectern', h:'Very pushy', ch:.32, p:[-15,-25], pat:[-24,-28], fp:[0,0], fpat:[-30,-36],
+   ok:['HRMM!! Okay okay! Price drop!'], bad:['He hides behind the lectern and sulks.']},
+  {id:'cure',   i:'🍎', n:'Cure him (golden apple + weakness)', h:'Once per villager', ch:.85, p:[-15,-25], pat:[12,18], fp:[0,0], fpat:[-5,-5], once:true,
+   ok:['I feel… cured! Hero discount! Hrmm!'], bad:['He was not even a zombie. Awkward.']},
+  {id:'bluff',  i:'🚶', n:'Walk away (bluff)', h:'50/50', ch:.5, p:[-8,-15], pat:[-4,-6], fp:[3,6], fpat:[-4,-4],
+   ok:['W-wait! Hrmm! Come back! Lower price!'], bad:['He does not care. He has 400 other customers.']},
+  {id:'hrmm',   i:'🗣️', n:'Say "hrmm" back in his language', h:'Cultural exchange', ch:.56, p:[-4,-9], pat:[6,10], fp:[0,0], fpat:[-6,-8],
+   ok:['Hrmm hrmm! You speak villager!','Hrmm. Hrmm hrmm. (He is moved.)'], bad:['That was a very rude hrmm.']},
+  {id:'hero',   i:'🏅', n:'Mention your Hero of the Village status', h:'Needs nerve', ch:.48, p:[-10,-18], pat:[0,0], fp:[0,0], fpat:[-10,-14],
+   ok:['Hero?! Hrmm! Why didn\'t you say so!'], bad:['You did not defend any raid. He checked.']},
+  {id:'stick',  i:'🥢', n:'Throw in a slightly used stick', h:'Desperate', ch:.28, p:[-5,-10], pat:[0,0], fp:[2,4], fpat:[-8,-12],
+   ok:['A stick! For my… collection. Hrmm.'], bad:['It is wet. Why is it wet.']},
+  {id:'trader', i:'🦙', n:'Point at the wandering trader', h:'Make him jealous', ch:.5, p:[-6,-12], pat:[-6,-10], fp:[0,0], fpat:[-12,-16],
+   ok:['Him?! His llamas spit! Hrmm. Cheaper!'], bad:['The trader is worse. Everyone knows. Hrmm.']},
+  {id:'cry',    i:'😭', n:'Sob uncontrollably', h:'Emotional damage', ch:.42, p:[-5,-10], pat:[2,4], fp:[0,0], fpat:[-14,-16],
+   ok:['Hrmm… there there. Discount.'], bad:['He is deeply uncomfortable.']},
+  {id:'style',  i:'💸', n:'Say emeralds are going out of style', h:'Economics 101', ch:.36, p:[-12,-20], pat:[-4,-6], fp:[0,0], fpat:[-16,-20],
+   ok:['Out of style?! Hrmm! Panic sale!'], bad:['Emeralds are eternal. Hrmm.']},
+  {id:'house',  i:'🏠', n:'Build him a tiny house', h:'Slow but sweet', ch:.72, p:[-6,-10], pat:[10,14], fp:[0,0], fpat:[-4,-6],
+   ok:['A house! With a bed! Hrmm hrmm!'], bad:['You built it on his crops. Hrmm.']}
+];
+const EVENTS = [
+  {n:'🧟 A zombie shambles past! Hrmmbert panics.', p:-8, pat:-5},
+  {n:'🤖 The iron golem is watching you. Very closely.', p:0, pat:-10},
+  {n:'🦙 A wandering trader sets up next door. Competition!', p:-6, pat:0},
+  {n:'📯 A pillager horn sounds in the distance…', p:-10, pat:-8},
+  {n:'🐱 A village cat sits on the lectern. He is delighted.', p:0, pat:12},
+  {n:'🌧️ It starts raining. He is grumpy now.', p:3, pat:-6}
+];
+const ri = (a) => { const lo = Math.min(a[0],a[1]), hi = Math.max(a[0],a[1]); return lo + Math.floor(Math.random() * (hi - lo + 1)); };
+
+/* ---------- Game ---------- */
+let G;
+function newGame(){
+  G = { price: 40 + Math.floor(Math.random() * 25), pat:100, turns:12, maxTurns:12, last:null, used:{}, marks:[], over:false, hand:[] };
+  G.startPrice = G.price;
+  $('#log').innerHTML = '';
+  $('#end').classList.remove('show'); $('#seal').classList.remove('show');
+  $('#trade').classList.remove('locked');
+  say('Hrmm. Mending book. ' + G.price + ' emeralds. No refunds.', 'meh');
+  log('A new villager appears. He wants <b>' + G.price + '</b> emeralds. You have <b>1 dirt</b>.', 'y');
+  dealHand(); render();
+}
+function dealHand(){
+  const pool = T.filter(t => !(t.once && G.used[t.id]));
+  G.hand = shuffle(pool).slice(0, 4);
+}
+function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
+function say(text, mood){
+  $('#say').textContent = text; setFace(mood);
+  const v = $('#vface'); v.classList.remove('talk','angry'); void v.offsetWidth; v.classList.add(mood === 'angry' ? 'angry' : 'talk');
+  hrmm(mood);
+}
+function log(html, cls){ const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; $('#log').prepend(d); }
+function render(){
+  $('#priceBig').textContent = '💚 ' + Math.max(1, G.price);
+  $('#mPrice').textContent = Math.max(1, G.price); $('#bPrice').style.width = Math.max(2, G.price / G.startPrice * 100) + '%';
+  $('#mPat').textContent = Math.max(0, G.pat); $('#bPat').style.width = Math.max(0, Math.min(100, G.pat)) + '%';
+  $('#mTurn').textContent = G.turns; $('#bTurn').style.width = (G.turns / G.maxTurns * 100) + '%';
+  $('#tactics').innerHTML = G.over || G.price <= 1 ? '' : G.hand.map((t, i) =>
+    '<button class="btn" data-i="' + i + '"><span class="ti">' + t.i + '</span><span>' + t.n + '<small>' + t.h + (G.last === t.id ? ' · ⚠ he saw that coming' : '') + '</small></span></button>').join('');
+}
+function play(t){
+  if (G.over) return;
+  A.Sfx.click();
+  let chance = t.ch;
+  if (G.last === t.id) chance *= .45;
+  if (G.pat < 30) chance *= .85;
+  const ok = Math.random() < chance;
+  G.last = t.id; if (t.once) G.used[t.id] = true;
+  G.turns--;
+  if (ok){
+    const dp = ri(t.p), dpat = ri(t.pat);
+    G.price += dp; G.pat = Math.min(100, G.pat + dpat);
+    G.marks.push('🟩');
+    say(A.rnd(t.ok), 'happy');
+    log(t.i + ' ' + t.n + ': <span class="g">price ' + dp + '</span>' + (dpat ? ' · patience ' + (dpat > 0 ? '+' : '') + dpat : ''), 'g');
+    A.Sfx.coin(); A.buzz(15);
+  } else {
+    const dp = ri(t.fp), dpat = ri(t.fpat);
+    G.price += dp; G.pat += dpat;
+    G.marks.push('🟥');
+    say(A.rnd(t.bad), dpat < -15 ? 'angry' : 'meh');
+    log(t.i + ' ' + t.n + ': <span class="r">failed</span>' + (dp ? ' · price +' + dp : '') + ' · patience ' + dpat, 'r');
+    A.Sfx.fail(); A.shake($('#vface'));
+  }
+  G.price = Math.max(1, G.price);
+  // random village event
+  if (!G.over && G.price > 1 && G.turns > 0 && G.turns < 10 && Math.random() < .25){
+    const e = A.rnd(EVENTS);
+    G.price = Math.max(1, G.price + e.p); G.pat = Math.min(100, G.pat + e.pat);
+    setTimeout(() => { log(e.n + (e.p ? ' Price ' + e.p + '.' : '') + (e.pat ? ' Patience ' + (e.pat > 0 ? '+' : '') + e.pat + '.' : ''), 'p'); A.Sfx.tone(300,.15,'triangle',.06); render(); }, 400);
+  }
+  if (G.pat <= 0){ setTimeout(() => lose('locked'), 500); }
+  else if (G.price <= 1){ G.price = 1; setTimeout(readyToSeal, 400); }
+  else if (G.turns <= 0){ setTimeout(() => lose('night'), 500); }
+  else dealHand();
+  render();
+}
+function readyToSeal(){
+  say('Hrmm… fine. ONE emerald. Final offer.', 'shock');
+  log('💚 The price hit <b>1 emerald</b>. Time to pass off your dirt as an emerald…', 'y');
+  $('#seal').classList.add('show'); render();
+  A.bigText('PRICE: 1 EMERALD!', '#55ff55');
+}
+$('#sealBtn').addEventListener('click', () => {
+  if (G.over) return;
+  $('#seal').classList.remove('show');
+  // the final con: patience helps
+  const chance = .55 + G.pat / 250;
+  if (Math.random() < chance) win();
+  else { say('Hrmm?! This "emerald" is DIRT!', 'angry'); G.marks.push('🟥'); setTimeout(() => lose('caught'), 700); }
+});
+function win(){
+  G.over = true; G.marks.push('📕');
+  const score = 1000 + G.turns * 80 + Math.max(0, G.pat) * 5;
+  say('Hrmm. Pleasure doing business. (He has no idea.)', 'happy');
+  A.Sfx.fanfare(true); A.confetti(); A.bigText('📕 MENDING ACQUIRED!', '#55ff55');
+  L.plays++; L.wins++; const turnsUsed = G.maxTurns - G.turns;
+  if (!L.fastest || turnsUsed < L.fastest) L.fastest = turnsUsed;
+  if (score > L.best) L.best = score; saveL();
+  A.report(GAME_ID, { score, xp: Math.round(score / 15), win:true, label: score + ' (' + turnsUsed + ' turns)' });
+  if (turnsUsed <= 5) A.unlock('vill_fast', '💰', 'Speed Scammer (≤5 turns)');
+  end(true, score, turnsUsed);
+}
+function lose(why){
+  G.over = true;
+  const score = Math.max(0, (G.startPrice - G.price) * 10);
+  if (why === 'locked'){ say('HRMM! NO MORE TRADES FOR YOU!', 'angry'); $('#trade').classList.add('locked'); A.Sfx.boom(); A.shake(document.body, true); }
+  else if (why === 'night'){ say('Hrmm… zzz. (He went to bed.)', 'meh'); A.Sfx.fail(); }
+  else { $('#trade').classList.add('locked'); A.Sfx.fail(); A.shake(document.body, true); }
+  L.plays++; saveL();
+  A.report(GAME_ID, { score:0, xp: Math.round(score / 12) + 5, win:false });
+  end(false, score, G.maxTurns - G.turns, why);
+}
+let lastEnd = null;
+function end(won, score, turns, why){
+  lastEnd = { won, score, turns, why, price:G.price, start:G.startPrice, marks:G.marks.slice() };
+  const W = [['📕','Master Scammer','He traded a Mending book for dirt. Legendary.'],['💰','Emerald Laundering Expert','The economy will never recover.'],['🤝','Diplomat of Dirt','Smooth talker. Terrible person.']];
+  const LS = { locked:['🔒','Trade Banned','He locked every trade. Even the paper ones.'], night:['🌙','Out of Time','He went to sleep. Villagers keep office hours.'], caught:['🕵️','Caught Red-Handed','The "emerald" was very clearly dirt.'] };
+  const t = won ? A.rnd(W) : LS[why];
+  $('#endEmoji').textContent = t[0]; $('#endTitle').textContent = t[1]; $('#endQuip').textContent = t[2];
+  $('#endLabel').textContent = won ? 'DEAL CLOSED IN ' + turns + ' TURNS' : 'NO DEAL';
+  $('#endScore').textContent = won ? score : '💚 ' + G.price;
+  $('#endMarks').textContent = G.marks.join('');
+  $('#end').classList.add('show'); render();
+  setTimeout(() => $('#end').scrollIntoView({ behavior:'smooth', block:'nearest' }), 150);
+}
+$('#tactics').addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b) play(G.hand[+b.dataset.i]); });
+$('#againBtn').addEventListener('click', () => { A.Sfx.click(); newGame(); scrollTo({ top:0, behavior:'smooth' }); });
+$('#shareBtn').addEventListener('click', () => {
+  const e = lastEnd; if (!e) return;
+  A.copy(A.shareText(GAME_ID, e.won
+    ? ['🟫 1 dirt → 📕 Mending book in ' + e.turns + ' turns', '⭐ ' + e.score + ' pts · started at ' + e.start + ' emeralds', e.marks.join('')]
+    : ['❌ ' + (e.why === 'locked' ? 'Got trade-banned' : e.why === 'night' ? 'He went to bed' : 'Caught passing off dirt') + ' at ' + e.price + ' emeralds', e.marks.join('')]));
+});
+newGame();
+})();
+</script>
+</body>
+</html>
