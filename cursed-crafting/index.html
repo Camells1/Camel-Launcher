@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b1d12">
+<meta name="description" content="Cursed Crafting & Chaos: 10 rapid-fire rounds of cursed crafting recipes, real-or-fake block facts and chaotic survival scenarios. Daily seed + endless mode.">
+<meta property="og:title" content="Cursed Crafting & Chaos">
+<meta property="og:description" content="10 rounds. 10 seconds each. Cursed recipes, fake facts and pure chaos. Can you reach Herobrine's Therapist?">
+<title>Cursed Crafting &amp; Chaos</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%235fbf3a'/%3E%3Crect x='1' y='2' width='2' height='2' fill='%23111'/%3E%3Crect x='5' y='2' width='2' height='2' fill='%23111'/%3E%3Crect x='3' y='4' width='2' height='3' fill='%23111'/%3E%3Crect x='2' y='5' width='1' height='3' fill='%23111'/%3E%3Crect x='5' y='5' width='1' height='3' fill='%23111'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --slot: clamp(54px, 17vw, 74px);
+    --ink:#3f3f3f;
+    --gui:#c6c6c6;
+    --green:#55ff55;
+    --red:#ff5555;
+    --gold:#ffaa00;
+    --yellow:#ffff55;
+    --aqua:#55ffff;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%}
+  body{
+    background-color:#2b1d12;
+    background-size:64px 64px;
+    image-rendering:pixelated;
+    color:#fff;
+    font-family:"Lucida Console","Courier New",ui-monospace,Menlo,Consolas,monospace;
+    font-weight:700;
+    min-height:100vh;min-height:100dvh;
+    display:flex;justify-content:center;
+    overflow-x:hidden;
+    -webkit-user-select:none;user-select:none;
+    -webkit-font-smoothing:none;
+  }
+  #app{
+    width:100%;max-width:560px;
+    padding:max(12px, env(safe-area-inset-top)) 12px max(20px, env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;
+    min-height:100vh;min-height:100dvh;
+    position:relative;
+  }
+  .screen{display:none;flex-direction:column;gap:14px;flex:1}
+  .screen.active{display:flex;animation:pop .28s steps(4)}
+  @keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+
+  .shadow{text-shadow:2px 2px 0 #3f3f3f}
+  .shadow-dark{text-shadow:2px 2px 0 #1a1a1a}
+
+  /* ---------- Minecraft-style GUI pieces ---------- */
+  .panel{
+    background:var(--gui);color:var(--ink);
+    border:3px solid #000;
+    box-shadow:inset 3px 3px 0 #fff, inset -3px -3px 0 #555;
+    padding:14px;
+  }
+  .dark-panel{
+    background:rgba(0,0,0,.62);
+    border:3px solid #000;
+    box-shadow:inset 0 0 0 2px #2a0f4a;
+    padding:12px 14px;color:#fff;
+  }
+  .btn{
+    appearance:none;-webkit-appearance:none;
+    font:inherit;font-weight:700;
+    color:#fff;text-shadow:2px 2px 0 #3f3f3f;
+    background:#7a7a7a;
+    border:3px solid #000;
+    box-shadow:inset 3px 3px 0 #b8b8b8, inset -3px -4px 0 #454545;
+    padding:12px 14px;
+    cursor:pointer;
+    font-size:16px;letter-spacing:.5px;
+    touch-action:manipulation;
+    transition:transform .05s;
+    min-height:48px;
+  }
+  .btn:hover,.btn:focus-visible{background:#7e8cc9;box-shadow:inset 3px 3px 0 #bcc6f0, inset -3px -4px 0 #3d4a85;outline:none}
+  .btn:active{transform:translateY(2px)}
+  .btn:disabled{cursor:default;transform:none}
+  .btn.primary{background:#3f9a2e;box-shadow:inset 3px 3px 0 #86e06c, inset -3px -4px 0 #1f5c14;font-size:22px;padding:16px}
+  .btn.primary:hover,.btn.primary:focus-visible{background:#4cb538}
+  .btn.small{font-size:13px;padding:8px 10px;min-height:38px}
+
+  /* ---------- Top bar ---------- */
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+  .brand-mini{font-size:12px;color:#ddd;opacity:.85}
+  #muteBtn{width:48px;min-height:44px;padding:6px;font-size:20px;line-height:1}
+
+  /* ---------- Start screen ---------- */
+  .title-wrap{position:relative;text-align:center;margin-top:6px}
+  #titleSvg{width:100%;max-width:520px;height:auto;display:block;margin:0 auto;filter:drop-shadow(0 6px 0 rgba(0,0,0,.35))}
+  .splash{
+    position:absolute;right:2%;bottom:-6px;
+    color:var(--yellow);text-shadow:2px 2px 0 #3f3f00;
+    font-size:clamp(12px,3.6vw,17px);
+    transform:rotate(-14deg);
+    animation:splash .55s ease-in-out infinite alternate;
+    white-space:nowrap;pointer-events:none;
+  }
+  @keyframes splash{from{transform:rotate(-14deg) scale(1)}to{transform:rotate(-14deg) scale(1.1)}}
+  .tagline{text-align:center;font-size:14px;color:#eee;line-height:1.5;margin:4px 0 0}
+  .mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .mode-toggle .btn{font-size:14px;padding:10px 6px;line-height:1.3}
+  .mode-toggle .btn small{display:block;font-size:11px;opacity:.85;margin-top:3px}
+  .mode-toggle .btn.on{background:#5b8a2b;box-shadow:inset 3px 3px 0 #9ed06a, inset -3px -4px 0 #2f4f12}
+  .mode-toggle .btn.on::before{content:"▶ "}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+  .stat{padding:10px 4px}
+  .stat b{display:block;font-size:22px;color:var(--ink)}
+  .stat span{font-size:11px;color:#555;text-transform:uppercase}
+  .how{font-size:12.5px;line-height:1.55;color:#ddd}
+  .how b{color:var(--yellow)}
+  .legal{font-size:10.5px;color:#aaa;text-align:center;line-height:1.5;margin-top:auto;padding-top:8px}
+
+  /* ---------- HUD ---------- */
+  .hud{display:flex;gap:8px;align-items:stretch}
+  .hud .chip{background:rgba(0,0,0,.6);border:3px solid #000;padding:6px 10px;font-size:14px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .hud .grow{flex:1;justify-content:center}
+  #hudScore{color:var(--yellow)}
+  #hudCombo{color:var(--gold)}
+  .hearts{display:flex;gap:2px}
+  .hearts svg{width:18px;height:18px}
+
+  .timer{height:22px;border:3px solid #000;background:#2a2a2a;position:relative;overflow:hidden}
+  .timer-fill{
+    position:absolute;inset:0 auto 0 0;width:100%;
+    background:#55dd33;
+    box-shadow:inset 0 3px 0 rgba(255,255,255,.35), inset 0 -3px 0 rgba(0,0,0,.25);
+  }
+  .timer-fill.mid{background:#e6c21a}
+  .timer-fill.low{background:#e03a2a;animation:blink .25s steps(2) infinite}
+  @keyframes blink{50%{filter:brightness(1.5)}}
+  .timer-seg{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 3px),#000 calc(10% - 3px) 10%)}
+  .timer-num{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:12px;text-shadow:1px 1px 0 #000}
+
+  /* ---------- Round stage ---------- */
+  .tag{font-size:12px;letter-spacing:1px;padding:4px 8px;display:inline-block;border:2px solid #000;background:#3a3a3a;color:#fff}
+  .tag.cursed{background:#5a1475;color:#ff9cff;animation:glitch 1.2s steps(2) infinite}
+  @keyframes glitch{0%,90%{transform:none}93%{transform:translate(2px,-1px)}96%{transform:translate(-2px,1px)}}
+  .tag.fact{background:#7a5a12;color:#ffe27a}
+  .tag.scen{background:#7a1b12;color:#ffb3a8}
+  .prompt{font-size:clamp(15px,4.2vw,18px);line-height:1.4;margin:8px 0 0;color:var(--ink)}
+
+  .craft{display:flex;align-items:center;justify-content:center;gap:clamp(8px,3vw,18px);margin:14px 0 6px}
+  .grid3{display:grid;grid-template-columns:repeat(3,var(--slot));gap:3px}
+  .slot{
+    width:var(--slot);height:var(--slot);
+    background:#8b8b8b;
+    box-shadow:inset 3px 3px 0 #373737, inset -3px -3px 0 #fff;
+    display:flex;align-items:center;justify-content:center;
+    padding:8px;position:relative;
+  }
+  .slot svg.px{width:100%;height:100%;display:block}
+  .slot .emo{font-size:calc(var(--slot) * .55);line-height:1;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.3))}
+  .arrow{width:clamp(30px,9vw,46px);flex:none;display:block;filter:drop-shadow(2px 2px 0 #3f3f3f)}
+  .arrow svg{width:100%;height:auto;display:block}
+  .result.slot{width:calc(var(--slot) * 1.25);height:calc(var(--slot) * 1.25)}
+  .result .q{font-size:calc(var(--slot) * .7);color:#fff;text-shadow:3px 3px 0 #3f3f3f;animation:qpulse .6s steps(3) infinite alternate}
+  @keyframes qpulse{to{transform:scale(1.15);color:var(--yellow)}}
+  .result.reveal{animation:reveal .4s steps(4)}
+  @keyframes reveal{0%{transform:scale(.3) rotate(-20deg)}100%{transform:none}}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 10px;justify-content:center;font-size:11.5px;color:#444;margin-top:8px}
+  .legend span{display:inline-flex;align-items:center;gap:4px}
+  .legend i{width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:13px}
+  .legend i svg{width:16px;height:16px}
+
+  .fact-card{margin-top:12px;background:#f3e7c4;border:3px solid #6b4a1e;box-shadow:inset 0 0 0 3px #e0cf9d;padding:16px;color:#3a2a10;font-size:clamp(15px,4.3vw,18px);line-height:1.45}
+  .fact-card::before{content:"📖 ";}
+  .scen-emoji{font-size:54px;text-align:center;margin:8px 0 2px;line-height:1}
+  .scen-text{font-size:clamp(14.5px,4.1vw,17px);line-height:1.5;color:var(--ink);margin-top:6px}
+
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .opts.one{grid-template-columns:1fr}
+  .opts.two .btn{font-size:20px;padding:18px 8px}
+  .opt{text-align:left;font-size:14.5px;line-height:1.3;display:flex;align-items:center;gap:10px;min-height:58px}
+  .opts.two .opt{justify-content:center;text-align:center}
+  .opt .k{flex:none;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);border:2px solid #000;font-size:12px;text-shadow:none}
+  .opts.two .opt .k{display:none}
+  .opt.correct{background:#2f8f2a !important;box-shadow:inset 3px 3px 0 #7fe06a, inset -3px -4px 0 #155010 !important}
+  .opt.wrong{background:#a52a24 !important;box-shadow:inset 3px 3px 0 #ff8a7a, inset -3px -4px 0 #5a0f0a !important}
+  .opt.dim{opacity:.55}
+
+  .feedback{display:none}
+  .feedback.show{display:block;animation:pop .25s steps(3)}
+  .verdict{font-size:18px;margin-bottom:6px}
+  .verdict.ok{color:var(--green)} .verdict.bad{color:var(--red)} .verdict.boom{color:var(--gold)}
+  .roast{font-size:14.5px;line-height:1.45;color:#fff}
+  .roast::before{content:"<Steve_The_Vet> ";color:var(--aqua)}
+  .why{font-size:12.5px;line-height:1.5;color:#bbb;margin-top:8px;border-top:2px dashed #444;padding-top:8px}
+  .why::before{content:"ⓘ ";color:var(--yellow)}
+  .pts{float:right;color:var(--yellow)}
+  #nextBtn{width:100%;margin-top:10px}
+
+  /* ---------- Results ---------- */
+  .rank-emoji{font-size:64px;text-align:center;line-height:1;animation:bob 1s steps(2) infinite alternate}
+  @keyframes bob{to{transform:translateY(-6px)}}
+  .rank-label{font-size:12px;text-align:center;color:#555;letter-spacing:2px}
+  .rank-title{font-size:clamp(22px,6.5vw,30px);text-align:center;color:#3f3f3f;margin:2px 0 4px;line-height:1.15}
+  .rank-quip{text-align:center;font-size:13px;color:#555;line-height:1.4}
+  .big-score{text-align:center;font-size:44px;color:var(--yellow);text-shadow:3px 3px 0 #3f3f00;margin:8px 0 0}
+  .sub-score{text-align:center;font-size:14px;color:#eee}
+  .marks{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;font-size:24px;line-height:1.1;margin:6px 0}
+  .res-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;font-size:11px;color:#555}
+  .res-stats b{display:block;font-size:18px;color:#3f3f3f}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .countdown{text-align:center;font-size:13px;color:#ddd}
+  .countdown b{color:var(--aqua)}
+  .note{text-align:center;font-size:12px;color:var(--yellow)}
+  #copyBtn{font-size:19px}
+
+  /* ---------- FX ---------- */
+  .shake{animation:shake .4s steps(8)}
+  @keyframes shake{0%,100%{transform:none}20%{transform:translate(-8px,4px)}40%{transform:translate(7px,-5px)}60%{transform:translate(-6px,-3px)}80%{transform:translate(5px,5px)}}
+  .shake-sm{animation:shakesm .3s steps(6)}
+  @keyframes shakesm{0%,100%{transform:none}33%{transform:translateX(-5px)}66%{transform:translateX(5px)}}
+  #flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:50}
+  #flash.go{animation:flash .5s ease-out}
+  @keyframes flash{0%{opacity:.9}100%{opacity:0}}
+  .particle{position:fixed;width:10px;height:10px;pointer-events:none;z-index:40;animation:fly .8s ease-out forwards}
+  @keyframes fly{to{transform:translate(var(--dx),var(--dy)) rotate(180deg);opacity:0}}
+  #toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%) translateY(140%);background:#000c;border:3px solid #000;box-shadow:inset 0 0 0 2px #55ff55;color:var(--green);padding:12px 16px;font-size:14px;z-index:60;transition:transform .2s steps(3),opacity .2s;max-width:92vw;text-align:center;opacity:0;visibility:hidden}
+  #toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible}
+
+  @media (max-width:380px){
+    .opt{font-size:13px;min-height:54px;padding:10px}
+    .hud .chip{font-size:12px;padding:5px 7px}
+    .opts:not(.two){grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .shake,.shake-sm,.splash,.rank-emoji,.tag.cursed,.result .q{animation:none !important}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="brand-mini shadow-dark" id="brandMini">⛏ CURSED CRAFTING &amp; CHAOS</div>
+    <button class="btn" id="muteBtn" aria-label="Toggle sound">🔊</button>
+  </div>
+
+  <!-- ================= START ================= -->
+  <section class="screen active" id="scrStart">
+    <div class="title-wrap">
+      <svg id="titleSvg" role="img" aria-label="Cursed Crafting and Chaos"></svg>
+      <div class="splash" id="splash">Sssss...</div>
+    </div>
+    <p class="tagline shadow-dark">10 rounds. 10 seconds each.<br>Cursed recipes, fake facts &amp; pure survival chaos.</p>
+
+    <div class="mode-toggle" role="radiogroup" aria-label="Game mode">
+      <button class="btn" id="modeDaily" role="radio">📅 DAILY SEED<small>Same 10 for everyone today</small></button>
+      <button class="btn" id="modeEndless" role="radio">♾ ENDLESS CHAOS<small>3 hearts. No mercy.</small></button>
+    </div>
+
+    <button class="btn primary" id="playBtn">▶ PLAY NOW</button>
+
+    <div class="stats">
+      <div class="panel stat"><b id="stBest">0</b><span id="stBestLbl">Best Daily</span></div>
+      <div class="panel stat"><b id="stStreak">0🔥</b><span>Day Streak</span></div>
+      <div class="panel stat"><b id="stPlayed">0</b><span>Runs Played</span></div>
+    </div>
+
+    <div class="dark-panel how">
+      <b>HOW TO PLAY:</b> Guess what the crafting grid makes (some recipes are <b>cursed</b>), call out <b>REAL or FAKE</b> block facts, and survive chaotic scenarios. Faster answers = more points. Keys <b>1–4</b> answer, <b>Enter</b> continues.
+    </div>
+    <div class="legal">Fan-made parody game. Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</div>
+  </section>
+
+  <!-- ================= GAME ================= -->
+  <section class="screen" id="scrGame">
+    <div class="hud">
+      <div class="chip" id="hudRound">1/10</div>
+      <div class="chip grow"><span>★</span><span id="hudScore">0</span></div>
+      <div class="chip" id="hudCombo" style="display:none"></div>
+      <div class="chip hearts" id="hudHearts" style="display:none"></div>
+    </div>
+    <div class="timer"><div class="timer-fill" id="timerFill"></div><div class="timer-seg"></div><div class="timer-num" id="timerNum">10</div></div>
+
+    <div class="panel" id="stage"></div>
+    <div class="opts" id="opts"></div>
+
+    <div class="dark-panel feedback" id="feedback">
+      <div class="verdict" id="verdict"></div>
+      <div class="roast" id="roast"></div>
+      <div class="why" id="why"></div>
+      <button class="btn" id="nextBtn">NEXT ▶</button>
+    </div>
+  </section>
+
+  <!-- ================= RESULTS ================= -->
+  <section class="screen" id="scrResult">
+    <div class="note" id="resNote" style="display:none"></div>
+    <div class="panel">
+      <div class="rank-emoji" id="rankEmoji">🛖</div>
+      <div class="rank-label">YOUR RANK</div>
+      <div class="rank-title" id="rankTitle">Dirt Hut Noob</div>
+      <div class="rank-quip" id="rankQuip"></div>
+    </div>
+    <div class="big-score" id="resScore">0</div>
+    <div class="sub-score shadow-dark" id="resSub">0/10 correct</div>
+    <div class="marks" id="resMarks"></div>
+    <div class="panel res-stats">
+      <div><b id="rsBest">0</b>BEST</div>
+      <div><b id="rsStreak">0</b>STREAK</div>
+      <div><b id="rsAcc">0%</b>ACCURACY</div>
+    </div>
+    <button class="btn primary" id="copyBtn">📋 COPY SCORE TO SHARE</button>
+    <button class="btn" id="nativeShareBtn" style="display:none">📤 SHARE…</button>
+    <div class="row2">
+      <button class="btn" id="againBtn">♾ ENDLESS</button>
+      <button class="btn" id="homeBtn">🏠 HOME</button>
+    </div>
+    <div class="countdown shadow-dark" id="countdown"></div>
+  </section>
+</div>
+<div id="flash"></div>
+<div id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   CONFIG — set SITE_URL to your domain for share links,
+   e.g. 'https://cursedcrafting.com'. Leave '' to auto-detect.
+   ========================================================= */
+const SITE_URL = '';
+const DAILY_ROUNDS = 10;
+const ENDLESS_LIVES = 3;
+const STORE_KEY = 'cursedCraftingChaos_v1';
+
+const $ = (s) => document.querySelector(s);
+const rnd = (a) => a[Math.floor(Math.random() * a.length)];
+
+/* ================= STORAGE ================= */
+const DEFAULTS = { muted:false, mode:'daily', bestDaily:0, bestEndless:0, streak:0, maxStreak:0, lastDaily:'', played:0, today:null };
+let S;
+try { S = Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(STORE_KEY) || '{}')); }
+catch (e) { S = Object.assign({}, DEFAULTS); }
+function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (e) {} }
+
+/* ================= DATES ================= */
+function dayKey(d){ d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function yesterdayKey(){ const d = new Date(); d.setDate(d.getDate()-1); return dayKey(d); }
+function dailyNumber(){ const d = new Date(); return Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2026,0,1)) / 864e5) + 1; }
+function currentStreak(){ return (S.lastDaily === dayKey() || S.lastDaily === yesterdayKey()) ? S.streak : 0; }
+
+/* ================= SEEDED RNG ================= */
+function hashStr(str){ let h = 1779033703 ^ str.length; for (let i=0;i<str.length;i++){ h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); } h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return (h ^= h >>> 16) >>> 0; }
+function mulberry32(a){ return function(){ a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function shuffle(arr, r){ r = r || Math.random; const a = arr.slice(); for (let i=a.length-1;i>0;i--){ const j = Math.floor(r()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
+function h2(x,y,s){ let n = Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(s, 982451653); n = Math.imul(n ^ (n >>> 13), 1274126177); return ((n ^ (n >>> 16)) >>> 0) / 4294967296; }
+
+/* ================= 8-BIT AUDIO (Web Audio API) ================= */
+const Sfx = {
+  ctx:null,
+  init(){
+    if (!this.ctx){ const AC = window.AudioContext || window.webkitAudioContext; if (AC) { try { this.ctx = new AC(); } catch(e){} } }
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+  },
+  tone(f, d, type, v, t0, f2){
+    if (S.muted || !this.ctx) return;
+    const c = this.ctx, t = c.currentTime + (t0||0), o = c.createOscillator(), g = c.createGain();
+    o.type = type || 'square';
+    o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(v || .1, t);
+    g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t + d + .03);
+  },
+  noise(d, v, t0, ftype, f1, f2){
+    if (S.muted || !this.ctx) return;
+    const c = this.ctx, t = c.currentTime + (t0||0);
+    const len = Math.floor(c.sampleRate * d), buf = c.createBuffer(1, len, c.sampleRate), data = buf.getChannelData(0);
+    let last = 0;
+    for (let i=0;i<len;i++){ // crunchy sample-and-hold noise = more 8-bit
+      if (i % 3 === 0) last = Math.random()*2-1;
+      data[i] = last;
+    }
+    const src = c.createBufferSource(); src.buffer = buf;
+    const flt = c.createBiquadFilter(); flt.type = ftype || 'lowpass';
+    flt.frequency.setValueAtTime(f1 || 1500, t);
+    if (f2) flt.frequency.exponentialRampToValueAtTime(f2, t + d);
+    const g = c.createGain(); g.gain.setValueAtTime(v || .4, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    src.connect(flt); flt.connect(g); g.connect(c.destination);
+    src.start(t); src.stop(t + d + .03);
+  },
+  click(){ this.tone(880,.05,'square',.07); this.tone(1320,.04,'square',.05,.035); },
+  tick(){ this.tone(1700,.035,'square',.05); },
+  success(){ [523,659,784,1047].forEach((f,i)=>this.tone(f,.13,'square',.09,i*.07)); this.tone(2093,.25,'triangle',.06,.28); },
+  fail(){ this.tone(330,.2,'sawtooth',.09,0,240); this.tone(220,.35,'sawtooth',.09,.18,90); },
+  boom(){
+    this.noise(.45,.12,0,'highpass',4000,6000);          // ssssss...
+    this.noise(1.1,.7,.42,'lowpass',2200,60);            // BOOM
+    this.tone(90,.7,'sine',.5,.42,28);                   // sub thump
+  },
+  fanfare(good){
+    const seq = good ? [523,659,784,659,784,1047] : [392,370,349,330];
+    seq.forEach((f,i)=>this.tone(f, good?.14:.22, 'square', .08, i*(good?.11:.2)));
+  }
+};
+
+/* ================= PIXEL ICONS (inline SVG, zero external images) ================= */
+function pxSvg(rows, pal){
+  let r = '';
+  for (let y=0;y<rows.length;y++){
+    const row = rows[y];
+    for (let x=0;x<row.length;x++){
+      const c = row[x];
+      if (c !== '.' && pal[c]) r += '<rect x="'+x+'" y="'+y+'" width="1.04" height="1.04" fill="'+pal[c]+'"/>';
+    }
+  }
+  return '<svg class="px" viewBox="0 0 8 8" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">'+r+'</svg>';
+}
+function texRows(seed){
+  const rows = [];
+  for (let y=0;y<8;y++){ let s=''; for (let x=0;x<8;x++){ const v = h2(x,y,seed); s += v<.45?'0':v<.75?'1':v<.9?'2':'3'; } rows.push(s); }
+  return rows;
+}
+const ICONS = {
+  planks:{n:'Oak Planks', m:['aaaaaaab','cccccccc','abaaaaaa','cccccccc','aaaabaaa','cccccccc','aaaaaaba','cccccccc'], p:{a:'#b8945f',b:'#9c7a4a',c:'#7a5e36'}},
+  stick:{n:'Stick', m:['......ab','.....ab.','....ab..','...ab...','..ab....','.ab.....','ab......','b.......'], p:{a:'#a8792f',b:'#5c3d14'}},
+  cobble:{n:'Cobblestone', t:['#7a7a7a','#5e5e5e','#a0a0a0','#3f3f3f'], s:3},
+  dirt:{n:'Dirt', t:['#866043','#6c4b33','#9a7451','#5b3d26'], s:7},
+  sand:{n:'Sand', t:['#dbcf9c','#cfc08b','#ebe2b8','#b9a970'], s:11},
+  wool:{n:'White Wool', t:['#e9ecec','#d9dcdd','#ffffff','#c4c8c9'], s:5},
+  goldblock:{n:'Block of Gold', t:['#f5d73a','#e8c42a','#fff39a','#c29d14'], s:13},
+  diamondblock:{n:'Block of Diamond', t:['#4aedd9','#36cdbb','#b5fff6','#249c8f'], s:17},
+  coal:{n:'Coal', m:['........','..kkk...','.khkkk..','.kkkhkk.','.kkkkkk.','..kkhk..','...kk...','........'], p:{k:'#252525',h:'#5a5a5a'}},
+  iron:{n:'Iron Ingot', m:['........','........','..hhhhh.','.hlllllh','hllllldd','hdddddd.','........','........'], p:{h:'#ffffff',l:'#d8d8d8',d:'#9a9a9a'}},
+  gold:{n:'Gold Ingot', m:['........','........','..hhhhh.','.hlllllh','hllllldd','hdddddd.','........','........'], p:{h:'#fffbb0',l:'#f5d73a',d:'#b58e10'}},
+  diamond:{n:'Diamond', m:['........','..hhhh..','.hllllh.','hllllldd','.llllld.','..llld..','...ld...','........'], p:{h:'#d6fffa',l:'#4aedd9',d:'#1f9e8e'}},
+  redstone:{n:'Redstone Dust', m:['........','.r...d..','...rr...','..rrdr.r','.d.rr...','...r..r.','.r...d..','........'], p:{r:'#ff2a1a',d:'#9c0000'}},
+  string:{n:'String', m:['........','.w......','..w.....','...ww...','.....w..','....s.w.','.......w','........'], p:{w:'#f2f2f2',s:'#b5b5b5'}},
+  gunpowder:{n:'Gunpowder', m:['........','........','...gG...','..gGgg..','.gGgGgg.','gggGgGgg','........','........'], p:{g:'#6a6a6a',G:'#9a9a9a'}},
+  wheat:{n:'Wheat', m:['.....y..','....yd..','...yd.y.','..yd.yd.','.yd.yd..','g..yd...','.g......','g.......'], p:{y:'#e3c04f',d:'#a8862d',g:'#6b8f2a'}},
+  slime:{n:'Slimeball', m:['........','..dddd..','.dgghgd.','.dghggd.','.dggggd.','.dggggd.','..dddd..','........'], p:{g:'#7ec850',h:'#c7ff95',d:'#4a8f2a'}},
+  sugar:{n:'Sugar', m:['........','........','...w....','..wsw...','.wswsw..','wswswsww','........','........'], p:{w:'#ffffff',s:'#d6d6d6'}},
+  glass:{n:'Glass', m:['gggggggg','g......g','g.h....g','g..h...g','g......g','g....h.g','g......b','gbbbbbbb'], p:{g:'#cfeef7',h:'#ffffff',b:'#8fc6d8'}},
+  apple:{n:'Apple', m:['....b...','...bl...','.aa.aa..','aahaaaa.','aaaaaaa.','aaaaaaa.','.aaaaa..','..a.a...'], p:{a:'#d7263d',h:'#ff9aa5',b:'#5c3d14',l:'#4caf50'}},
+  gapple:{n:'Golden Apple', m:['....b...','...bl...','.aa.aa..','aahaaaa.','aaaaaaa.','aaaaaaa.','.aaaaa..','..a.a...'], p:{a:'#f5d73a',h:'#fffbd0',b:'#5c3d14',l:'#4caf50'}},
+  pumpkin:{n:'Pumpkin', m:['...gg...','.oOoOoO.','oOoOoOoO','oOoOoOoO','oOoOoOoO','oOoOoOoO','.oOoOoO.','........'], p:{o:'#e38a1d',O:'#c46d0e',g:'#5b8a2b'}},
+  carved:{n:'Carved Pumpkin', m:['...gg...','.oOoOoO.','oOkOoOkO','oOoOoOoO','oOkkkkoO','oOoOoOoO','.oOoOoO.','........'], p:{o:'#e38a1d',O:'#c46d0e',g:'#5b8a2b',k:'#3a1a00'}},
+  torch:{n:'Torch', m:['........','...yy...','...oy...','...bb...','...bb...','...bb...','...bb...','........'], p:{y:'#ffe066',o:'#ff8a00',b:'#8a5a2b'}},
+  creeper:{n:'Creeper Head', m:['gGggggGg','ggGggggG','gkkggkkg','gkkggkkg','gggkkggg','ggkkkkgg','ggkkkkgg','ggkggkgg'], p:{g:'#5fbf3a',G:'#8fe06a',k:'#111111'}},
+  tnt:{n:'TNT', m:['rRrRrRrR','rrrrrrrr','wwwwwwww','wkkwkkkw','wwwwwwww','rrrrrrrr','rRrRrRrR','rrrrrrrr'], p:{r:'#db2b1f',R:'#a01812',w:'#eeeeee',k:'#222222'}},
+  table:{n:'Crafting Table', m:['llllllll','lcclccdl','lcclccdl','llllllll','lccdlccl','lccdlccl','lddllddl','llllllll'], p:{l:'#5c3d1e',c:'#b5874a',d:'#8a6232'}},
+  furnace:{n:'Furnace', m:['ssssssss','sdssdsss','ssssssss','sskkkkss','skkkkkks','skyooyks','skooooks','ssssssss'], p:{s:'#8a8a8a',d:'#5e5e5e',k:'#2b2b2b',o:'#ff9b1a',y:'#ffd84a'}},
+  chest:{n:'Chest', m:['dddddddd','dbbbbbbd','dbbbbbbd','dkkyykkd','dbbyybbd','dbbbbbbd','dbbbbbbd','dddddddd'], p:{b:'#a5752c',d:'#5a3c14',k:'#3a2510',y:'#d9d9d9'}},
+  piston:{n:'Piston', m:['pppppppp','pppppppp','sssbbsss','sssbbsss','sssbbsss','sdssssds','ssssssss','sdsssdss'], p:{p:'#b8945f',s:'#7f7f7f',d:'#5a5a5a',b:'#c9c9c9'}},
+  bread:{n:'Bread', e:'🍞'}, pork:{n:'Cooked Porkchop', e:'🍖'}, milk:{n:'Milk Bucket', e:'🥛'},
+  egg:{n:'Egg', e:'🥚'}, chicken:{n:'Chicken (concerned)', e:'🐔'}
+};
+const _iconCache = {};
+function icon(k){
+  if (!k) return '';
+  if (_iconCache[k]) return _iconCache[k];
+  const d = ICONS[k]; let h;
+  if (!d) h = '<span class="emo">'+k+'</span>';
+  else if (d.e) h = '<span class="emo">'+d.e+'</span>';
+  else if (d.t) h = pxSvg(texRows(d.s), {0:d.t[0],1:d.t[1],2:d.t[2],3:d.t[3]});
+  else h = pxSvg(d.m, d.p);
+  return (_iconCache[k] = h);
+}
+
+/* ================= QUESTION BANK ================= */
+/* craft: g = 9 comma-separated slots, o[0] is the CORRECT option, r = result icon, w = explanation, c = cursed */
+const CRAFTS = [
+  {g:'planks,planks,,planks,planks,,,,', o:['Crafting Table','Chest','Barrel','A Very Square Boat'], r:'table', w:'Four planks in a 2×2 = Crafting Table. The first thing you craft. The last thing you respect.'},
+  {g:',planks,,,planks,,,,', o:['4 Sticks','Ladder','Fence','1 Extremely Tall Plank'], r:'stick', w:'Two planks stacked vertically = 4 sticks. The stick economy is booming.'},
+  {g:'cobble,cobble,cobble,cobble,,cobble,cobble,cobble,cobble', o:['Furnace','Dispenser','Stonecutter','Cobblestone Donut'], r:'furnace', w:'8 cobblestone around an empty middle = Furnace. Yes, it is technically a donut.'},
+  {g:'planks,planks,planks,planks,,planks,planks,planks,planks', o:['Chest','Barrel','Shulker Box','Wooden Donut (Hollow)'], r:'chest', w:'8 planks in a ring = Chest. Barrels use slabs, shulker boxes need shulker shells.'},
+  {g:',coal,,,stick,,,,', o:['4 Torches','Campfire','Lantern','Soul Torch'], r:'torch', w:'Coal on a stick = 4 torches. Soul torches also need soul sand or soul soil.'},
+  {g:'diamond,diamond,diamond,,stick,,,stick,', o:['Diamond Pickaxe','Diamond Axe','Diamond Hoe','Diamond Trident'], r:'⛏️', w:'Three across, two sticks down: the holy T. Tridents cannot be crafted at all.'},
+  {g:'gunpowder,sand,gunpowder,sand,gunpowder,sand,gunpowder,sand,gunpowder', o:['TNT','Sand Sandwich','Firework Star','Creeper Spawn Egg'], r:'tnt', w:'5 gunpowder + 4 sand in a checkerboard = TNT. Spawn eggs are not craftable.'},
+  {g:',stick,string,stick,,string,,stick,string', o:['Bow','Fishing Rod','Crossbow','Tiny Harp'], r:'🏹', w:'3 sticks + 3 string = Bow. Crossbows need iron, a tripwire hook and only 2 string.'},
+  {g:',,,wheat,wheat,wheat,,,', o:['Bread','Hay Bale','Cookie','Wheat Burrito'], r:'bread', w:'3 wheat in a row = Bread. 9 wheat would be a hay bale; cookies need cocoa beans.'},
+  {g:',,,iron,,iron,,iron,', o:['Bucket','Cauldron','Iron Helmet','Minecart'], r:'🪣', w:'3 iron in a V = Bucket. A cauldron uses 7, a minecart uses 5.'},
+  {g:',,,glass,glass,glass,glass,glass,glass', o:['16 Glass Panes','6 Glass Panes','Glass Door','Window Block™'], r:'glass', w:"6 glass → 16 panes. Mojang's math department is undefeated."},
+  {g:'milk,milk,milk,sugar,egg,sugar,wheat,wheat,wheat', o:['Cake','Pumpkin Pie','Cookie','The Cake Is A Lie'], r:'🎂', w:'Milk, sugar, egg and wheat = Cake. And you even get your empty buckets back.'},
+  {g:'goldblock,goldblock,goldblock,goldblock,apple,goldblock,goldblock,goldblock,goldblock', o:['Nothing (removed in 1.9)','Enchanted Golden Apple','Golden Apple','Notch Apple Juice'], r:'❌', w:'The 8-gold-block "Notch Apple" recipe was removed in 1.9. Now it is loot-only. Sorry, 2013 kid.'},
+  {g:'gold,gold,gold,gold,apple,gold,gold,gold,gold', o:['Golden Apple','Enchanted Golden Apple','Golden Carrot','Fool\'s Apple'], r:'gapple', w:'8 gold INGOTS around an apple = regular Golden Apple. Ingots, not blocks. Wallet says thanks.'},
+  {g:',,,wool,wool,wool,planks,planks,planks', o:['Bed','Carpet','Loom','A Fluffy Table'], r:'🛏️', w:'3 wool over 3 planks = Bed. Do not try sleeping in the Nether. Trust me.'},
+  {g:'string,string,,string,slime,,,,string', o:['2 Leads','Sticky Piston','Fishing Rod','Slime Necklace'], r:'🪢', w:'4 string + 1 slimeball = 2 Leads. Now go walk your llama.'},
+  {g:',carved,,,torch,,,,', o:["Jack o'Lantern",'Lantern','Pumpkin Pie','Spooky Torch Hat'], r:'🎃', w:"Carved pumpkin on a torch = Jack o'Lantern. A light source that judges you."},
+  {g:'planks,planks,planks,cobble,iron,cobble,cobble,redstone,cobble', o:['Piston','Observer','Dispenser','Wooden Lid Machine'], r:'piston', w:'Planks, cobble, iron and redstone = Piston. Add a slimeball for the sticky version.'},
+  {g:'diamond,diamond,diamond,diamond,diamond,diamond,diamond,diamond,diamond', o:['Block of Diamond','Diamond Ore','Beacon','9 Diamonds (Refund)'], r:'diamondblock', w:'9 diamonds = Block of Diamond. Ore cannot be crafted. Flexing can.'},
+  // ---- cursed ones ----
+  {c:1, g:'dirt,dirt,dirt,dirt,dirt,dirt,dirt,dirt,dirt', o:['Dirt Hut (Fully Furnished)','Diamond (please?)','Grass Block','Bedrock'], r:'🏚️', w:'Lore-accurate. Every legend starts in a dirt hut. Most of them also end there.'},
+  {c:1, g:'dirt,dirt,dirt,,stick,,,stick,', o:['Dirt Pickaxe (Mines Your Dignity)','Stone Pickaxe','Netherite Pickaxe','Golden Shovel'], r:'💩', w:'Cursed logic: dirt in, dirt pickaxe out. Durability: 1. Shame: infinite.'},
+  {c:1, g:'stick,stick,stick,stick,stick,stick,stick,stick,stick', o:['One Lore-Accurate Long Stick','Beacon','Netherite Ingot','Elytra'], r:'🦯', w:'In vanilla 9 sticks do nothing. In cursed land, you get one VERY long stick.'},
+  {c:1, g:'creeper,creeper,creeper,creeper,tnt,creeper,creeper,creeper,creeper', o:['Creeper Family Reunion (RUN)','Peace Treaty','Birthday Cake','Diamond Armor'], r:'💥', w:'Eight creepers and a TNT. Nobody survives the family reunion.'},
+  {c:1, g:',bread,,,pork,,,bread,', o:['The Sandwich Mojang Will Never Add','Cooked Porkchop','Hay Bale','Rabbit Stew'], r:'🥪', w:'Ten years of community requests. Still no sandwich. This is the only place it exists.'},
+  {c:1, g:'diamond,diamond,diamond,diamond,dirt,diamond,diamond,diamond,diamond', o:['Rich Dirt (Still Dirt)','Diamond Ore','Beacon','Emerald'], r:'🤑', w:'You surrounded dirt with 8 diamonds. It is still dirt. It just has better posture now.'},
+  {c:1, g:'egg,egg,egg,egg,chicken,egg,egg,egg,egg', o:["Chicken's Worst Nightmare",'Spawn Egg','Cake','Bedrock'], r:'😱', w:'Surrounding a chicken with its own eggs is a war crime in 14 biomes.'}
+];
+
+/* fact: s = statement, real = true/false, w = explanation */
+const FACTS = [
+  {s:'Creepers exist because Notch messed up the pig model, making it tall instead of long.', real:true, w:'REAL. A coding mix-up of length and height created the creeper. Happy accident, unhappy players.'},
+  {s:'Cats and ocelots scare creepers away.', real:true, w:'REAL. Creepers flee from cats. Get a cat. Save your house.'},
+  {s:'Wearing a carved pumpkin lets you look at Endermen without making them angry.', real:true, w:'REAL. Terrible view, excellent survival.'},
+  {s:"Naming a sheep 'jeb_' with a name tag makes its wool cycle through rainbow colors.", real:true, w:'REAL. Shearing it still only drops the original wool color though.'},
+  {s:"Naming a mob 'Dinnerbone' or 'Grumm' flips it upside down.", real:true, w:'REAL. Named after Mojang devs. Upside-down cows are peak cinema.'},
+  {s:'A pig struck by lightning turns into a zombified piglin.', real:true, w:'REAL. Bacon to brain-eater in one bolt.'},
+  {s:'A villager struck by lightning turns into a witch.', real:true, w:'REAL. Hrmm → hehehe.'},
+  {s:"The ghast's sounds were recorded from composer C418's cat.", real:true, w:'REAL. A sleepy cat made the scariest noise in the Nether.'},
+  {s:'Feeding a cookie to a parrot kills it.', real:true, w:'REAL. Chocolate is toxic to real parrots too. Use seeds, monster.'},
+  {s:'Wearing at least one piece of gold armor keeps most piglins from attacking you.', real:true, w:'REAL. Piglins love bling. Do not mine their gold blocks though.'},
+  {s:'Trying to sleep in a bed in the Nether makes it explode.', real:true, w:'REAL. Speedrunners weaponize this. Casuals get obliterated by it.'},
+  {s:'Feeding raw fish to a dolphin can make it lead you to buried treasure, shipwrecks or ruins.', real:true, w:'REAL. The ocean GPS runs on cod.'},
+  {s:'Axolotls sometimes play dead when they get hurt.', real:true, w:'REAL. Relatable behavior.'},
+  {s:'Snow golems take damage in hot biomes like deserts and the Nether.', real:true, w:'REAL. They melt. Obviously. They are made of snow, buddy.'},
+  {s:'Bees die some time after stinging you.', real:true, w:'REAL. They lose their stinger and pass on. Do not anger the bees.'},
+  {s:'Chickens never take fall damage.', real:true, w:'REAL. They flap their little wings and float down. Invincible kings.'},
+  {s:'Baby pandas sometimes sneeze, and the sneeze can drop a slimeball.', real:true, w:'REAL. Panda boogers are a valid slimeball farm.'},
+  {s:'Lava flows faster and farther in the Overworld than in the Nether.', real:false, w:'FAKE. It is the opposite: Nether lava is faster and spreads farther. Respect the Nether.'},
+  {s:'Placing 4 Diamond Blocks in a T-shape and adding a pumpkin summons a Diamond Golem.', real:false, w:'FAKE. That is the iron golem build. Diamond golems are fan fiction.'},
+  {s:'Creepers are terrified of chickens.', real:false, w:'FAKE. Cats, not chickens. Chickens are terrified of everything, including you.'},
+  {s:'Wolves can be tamed using rotten flesh.', real:false, w:'FAKE. Bones tame wolves. Rotten flesh only feeds dogs you already own.'},
+  {s:'Playing any music disc in a jukebox near the Warden puts it to sleep.', real:false, w:'FAKE. Noise ATTRACTS the Warden. You basically rang the dinner bell.'},
+  {s:'Eating 64 cookies in a row permanently increases your walking speed.', real:false, w:'FAKE. It gives you exactly what 64 cookies gives a real person: regret.'},
+  {s:"Naming a zombie 'Herobrine' gives it glowing white eyes.", real:false, w:'FAKE. Herobrine has been "removed" in like 40 changelogs. Still not real.'},
+  {s:'Endermen can pick up any block, including diamond ore.', real:false, w:'FAKE. They only grab certain blocks like dirt, sand, flowers and TNT. Your diamonds are safe. From them.'},
+  {s:'Mining bedrock in survival is possible if you use a Netherite pickaxe with Efficiency V.', real:false, w:'FAKE. Bedrock is unbreakable in survival no matter what. Exploits do not count, nerd.'},
+  {s:'Using flint and steel on a creeper makes it ignite and explode.', real:true, w:'REAL. Lighting a creeper with flint and steel starts its fuse. Peak "why would you do that" gameplay.'}
+];
+
+/* scenario: e = emoji, s = text, o[0] = CORRECT option, w = explanation */
+const SCENARIOS = [
+  {e:'🕳️', s:'You fall into a ravine with 1 water bucket, 3 dirt blocks and a confused creeper. What survives?', o:['You. MLG water bucket clutch.','The creeper. It is confused, not stupid.','Only the 3 dirt blocks. They always survive.','Nobody. The ravine wins.'], w:'Place the water right before you land and fall damage is cancelled. The creeper is still confused. So are you.'},
+  {e:'👁️', s:'You accidentally looked at an Enderman and it is SCREAMING at you. You have a water bucket, a carved pumpkin and 1 cookie.', o:['Place the water and stand in it','Put on the pumpkin now (it fixes everything)','Offer it the cookie','Stare harder to assert dominance'], w:'Endermen take damage from water and teleport away. The pumpkin only helps BEFORE you look.'},
+  {e:'👻', s:'Nether. Half a heart left. A ghast fireball is flying straight at you. Your hands are empty.', o:['Punch the fireball back at it','Place a bed and sleep it off','Dig straight down','Scream in all caps'], w:'Hitting a ghast fireball deflects it. Send it back and the ghast might even die. Bed = instant explosion here.'},
+  {e:'🔥', s:'You fell into lava in the Overworld wearing full diamond, with a water bucket in your hotbar.', o:['Dump the water on yourself','Swim deeper to find the bottom','Drink the water bucket','Write a will in chat'], w:'Water extinguishes you and turns surrounding lava into obsidian or cobble. Then get out. Fast.'},
+  {e:'🌋', s:'Same lava situation... but this time you are in the NETHER. Water bucket and a Fire Resistance potion in your hotbar.', o:['Drink Fire Resistance','Dump the water on yourself','Place a bed for comfort','Pillar up with netherrack while burning'], w:'Water instantly evaporates in the Nether. Fire Resistance is the only real save.'},
+  {e:'🫧', s:'You are deep underwater on your last bubble of air. Your hotbar has a wooden door.', o:['Place the door to make an air pocket','Eat kelp for oxygen','Swim down to find a cave','Hold your breath IRL harder'], w:'Doors (and signs) create a breathable pocket underwater. Old-school ocean survival trick.'},
+  {e:'🐷', s:'You wander into a bastion surrounded by piglins. You have gold boots in your inventory and a pickaxe.', o:['Equip the gold boots','Mine the gold blocks to calm them','Throw them your diamonds','Do the default dance'], w:'Wearing any gold armor keeps most piglins chill. Mining gold blocks near them? Instant riot.'},
+  {e:'🖤', s:'The Warden is emerging 10 blocks away. You have 16 snowballs, wool, and absolutely zero courage.', o:['Throw snowballs away from you and sneak off','Fight it barehanded','Play a music disc to soothe it','Sprint past it while screaming'], w:'The Warden tracks vibrations. Projectiles landing elsewhere distract it, and sneaking keeps you quiet.'},
+  {e:'💣', s:'Ssssss... a creeper is hissing right behind you in an open field. No shield, no cat.', o:['Sprint away immediately','Turn around and give it a hug','Crouch and wait','Feed it gunpowder'], w:'Getting out of range cancels the fuse. A sprint-hit to knock it back works too.'},
+  {e:'🌙', s:'Night one. No shelter, no torches. You have 3 dirt blocks and a sheep is nearby.', o:['Pillar up 3 dirt and wait it out','Sleep on top of the sheep','Fight every zombie barehanded','Start a TNT business'], w:'Classic nerd pole: most mobs cannot reach you three blocks up. Watch out for skeletons and spiders.'},
+  {e:'🦇', s:'Phantoms keep swooping at you every night and you have not slept in 5 in-game days.', o:['Sleep in a bed','Build your base higher','Wear a pumpkin','Befriend them with fish'], w:'Phantoms spawn when you skip sleep for 3+ nights. Sleeping resets the timer.'},
+  {e:'🐉', s:'The Ender Dragon is perched on the exit fountain. You have 5 beds and a big ego.', o:['Place a bed near it and try to sleep','Throw the beds at it','Take a nap and hope it leaves','Build a bed fort and hide'], w:'Beds explode in the End too. Speedrunners blow up the perched dragon with them. Mind your own health.'},
+  {e:'🧑‍🌾', s:'You need Mending. Your new librarian villager offers garbage trades and you have NOT traded with him yet.', o:['Break and replace his lectern to reroll','Hit him until prices drop','Leave a bad review','Lock him in a minecart forever'], w:'An untraded villager rerolls trades when you break and replace their job block. Lectern-rolling legend.'},
+  {e:'🏹', s:'A skeleton is sniping you from a cliff. You have a shield in your offhand.', o:['Hold up the shield and close the distance','Turn around so it hits your back','Jump off the cliff toward it','Throw your shield at it'], w:'Shields block arrows completely. Block, advance, bonk.'}
+];
+
+/* ================= ROASTS ================= */
+const ROAST_OK = [
+  'Okay, sweaty. Who let you out of the speedrun Discord?',
+  'Clean. Like a perfectly spawn-proofed base.',
+  'You have read the wiki at 3AM, haven’t you.',
+  'Even the villagers went "hrmm" in approval.',
+  'Notch felt that one.',
+  'Big brain. Redstone engineer energy.',
+  '+1 XP level. Don’t waste it on a Bane of Arthropods book.',
+  'Correct. Your dirt hut has been upgraded to a cobble hut.',
+  'Certified tryhard. I mean that as a compliment. Mostly.',
+  'That was smoother than a minecart on powered rails.',
+  'W. Take this golden carrot as a reward. 🥕'
+];
+const ROAST_BAD = [
+  'Bro tried to craft a saddle in vanilla. Uninstall.',
+  'That answer was so bad a villager lowered his prices out of pity.',
+  'Respectfully? Go back to Peaceful.',
+  'You play on touch controls with your elbows, don’t you.',
+  'Even a baby zombie would’ve known that.',
+  'Wrong. Your diamonds have been sent to the lava.',
+  'Skill issue detected. Respawn?',
+  'That’s the kind of answer that gets you banned from the SMP.',
+  'You punched a tree and the tree won.',
+  'The Ender Dragon is laughing at you in purple particles.',
+  'Ooh. Bold. Wrong, but bold.',
+  'I’ve seen smarter decisions from a chicken in a waterfall.'
+];
+const ROAST_TIMEOUT = [
+  'Sssss... BOOM. You stood there like a creeper hug enthusiast.',
+  'AFK detected. Your hunger bar emptied while you thought.',
+  'You took so long the phantoms showed up.',
+  'Time’s up. A broken redstone clock ticks faster than your brain.',
+  'Lagged out IRL? Try turning your brain off and on again.',
+  'The creeper got bored waiting and exploded out of spite.'
+];
+const SPLASHES = ['Now with 40% more creepers!','Not affiliated with Mojang!','Herobrine removed (again)!','100% cursed!','Also try touching grass!','Contains 0 sandwiches!','Sssssss...','Ten rounds of pain!','Hrmm!','Villager approved!','Dirt huts welcome!','Bedrock-proof!','Do not feed the parrot!','Mind the lava!'];
+
+/* ================= RANKS ================= */
+const RANKS = [
+  {d:0,  e:12, t:'Dirt Hut Noob',               i:'🛖', q:'You live in a 3×3 dirt box and you are proud of it.'},
+  {d:2,  e:3,  t:'Wooden Pickaxe Enjoyer',      i:'🪵', q:'You still punch trees for fun. We see you.'},
+  {d:4,  e:6,  t:'Villager Trade Scammer',      i:'🧑‍🌾', q:'Hrmm. You know just enough to be dangerous.'},
+  {d:6,  e:10, t:'Redstone Spaghetti Chef',     i:'🍝', q:'It works. Nobody knows how. Including you.'},
+  {d:7,  e:14, t:'Netherite Grinder',           i:'⛏️', q:'Ancient debris fears your bed explosions.'},
+  {d:8,  e:19, t:'Seed-Glitched Speedrunner',   i:'⚡', q:'You have frame-perfect knowledge and zero social life.'},
+  {d:9,  e:25, t:'Ender Dragon Slayer',         i:'🐉', q:'The purple beam bows before you.'},
+  {d:10, e:32, t:"Herobrine's Therapist",       i:'👁️', q:'Even Herobrine opens up to you. Absolute legend.'}
+];
+function rankFor(run){
+  const key = run.mode === 'daily' ? 'd' : 'e';
+  let r = RANKS[0];
+  for (const x of RANKS) if (run.correct >= x[key]) r = x;
+  return r;
+}
+
+/* ================= DOM REFS ================= */
+const scr = { start:$('#scrStart'), game:$('#scrGame'), result:$('#scrResult') };
+const el = {
+  stage:$('#stage'), opts:$('#opts'), feedback:$('#feedback'), verdict:$('#verdict'), roast:$('#roast'), why:$('#why'),
+  nextBtn:$('#nextBtn'), timerFill:$('#timerFill'), timerNum:$('#timerNum'),
+  hudRound:$('#hudRound'), hudScore:$('#hudScore'), hudCombo:$('#hudCombo'), hudHearts:$('#hudHearts'),
+  toast:$('#toast'), flash:$('#flash'), app:$('#app')
+};
+function show(name){
+  Object.values(scr).forEach(s => s.classList.remove('active'));
+  scr[name].classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ================= BACKGROUND + TITLE ================= */
+function paintBackground(){
+  try {
+    const c = document.createElement('canvas'); c.width = 16; c.height = 16;
+    const x = c.getContext('2d');
+    const pal = ['#3a281b','#2f2015','#47321f','#251810'];
+    for (let i=0;i<16;i++) for (let j=0;j<16;j++){ const v = h2(i,j,99); x.fillStyle = pal[v<.45?0:v<.75?1:v<.9?2:3]; x.fillRect(i,j,1,1); }
+    document.body.style.backgroundImage = 'url(' + c.toDataURL() + ')';
+  } catch(e){}
+}
+const FONT = {
+  C:['.####','#....','#....','#....','.####'], U:['#...#','#...#','#...#','#...#','.###.'],
+  R:['####.','#...#','####.','#..#.','#...#'], S:['.####','#....','.###.','....#','####.'],
+  E:['#####','#....','####.','#....','#####'], D:['####.','#...#','#...#','#...#','####.'],
+  A:['.###.','#...#','#####','#...#','#...#'], F:['#####','#....','####.','#....','#....'],
+  T:['#####','..#..','..#..','..#..','..#..'], I:['###','.#.','.#.','.#.','###'],
+  N:['#...#','##..#','#.#.#','#..##','#...#'], G:['.####','#....','#..##','#...#','.###.'],
+  H:['#...#','#...#','#####','#...#','#...#'], O:['.###.','#...#','#...#','#...#','.###.'],
+  '&':['.#...','#.#..','.#.#.','#..#.','.##.#'], ' ':['..','..','..','..','..']
+};
+function buildTitle(){
+  const lines = [
+    {t:'CURSED',   c:['#ffffff','#e8e8e8','#c9c9c9','#a8a8a8','#8a8a8a']},
+    {t:'CRAFTING', c:['#ffffff','#e8e8e8','#c9c9c9','#a8a8a8','#8a8a8a']},
+    {t:'& CHAOS',  c:['#c6ff9e','#8fe06a','#5fbf3a','#3f9a2e','#2c7a1f']}
+  ];
+  const widthOf = s => [...s].reduce((w,ch)=>w + (FONT[ch]?FONT[ch][0].length:3) + 1, -1);
+  const maxW = Math.max(...lines.map(l => widthOf(l.t)));
+  const lineH = 6.6, pad = 1;
+  let rects = '', shadows = '';
+  lines.forEach((ln, li) => {
+    let x = pad + (maxW - widthOf(ln.t)) / 2;
+    const y0 = pad + li * lineH;
+    for (const ch of ln.t){
+      const g = FONT[ch] || FONT[' '];
+      g.forEach((row, ry) => {
+        for (let rx=0; rx<row.length; rx++){
+          if (row[rx] === '#'){
+            const X = (x + rx).toFixed(2), Y = (y0 + ry).toFixed(2);
+            shadows += '<rect x="'+(x+rx+.35).toFixed(2)+'" y="'+(y0+ry+.35).toFixed(2)+'" width="1" height="1"/>';
+            rects += '<rect x="'+X+'" y="'+Y+'" width="1.02" height="1.02" fill="'+ln.c[ry]+'"/>';
+          }
+        }
+      });
+      x += g[0].length + 1;
+    }
+  });
+  const W = maxW + pad*2 + .5, H = lines.length * lineH + pad;
+  const svg = $('#titleSvg');
+  svg.setAttribute('viewBox', '0 0 ' + W.toFixed(2) + ' ' + H.toFixed(2));
+  svg.setAttribute('shape-rendering', 'crispEdges');
+  svg.innerHTML = '<g fill="#1d1d1d">' + shadows + '</g>' + rects;
+}
+
+/* ================= HEART ICON ================= */
+const HEART_FULL = pxSvg(['.rr.rr..','rhrrrrr.','rrrrrrr.','rrrrrrr.','.rrrrr..','..rrr...','...r....','........'], {r:'#e0201a',h:'#ffb0a8'});
+const HEART_EMPTY = pxSvg(['.kk.kk..','k..k..k.','k.....k.','k.....k.','.k...k..','..k.k...','...k....','........'], {k:'#1a1a1a'});
+
+/* ================= GAME STATE ================= */
+let G = null;
+let countdownTimer = null;
+
+function makeRound(kind, raw, r){
+  if (kind === 'craft'){
+    const order = shuffle([0,1,2,3], r);
+    return { type:'craft', raw, grid:raw.g.split(','), opts:order.map(i=>raw.o[i]), answer:order.indexOf(0), res:raw.r, why:raw.w, cursed:!!raw.c, time:10 };
+  }
+  if (kind === 'fact'){
+    return { type:'fact', raw, text:raw.s, opts:['✔ REAL','✘ FAKE'], answer: raw.real ? 0 : 1, why:raw.w, time:10 };
+  }
+  const order = shuffle([0,1,2,3], r);
+  return { type:'scen', raw, emoji:raw.e, text:raw.s, opts:order.map(i=>raw.o[i]), answer:order.indexOf(0), why:raw.w, time:14 };
+}
+
+function buildDaily(){
+  const r = mulberry32(hashStr('cursed-crafting-chaos|' + dayKey()));
+  const crafts = shuffle(CRAFTS, r).slice(0,4).map(q => makeRound('craft', q, r));
+  const facts  = shuffle(FACTS, r).slice(0,3).map(q => makeRound('fact', q, r));
+  const scens  = shuffle(SCENARIOS, r).slice(0,3).map(q => makeRound('scen', q, r));
+  const first = crafts.shift(); // always open with a crafting grid
+  return [first].concat(shuffle(crafts.concat(facts, scens), r));
+}
+
+function endlessBag(){
+  const all = CRAFTS.map(q=>['craft',q]).concat(FACTS.map(q=>['fact',q]), SCENARIOS.map(q=>['scen',q]));
+  return shuffle(all);
+}
+function nextEndless(){
+  if (!G.bag.length) G.bag = endlessBag();
+  const [k, q] = G.bag.pop();
+  return makeRound(k, q, Math.random);
+}
+
+function startGame(mode){
+  Sfx.init();
+  clearInterval(countdownTimer);
+  G = {
+    mode, idx:0, score:0, correct:0, combo:0, bestCombo:0, lives:ENDLESS_LIVES, marks:[], locked:false, raf:0,
+    rounds: mode === 'daily' ? buildDaily() : [], bag: mode === 'endless' ? endlessBag() : []
+  };
+  if (mode === 'endless') G.rounds.push(nextEndless());
+  show('game');
+  loadRound();
+}
+
+function loadRound(){
+  G.q = G.rounds[G.idx];
+  G.locked = false;
+  el.feedback.classList.remove('show');
+  renderHud();
+  renderRound();
+  startTimer(G.q.time);
+}
+
+function renderHud(){
+  el.hudRound.textContent = G.mode === 'daily' ? ('RND ' + (G.idx+1) + '/' + DAILY_ROUNDS) : ('RND ' + (G.idx+1));
+  el.hudScore.textContent = G.score;
+  if (G.combo >= 2){ el.hudCombo.style.display = ''; el.hudCombo.textContent = '🔥x' + G.combo; }
+  else el.hudCombo.style.display = 'none';
+  if (G.mode === 'endless'){
+    el.hudHearts.style.display = '';
+    let h = ''; for (let i=0;i<ENDLESS_LIVES;i++) h += i < G.lives ? HEART_FULL : HEART_EMPTY;
+    el.hudHearts.innerHTML = h;
+  } else el.hudHearts.style.display = 'none';
+}
+
+const ARROW_SVG = '<span class="arrow" aria-hidden="true">' + pxSvg(['....a...','....aa..','aaaaaaa.','aaaaaaaa','aaaaaaa.','....aa..','....a...','........'], {a:'#8b8b8b'}) + '</span>';
+
+function renderRound(){
+  const q = G.q;
+  let html = '';
+  if (q.type === 'craft'){
+    html += q.cursed ? '<span class="tag cursed">☠ CURSED RECIPE</span>' : '<span class="tag">📜 RECIPE CHECK</span>';
+    html += '<p class="prompt">' + (q.cursed ? 'Mojang denies all involvement. What does this cursed recipe craft?' : 'What does this craft in vanilla?') + '</p>';
+    html += '<div class="craft"><div class="grid3">';
+    const used = {};
+    q.grid.forEach(k => { const key = k.trim(); if (key) used[key] = (used[key]||0) + 1; html += '<div class="slot" title="' + (key && ICONS[key] ? ICONS[key].n : '') + '">' + icon(key) + '</div>'; });
+    html += '</div>' + ARROW_SVG + '<div class="slot result" id="resultSlot"><span class="q">?</span></div></div>';
+    html += '<div class="legend">' + Object.keys(used).map(k => '<span><i>' + icon(k) + '</i>' + (ICONS[k] ? ICONS[k].n : k) + ' ×' + used[k] + '</span>').join('') + '</div>';
+  } else if (q.type === 'fact'){
+    html += '<span class="tag fact">🧐 REAL OR FAKE?</span>';
+    html += '<div class="fact-card">' + q.text + '</div>';
+  } else {
+    html += '<span class="tag scen">💀 SURVIVAL CHAOS</span>';
+    html += '<div class="scen-emoji">' + q.emoji + '</div>';
+    html += '<div class="scen-text">' + q.text + '</div>';
+  }
+  el.stage.innerHTML = html;
+
+  el.opts.className = 'opts' + (q.type === 'fact' ? ' two' : q.type === 'scen' ? ' one' : '');
+  el.opts.innerHTML = q.opts.map((o,i) => '<button class="btn opt" data-i="' + i + '"><span class="k">' + (i+1) + '</span><span>' + o + '</span></button>').join('');
+}
+
+/* ================= TIMER ================= */
+function startTimer(sec){
+  cancelAnimationFrame(G.raf);
+  G.tLimit = sec * 1000; G.tStart = performance.now(); G.lastSec = sec; G.left = G.tLimit;
+  el.timerNum.textContent = sec;
+  const loop = (now) => {
+    if (G.locked) return;
+    const left = Math.max(0, G.tLimit - (now - G.tStart));
+    G.left = left;
+    const frac = left / G.tLimit;
+    el.timerFill.style.width = (frac * 100) + '%';
+    el.timerFill.className = 'timer-fill' + (frac < .3 ? ' low' : frac < .6 ? ' mid' : '');
+    const s = Math.ceil(left / 1000);
+    if (s !== G.lastSec){ G.lastSec = s; el.timerNum.textContent = s; if (s <= 3 && s > 0) Sfx.tick(); }
+    if (left <= 0){ answer(-1); return; }
+    G.raf = requestAnimationFrame(loop);
+  };
+  G.raf = requestAnimationFrame(loop);
+}
+
+/* ================= ANSWERING ================= */
+function answer(i){
+  if (!G || G.locked) return;
+  G.locked = true;
+  cancelAnimationFrame(G.raf);
+  const q = G.q;
+  const frac = G.left / G.tLimit;
+  const btns = el.opts.querySelectorAll('.opt');
+  btns.forEach((b, bi) => {
+    b.disabled = true;
+    if (bi === q.answer) b.classList.add('correct');
+    else if (bi === i) b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+
+  let verdict, cls, roast, pts = 0;
+  if (i === q.answer){
+    G.correct++; G.combo++; G.bestCombo = Math.max(G.bestCombo, G.combo);
+    const speed = Math.round(frac * 100);
+    const comboBonus = Math.min(100, (G.combo - 1) * 25);
+    pts = 100 + speed + comboBonus;
+    G.score += pts;
+    G.marks.push(frac >= .5 ? 'fast' : 'slow');
+    cls = 'ok'; verdict = (frac >= .7 ? '⚡ LIGHTNING FAST! ' : '✔ CORRECT! ') + (G.combo >= 3 ? '🔥 x' + G.combo + ' COMBO' : '');
+    roast = rnd(ROAST_OK);
+    Sfx.success(); burst();
+  } else if (i === -1){
+    G.combo = 0; G.lives--;
+    G.marks.push('boom');
+    cls = 'boom'; verdict = '💥 TIME\'S UP — KABOOM';
+    roast = rnd(ROAST_TIMEOUT);
+    Sfx.boom(); explodeFx();
+  } else {
+    G.combo = 0; G.lives--;
+    G.marks.push('wrong');
+    cls = 'bad'; verdict = '✘ WRONG!';
+    roast = rnd(ROAST_BAD);
+    Sfx.fail(); shake(false);
+  }
+
+  if (q.type === 'craft'){
+    const rs = $('#resultSlot');
+    if (rs){ rs.innerHTML = icon(q.res); rs.classList.add('reveal'); }
+  }
+
+  el.verdict.className = 'verdict ' + cls;
+  el.verdict.innerHTML = verdict + (pts ? '<span class="pts">+' + pts + '</span>' : '');
+  el.roast.textContent = roast;
+  el.why.textContent = q.why;
+
+  const over = G.mode === 'daily' ? (G.idx + 1 >= DAILY_ROUNDS) : (G.lives <= 0);
+  el.nextBtn.textContent = over ? '🏆 SEE RESULTS' : 'NEXT ▶';
+  el.feedback.classList.add('show');
+  renderHud();
+  setTimeout(() => { el.feedback.scrollIntoView({behavior:'smooth', block:'nearest'}); el.nextBtn.focus({preventScroll:true}); }, 60);
+}
+
+function next(){
+  if (!G || !G.locked) return;
+  Sfx.click();
+  const over = G.mode === 'daily' ? (G.idx + 1 >= DAILY_ROUNDS) : (G.lives <= 0);
+  if (over){ finish(); return; }
+  G.idx++;
+  if (G.mode === 'endless') G.rounds.push(nextEndless());
+  loadRound();
+}
+
+/* ================= FINISH / RESULTS ================= */
+function finish(){
+  const run = {
+    mode:G.mode, score:G.score, correct:G.correct, total:G.marks.length, marks:G.marks.slice(),
+    date:dayKey(), dayNo:dailyNumber(), bestCombo:G.bestCombo
+  };
+  S.played++;
+  if (run.mode === 'daily'){
+    if (S.lastDaily !== run.date){
+      S.streak = (S.lastDaily === yesterdayKey()) ? S.streak + 1 : 1;
+      S.lastDaily = run.date;
+      S.maxStreak = Math.max(S.maxStreak, S.streak);
+    }
+    S.bestDaily = Math.max(S.bestDaily, run.score);
+    S.today = run;
+  } else {
+    run.newBest = run.score > S.bestEndless;
+    S.bestEndless = Math.max(S.bestEndless, run.score);
+  }
+  save();
+  G = null;
+  showResult(run, false);
+  Sfx.fanfare(run.correct / Math.max(1, run.total) >= .5);
+}
+
+const MARK_EMOJI = { fast:'🟩', slow:'🟨', wrong:'🟥', boom:'💥' };
+function siteLink(){
+  if (SITE_URL) return SITE_URL;
+  if (/^https?:/.test(location.protocol)) return location.origin + location.pathname.replace(/index\.html$/, '');
+  return '';
+}
+function shareText(run){
+  const rank = rankFor(run);
+  let marks = run.marks.map(m => MARK_EMOJI[m]);
+  let grid;
+  if (run.mode === 'daily'){
+    grid = marks.slice(0,5).join('') + '\n' + marks.slice(5,10).join('');
+  } else {
+    const capped = marks.slice(0,30);
+    const rows = []; for (let i=0;i<capped.length;i+=10) rows.push(capped.slice(i,i+10).join(''));
+    grid = rows.join('\n') + (marks.length > 30 ? ' …' : '');
+  }
+  const head = run.mode === 'daily'
+    ? '⛏️ Cursed Crafting & Chaos #' + run.dayNo + '\n⭐ ' + run.score + ' pts · ' + run.correct + '/' + run.total
+    : '⛏️ Cursed Crafting & Chaos ♾ ENDLESS\n⭐ ' + run.score + ' pts · survived ' + run.total + ' rounds';
+  const streak = run.mode === 'daily' && currentStreak() > 1 ? '\n🔥 ' + currentStreak() + '-day streak' : '';
+  const link = siteLink();
+  return head + '\n' + rank.i + ' ' + rank.t + '\n' + grid + streak + (link ? '\n' + link : '');
+}
+
+function showResult(run, revisit){
+  const rank = rankFor(run);
+  $('#rankEmoji').textContent = rank.i;
+  $('#rankTitle').textContent = rank.t;
+  $('#rankQuip').textContent = rank.q;
+  $('#resScore').textContent = run.score;
+  $('#resSub').textContent = run.mode === 'daily'
+    ? ('DAILY #' + run.dayNo + ' · ' + run.correct + '/' + run.total + ' correct')
+    : ('ENDLESS · ' + run.correct + ' correct · ' + run.total + ' rounds');
+  $('#resMarks').textContent = run.marks.map(m => MARK_EMOJI[m]).join('');
+  $('#rsBest').textContent = run.mode === 'daily' ? S.bestDaily : S.bestEndless;
+  $('#rsStreak').textContent = currentStreak() + '🔥';
+  $('#rsAcc').textContent = Math.round(100 * run.correct / Math.max(1, run.total)) + '%';
+
+  const note = $('#resNote');
+  if (revisit){ note.style.display = ''; note.textContent = '✅ You already crushed today’s daily. Here’s your card!'; }
+  else if (run.newBest){ note.style.display = ''; note.textContent = '🏆 NEW ENDLESS HIGH SCORE!'; }
+  else note.style.display = 'none';
+
+  $('#againBtn').textContent = run.mode === 'daily' ? '♾ TRY ENDLESS' : '🔁 PLAY AGAIN';
+  $('#againBtn').onclick = () => { Sfx.click(); setMode('endless'); startGame('endless'); };
+  $('#copyBtn').onclick = () => { Sfx.click(); copyText(shareText(run)); };
+  const ns = $('#nativeShareBtn');
+  if (navigator.share){ ns.style.display = ''; ns.onclick = () => { Sfx.click(); navigator.share({ text: shareText(run) }).catch(()=>{}); }; }
+
+  clearInterval(countdownTimer);
+  const cd = $('#countdown');
+  if (run.mode === 'daily'){
+    const tickCd = () => {
+      const now = new Date(), mid = new Date(now); mid.setHours(24,0,0,0);
+      const s = Math.max(0, Math.floor((mid - now) / 1000));
+      const hh = String(Math.floor(s/3600)).padStart(2,'0'), mm = String(Math.floor(s%3600/60)).padStart(2,'0'), ss = String(s%60).padStart(2,'0');
+      cd.innerHTML = 'Next daily seed in <b>' + hh + ':' + mm + ':' + ss + '</b>';
+    };
+    tickCd(); countdownTimer = setInterval(tickCd, 1000);
+  } else cd.textContent = 'Best endless: ' + S.bestEndless + ' pts';
+  show('result');
+}
+
+/* ================= CLIPBOARD ================= */
+function copyText(text){
+  const done = () => toast('✔ Copied! Paste it in Discord or TikTok comments.');
+  const fallback = () => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly',''); ta.style.position = 'fixed'; ta.style.top = '-1000px'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+      const ok = document.execCommand('copy'); document.body.removeChild(ta);
+      if (ok) done(); else prompt('Copy your score:', text);
+    } catch (e) { prompt('Copy your score:', text); }
+  };
+  if (navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(done, fallback);
+  } else fallback();
+}
+let toastT = 0;
+function toast(msg){
+  el.toast.textContent = msg; el.toast.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => el.toast.classList.remove('show'), 2400);
+}
+
+/* ================= FX ================= */
+function shake(big){
+  const c = big ? 'shake' : 'shake-sm';
+  el.app.classList.remove('shake','shake-sm'); void el.app.offsetWidth; el.app.classList.add(c);
+  setTimeout(() => el.app.classList.remove(c), 450);
+}
+function explodeFx(){
+  el.flash.classList.remove('go'); void el.flash.offsetWidth;
+  setTimeout(() => el.flash.classList.add('go'), 420);
+  setTimeout(() => shake(true), 420);
+  setTimeout(() => burst(['#ffffff','#bbbbbb','#666666','#ff9b1a'], 22), 430);
+}
+function burst(colors, n){
+  colors = colors || ['#55ff55','#7fe06a','#ffff55','#4aedd9','#ffffff'];
+  n = n || 16;
+  const src = el.opts.querySelector('.correct') || el.stage;
+  const r = src.getBoundingClientRect();
+  const cx = r.left + r.width/2, cy = r.top + r.height/2;
+  for (let i=0;i<n;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = cx + 'px'; p.style.top = cy + 'px';
+    p.style.background = colors[i % colors.length];
+    const a = Math.random() * Math.PI * 2, d = 60 + Math.random() * 120;
+    p.style.setProperty('--dx', Math.cos(a)*d + 'px');
+    p.style.setProperty('--dy', (Math.sin(a)*d - 40) + 'px');
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 850);
+  }
+}
+
+/* ================= START SCREEN ================= */
+function setMode(m){
+  S.mode = m; save();
+  $('#modeDaily').classList.toggle('on', m === 'daily');
+  $('#modeEndless').classList.toggle('on', m === 'endless');
+  $('#modeDaily').setAttribute('aria-checked', m === 'daily');
+  $('#modeEndless').setAttribute('aria-checked', m === 'endless');
+  refreshStart();
+}
+function refreshStart(){
+  const playedToday = S.today && S.today.date === dayKey();
+  $('#playBtn').textContent = (S.mode === 'daily' && playedToday) ? '📋 VIEW TODAY’S CARD' : '▶ PLAY NOW';
+  $('#stBest').textContent = S.mode === 'daily' ? S.bestDaily : S.bestEndless;
+  $('#stBestLbl').textContent = S.mode === 'daily' ? 'Best Daily' : 'Best Endless';
+  $('#stStreak').textContent = currentStreak() + '🔥';
+  $('#stPlayed').textContent = S.played;
+}
+function goHome(){
+  clearInterval(countdownTimer);
+  if (G){ cancelAnimationFrame(G.raf); G = null; }
+  $('#splash').textContent = rnd(SPLASHES);
+  refreshStart();
+  show('start');
+}
+function updateMuteBtn(){ $('#muteBtn').textContent = S.muted ? '🔇' : '🔊'; $('#muteBtn').setAttribute('aria-pressed', S.muted); }
+
+/* ================= EVENTS ================= */
+$('#muteBtn').addEventListener('click', () => { S.muted = !S.muted; save(); updateMuteBtn(); Sfx.init(); Sfx.click(); });
+$('#modeDaily').addEventListener('click', () => { Sfx.init(); Sfx.click(); setMode('daily'); });
+$('#modeEndless').addEventListener('click', () => { Sfx.init(); Sfx.click(); setMode('endless'); });
+$('#playBtn').addEventListener('click', () => {
+  Sfx.init(); Sfx.click();
+  if (S.mode === 'daily' && S.today && S.today.date === dayKey()) { showResult(S.today, true); return; }
+  startGame(S.mode);
+});
+$('#homeBtn').addEventListener('click', () => { Sfx.click(); goHome(); });
+el.nextBtn.addEventListener('click', next);
+el.opts.addEventListener('click', (e) => {
+  const b = e.target.closest('.opt');
+  if (!b || b.disabled) return;
+  Sfx.click();
+  answer(+b.dataset.i);
+});
+document.addEventListener('keydown', (e) => {
+  if (scr.game.classList.contains('active') && G){
+    if (!G.locked && /^[1-4]$/.test(e.key)){
+      const i = +e.key - 1;
+      if (i < G.q.opts.length){ Sfx.click(); answer(i); }
+    } else if (G.locked && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); next(); }
+  } else if (scr.start.classList.contains('active') && e.key === 'Enter'){
+    e.preventDefault(); $('#playBtn').click();
+  }
+});
+
+/* ================= BOOT ================= */
+paintBackground();
+buildTitle();
+updateMuteBtn();
+setMode(S.mode === 'endless' ? 'endless' : 'daily');
+$('#splash').textContent = rnd(SPLASHES);
+
+})();
+</script>
+</body>
+</html>
