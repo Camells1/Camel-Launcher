@@ -6,3 +6,4 @@ build/jre-download.zip
 build/jre-extract-tmp/
 installer-app/node_modules/
 installer-app/dist/
+cursed-crafting/lb-data/

@@ -195,6 +195,19 @@
   .rv small{display:block;color:#aaa}
   .rv .y{color:#ff8a7a} .rv .c{color:#7fe06a}
 
+  /* ---------- Leaderboard ---------- */
+  .lb-title{font-size:13px;color:#3f3f3f;margin-bottom:8px;text-align:center}
+  .lb-row{display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:center;padding:6px 8px;background:#b0b0b0;border:2px solid #555;margin-bottom:4px;font-size:13px;color:#333}
+  .lb-row.me{background:#9ed06a;border-color:#2f4f12}
+  .lb-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lb-n small{font-size:11px}
+  .lb-s{color:#7a5a00}
+  .lb-empty,.lb-foot{font-size:12px;color:#555;text-align:center;padding:6px 0;line-height:1.45}
+  .lb-form{display:flex;gap:6px;margin-bottom:8px}
+  .lb-form input{flex:1;min-width:0;padding:8px;border:3px solid #000;font-weight:700;background:#fff;color:#000}
+  .lb-form .btn{min-height:42px;font-size:14px;padding:8px 12px}
+  input{-webkit-user-select:text;user-select:text}
+
   /* ---------- Modals ---------- */
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:70;display:none;align-items:flex-start;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 12px 16px;overflow-y:auto}
   .modal.show{display:flex;animation:pop .2s steps(3)}
@@ -273,6 +286,7 @@
   <div class="topbar">
     <div class="brand-mini shadow-dark">⛏ CURSED CRAFTING &amp; CHAOS</div>
     <div class="top-btns">
+      <button class="btn icon" id="lbBtn" aria-label="Leaderboard" title="Leaderboard (L)">🌍</button>
       <button class="btn icon" id="achBtn" aria-label="Advancements" title="Advancements">🏆</button>
       <button class="btn icon" id="statsBtn" aria-label="Statistics" title="Statistics">📊</button>
       <button class="btn icon" id="setBtn" aria-label="Settings" title="Settings">⚙️</button>
@@ -384,6 +398,7 @@
       <button class="btn" id="againBtn">♾ ENDLESS</button>
       <button class="btn" id="homeBtn">🏠 HOME</button>
     </div>
+    <div class="panel" id="lbBox" style="display:none"></div>
     <details class="dark-panel review" id="review"><summary>📜 REVIEW YOUR ANSWERS</summary><div id="reviewList"></div></details>
     <div class="countdown shadow-dark" id="countdown"></div>
   </section>
@@ -409,9 +424,12 @@
 
 /* =========================================================
    CONFIG — set SITE_URL to your domain for share links,
-   e.g. 'https://cursedcrafting.com'. Leave '' to auto-detect.
+   e.g. 'https://citt.nl/games/' if you upload into a subfolder.
+   Leave '' to auto-detect.
    ========================================================= */
-const SITE_URL = '';
+const SITE_URL = 'https://citt.nl/';
+/* Global leaderboard backend (upload leaderboard.php next to this file). Set to '' to disable. */
+const LEADERBOARD_URL = 'leaderboard.php';
 const DAILY_ROUNDS = 10;
 const SPEEDRUN_MS = 60000;
 const STORE_KEY = 'cursedCraftingChaos_v1';
@@ -426,7 +444,7 @@ function defaults(){
   return {
     muted:false, mode:'daily', diff:'normal', cat:'all',
     bestDaily:0, bestEndless:0, bestSpeed:0, streak:0, maxStreak:0, lastDaily:'', played:0, today:null,
-    xp:0, ach:{}, history:[], days:{},
+    xp:0, ach:{}, history:[], days:{}, pid:'', lbSent:{}, localTop:{},
     set:{ vol:.8, music:false, haptics:true, reduced:false, cb:false, ticks:true, name:'', theme:'overworld' },
     st:{ answered:0, correct:0, cat:{}, bestCombo:0, fastest:0, booms:0, cursed:0, endlessRounds:0, lifelines:0, challengesWon:0 }
   };
@@ -438,7 +456,7 @@ let S;
   S = Object.assign(d, saved);
   S.set = Object.assign(defaults().set, saved.set || {});
   S.st = Object.assign(defaults().st, saved.st || {});
-  S.ach = saved.ach || {}; S.history = saved.history || []; S.days = saved.days || {};
+  S.ach = saved.ach || {}; S.history = saved.history || []; S.days = saved.days || {}; S.lbSent = saved.lbSent || {}; S.localTop = saved.localTop || {};
 })();
 function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (e) {} }
 
@@ -777,7 +795,7 @@ const ROAST_OK = ['Okay, sweaty. Who let you out of the speedrun Discord?','Clea
 const ROAST_BAD = ['Bro tried to craft a saddle out of vibes. Uninstall.','That answer was so bad a villager lowered his prices out of pity.','Respectfully? Go back to Peaceful.','You play with touch controls using your elbows, don’t you.','Even a baby zombie would’ve known that.','Wrong. Your diamonds have been sent to the lava.','Skill issue detected. Respawn?','That’s the kind of answer that gets you banned from the SMP.','You punched a tree and the tree won.','The Ender Dragon is laughing at you in purple particles.','Ooh. Bold. Wrong, but bold.','I’ve seen smarter decisions from a chicken in a waterfall.'];
 const ROAST_TIMEOUT = ['Sssss... BOOM. You stood there like a creeper hug enthusiast.','AFK detected. Your hunger bar emptied while you thought.','You took so long the phantoms showed up.','Time’s up. A broken redstone clock ticks faster than your brain.','Lagged out IRL? Try turning your brain off and on again.','The creeper got bored waiting and exploded out of spite.'];
 const ROAST_SKIP = ['Totem of Undying popped. Cowardly, but alive.','You dodged that question like a skeleton dodges sunlight. Barely.','Skipped. The totem has been spent on your ego.'];
-const SPLASHES = ['Now with 40% more creepers!','Not affiliated with Mojang!','Herobrine removed (again)!','100% cursed!','Also try touching grass!','Contains 0 sandwiches!','Sssssss...','Ten rounds of pain!','Hrmm!','Villager approved!','Dirt huts welcome!','Bedrock-proof!','Do not feed the parrot!','Mind the lava!','Now with lifelines!','Speedrun any%!','Try the Konami code!','Chaos events included!','50 new features!'];
+const SPLASHES = ['Now with 40% more creepers!','Not affiliated with Mojang!','Herobrine removed (again)!','100% cursed!','Also try touching grass!','Contains 0 sandwiches!','Sssssss...','Ten rounds of pain!','Hrmm!','Villager approved!','Dirt huts welcome!','Bedrock-proof!','Do not feed the parrot!','Mind the lava!','Now with lifelines!','Global leaderboard!','Speedrun any%!','Try the Konami code!','Chaos events included!','50 new features!'];
 
 /* ================= RANKS ================= */
 const RANKS = [
@@ -819,6 +837,7 @@ const ACH = [
   {id:'dirt', i:'🟫', n:'Dirt Enthusiast', d:'Score 0 correct on a daily (impressive)'},
   {id:'resource', i:'🎒', n:'Resourceful', d:'Use all 3 lifelines in one run'},
   {id:'owl', i:'🦉', n:'Insomnia', d:'Play a run between midnight and 4 AM'},
+  {id:'famous', i:'🌍', n:'Hall of Fame', d:'Reach the global top 10'},
   {id:'konami', i:'👁️', n:'Herobrine Sighting', d:'???', secret:1},
   {id:'selfdestruct', i:'🧨', n:'Self-Destruct', d:'???', secret:1}
 ];
@@ -1237,6 +1256,11 @@ function finish(){
   S.xp += run.xp;
   S.history.unshift({ mode:run.mode, diff:run.diff, score:run.score, correct:run.correct, total:run.total, date:run.date });
   S.history = S.history.slice(0, 15);
+  const lbB = lbBoardFor(run);
+  if (lbB){
+    const arr = (S.localTop[lbB] || []).concat([{ s:run.score, c:run.correct, t:run.total, d:run.diff, date:run.date }]);
+    arr.sort((a,b) => b.s - a.s); S.localTop[lbB] = arr.slice(0, 10);
+  }
   const newLvl = levelInfo(S.xp).lvl;
   save();
 
@@ -1361,6 +1385,7 @@ function showResult(run, revisit){
   $('#review').style.display = (run.review && run.review.length) ? '' : 'none';
   updateCountdowns();
   show('result');
+  renderResultLb(run);
 }
 
 /* ================= SHARE IMAGE (canvas PNG) ================= */
@@ -1460,6 +1485,96 @@ function popup(text){
 }
 function bigText(t){ el.big.textContent = t; el.big.classList.remove('go'); void el.big.offsetWidth; el.big.classList.add('go'); }
 
+/* ================= GLOBAL LEADERBOARD ================= */
+const LB_BOARDS = { daily:'📅 Today’s Daily', endless:'♾ Endless', speedrun:'⚡ Speedrun' };
+const MEDALS = ['🥇','🥈','🥉'];
+const cleanName = (v) => String(v || '').replace(/[^\p{L}\p{N} _\-.!]/gu, '').replace(/\s+/g, ' ').trimStart().slice(0, 16);
+const lbOnline = () => !!LEADERBOARD_URL && /^https?:/.test(location.protocol);
+function lbBoardFor(run){ return run.mode === 'daily' ? 'daily' : run.mode === 'endless' ? 'endless' : run.mode === 'speedrun' ? 'speedrun' : null; }
+function playerId(){
+  if (!S.pid){
+    const a = new Uint32Array(4);
+    try { crypto.getRandomValues(a); } catch(e){ for (let i=0;i<4;i++) a[i] = Math.floor(Math.random() * 4294967296); }
+    S.pid = Array.from(a).map(n => n.toString(36).padStart(7,'0')).join('').slice(0, 28);
+    save();
+  }
+  return S.pid;
+}
+function lbParams(board, date){ const p = { board, pid:playerId() }; if (board === 'daily') p.date = date || dayKey(); return p; }
+async function lbCall(params, body){
+  const ctrl = window.AbortController ? new AbortController() : null;
+  const to = setTimeout(() => { if (ctrl) ctrl.abort(); }, 7000);
+  try {
+    const url = LEADERBOARD_URL + '?' + new URLSearchParams(params).toString();
+    const opts = body ? { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) } : { cache:'no-store' };
+    if (ctrl) opts.signal = ctrl.signal;
+    const res = await fetch(url, opts);
+    let j = null; try { j = await res.json(); } catch(e){}
+    if (!res.ok || !j || !j.ok) throw new Error(j && j.error ? j.error : 'error ' + res.status);
+    return j;
+  } finally { clearTimeout(to); }
+}
+function lbListHtml(j){
+  if (!j.top.length) return '<div class="lb-empty">No scores yet. Be the first legend!</div>';
+  let h = j.top.map((e, i) => '<div class="lb-row' + (e.me ? ' me' : '') + '"><span>' + (MEDALS[i] || '#' + (i+1)) + '</span><span class="lb-n">' + esc(e.n) +
+    (e.d && e.d !== 'normal' && DIFFS[e.d] ? ' <small>' + DIFFS[e.d].n.split(' ')[0] + '</small>' : '') + '</span><span class="lb-s">' + e.s + '</span></div>').join('');
+  if (j.you && j.you.rank > j.top.length) h += '<div class="lb-row me"><span>#' + j.you.rank + '</span><span class="lb-n">' + esc(S.set.name || 'You') + '</span><span class="lb-s">' + j.you.s + '</span></div>';
+  return h + '<div class="lb-foot">' + j.count + ' player' + (j.count === 1 ? '' : 's') + (j.you ? ' · you are <b>#' + j.you.rank + '</b>' : '') + '</div>';
+}
+function localTopHtml(board){
+  const a = S.localTop[board] || [];
+  if (!a.length) return '<div class="lb-empty">No runs on this device yet.</div>';
+  return a.map((e, i) => '<div class="lb-row"><span>' + (MEDALS[i] || '#' + (i+1)) + '</span><span class="lb-n">' + e.date.slice(5) + ' · ' + e.c + '/' + e.t +
+    (e.d && e.d !== 'normal' && DIFFS[e.d] ? ' ' + DIFFS[e.d].n.split(' ')[0] : '') + '</span><span class="lb-s">' + e.s + '</span></div>').join('');
+}
+async function renderResultLb(run){
+  const box = $('#lbBox'), board = lbBoardFor(run);
+  if (!board){ box.style.display = 'none'; return; }
+  box.style.display = '';
+  const date = board === 'daily' ? (run.seed ? run.seed.slice(6) : run.date) : null;
+  const title = '<div class="lb-title">🌍 GLOBAL LEADERBOARD · ' + (board === 'daily' ? 'Daily #' + dailyNumber(date) : LB_BOARDS[board]) + '</div>';
+  if (!lbOnline()){
+    box.innerHTML = title + '<div class="lb-empty">The global board goes live once the game is on your website. Your best runs on this device:</div>' + localTopHtml(board);
+    return;
+  }
+  const key = board === 'daily' ? 'daily-' + date : null;
+  const submitted = key ? !!S.lbSent[key] : !!run.lbDone;
+  const showList = (j) => { if (lastRun === run && $('#lbList')) $('#lbList').innerHTML = lbListHtml(j); };
+  const showErr = (e) => { if (lastRun === run && $('#lbList')) $('#lbList').innerHTML = '<div class="lb-empty">Leaderboard unreachable right now (' + esc(e.message) + ').</div>' + localTopHtml(board); };
+  if (!submitted && !S.set.name){
+    box.innerHTML = title + '<div class="lb-form"><input id="lbName" maxlength="16" placeholder="Your nickname" aria-label="Nickname"><button class="btn" id="lbSubmit">SUBMIT</button></div><div id="lbList"><div class="lb-empty">Loading…</div></div>';
+    const go = () => { const n = cleanName($('#lbName').value).trim(); if (!n){ toast('Pick a nickname first!'); return; } Sfx.click(); S.set.name = n; save(); renderResultLb(run); };
+    $('#lbSubmit').onclick = go;
+    $('#lbName').addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') go(); });
+    lbCall(lbParams(board, date)).then(showList, showErr);
+    return;
+  }
+  box.innerHTML = title + '<div id="lbList"><div class="lb-empty">' + (submitted ? 'Loading…' : 'Submitting your score…') + '</div></div>';
+  try {
+    let j;
+    if (!submitted){
+      j = await lbCall(lbParams(board, date), { board, date, pid:playerId(), name:S.set.name.trim(), score:run.score, correct:run.correct, total:run.total, diff:run.diff });
+      run.lbDone = true; if (key) S.lbSent[key] = true; save();
+      if (j.you){ toast('🌍 You placed #' + j.you.rank + ' of ' + j.count + ' worldwide!'); if (j.you.rank <= 10) unlock('famous'); }
+    } else j = await lbCall(lbParams(board, date));
+    showList(j);
+  } catch(e){ showErr(e); }
+}
+function openLeaderboard(tab){
+  tab = tab || (S.mode === 'endless' || S.mode === 'speedrun' ? S.mode : 'daily');
+  const tabs = '<div class="chips" style="margin-bottom:10px">' + Object.keys(LB_BOARDS).concat(['local']).map(k =>
+    '<button class="btn' + (k === tab ? ' on' : '') + '" data-lbtab="' + k + '">' + (LB_BOARDS[k] || '📱 This Device') + '</button>').join('') + '</div>';
+  const sub = tab === 'daily' ? '<div class="lb-title">Daily #' + dailyNumber() + ' · resets in ' + untilMidnight() + '</div>' : tab === 'local' ? '' : '<div class="lb-title">All-time personal bests</div>';
+  openModal('🌍 LEADERBOARD', tabs + sub + '<div id="lbModalList"><div class="lb-empty">Loading…</div></div>' +
+    (S.set.name ? '' : '<div class="lb-foot">Finish a run (or set a nickname in ⚙️ Settings) to get on the board.</div>'));
+  $$('#modalBody [data-lbtab]').forEach(b => b.addEventListener('click', () => { Sfx.click(); openLeaderboard(b.dataset.lbtab); }));
+  const box = $('#lbModalList');
+  if (tab === 'local'){ box.innerHTML = Object.keys(LB_BOARDS).map(b => '<div class="sec">' + LB_BOARDS[b] + '</div>' + localTopHtml(b)).join(''); return; }
+  if (!lbOnline()){ box.innerHTML = '<div class="lb-empty">The global leaderboard goes live once the game and leaderboard.php are on your website. Your best runs on this device:</div>' + localTopHtml(tab); return; }
+  lbCall(lbParams(tab)).then(j => { if (box.isConnected) box.innerHTML = lbListHtml(j); })
+    .catch(e => { if (box.isConnected) box.innerHTML = '<div class="lb-empty">Leaderboard unreachable (' + esc(e.message) + ').</div>' + localTopHtml(tab); });
+}
+
 /* ================= MODALS ================= */
 function openModal(title, html){
   pause();
@@ -1522,7 +1637,7 @@ function openSettings(){
   h += '<button class="btn small danger" id="resetBtn" style="width:100%">🗑 Reset all progress</button>';
   h += '<div style="font-size:11px;color:#555;margin-top:10px;text-align:center">Level ' + lvl + ' · ' + S.xp + ' total XP</div>';
   openModal('⚙️ SETTINGS', h);
-  $('#setName').addEventListener('input', e => { S.set.name = e.target.value.replace(/[^\w \-.!]/g,'').slice(0,16); save(); });
+  $('#setName').addEventListener('input', e => { S.set.name = cleanName(e.target.value); save(); });
   $('#setVol').addEventListener('input', e => { S.set.vol = +e.target.value; Sfx.init(); Sfx.applyVol(); save(); });
   $('#setVol').addEventListener('change', () => Sfx.click());
   $$('#modalBody [data-tg]').forEach(b => b.addEventListener('click', () => {
@@ -1548,7 +1663,7 @@ function openSettings(){
 function openHelp(){
   openModal('⌨ KEYBOARD SHORTCUTS', '<div class="keys">' +
     '<kbd>1</kbd>–<kbd>4</kbd> Pick an answer<br><kbd>Enter</kbd> Next round / Play<br><kbd>Q</kbd> Ender Pearl (50/50)<br><kbd>W</kbd> Potion of Slowness (+5s)<br><kbd>E</kbd> Totem of Undying (skip)<br>' +
-    '<kbd>P</kbd> Pause / resume<br><kbd>M</kbd> Mute<br><kbd>F</kbd> Fullscreen<br><kbd>?</kbd> This help<br><kbd>Esc</kbd> Close menus</div>' +
+    '<kbd>P</kbd> Pause / resume<br><kbd>L</kbd> Leaderboard<br><kbd>M</kbd> Mute<br><kbd>F</kbd> Fullscreen<br><kbd>?</kbd> This help<br><kbd>Esc</kbd> Close menus</div>' +
     '<div style="font-size:11.5px;color:#555;margin-top:10px">Psst… some old-school cheat codes still work here. ⬆⬆⬇⬇</div>');
 }
 function toggleFullscreen(){
@@ -1613,6 +1728,7 @@ function toggleMute(){ S.muted = !S.muted; save(); updateMuteBtn(); Sfx.init(); 
 
 /* ================= EVENTS ================= */
 $('#muteBtn').addEventListener('click', toggleMute);
+$('#lbBtn').addEventListener('click', () => { Sfx.init(); Sfx.click(); openLeaderboard(); });
 $('#achBtn').addEventListener('click', () => { Sfx.init(); Sfx.click(); openAch(); });
 $('#statsBtn').addEventListener('click', () => { Sfx.init(); Sfx.click(); openStats(); });
 $('#setBtn').addEventListener('click', () => { Sfx.init(); Sfx.click(); openSettings(); });
@@ -1663,6 +1779,7 @@ document.addEventListener('keydown', e => {
   if (key === '?' ){ openHelp(); return; }
   if (key === 'm'){ toggleMute(); return; }
   if (key === 'f'){ toggleFullscreen(); return; }
+  if (key === 'l' && !(G && !G.locked)){ openLeaderboard(); return; }
   if (screenIs('game') && G){
     if (key === 'p'){ G.paused ? resume() : pause(); return; }
     if (G.paused) return;
