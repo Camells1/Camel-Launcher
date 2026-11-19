@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b1d12">
+<meta name="description" content="Chaos Arcade: 10 free Minecraft-inspired browser minigames. Cursed crafting, MLG water bucket clutches, creeper minesweeper and more. Earn XP and rank up from Wooden Pickaxe to Netherite Menace.">
+<meta property="og:title" content="Chaos Arcade — 10-in-1 blocky minigames">
+<meta property="og:description" content="10 chaotic Minecraft-inspired minigames. One XP bar. Can you reach Netherite Menace?">
+<title>Chaos Arcade · 10-in-1</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%235fbf3a'/%3E%3Crect x='1' y='2' width='2' height='2' fill='%23111'/%3E%3Crect x='5' y='2' width='2' height='2' fill='%23111'/%3E%3Crect x='3' y='4' width='2' height='3' fill='%23111'/%3E%3Crect x='2' y='5' width='1' height='3' fill='%23111'/%3E%3Crect x='5' y='5' width='1' height='3' fill='%23111'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="ticker" aria-hidden="true"><span id="ticker">Loading chaos…</span></div>
+
+  <div class="lobby-top">
+    <button class="btn icon" id="shareProfile" title="Share your arcade profile" aria-label="Share profile">📤</button>
+    <button class="btn icon" id="muteBtn" title="Toggle sound" aria-label="Toggle sound">🔊</button>
+  </div>
+
+  <header class="hero">
+    <div class="pixel-title" id="title"></div>
+    <div class="ten">10-IN-1</div>
+    <div class="splash" id="splash">Sssss…</div>
+  </header>
+  <p class="subtitle shadow-dark">10 Minecraft-inspired minigames · one XP bar · zero chill.<br>Rank up from 🪵 Wooden Pickaxe to 😈 Netherite Menace.</p>
+
+  <div class="lobby-grid">
+    <aside class="side">
+      <!-- Player profile -->
+      <div class="panel profile" id="profile">
+        <div class="avatar slot" id="avatar">🪵</div>
+        <div>
+          <input class="pname" id="pname" maxlength="16" placeholder="Enter nickname" aria-label="Nickname">
+          <div class="rank" id="rankTitle">Wooden Pickaxe</div>
+          <div class="xpbar"><i id="xpFill" style="width:0%"></i></div>
+          <div class="xptext" id="xpText">0 XP</div>
+        </div>
+        <div class="pstats">
+          <div><b id="psXP">0</b>XP</div>
+          <div><b id="psRuns">0</b>RUNS</div>
+          <div><b id="psWins">0</b>WINS</div>
+          <div><b id="psTried">0/10</b>TRIED</div>
+        </div>
+        <div class="ladder" id="ladder"></div>
+      </div>
+
+      <button class="btn purple big block" id="randomBtn">🎲 RANDOM CHAOS GAME</button>
+
+      <a class="featured" id="featured" href="#"></a>
+
+      <div class="dark-panel chest-box">
+        <div class="chest-ico" id="chestIco" role="button" aria-label="Daily loot chest"></div>
+        <div class="txt" id="chestTxt"></div>
+      </div>
+
+      <div class="dark-panel howto">
+        <b>HOW IT WORKS:</b> Every game pays out <b>XP</b> into one shared arcade bar. The <b>⭐ Game of the Day</b> pays <b>2x</b>. Open the <b>loot chest</b> daily for bonus XP and a streak. Every game has a <b>Copy Score</b> button so you can flex in Discord. Progress is saved in this browser.
+      </div>
+    </aside>
+
+    <main>
+      <div class="section-h">
+        <h2>🕹️ PICK YOUR POISON</h2>
+        <div class="filters" id="filters">
+          <button class="btn small on" data-f="all">All</button>
+          <button class="btn small" data-f="easy">Easy</button>
+          <button class="btn small" data-f="medium">Medium</button>
+          <button class="btn small" data-f="hard">Hard+</button>
+          <button class="btn small" data-f="new">Unplayed</button>
+        </div>
+      </div>
+      <div class="cards" id="cards"></div>
+    </main>
+  </div>
+
+  <div class="legal">Fan-made parody arcade. Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</div>
+</div>
+
+<div id="loading"><div class="lt" id="loadText">Generating terrain…</div><div class="lbar"><i></i></div></div>
+<div class="peeker" id="peeker" title="?"></div>
+
+<script src="arcade.js"></script>
+<script>
+(() => {
+'use strict';
+const A = Arcade, $ = (s) => document.querySelector(s), $$ = (s) => Array.from(document.querySelectorAll(s));
+
+A.paintBody();
+A.fallingBlocks();
+$('#loading').style.backgroundImage = document.body.style.backgroundImage;
+
+/* ---------- Pixel title: every letter is a different block ---------- */
+const FONT = {
+  C:['.####','#....','#....','#....','.####'], H:['#...#','#...#','#####','#...#','#...#'], A:['.###.','#...#','#####','#...#','#...#'],
+  O:['.###.','#...#','#...#','#...#','.###.'], S:['.####','#....','.###.','....#','####.'], R:['####.','#...#','####.','#..#.','#...#'],
+  D:['####.','#...#','#...#','#...#','####.'], E:['#####','#....','####.','#....','#####'], ' ':['..','..','..','..','..']
+};
+const BLOCKS = {
+  grass:{top:['#8fe06a','#5fbf3a','#4fa82f'], body:['#866043','#6c4b33','#9a7451']},
+  diamond:{body:['#4aedd9','#b5fff6','#36cdbb']}, gold:{body:['#f5d73a','#fff39a','#e8c42a']},
+  redstone:{body:['#ff3a2a','#c4160a','#ff7a6a']}, emerald:{body:['#41f384','#17dd62','#a8ffc8']},
+  stone:{body:['#a0a0a0','#7d7d7d','#8f8f8f']}, obsidian:{body:['#3b2a57','#241a36','#5b3d8a']},
+  tnt:{body:['#db2b1f','#eeeeee','#a01812']}, lapis:{body:['#2d5bd6','#1f3f9a','#6a8fff']},
+  netherrack:{body:['#7d3535','#6b2a2a','#a04545']}, wood:{body:['#b8945f','#9c7a4a','#7a5e36']}
+};
+function buildTitle(){
+  const lines = [{t:'CHAOS', b:['grass','diamond','gold','redstone','emerald']}, {t:'ARCADE', b:['tnt','lapis','obsidian','wood','netherrack','stone']}];
+  const wOf = s => [...s].reduce((w,ch)=>w + FONT[ch][0].length + 1, -1);
+  const maxW = Math.max(...lines.map(l => wOf(l.t))), lineH = 6.6, pad = 1;
+  let svg = '', li = 0, n = 0;
+  lines.forEach((ln, row) => {
+    let x = pad + (maxW - wOf(ln.t)) / 2; const y0 = pad + row * lineH;
+    [...ln.t].forEach((ch, ci) => {
+      const g = FONT[ch], blk = BLOCKS[ln.b[ci]] || BLOCKS.stone;
+      let sh = '', fr = '';
+      g.forEach((r, ry) => { for (let rx=0; rx<r.length; rx++) if (r[rx] === '#'){
+        const pal = (blk.top && ry === 0) ? blk.top : blk.body, v = A.h2(rx + ci*7, ry + row*9, 5);
+        sh += '<rect x="'+(x+rx+.4).toFixed(2)+'" y="'+(y0+ry+.4).toFixed(2)+'" width="1" height="1"/>';
+        fr += '<rect x="'+(x+rx).toFixed(2)+'" y="'+(y0+ry).toFixed(2)+'" width="1.03" height="1.03" fill="'+pal[v<.55?0:v<.8?1:2]+'"/>';
+      }});
+      svg += '<g class="lt" style="animation-delay:' + (-n*0.14).toFixed(2) + 's"><g fill="#111">' + sh + '</g>' + fr + '</g>';
+      x += g[0].length + 1; n++;
+    });
+  });
+  $('#title').innerHTML = '<svg viewBox="0 0 ' + (maxW + pad*2 + .6).toFixed(2) + ' ' + (lines.length*lineH + pad).toFixed(2) + '" shape-rendering="crispEdges" role="img" aria-label="Chaos Arcade">' + svg + '</svg>';
+}
+
+const SPLASHES = ['10 games, 0 sleep!','Now with 100% more creepers!','Also try touching grass!','Not affiliated with Mojang!','Hrmm!','Water bucket… RELEASE!','Cats > creepers!','Certified chaos!','Rank up or log off!','Do not dig straight down!','Herobrine not included!','Free XP inside!','Press the purple button!','Bring snacks!'];
+$('#splash').addEventListener('click', () => { A.Sfx.click(); $('#splash').textContent = A.rnd(SPLASHES); });
+
+/* ---------- Profile ---------- */
+function renderProfile(){
+  A.load();
+  const st = A.state, ri = A.rankInfo();
+  $('#avatar').textContent = ri.rank.i;
+  $('#rankTitle').textContent = ri.rank.t;
+  $('#rankTitle').style.color = ri.rank.c;
+  $('#xpFill').style.width = (ri.frac * 100).toFixed(1) + '%';
+  $('#xpText').textContent = ri.next ? (st.xp - ri.rank.xp) + ' / ' + (ri.next.xp - ri.rank.xp) + ' XP to ' + ri.next.i + ' ' + ri.next.t : 'MAX RANK · ' + st.xp + ' XP · absolute menace';
+  $('#psXP').textContent = st.xp; $('#psRuns').textContent = st.plays; $('#psWins').textContent = st.wins;
+  $('#psTried').textContent = A.GAMES.filter(g => st.games[g.id] && st.games[g.id].plays).length + '/10';
+  $('#ladder').innerHTML = A.RANKS.map((r, i) => '<span class="' + (i <= ri.idx ? 'got' : '') + '" title="' + r.t + ' (' + r.xp + ' XP)">' + r.i + '</span>').join('');
+  if (document.activeElement !== $('#pname')) $('#pname').value = st.name || '';
+  $('#muteBtn').textContent = st.muted ? '🔇' : '🔊';
+}
+$('#pname').addEventListener('input', e => A.setName(e.target.value));
+$('#pname').addEventListener('change', () => { A.Sfx.click(); A.toast('🏷 Nickname saved: ' + (A.state.name || 'anonymous')); });
+$('#muteBtn').addEventListener('click', () => { A.setMuted(!A.state.muted); A.Sfx.init(); A.Sfx.click(); renderProfile(); });
+
+/* ---------- Featured game ---------- */
+function renderFeatured(){
+  const g = A.featuredGame(), f = $('#featured');
+  f.href = 'games/' + g.file;
+  f.innerHTML = '<div class="fi">' + A.icon(g.icon) + '</div><div><small>⭐ GAME OF THE DAY · 2x XP</small><b>' + g.e + ' ' + g.t + '</b><span style="font-size:11.5px">Rotates at midnight. Go farm it. ▶</span></div>';
+}
+$('#featured').addEventListener('click', e => { e.preventDefault(); launch(A.featuredGame()); });
+
+/* ---------- Cards ---------- */
+let filter = 'all';
+const DIFF_LABEL = { easy:'EASY', medium:'MEDIUM', hard:'HARD', chaos:'CHAOS' };
+function renderCards(){
+  A.load();
+  const feat = A.featuredGame().id;
+  const list = A.GAMES.filter(g => {
+    const s = A.state.games[g.id];
+    if (filter === 'easy') return g.d === 'easy';
+    if (filter === 'medium') return g.d === 'medium';
+    if (filter === 'hard') return g.d === 'hard' || g.d === 'chaos';
+    if (filter === 'new') return !(s && s.plays);
+    return true;
+  });
+  $('#cards').innerHTML = list.map(g => {
+    const s = A.state.games[g.id], bg = A.textureURL(g.bg, g.n * 13, 16);
+    const best = s && s.plays ? '🏆 Best: ' + (s.bestLabel || s.best) + ' · 🎮 ' + s.plays + ' play' + (s.plays === 1 ? '' : 's') : (g.ready ? '✨ Never played. Fresh XP!' : '');
+    const tag = g.ready ? 'a' : 'div';
+    return '<' + tag + ' class="card' + (g.ready ? '' : ' locked') + '" data-id="' + g.id + '"' + (g.ready ? ' href="games/' + g.file + '"' : ' aria-disabled="true"') + '>' +
+      '<div class="card-thumb" style="background-image:url(' + bg + ')"><div class="card-num">#' + String(g.n).padStart(2,'0') + '</div>' +
+      (g.id === feat ? '<div class="ribbon">⭐ 2x XP</div>' : '') +
+      '<div class="card-icon">' + A.icon(g.icon) + '</div><div class="card-emoji">' + g.e + '</div></div>' +
+      '<div class="card-body"><div class="card-title">' + g.t + '</div>' +
+      '<div class="card-badges"><span class="badge ' + g.d + '">' + DIFF_LABEL[g.d] + '</span><span class="badge tag">' + g.tag + '</span></div>' +
+      '<p class="card-desc">' + g.desc + '</p><div class="card-best">' + best + '</div></div>' +
+      '<div class="card-play">' + (g.ready ? '▶ PLAY' : '🔒 SOON') + '</div>' +
+      (g.ready ? '' : '<div class="lock"><b>🔒</b>COMING SOON</div>') +
+      '</' + tag + '>';
+  }).join('') || '<div class="dark-panel">Nothing here. You have played everything. Touch grass? 🌱</div>';
+
+  $$('.card').forEach(c => {
+    const g = A.gameById(c.dataset.id);
+    c.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') A.Sfx.hover(); });
+    c.addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse' || c.classList.contains('locked')) return;
+      const r = c.getBoundingClientRect(), dx = (e.clientX - r.left) / r.width - .5, dy = (e.clientY - r.top) / r.height - .5;
+      c.style.transform = 'perspective(600px) rotateY(' + (dx*10).toFixed(1) + 'deg) rotateX(' + (-dy*10).toFixed(1) + 'deg) translateY(-4px)';
+    });
+    c.addEventListener('pointerleave', () => { c.style.transform = ''; });
+    c.addEventListener('click', e => {
+      e.preventDefault();
+      if (!g.ready){ A.Sfx.fail(); A.shake(c); A.toast('🔒 ' + g.t + ' is still being crafted. Soon™'); return; }
+      launch(g);
+    });
+  });
+}
+$('#filters').addEventListener('click', e => {
+  const b = e.target.closest('[data-f]'); if (!b) return;
+  A.Sfx.click(); filter = b.dataset.f;
+  $$('#filters .btn').forEach(x => x.classList.toggle('on', x === b));
+  renderCards();
+});
+
+/* ---------- Launch with a Minecraft-style loading screen ---------- */
+const LOAD_MSGS = ['Generating terrain…','Building terrain…','Spawning creepers…','Hiding diamonds…','Bribing villagers…','Loading chaos…','Charging creepers…','Filling water buckets…'];
+let launching = false;
+function launch(g){
+  if (launching) return; launching = true;
+  A.Sfx.init(); A.Sfx.click();
+  $('#loadText').textContent = g.e + ' ' + A.rnd(LOAD_MSGS);
+  $('#loading').classList.add('show');
+  setTimeout(() => { location.href = 'games/' + g.file; }, 600);
+}
+window.addEventListener('pageshow', () => { launching = false; $('#loading').classList.remove('show'); renderAll(); });
+
+/* ---------- Random chaos game (slot machine) ---------- */
+$('#randomBtn').addEventListener('click', () => {
+  if (launching) return;
+  A.Sfx.init();
+  filter = 'all'; $$('#filters .btn').forEach(x => x.classList.toggle('on', x.dataset.f === 'all')); renderCards();
+  const ready = A.GAMES.filter(g => g.ready);
+  const pick = ready[Math.floor(Math.random() * ready.length)];
+  const cards = $$('.card:not(.locked)');
+  const target = cards.findIndex(c => c.dataset.id === pick.id);
+  let i = 0, delay = 50;
+  $('#randomBtn').disabled = true;
+  (function spin(){
+    cards.forEach(c => c.classList.remove('lit'));
+    const c = cards[i % cards.length]; c.classList.add('lit');
+    A.Sfx.tone(500 + (i % 6) * 90, .04, 'square', .06);
+    if (i >= 14 && i % cards.length === target){
+      A.Sfx.success(); A.bigText('🎲 ' + pick.t.toUpperCase() + '!');
+      const r = c.getBoundingClientRect(); A.burst(r.left + r.width/2, r.top + r.height/2);
+      setTimeout(() => { $('#randomBtn').disabled = false; launch(pick); }, 1100);
+      return;
+    }
+    i++; delay = Math.min(260, delay * 1.12);
+    setTimeout(spin, delay);
+  })();
+});
+
+/* ---------- Daily loot chest ---------- */
+const CHEST = A.px(['dddddddd','dbbbbbbd','dbbbbbbd','dkkyykkd','dbbyybbd','dbbbbbbd','dbbbbbbd','dddddddd'], {b:'#a5752c',d:'#5a3c14',k:'#3a2510',y:'#d9d9d9'});
+const CHEST_OPEN = A.px(['dddddddd','dbbbbbbd','dyyyyyyd','dkkkkkkd','dgggggd.','dbbbbbbd','dbbbbbbd','dddddddd'], {b:'#a5752c',d:'#5a3c14',k:'#2a1a08',y:'#ffe066',g:'#f5d73a'});
+let chestTimer = 0;
+function untilMidnight(){ const n = new Date(), m = new Date(n); m.setHours(24,0,0,0); const s = Math.max(0, Math.floor((m - n)/1000)); return String(Math.floor(s/3600)).padStart(2,'0') + ':' + String(Math.floor(s%3600/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); }
+function yesterday(){ const d = new Date(); d.setDate(d.getDate()-1); return A.dayKey(d); }
+function renderChest(){
+  A.load();
+  const ready = A.state.lastChest !== A.dayKey(), ico = $('#chestIco');
+  ico.innerHTML = ready ? CHEST : CHEST_OPEN;
+  ico.classList.toggle('ready', ready);
+  const streak = A.state.lastChest === A.dayKey() || A.state.lastChest === yesterday() ? A.state.chestStreak : 0;
+  $('#chestTxt').innerHTML = ready
+    ? '<b>🎁 DAILY LOOT CHEST READY!</b><br>Tap it for free XP. Streak: ' + streak + ' day' + (streak === 1 ? '' : 's') + ' 🔥'
+    : '<b>Chest looted.</b> Streak: ' + streak + ' 🔥<br>Next chest in <b id="chestCd">' + untilMidnight() + '</b>';
+}
+$('#chestIco').addEventListener('click', () => {
+  A.Sfx.init(); A.load();
+  if (A.state.lastChest === A.dayKey()){ A.Sfx.click(); A.toast('📦 Already looted. Come back tomorrow!'); return; }
+  const ico = $('#chestIco'); ico.classList.remove('ready'); ico.classList.add('opening');
+  A.Sfx.chest();
+  setTimeout(() => {
+    A.load();
+    const streak = A.state.lastChest === yesterday() ? A.state.chestStreak + 1 : 1;
+    A.state.chestStreak = streak; A.state.lastChest = A.dayKey(); A.save();
+    const loot = A.rnd([['💎','a diamond'],['🥕','a golden carrot'],['🧪','a suspicious potion'],['📕','a Mending book (fake)'],['🍪','a cookie (do NOT feed the parrot)'],['🟩','an emerald'],['🦴','a bone']]);
+    const xp = 15 + Math.floor(Math.random() * 36) + Math.min(50, (streak - 1) * 10);
+    ico.classList.remove('opening');
+    const r = ico.getBoundingClientRect(); A.burst(r.left + r.width/2, r.top + r.height/2, ['#ffe066','#f5d73a','#ffffff','#4aedd9'], 26);
+    A.bigText(loot[0] + ' +' + xp + ' XP');
+    A.addXP(xp, 'Loot: ' + loot[1] + (streak > 1 ? ' · ' + streak + '-day streak' : ''));
+    if (streak >= 7) A.unlock('chest7', '📦', 'Loot Goblin (7-day chest streak)');
+    renderAll();
+  }, 550);
+});
+
+/* ---------- Creeper peeker easter egg ---------- */
+const peeker = $('#peeker');
+peeker.innerHTML = A.icon('creeper');
+let peekT = 0;
+function schedulePeek(){ clearTimeout(peekT); peekT = setTimeout(() => { peeker.classList.add('up'); A.Sfx.tone(180,.3,'sawtooth',.03,0,120); setTimeout(() => peeker.classList.remove('up'), 3200); schedulePeek(); }, 14000 + Math.random() * 16000); }
+peeker.addEventListener('click', () => {
+  A.Sfx.init(); peeker.classList.add('flash'); A.Sfx.hiss();
+  setTimeout(() => {
+    peeker.classList.remove('flash','up'); A.Sfx.boom(); A.flash(); A.shake(document.body, true);
+    A.load();
+    if (A.state.creeperDay !== A.dayKey()){ A.state.creeperDay = A.dayKey(); A.save(); A.addXP(10, 'You bonked the lobby creeper'); A.unlock('peeker', '💥', 'Lobby Creeper Bonker'); }
+    else A.toast('💥 He is back already?! (XP bonus is once a day)');
+    renderAll();
+  }, 650);
+});
+schedulePeek();
+
+/* ---------- Ticker ---------- */
+function renderTicker(){
+  const ri = A.rankInfo(), f = A.featuredGame(), ready = A.GAMES.filter(g => g.ready).length;
+  const best = A.GAMES.filter(g => A.state.games[g.id] && A.state.games[g.id].best).map(g => g.e + ' ' + (A.state.games[g.id].bestLabel || A.state.games[g.id].best)).join('  ');
+  const items = [
+    '⭐ GAME OF THE DAY: ' + f.t.toUpperCase() + ' PAYS 2x XP',
+    ri.next ? '⛏ ' + (ri.next.xp - A.state.xp) + ' XP UNTIL ' + ri.next.t.toUpperCase() : '😈 YOU ARE A NETHERITE MENACE',
+    '🕹️ ' + ready + ' / 10 GAMES UNLOCKED, MORE BEING CRAFTED',
+    best ? '🏆 YOUR BESTS: ' + best : '🏆 NO HIGH SCORES YET. FIX THAT.',
+    '🎁 OPEN THE LOOT CHEST EVERY DAY FOR A STREAK BONUS',
+    '💥 RUMOR: A CREEPER LURKS IN THE BOTTOM CORNER',
+    '📋 EVERY GAME HAS A COPY-SCORE BUTTON. FLEX RESPONSIBLY.'
+  ];
+  $('#ticker').textContent = items.join('   ✦   ');
+}
+
+/* ---------- Share profile ---------- */
+$('#shareProfile').addEventListener('click', () => {
+  A.load();
+  const ri = A.rankInfo(), st = A.state;
+  const bests = A.GAMES.filter(g => st.games[g.id] && st.games[g.id].plays).map(g => g.e + ' ' + (st.games[g.id].bestLabel || st.games[g.id].best || '—')).join(' · ');
+  const tried = A.GAMES.filter(g => st.games[g.id] && st.games[g.id].plays).length;
+  const bar = '🟩'.repeat(Math.round(ri.frac * 8)) + '⬛'.repeat(8 - Math.round(ri.frac * 8));
+  const text = '🕹️ CHAOS ARCADE' + (st.name ? ' — ' + st.name : '') + '\n' + ri.rank.i + ' ' + ri.rank.t + ' · ' + st.xp + ' XP\n' + bar + (ri.next ? ' → ' + ri.next.i : ' MAX') + '\n' +
+    (bests ? bests + '\n' : '') + '🎮 ' + st.plays + ' runs · ' + tried + '/10 games tried' + (A.hubURL() ? '\n' + A.hubURL() : '');
+  A.copy(text, '📤 Profile copied! Paste it in Discord or TikTok.');
+});
+
+function renderAll(){ renderProfile(); renderFeatured(); renderCards(); renderChest(); renderTicker(); }
+setInterval(() => { const cd = $('#chestCd'); if (cd) cd.textContent = untilMidnight(); }, 1000);
+
+buildTitle();
+$('#splash').textContent = A.rnd(SPLASHES);
+A.load();
+if (A.state.lastVisit !== A.dayKey()){ A.state.lastVisit = A.dayKey(); A.save(); }
+renderAll();
+})();
+</script>
+</body>
+</html>
