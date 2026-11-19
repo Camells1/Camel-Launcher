@@ -28,13 +28,51 @@
   .lbmodal .lbr.me{background:#9ed06a;border-color:#2f4f12}
   .lbmodal .lbe{font-size:12px;color:#555;text-align:center;padding:6px}
   .count{font-size:12px;color:#ccc}
+  .topbtn{position:relative}
+  .badge-dot{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 4px;background:#ff3a3a;color:#fff;border:2px solid #000;font-size:11px;display:none;align-items:center;justify-content:center;text-shadow:none}
+  .badge-dot.on{display:flex;animation:pop .3s steps(3)}
+  #acctBtn{width:auto;padding:4px 10px;font-size:13px;max-width:160px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .acct .tabs{display:flex;gap:6px;margin-bottom:10px}
+  .acct input{width:100%;padding:10px;border:3px solid #000;font-weight:700;margin-bottom:8px;background:#fff;color:#000}
+  .acct .note{font-size:11.5px;color:#555;line-height:1.5;margin:6px 0}
+  .acct .err{color:#b8331f;font-size:12.5px;min-height:18px}
+  .acct .sec{font-size:13px;color:#333;margin:12px 0 6px;border-bottom:2px solid #8b8b8b;padding-bottom:3px}
+  .frow{display:flex;align-items:center;gap:6px;padding:6px;background:#b0b0b0;border:2px solid #555;margin-bottom:4px;font-size:13px;color:#222}
+  .frow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .frow .btn{min-height:32px;padding:4px 8px;font-size:12px}
+  .dot{width:10px;height:10px;border:2px solid #000;background:#777;flex:none}
+  .dot.on{background:#55ff55;box-shadow:0 0 6px #55ff55}
+  /* chat panel */
+  #chat{position:fixed;top:0;right:0;bottom:0;width:min(400px,100vw);z-index:190;background:#120c24;border-left:4px solid #000;box-shadow:-8px 0 0 rgba(0,0,0,.35);display:flex;flex-direction:column;transform:translateX(105%);transition:transform .25s steps(5);padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+  #chat.open{transform:none}
+  .ch-head{display:flex;align-items:center;gap:6px;padding:8px;border-bottom:3px solid #000;background:#1d1438}
+  .ch-head .t{flex:1;font-size:14px}
+  .ch-rooms{display:flex;gap:5px;overflow-x:auto;padding:6px 8px;border-bottom:3px solid #000;background:#170f2e;flex:none}
+  .ch-rooms .btn{flex:none;font-size:12px;padding:5px 9px;min-height:32px;position:relative}
+  .ch-rooms .btn .badge-dot{top:-5px;right:-5px}
+  .ch-msgs{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:6px;user-select:text;-webkit-user-select:text}
+  .msg{max-width:88%;padding:6px 9px;background:#2a2050;border:2px solid #000;font-size:13.5px;line-height:1.4;word-wrap:break-word;align-self:flex-start;cursor:pointer;animation:pop .2s steps(2)}
+  .msg.mine{align-self:flex-end;background:#1f5a2a}
+  .msg .who{font-size:11px;color:var(--aqua);margin-bottom:2px}
+  .msg.mine .who{color:#b5ffb0}
+  .msg .tm{font-size:10px;color:#999;margin-left:6px}
+  .msg .acts{display:flex;gap:4px;margin-top:6px}
+  .msg .acts .btn{min-height:28px;font-size:11px;padding:3px 7px}
+  .ch-sys{align-self:center;font-size:11.5px;color:#aaa;text-align:center;padding:4px 8px}
+  .ch-form{display:flex;gap:6px;padding:8px;border-top:3px solid #000;background:#1d1438}
+  .ch-form input{flex:1;min-width:0;padding:10px;border:3px solid #000;font-weight:700;background:#fff;color:#000}
+  .ch-safe{font-size:10.5px;color:#999;text-align:center;padding:0 8px 6px;background:#1d1438}
+  .ch-gate{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px;font-size:13px;color:#ddd;line-height:1.5}
 </style>
+
 </head>
 <body>
 <div class="wrap">
   <div class="ticker" aria-hidden="true"><span id="ticker">Loading chaos…</span></div>
 
   <div class="lobby-top">
+    <button class="btn icon topbtn" id="acctBtn" title="Account & friends" aria-label="Account and friends">👤 LOG IN</button>
+    <button class="btn icon topbtn" id="chatBtn" title="Chat" aria-label="Chat">💬<span class="badge-dot" id="chatBadge"></span></button>
     <button class="btn icon" id="lbBtn" title="Leaderboards" aria-label="Leaderboards">🏆</button>
     <button class="btn icon" id="shareProfile" title="Share your arcade profile" aria-label="Share profile">📤</button>
     <button class="btn icon" id="muteBtn" title="Toggle sound" aria-label="Toggle sound">🔊</button>
@@ -94,7 +132,15 @@
   <div class="legal">Chaos Arcade · free fan-made browser games. Progress is saved in this browser. The Block World games are a fan-made parody: not an official Minecraft product and not approved by or associated with Mojang or Microsoft.</div>
 </div>
 
-<div class="modal" id="lbModal"><div class="panel lbmodal"><button class="btn icon x" id="lbClose" aria-label="Close">✖</button><h2>🏆 LEADERBOARDS</h2><select id="lbSel" aria-label="Choose leaderboard"></select><div id="lbBody"></div></div></div>
+<div class="modal" id="lbModal"><div class="panel lbmodal"><button class="btn icon x" id="lbClose" aria-label="Close">✖</button><h2>🏆 LEADERBOARDS</h2><div class="row" style="margin-bottom:8px"><button class="btn small on" id="lbG">🌍 Global</button><button class="btn small" id="lbF">👥 Friends</button></div><select id="lbSel" aria-label="Choose leaderboard"></select><div id="lbBody"></div></div></div>
+<div class="modal" id="acctModal"><div class="panel acct"><button class="btn icon x" id="acctClose" aria-label="Close">✖</button><h2 id="acctTitle">👤 ACCOUNT</h2><div id="acctBody"></div></div></div>
+<aside id="chat" aria-label="Chat">
+  <div class="ch-head"><span class="t" id="chTitle">💬 CHAT</span><span class="chip" id="chOnline" style="font-size:11px">● 0 online</span><button class="btn icon" id="chClose" aria-label="Close chat">✖</button></div>
+  <div class="ch-rooms" id="chRooms"></div>
+  <div class="ch-msgs" id="chMsgs"></div>
+  <form class="ch-form" id="chForm"><input id="chIn" maxlength="200" autocomplete="off" placeholder="Say something nice…" aria-label="Message"><button class="btn green" type="submit">SEND</button></form>
+  <div class="ch-safe">🛡️ Be kind. Never share your real name, address, school, phone or passwords. Tap a message to report or block.</div>
+</aside>
 <div id="loading"><div class="lt" id="loadText">Loading…</div><div class="lbar"><i></i></div></div>
 <div class="peeker" id="peeker" title="?"></div>
 
@@ -150,6 +196,8 @@ function renderProfile(){
   $('#psTried').textContent = A.GAMES.filter(g => st.games[g.id] && st.games[g.id].plays).length + '/' + A.GAMES.length;
   $('#ladder').innerHTML = A.RANKS.map((r, i) => '<span class="' + (i <= ri.idx ? 'got' : '') + '" title="' + r.t + ' (' + r.xp + ' XP)">' + r.i + '</span>').join('');
   if (document.activeElement !== $('#pname')) $('#pname').value = st.name || '';
+  $('#pname').disabled = !!A.acct.user; $('#pname').title = A.acct.user ? 'Logged in: your account name is used everywhere' : '';
+  $('#acctBtn').textContent = A.acct.user ? '👤 ' + A.acct.user.name : '👤 LOG IN';
   $('#muteBtn').textContent = st.muted ? '🔇' : '🔊';
 }
 $('#pname').addEventListener('input', e => A.setName(e.target.value));
@@ -196,7 +244,7 @@ function renderCards(){
   $('#cards').innerHTML = list.map(g => {
     const s = A.state.games[g.id], key = g.id;
     const bg = texCache[key] || (texCache[key] = A.textureURL(g.bg, g.n * 13, 16));
-    const best = s && s.plays ? '🏆 Best: ' + (s.bestLabel || s.best || '—') + ' · 🎮 ' + s.plays : '✨ Never played. Fresh XP!';
+    const best = s && s.plays ? (['','🥉 ','🥈 ','🥇 '][s.medal || 0]) + '🏆 Best: ' + (s.bestLabel || s.best || '—') + ' · 🎮 ' + s.plays : '✨ Never played. Fresh XP!';
     return '<a class="card" data-id="' + g.id + '" href="games/' + g.file + '">' +
       '<div class="card-thumb" style="background-image:url(' + bg + ')"><div class="card-num">#' + String(g.n).padStart(2,'0') + '</div>' +
       (g.id === feat ? '<div class="ribbon">⭐ 2x XP</div>' : '') +
@@ -300,11 +348,14 @@ function openLB(board){
   $('#lbModal').classList.add('show');
   loadLB();
 }
+let lbFriends = false;
+$('#lbG').addEventListener('click', () => { lbFriends = false; $('#lbG').classList.add('on'); $('#lbF').classList.remove('on'); loadLB(); });
+$('#lbF').addEventListener('click', () => { if (!A.acct.user){ A.toast('👥 Log in to see your friends board'); openAcct(); return; } lbFriends = true; $('#lbF').classList.add('on'); $('#lbG').classList.remove('on'); loadLB(); });
 function loadLB(){
   const board = $('#lbSel').value, body = $('#lbBody');
   const row = (i, n, s, me) => '<div class="lbr' + (me ? ' me' : '') + '"><span>' + (['🥇','🥈','🥉'][i] || '#' + (i+1)) + '</span><span>' + A.esc(n) + '</span><span>' + s + '</span></div>';
   body.innerHTML = '<div class="lbe">Loading…</div>';
-  A.lb.get(board).then(j => {
+  A.lb.get(board, lbFriends).then(j => {
     let h = j.top.length ? j.top.map((x, i) => row(i, x.n, x.s, x.me)).join('') : '<div class="lbe">Nobody on this board yet. Be the first!</div>';
     if (j.you && j.you.rank > j.top.length) h += row(j.you.rank - 1, A.state.name || 'You', j.you.s, true);
     h += '<div class="lbe">' + j.count + ' player' + (j.count === 1 ? '' : 's') + (j.you ? ' · you are #' + j.you.rank : (A.state.name ? '' : ' · set a nickname to join')) + '</div>';
@@ -345,11 +396,167 @@ $('#shareProfile').addEventListener('click', () => {
   A.copy('🕹️ CHAOS ARCADE' + (st.name ? ' — ' + st.name : '') + '\n' + ri.rank.i + ' ' + ri.rank.t + ' · ' + st.xp + ' XP\n' + bar + (ri.next ? ' → ' + ri.next.i : ' MAX') + '\n' + (tops ? tops + '\n' : '') + '🎮 ' + st.plays + ' runs · ' + tried + '/' + A.GAMES.length + ' games tried' + (A.hubURL() ? '\n' + A.hubURL() : ''), '📤 Profile copied! Paste it in Discord or TikTok.');
 });
 
+/* =================== ACCOUNTS & FRIENDS =================== */
+const esc = A.esc;
+function openAcct(){ A.Sfx.click(); $('#acctModal').classList.add('show'); renderAcct(); }
+$('#acctBtn').addEventListener('click', openAcct);
+$('#acctClose').addEventListener('click', () => $('#acctModal').classList.remove('show'));
+$('#acctModal').addEventListener('click', e => { if (e.target.id === 'acctModal') $('#acctModal').classList.remove('show'); });
+let acctTab = 'login', meCache = null;
+function renderAcct(msg){
+  const b = $('#acctBody');
+  if (A.acct.down){ b.innerHTML = '<div class="note">Accounts, friends and chat go live once the arcade is uploaded to your website (they need <b>api.php</b> and PHP). Everything else works here already.</div>'; return; }
+  if (!A.acct.user){
+    $('#acctTitle').textContent = '👤 ' + (acctTab === 'login' ? 'LOG IN' : 'CREATE ACCOUNT');
+    b.innerHTML = '<div class="tabs"><button class="btn small' + (acctTab === 'login' ? ' on' : '') + '" data-t="login">Log in</button><button class="btn small' + (acctTab === 'reg' ? ' on' : '') + '" data-t="reg">Create account</button></div>' +
+      '<form id="acctForm"><input id="aUser" maxlength="16" placeholder="Username" autocomplete="username" aria-label="Username"><input id="aPass" type="password" maxlength="100" placeholder="Password' + (acctTab === 'reg' ? ' (6+ characters)' : '') + '" autocomplete="' + (acctTab === 'reg' ? 'new-password' : 'current-password') + '" aria-label="Password">' +
+      (acctTab === 'reg' ? '<input id="aPass2" type="password" maxlength="100" placeholder="Repeat password" autocomplete="new-password" aria-label="Repeat password">' : '') +
+      '<div class="err" id="aErr">' + (msg || '') + '</div><button class="btn green block" type="submit">' + (acctTab === 'login' ? '▶ LOG IN' : '✨ CREATE ACCOUNT') + '</button></form>' +
+      '<div class="note">' + (acctTab === 'reg' ? '🛡️ Pick a gamer name, NOT your real name. Your progress, XP and high scores get saved to your account so you can play on any device. ' : '') + 'Accounts unlock friends, chat and protected leaderboard names.</div>';
+    b.querySelectorAll('[data-t]').forEach(x => x.addEventListener('click', () => { acctTab = x.dataset.t; renderAcct(); }));
+    $('#acctForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const u = $('#aUser').value.trim(), p = $('#aPass').value;
+      if (acctTab === 'reg' && p !== $('#aPass2').value){ $('#aErr').textContent = 'Passwords do not match.'; return; }
+      $('#aErr').textContent = '…';
+      (acctTab === 'login' ? A.acct.login(u, p) : A.acct.register(u, p)).then(() => { A.Sfx.levelup(); A.toast('👋 Welcome, ' + A.acct.user.name + '!'); renderAll(); renderAcct(); startInbox(); }).catch(err => { A.Sfx.fail(); $('#aErr').textContent = err.message; });
+    });
+    return;
+  }
+  $('#acctTitle').textContent = '👤 ' + A.acct.user.name;
+  b.innerHTML = '<div class="note">Loading friends…</div>';
+  A.acct.me().then(me => { meCache = me; drawFriends(me); }).catch(err => { b.innerHTML = '<div class="err">' + esc(err.message) + '</div><button class="btn red block" id="aOut">LOG OUT</button>'; $('#aOut').addEventListener('click', logout); });
+}
+function logout(){ A.acct.logout(); stopChat(); meCache = null; A.toast('👋 Logged out'); renderAll(); renderAcct(); }
+function drawFriends(me){
+  const b = $('#acctBody'), row = (u, btns) => '<div class="frow">' + (u.online != null ? '<span class="dot' + (u.online ? ' on' : '') + '"></span>' : '') + '<span class="nm">' + esc(u.rank || '') + ' ' + esc(u.name) + ' <small style="color:#555">' + (u.xp || 0) + ' XP</small></span>' + btns + '</div>';
+  let h = '<div class="note">' + (me.admin ? '🛡️ You are an admin. ' : '') + 'Logged in. Your progress syncs to this account automatically.</div>';
+  h += '<div class="sec">➕ ADD A FRIEND</div><input id="fSearch" maxlength="16" placeholder="Search a username…" aria-label="Search players"><div id="fResults"></div>';
+  if (me.incoming.length) h += '<div class="sec">📩 FRIEND REQUESTS (' + me.incoming.length + ')</div>' + me.incoming.map(u => row(u, '<button class="btn small green" data-a="friend_accept" data-n="' + u.id + '">✔</button><button class="btn small red" data-a="friend_decline" data-n="' + u.id + '">✖</button>')).join('');
+  h += '<div class="sec">👥 FRIENDS (' + me.friends.length + ')</div>' + (me.friends.length ? me.friends.map(u => row(u, '<button class="btn small purple" data-chat="' + u.id + '">💬</button><button class="btn small" data-a="friend_remove" data-n="' + u.id + '" title="Remove friend">✖</button><button class="btn small" data-a="block" data-n="' + u.id + '" title="Block">🚫</button>')).join('') : '<div class="note">No friends yet. Search for a username above!</div>');
+  if (me.outgoing.length) h += '<div class="sec">⏳ SENT REQUESTS</div>' + me.outgoing.map(u => row(u, '<button class="btn small" data-a="friend_decline" data-n="' + u.id + '">Cancel</button>')).join('');
+  if (me.blocked.length) h += '<div class="sec">🚫 BLOCKED</div>' + me.blocked.map(id => row({ name:id }, '<button class="btn small" data-a="unblock" data-n="' + id + '">Unblock</button>')).join('');
+  h += '<button class="btn red block" id="aOut" style="margin-top:12px">LOG OUT</button>';
+  b.innerHTML = h;
+  $('#aOut').addEventListener('click', logout);
+  b.querySelectorAll('[data-a]').forEach(x => x.addEventListener('click', () => { A.Sfx.click(); A.acct.friend(x.dataset.a, x.dataset.n).then(() => { A.toast({ friend_accept:'🤝 You are now friends!', friend_decline:'Request removed', friend_remove:'Friend removed', block:'🚫 Blocked', unblock:'Unblocked' }[x.dataset.a]); renderAcct(); }).catch(e => A.toast(e.message)); }));
+  b.querySelectorAll('[data-chat]').forEach(x => x.addEventListener('click', () => { $('#acctModal').classList.remove('show'); openChat('dm:' + x.dataset.chat); }));
+  let st = 0;
+  $('#fSearch').addEventListener('input', e => {
+    clearTimeout(st); const q = e.target.value.trim();
+    st = setTimeout(() => {
+      if (q.length < 2){ $('#fResults').innerHTML = ''; return; }
+      A.acct.search(q).then(r => {
+        const known = new Set(me.friends.map(f => f.id).concat(me.outgoing.map(f => f.id)));
+        $('#fResults').innerHTML = r.users.length ? r.users.map(u => row(u, known.has(u.id) ? '<span style="font-size:11px">✔ added</span>' : '<button class="btn small green" data-add="' + u.id + '">➕ ADD</button>')).join('') : '<div class="note">Nobody found with that name.</div>';
+        $('#fResults').querySelectorAll('[data-add]').forEach(x => x.addEventListener('click', () => A.acct.friend('friend_request', x.dataset.add).then(r2 => { A.Sfx.coin(); A.toast(r2.result === 'friends' ? '🤝 You are now friends!' : '📨 Friend request sent!'); renderAcct(); }).catch(err => A.toast(err.message))));
+      }).catch(err => { $('#fResults').innerHTML = '<div class="err">' + esc(err.message) + '</div>'; });
+    }, 300);
+  });
+}
+
+/* =================== CHAT (polls every second while open) =================== */
+let room = 'global', lastId = {}, pollT = 0, inboxT = 0, chatOpen = false;
+const readKey = (r) => 'ca_read_' + (A.acct.user ? A.acct.user.id : '') + '_' + r;
+function lastRead(r){ try { return +(localStorage.getItem(readKey(r)) || 0); } catch(e){ return 0; } }
+function setRead(r, id){ try { localStorage.setItem(readKey(r), id); } catch(e){} }
+function openChat(r){
+  A.Sfx.init(); A.Sfx.click(); chatOpen = true; $('#chat').classList.add('open');
+  if (r) room = r;
+  renderRooms(); loadRoom();
+}
+function stopChat(){ clearTimeout(pollT); }
+function closeChat(){ chatOpen = false; $('#chat').classList.remove('open'); stopChat(); }
+$('#chatBtn').addEventListener('click', () => chatOpen ? closeChat() : openChat());
+$('#chClose').addEventListener('click', closeChat);
+let unread = {};
+function renderRooms(){
+  const fr = meCache ? meCache.friends : [];
+  $('#chRooms').innerHTML = '<button class="btn small' + (room === 'global' ? ' on' : '') + '" data-r="global">🌍 Global</button>' + fr.map(f => '<button class="btn small' + (room === 'dm:' + f.id ? ' on' : '') + '" data-r="dm:' + f.id + '">' + (f.online ? '🟢' : '⚫') + ' ' + esc(f.name) + '<span class="badge-dot' + (unread['dm:' + f.id] ? ' on' : '') + '">!</span></button>').join('');
+  $('#chRooms').querySelectorAll('[data-r]').forEach(b => b.addEventListener('click', () => { room = b.dataset.r; A.Sfx.click(); renderRooms(); loadRoom(); }));
+}
+function sys(text){ const d = document.createElement('div'); d.className = 'ch-sys'; d.textContent = text; $('#chMsgs').appendChild(d); }
+function loadRoom(){
+  stopChat();
+  const box = $('#chMsgs'); box.innerHTML = '';
+  $('#chTitle').textContent = room === 'global' ? '💬 GLOBAL CHAT' : '💬 ' + room.slice(3);
+  if (A.acct.down || !A.acct.user){
+    $('#chForm').style.display = 'none';
+    box.innerHTML = '<div class="ch-gate"><div style="font-size:40px">💬</div>' + (A.acct.down ? 'Chat goes live once the arcade is on your website (it needs <b>api.php</b> and PHP).' : 'Log in to chat with other players and your friends.<button class="btn green" id="chLogin">👤 LOG IN / SIGN UP</button>') + '</div>';
+    const l = $('#chLogin'); if (l) l.addEventListener('click', () => { closeChat(); openAcct(); });
+    return;
+  }
+  $('#chForm').style.display = '';
+  lastId[room] = 0; sys(room === 'global' ? 'Welcome to global chat! Messages are visible to every player.' : 'Private chat with ' + room.slice(3) + '. Only friends can message each other.');
+  if (!meCache) A.acct.me().then(me => { meCache = me; renderRooms(); }).catch(() => {});
+  poll();
+}
+function addMsg(m){
+  const mine = A.acct.user && m.u === A.acct.user.id, d = document.createElement('div');
+  d.className = 'msg' + (mine ? ' mine' : ''); d.dataset.id = m.id; d.dataset.u = m.u;
+  const t = new Date(m.ts * 1000);
+  d.innerHTML = '<div class="who"></div><div class="tx"></div>';
+  d.querySelector('.who').textContent = (m.rk || '') + ' ' + m.n; const tm = document.createElement('span'); tm.className = 'tm'; tm.textContent = String(t.getHours()).padStart(2,'0') + ':' + String(t.getMinutes()).padStart(2,'0'); d.querySelector('.who').appendChild(tm);
+  d.querySelector('.tx').textContent = m.t;
+  if (!mine) d.addEventListener('click', () => showActs(d, m));
+  $('#chMsgs').appendChild(d);
+}
+function showActs(d, m){
+  if (d.querySelector('.acts')){ d.querySelector('.acts').remove(); return; }
+  const a = document.createElement('div'); a.className = 'acts';
+  a.innerHTML = '<button class="btn small" data-x="report">🚩 Report</button><button class="btn small" data-x="block">🚫 Block</button><button class="btn small green" data-x="add">➕ Friend</button>' + (meCache && meCache.admin && room === 'global' ? '<button class="btn small red" data-x="del">🗑</button><button class="btn small red" data-x="ban">⛔ Ban</button>' : '');
+  a.addEventListener('click', e => {
+    e.stopPropagation(); const x = e.target.closest('[data-x]'); if (!x) return;
+    const act = x.dataset.x;
+    const done = (msg) => { A.toast(msg); a.remove(); };
+    if (act === 'report') A.acct.report(room, m.id).then(() => done('🚩 Reported. Thanks for keeping chat friendly.')).catch(err => A.toast(err.message));
+    if (act === 'block') A.acct.friend('block', m.u).then(() => { done('🚫 ' + m.n + ' is blocked. You will not see their messages.'); document.querySelectorAll('.msg[data-u="' + m.u + '"]').forEach(n => n.remove()); }).catch(err => A.toast(err.message));
+    if (act === 'add') A.acct.friend('friend_request', m.u).then(r => done(r.result === 'friends' ? '🤝 Friends!' : '📨 Friend request sent to ' + m.n)).catch(err => A.toast(err.message));
+    if (act === 'del') A.acct.del(room, m.id).then(() => { d.remove(); A.toast('🗑 Deleted'); }).catch(err => A.toast(err.message));
+    if (act === 'ban') A.acct.ban(m.u, true).then(() => { done('⛔ ' + m.n + ' banned'); }).catch(err => A.toast(err.message));
+  });
+  d.appendChild(a);
+}
+function poll(){
+  if (!chatOpen || !A.acct.user) return;
+  const r = room;
+  A.acct.poll(r, lastId[r] || 0).then(j => {
+    if (r !== room) return;
+    const box = $('#chMsgs'), atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
+    j.msgs.forEach(m => { if (m.id > (lastId[r] || 0)){ addMsg(m); lastId[r] = m.id; if (A.acct.user && m.u !== A.acct.user.id && document.hidden === false && lastRead(r) && m.id > lastRead(r)) A.Sfx.tone(880, .05, 'triangle', .04); } });
+    (j.hidden || []).forEach(id => { const n = box.querySelector('.msg[data-id="' + id + '"]'); if (n) n.remove(); });
+    $('#chOnline').textContent = '● ' + j.online + ' online';
+    if (atBottom || j.msgs.length) box.scrollTop = box.scrollHeight;
+    setRead(r, j.last); unread[r] = false; updateBadge();
+  }).catch(err => { if (/login/.test(err.message)) { loadRoom(); return; } }).then(() => { clearTimeout(pollT); if (chatOpen && r === room) pollT = setTimeout(poll, 1000); });
+}
+$('#chForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const t = $('#chIn').value.trim(); if (!t) return;
+  $('#chIn').value = '';
+  A.acct.send(room, t).then(() => { A.Sfx.tone(660, .04); clearTimeout(pollT); poll(); }).catch(err => { sys('⚠️ ' + err.message); A.Sfx.fail(); });
+});
+function updateBadge(){ const n = Object.values(unread).filter(Boolean).length; const b = $('#chatBadge'); b.textContent = n; b.classList.toggle('on', n > 0); }
+function startInbox(){
+  clearInterval(inboxT);
+  if (!A.acct.user){ A.acct.me().catch(() => {}); return; }
+  if (A.acct.down) return;
+  const check = () => A.acct.inbox().then(j => {
+    Object.entries(j.inbox).forEach(([f, last]) => { const r = 'dm:' + f; if (last && last.from !== A.acct.user.id && last.id > lastRead(r) && !(chatOpen && room === r)){ if (!unread[r]) A.Sfx.coin(); unread[r] = true; } });
+    updateBadge(); if (chatOpen) renderRooms();
+  }).catch(() => {});
+  check(); inboxT = setInterval(check, 6000);
+  A.acct.me().then(me => { meCache = me; if (me.incoming.length){ $('#acctBtn').textContent = '👤 ' + A.acct.user.name + ' 📩' + me.incoming.length; } }).catch(() => {});
+}
+if (location.hash === '#account') setTimeout(openAcct, 300);
+
 function renderAll(){ renderProfile(); renderQuests(); renderFeatured(); renderCats(); renderCards(); renderChest(); renderTicker(); }
 setInterval(() => { const cd = $('#chestCd'); if (cd) cd.textContent = untilMidnight(); }, 1000);
 buildTitle();
 $('#splash').textContent = A.rnd(SPLASHES);
 renderAll();
+startInbox();
+if (A.state.music) ['pointerdown','keydown'].forEach(ev => addEventListener(ev, () => A.Music.start(), { once:true }));
 })();
 </script>
 </body>

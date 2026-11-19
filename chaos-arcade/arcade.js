@@ -152,7 +152,7 @@ function addXP(amount, reason){
   if (!amount) return 0;
   load();
   const before = rankInfo().idx;
-  state.xp += amount; today().xp += amount; save();
+  state.xp += amount; today().xp += amount; save(); syncSoon();
   const after = rankInfo();
   toast('+' + amount + ' XP' + (reason ? ' · ' + reason : ''));
   if (after.idx > before){
@@ -172,6 +172,7 @@ function report(id, opts){
   if (opts.win){ g.wins++; state.wins++; }
   let newBest = false;
   if (typeof opts.score === 'number' && opts.score > g.best){ g.best = opts.score; g.bestLabel = opts.label || ''; newBest = g.plays > 1; }
+  if (opts.medal && opts.medal > (g.medal || 0)) g.medal = opts.medal;
   g.last = dayKey();
   let xp = Math.max(5, Math.round(opts.xp || 0));
   const feat = featuredGame().id === id;
@@ -253,7 +254,8 @@ async function lbCall(params, body){
   const ctrl = window.AbortController ? new AbortController() : null;
   const to = setTimeout(() => { if (ctrl) ctrl.abort(); }, 7000);
   try {
-    const opts = body ? { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) } : { cache:'no-store' };
+    const opts = body ? { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) } : { cache:'no-store', headers:{} };
+    if (state.auth && state.auth.token) opts.headers['X-Auth'] = state.auth.token;
     if (ctrl) opts.signal = ctrl.signal;
     const res = await fetch(LB_URL + '?' + new URLSearchParams(params), opts);
     let j = null; try { j = await res.json(); } catch(e){ lbDown = true; throw new Error('leaderboard not installed'); }
@@ -272,7 +274,7 @@ function lbSubmit(board, score){
   return send(2)
     .then(j => { load(); if (state.pending && state.pending[board] <= body.score){ delete state.pending[board]; save(); } if (j.you && j.you.rank <= 3 && board !== 'xp') unlock('podium', '🏆', 'Podium finish on a global leaderboard'); return j; });
 }
-function lbGet(board){ return lbCall({ board, pid:playerId() }); }
+function lbGet(board, friends){ const p = { board, pid:playerId() }; if (friends) p.friends = 1; return lbCall(p); }
 /* send any scores that could not be delivered last time (rate limit, closed tab, offline) */
 function flushPending(){
   if (lbDown || !state.name || !state.pending) return;
@@ -285,6 +287,72 @@ function localTop(board){
   if (board === 'xp') return [{ s:state.xp, l:'XP', d:dayKey() }];
   return (state.tops[board] || []).slice();
 }
+
+/* ---------- Accounts, progress sync, friends & chat API (api.php) ---------- */
+const API_URL = ROOT + 'api.php';
+let apiDown = !/^https?:/.test(location.protocol);
+async function api(action, body){
+  if (apiDown) throw new Error('Accounts and chat go live when the arcade runs on your website (needs PHP).');
+  const opts = { method:body ? 'POST' : 'GET', headers:{}, cache:'no-store' };
+  if (body){ opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+  if (state.auth && state.auth.token) opts.headers['X-Auth'] = state.auth.token;
+  const qs = body ? '' : '&' + new URLSearchParams(arguments[2] || {});
+  const res = await fetch(API_URL + '?action=' + action + qs, opts);
+  let j = null; try { j = await res.json(); } catch(e){ apiDown = true; throw new Error('Accounts and chat go live when the arcade runs on your website (needs PHP).'); }
+  if (res.status === 401 && state.auth && action !== 'login'){ state.auth = null; save(); updateBar(); }
+  if (!res.ok || !j.ok) throw new Error(j && j.error ? j.error : 'error ' + res.status);
+  return j;
+}
+const PROGRESS_KEYS = ['xp','games','plays','wins','tops','ach','chestStreak','lastChest','day'];
+function progressBlob(){ const o = {}; PROGRESS_KEYS.forEach(k => o[k] = state[k]); return o; }
+let syncT = 0;
+function syncSoon(){ if (!state.auth) return; clearTimeout(syncT); syncT = setTimeout(() => { api('progress_save', { data:progressBlob(), rank:rankInfo().rank.i }).catch(() => {}); }, 3000); }
+async function afterLogin(j){
+  state.auth = { token:j.token, name:j.user.name, id:j.user.id }; state.name = j.user.name; save();
+  try {
+    const p = await api('progress_get', null, {});
+    if (p.progress && (p.progress.xp || 0) > state.xp){ PROGRESS_KEYS.forEach(k => { if (p.progress[k] !== undefined) state[k] = p.progress[k]; }); save(); toast('☁️ Progress loaded from your account (' + state.xp + ' XP)'); }
+    else syncSoon();
+  } catch(e){}
+  updateBar();
+  return j;
+}
+const Acct = {
+  get user(){ return state.auth; },
+  register(username, password){ return api('register', { username, password }).then(afterLogin); },
+  login(username, password){ return api('login', { username, password }).then(afterLogin); },
+  logout(){ const p = api('logout', {}).catch(() => {}); state.auth = null; save(); updateBar(); return p; },
+  me(){ return api('me', null, {}); },
+  search(q){ return api('search', null, { q }); },
+  friend(action, name){ return api(action, { name }); },
+  send(room, text){ return api('chat_send', { room, text }); },
+  poll(room, since){ return api('chat_poll', null, { room, since }); },
+  inbox(){ return api('inbox', null, {}); },
+  report(room, id){ return api('chat_report', { room, id }); },
+  del(room, id){ return api('chat_delete', { room, id }); },
+  ban(name, on){ return api('ban', { name, on }); },
+  get down(){ return apiDown; }
+};
+
+/* ---------- Background music (original chiptune, optional) ---------- */
+const Music = {
+  timer:null, step:0, next:0, bus:null,
+  prog:[[0,4,7,11],[-3,0,4,7],[5,9,12,16],[2,5,9,14]],
+  start(){
+    if (!state.music || state.muted || this.timer) return; Sfx.init(); const c = Sfx.ctx; if (!c) return;
+    if (!this.bus){ this.bus = c.createGain(); this.bus.gain.value = .16; this.bus.connect(Sfx.out); }
+    this.next = c.currentTime + .1; this.step = 0;
+    this.timer = setInterval(() => { while (this.next < c.currentTime + .25){ this.play(this.step++, this.next); this.next += 60/112/2; } }, 60);
+  },
+  stop(){ clearInterval(this.timer); this.timer = null; },
+  play(i, t){
+    const c = Sfx.ctx, chord = this.prog[Math.floor(i/16) % 4], pos = i % 16, f = (m) => 440 * Math.pow(2, (m-69)/12);
+    const v = (fr, d, type, vol) => { const o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.value = fr; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(this.bus); o.start(t); o.stop(t + d + .02); };
+    if (pos % 2 === 0) v(f(64 + chord[(pos/2) % 4] + (pos >= 8 ? 12 : 0)), .3, 'square', .05);
+    if (pos % 4 === 0) v(f(40 + chord[0]), .5, 'triangle', .14);
+  },
+  toggle(){ state.music = !state.music; save(); if (state.music) this.start(); else this.stop(); return state.music; }
+};
 
 /* ---------- 8-bit sound (Web Audio API) ---------- */
 const Sfx = {
@@ -331,7 +399,7 @@ const Sfx = {
   fanfare(good){ (good ? [523,659,784,659,784,1047] : [392,370,349,330]).forEach((f,i)=>this.tone(f, good?.14:.22, 'square', .08, i*(good?.11:.2))); }
 };
 ['pointerdown','keydown','touchstart'].forEach(ev => window.addEventListener(ev, () => Sfx.init(), { once:false, passive:true }));
-function setMuted(m){ load(); state.muted = !!m; save(); updateBar(); }
+function setMuted(m){ load(); state.muted = !!m; save(); updateBar(); if (m) Music.stop(); else Music.start(); }
 function buzz(p){ if (navigator.vibrate) { try { navigator.vibrate(p); } catch(e){} } }
 
 /* ---------- Pixel art ---------- */
@@ -427,7 +495,7 @@ function shareText(gameId, lines){
 /* ---------- Game page top bar ---------- */
 function updateBar(){
   const xp = $('#abXP'), mute = $('#abMute');
-  if (xp){ const ri = rankInfo(); xp.textContent = ri.rank.i + ' ' + state.xp + ' XP'; xp.title = ri.rank.t; }
+  if (xp){ const ri = rankInfo(); xp.textContent = ri.rank.i + ' ' + (state.auth ? state.auth.name + ' · ' : '') + state.xp + ' XP'; xp.title = ri.rank.t; }
   if (mute) mute.textContent = state.muted ? '🔇' : '🔊';
 }
 function mountBar(gameId, opts){
@@ -437,7 +505,10 @@ function mountBar(gameId, opts){
   host.className = 'arcade-bar';
   host.innerHTML = '<a class="btn back" href="' + ROOT + 'index.html" title="Back to the arcade">⬅ ARCADE</a>' +
     '<div class="title">' + (g ? g.e + ' ' + esc(g.t) : '') + (g && featuredGame().id === g.id ? ' <span class="badge gold" style="background:#d9a514">⭐ 2x XP</span>' : '') + '</div>' +
-    '<span class="chip" id="abXP"></span>' + (opts.noMute ? '' : '<button class="btn icon" id="abMute" aria-label="Toggle sound">🔊</button>');
+    '<span class="chip" id="abXP"></span>' + '<button class="btn icon" id="abMusic" aria-label="Toggle music" title="Music">🎵</button>' + (opts.noMute ? '' : '<button class="btn icon" id="abMute" aria-label="Toggle sound">🔊</button>');
+  const mu = $('#abMusic');
+  if (mu){ mu.style.opacity = state.music ? 1 : .5; mu.addEventListener('click', () => { Sfx.init(); const on = Music.toggle(); mu.style.opacity = on ? 1 : .5; toast(on ? '🎵 Music on' : '🎵 Music off'); }); }
+  if (state.music) ['pointerdown','keydown'].forEach(ev => addEventListener(ev, () => Music.start(), { once:true }));
   const m = $('#abMute');
   if (m) m.addEventListener('click', () => { setMuted(!state.muted); Sfx.init(); Sfx.click(); if (opts.onMute) opts.onMute(state.muted); });
   updateBar();
@@ -478,6 +549,7 @@ window.Arcade = {
   copy, shareText, pageURL, hubURL,
   mountBar, updateBar, fallingBlocks,
   quests, today, lb:{ submit:lbSubmit, get:lbGet, local:localTop, get down(){ return lbDown; } }, playerId,
+  acct:Acct, Music, syncSoon,
   setName(n){ load(); state.name = String(n||'').replace(/[^\p{L}\p{N} _\-.!]/gu,'').slice(0,16); save(); }
 };
 })();

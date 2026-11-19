@@ -12,6 +12,9 @@ const Kit = {};
 let def = null, k = null, raf = 0, last = 0;
 let G = null; // catalogue entry
 
+const MEDAL_E = ['', '🥉', '🥈', '🥇'], MEDAL_N = ['', 'BRONZE', 'SILVER', 'GOLD'];
+function medals(){ if (def.medals) return def.medals; if (!def.winAt || def.winAt <= 1) return null; return [Math.max(1, Math.round(def.winAt * .5)), def.winAt, def.winAt * 2]; }
+function medalFor(score){ const m = medals(); if (!m) return 0; return score >= m[2] ? 3 : score >= m[1] ? 2 : score >= m[0] ? 1 : 0; }
 const QUIPS_GOOD = ['UNREAL!','LEGENDARY!','ABSOLUTE MENACE!','CERTIFIED GAMER!','GODLIKE!','INSANE RUN!'];
 const QUIPS_MID = ['NICE RUN!','NOT BAD!','SOLID!','GETTING THERE!','RESPECTABLE!'];
 const QUIPS_BAD = ['OUCH.','SKILL ISSUE?','WARM-UP ROUND','THAT HAPPENED.','ONE MORE TRY?'];
@@ -182,6 +185,7 @@ function showStart(){
   ov.className = 'kit-ov';
   ov.innerHTML = '<div class="kit-icon">' + G.e + '</div><h2>' + G.t + '</h2><p>' + G.desc + '</p>' +
     (st.plays ? '<div class="kit-best">🏆 Your best: <b>' + (def.scoreText ? def.scoreText(st.best) : st.best) + '</b> · ' + st.plays + ' play' + (st.plays === 1 ? '' : 's') + '</div>' : '') +
+    (medals() ? '<div class="kit-medals">' + medals().map((v, i) => '<span class="' + ((st.medal || 0) > i ? 'got' : '') + '">' + MEDAL_E[i + 1] + ' ' + (def.scoreText ? def.scoreText(v) : v) + '</span>').join('') + '</div>' : '') +
     '<button class="btn green big" id="kitPlay">▶ PLAY</button><div class="kit-lb" id="kitLbMini"></div><div class="kit-hint">Space / Enter also starts</div>';
   $('#kitPlay').addEventListener('click', start);
   miniBoard($('#kitLbMini'), 3);
@@ -190,10 +194,20 @@ function start(){
   A.Sfx.init(); A.Sfx.click();
   k._reset();
   k.score = 0; k.combo = 0; k.t = 0; k.ended = false; k.paused = false; k.data = {};
-  $('#kitOv').className = 'kit-ov hide';
+  $('#kitOv').className = 'kit-ov hide'; $('#kitStage').classList.remove('ended');
+  if (k.canvas) sizeCanvas();
   if (def.init) def.init(k);
-  k.running = true;
   renderHud();
+  if (def.dom || def.countdown === false){ k.running = true; return; }
+  const ov = $('#kitOv'); let n = 3;
+  ov.className = 'kit-ov count';
+  (function tick(){
+    if (k.ended) return;
+    ov.innerHTML = '<div class="kit-count">' + (n > 0 ? n : 'GO!') + '</div>';
+    A.Sfx.tone(n > 0 ? 520 : 1040, n > 0 ? .1 : .25, 'square', .08);
+    if (n <= 0){ setTimeout(() => { ov.className = 'kit-ov hide'; }, 350); k.running = true; return; }
+    n--; setTimeout(tick, 450);
+  })();
 }
 function endGame(opts){
   if (k.ended) return;
@@ -204,7 +218,8 @@ function endGame(opts){
   const label = opts.label || (def.label ? def.label(score, k) : (def.scoreText ? def.scoreText(score) : score + ' pts'));
   const win = opts.win != null ? opts.win : (def.winAt != null ? score >= def.winAt : score > 0);
   const xp = def.xp ? def.xp(score, k) : Math.min(150, Math.round(Math.sqrt(score) * 3));
-  const res = A.report(G.id, { score, xp, win, label });
+  const medal = medalFor(score), prevMedal = A.gameStats(G.id).medal || 0;
+  const res = A.report(G.id, { score, xp:xp + (medal > prevMedal ? medal * 15 : 0), win, label, medal });
   const newBest = score > prevBest && score > 0;
   if (newBest) setTimeout(() => A.confetti(), 300);
   A.Sfx.fanfare(win || newBest);
@@ -212,8 +227,10 @@ function endGame(opts){
   const lines = (opts.lines || []).map(l => '<div>' + l + '</div>').join('');
   const ov = $('#kitOv');
   setTimeout(() => {
-    ov.className = 'kit-ov end';
+    ov.className = 'kit-ov end'; $('#kitStage').classList.add('ended'); renderHud(); window.scrollTo({ top:0, behavior:'smooth' });
     ov.innerHTML = '<div class="kit-quip">' + quip + '</div><div class="kit-score">' + (def.scoreText ? def.scoreText(score) : score) + '</div>' +
+      (medal ? '<div class="kit-medal' + (medal > prevMedal ? ' new' : '') + '">' + MEDAL_E[medal] + ' ' + MEDAL_N[medal] + (medal > prevMedal ? ' MEDAL UNLOCKED!' : '') + '</div>' : '') +
+      (medals() && medal < 3 ? '<div class="kit-next">Next: ' + MEDAL_E[medal + 1] + ' at ' + (def.scoreText ? def.scoreText(medals()[medal]) : medals()[medal]) + '</div>' : '') +
       '<div class="kit-lines">' + lines + '<div>+' + (res.xp || 0) + ' XP' + (res.featured ? ' (⭐ 2x)' : '') + ' · best ' + (def.scoreText ? def.scoreText(Math.max(prevBest, score)) : Math.max(prevBest, score)) + '</div></div>' +
       '<div class="kit-btns"><button class="btn green" id="kitAgain">🔄 AGAIN</button><button class="btn gold" id="kitShare">📋 SHARE</button><a class="btn" href="../index.html">⬅ ARCADE</a></div>' +
       '<div class="kit-lb" id="kitLb"></div>';
@@ -237,14 +254,22 @@ function miniBoard(el, n){
   }).catch(() => { el.innerHTML = '<div class="lbt">📱 YOUR TOP RUNS</div>' + localRows(n); });
 }
 function boardAfter(el, p, score){
+  const tabs = (which) => A.acct.user ? '<div class="kit-tabs"><button class="btn small' + (which === 'g' ? ' on' : '') + '" data-tab="g">🌍 Global</button><button class="btn small' + (which === 'f' ? ' on' : '') + '" data-tab="f">👥 Friends</button></div>' : '';
+  const bindTabs = () => el.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => { A.Sfx.click(); el.innerHTML = '<div class="lbe">Loading…</div>'; (b.dataset.tab === 'f' ? A.lb.get(G.id, true).then(j => showF(j)) : A.lb.get(G.id).then(show)).catch(offline); }));
+  const showF = (j) => {
+    const others = j.top.filter(x => !x.me), beaten = others.filter(x => x.s < score).length;
+    let h = tabs('f') + '<div class="lbt">👥 FRIENDS</div>' + (j.top.length ? j.top.map((x, i) => rowHtml(i, x.n, x.s, x.me)).join('') : '<div class="lbe">No friends on this board yet. Add some in the lobby!</div>');
+    if (others.length) h += '<div class="lbe">' + (beaten === others.length ? '👑 You beat ALL ' + others.length + ' friends!' : '⚔️ You beat ' + beaten + ' of ' + others.length + ' friends') + '</div>';
+    el.innerHTML = h; bindTabs();
+  };
   const show = (j) => {
-    let h = '<div class="lbt">🌍 GLOBAL LEADERBOARD</div>' + (j.top.length ? j.top.map((x, i) => rowHtml(i, x.n, x.s, x.me)).join('') : '<div class="lbe">Nobody yet.</div>');
+    let h = tabs('g') + '<div class="lbt">🌍 GLOBAL LEADERBOARD</div>' + (j.top.length ? j.top.map((x, i) => rowHtml(i, x.n, x.s, x.me)).join('') : '<div class="lbe">Nobody yet.</div>');
     if (j.you && j.you.rank > j.top.length) h += rowHtml(j.you.rank - 1, A.state.name || 'You', j.you.s, true);
-    h += '<div class="lbe">' + j.count + ' player' + (j.count === 1 ? '' : 's') + (j.you ? ' · you are #' + j.you.rank : '') + '</div>';
-    el.innerHTML = h;
+    h += '<div class="lbe">' + j.count + ' player' + (j.count === 1 ? '' : 's') + (j.you ? ' · you are #' + j.you.rank : '') + (A.acct.user ? '' : ' · <a href="../index.html#account">log in</a> to protect your name') + '</div>';
+    el.innerHTML = h; bindTabs();
   };
   const offline = () => { el.innerHTML = '<div class="lbt">📱 YOUR TOP RUNS (this device)</div>' + localRows(5) + '<div class="lbe">The global board goes live when the arcade runs on your website.</div>'; };
-  if (!A.state.name){
+  if (!A.state.name && !A.acct.user){
     if (A.lb.down){ offline(); return; }
     el.innerHTML = '<div class="lbt">🌍 PUT YOUR NAME ON THE BOARD</div><div class="kit-name"><input id="kitName" maxlength="16" placeholder="Nickname" aria-label="Nickname"><button class="btn green" id="kitNameGo">SUBMIT</button></div>';
     const go = () => {

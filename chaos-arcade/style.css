@@ -288,3 +288,17 @@ a{color:var(--aqua)}
 .kcard{width:clamp(52px,16vw,72px);aspect-ratio:5/7;background:#fff;color:#111;border:3px solid #000;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:clamp(16px,5vw,22px);box-shadow:3px 3px 0 rgba(0,0,0,.4);animation:pop .25s steps(3)}
 .kcard.red{color:#c0201a}
 .kcard.back{background:repeating-linear-gradient(45deg,#5a2fb0 0 6px,#3a1f7a 6px 12px);color:transparent}
+
+/* kit: medals, countdown, tabs */
+.kit-medals{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;font-size:12px}
+.kit-medals span{background:rgba(255,255,255,.08);border:2px solid #000;padding:3px 7px;opacity:.55;filter:grayscale(.8)}
+.kit-medals span.got{opacity:1;filter:none;border-color:#ffaa00}
+.kit-medal{font-size:18px;color:var(--gold);text-shadow:2px 2px 0 #000}
+.kit-medal.new{animation:pop .4s steps(4), wiggle .6s steps(3) .4s 2}
+.kit-next{font-size:12px;color:#aaa}
+.kit-ov.count{background:rgba(10,6,24,.35)}
+.kit-count{font-size:clamp(70px,24vw,140px);color:var(--yellow);text-shadow:6px 6px 0 #3f3f00, 0 0 30px rgba(255,255,85,.5);animation:pop .3s steps(3)}
+.kit-tabs{display:flex;gap:6px;justify-content:center;margin-bottom:6px}
+.kit-lb a{color:var(--aqua)}
+#kitStage.ended .kit-canvas,#kitStage.ended .kit-dom{display:none}
+.kit-ov.end{position:relative;inset:auto;width:100%;min-height:340px;justify-content:flex-start;padding:20px 14px;overflow:visible}
