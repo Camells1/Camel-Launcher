@@ -517,7 +517,9 @@ function mountBar(gameId, opts){
 /* ---------- Background falling blocks (decorative) ---------- */
 function fallingBlocks(){
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const c = document.createElement('canvas'); c.id = 'bgBlocks'; document.body.prepend(c);
+  const c = document.createElement('canvas'); c.id = 'bgBlocks';
+  c.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.55';
+  document.body.prepend(c);
   const x = c.getContext('2d'); let W, H;
   const resize = () => { W = c.width = innerWidth; H = c.height = innerHeight; }; resize(); addEventListener('resize', resize);
   const pals = [['#ff55ff','#9a2a9a'],['#55ffff','#1a8a8a'],['#ffff55','#a0a020'],['#55ff55','#1f8a1f'],['#ff5555','#8a1a1a'],['#5fbf3a','#866043'],['#5577ff','#22337a']];
@@ -536,6 +538,27 @@ function fallingBlocks(){
     requestAnimationFrame(loop);
   })();
 }
+
+/* ---------- Upload self-check: shows a clear message if style.css did not load ---------- */
+function selfCheck(){
+  const ok = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
+  if (ok) return;
+  const url = ROOT + 'style.css';
+  const show = (why) => {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:relative;z-index:9999;margin:10px;padding:14px;background:#a52a24;color:#fff;font:bold 15px/1.5 monospace;border:4px solid #000';
+    d.innerHTML = '⚠️ CHAOS ARCADE SETUP PROBLEM: the stylesheet did not load, so the page looks broken.<br>Checked <b>' + new URL(url, location.href).href + '</b>: ' + why +
+      '<br><br>Fix: upload <b>style.css</b> into the same folder as index.html (and arcade.js into the same folder), then refresh with Ctrl+F5.';
+    document.body.prepend(d);
+  };
+  fetch(url, { cache:'no-store' }).then(r => {
+    const type = r.headers.get('content-type') || '?';
+    if (!r.ok) show('the server says <b>HTTP ' + r.status + '</b> (file missing or in the wrong folder).');
+    else if (!/text\/css/.test(type)) show('the file exists but the server sends it as <b>' + type + '</b> instead of text/css. Ask your host to serve .css files as text/css.');
+    else show('the file exists, so the browser may be showing an old cached copy. Press Ctrl+F5.');
+  }).catch(() => show('it could not be reached at all.'));
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(selfCheck, 300)); else setTimeout(selfCheck, 300);
 
 /* ---------- Public API ---------- */
 window.Arcade = {
