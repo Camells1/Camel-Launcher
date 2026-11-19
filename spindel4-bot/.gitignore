@@ -3,3 +3,4 @@ brain.json
 __pycache__/
 *.tmp
 state/
+resultaten.txt

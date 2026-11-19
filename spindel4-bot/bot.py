@@ -63,12 +63,42 @@ def main():
     }
     tabs = max(1, min(10, args.tabs))
     done = set()
+    # running total over all tabs, split by who started (first robot move odd = robot started)
+    tally = {"first": [0, 0, 0], "second": [0, 0, 0]}   # won, draw, lost
+    first_move = {}
+
+    def result_line():
+        f, sc = tally["first"], tally["second"]
+        n = sum(f) + sum(sc)
+        won = f[0] + sc[0]
+        pct = lambda a: ("%.1f%%" % (100.0 * a[0] / sum(a))) if sum(a) else "-"
+        if args.english:
+            return "TOTAL: %d/%d won (%s) | robot started: %d/%d (%s) | computer started: %d/%d (%s)" % (
+                won, n, pct([won, 0, n - won]), f[0], sum(f), pct(f), sc[0], sum(sc), pct(sc))
+        return "TOTAAL: %d/%d gewonnen (%s) | robot begon: %d/%d (%s) | computer begon: %d/%d (%s)" % (
+            won, n, pct([won, 0, n - won]), f[0], sum(f), pct(f), sc[0], sum(sc), pct(sc))
 
     def on_console(n):
         def handler(msg):
             t = msg.text
             if t.startswith("[S4R]"):
-                log(("[tab %d] " % n if tabs > 1 else "") + t[6:])
+                body = t[6:]
+                log(("[tab %d] " % n if tabs > 1 else "") + body)
+                m = re.match(r"(?:zet|move) (\d+):", body)
+                if m and first_move.get(n) is None:
+                    first_move[n] = int(m.group(1))
+                if body.startswith(("UITSLAG", "RESULT")):
+                    key = "first" if (first_move.get(n) or 1) % 2 == 1 else "second"
+                    up = body.upper()
+                    slot = 0 if ("GEWONNEN" in up or "WIN" in up.split("(")[0]) else (1 if ("GELIJK" in up.split("(")[0] or "DRAW" in up.split("(")[0]) else 2)
+                    tally[key][slot] += 1
+                    first_move[n] = None
+                    log(result_line())
+                    try:
+                        with open(os.path.join(HERE, "resultaten.txt"), "w") as fh:
+                            fh.write(result_line() + "\n")
+                    except OSError:
+                        pass
                 if t.strip() == "[S4R] DONE":
                     done.add(n)
         return handler
