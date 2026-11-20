@@ -34,7 +34,7 @@ function cash(k){
   ui(k); setTimeout(() => endRound(k), 1500);
 }
 function endRound(k){ const d = k.data; if (!k.running) return; d.round++; if (d.round >= ROUNDS || d.bank < 5) return k.over({ score:d.bank, win:d.bank > 100, title:d.bank > 100 ? '🚀 TO THE MOON!' : d.bank < 5 ? '💥 REKT' : '🙃 GRAVITY WINS', lines:[d.hist.join('') + ' · bank ' + d.bank] }); newRound(k); }
-Kit.def({
+Kit.def({ noBestBar:true,
   aspect:.9, winAt:101,
   scoreText:(s) => s + '🪙',
   how:'Start with 100 coins. Pick a bet and LAUNCH. The multiplier climbs while the rocket flies… and it can explode at ANY moment. Cash out before it blows to win bet × multiplier. 10 rounds. Your score is your final bank. Space = launch / cash out.',

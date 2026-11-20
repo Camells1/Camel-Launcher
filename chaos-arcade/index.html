@@ -121,7 +121,7 @@
 
     <main>
       <div class="searchrow">
-        <input id="search" placeholder="🔍 Search 57 games…" aria-label="Search games">
+        <input id="search" placeholder="🔍 Search 100 games…" aria-label="Search games">
         <span class="count shadow-dark" id="shown"></span>
       </div>
       <div class="catbar" id="cats"></div>
@@ -223,7 +223,7 @@ let cat = 'all', query = '';
 try { cat = sessionStorage.getItem('ca_cat') || 'all'; } catch(e){}
 function renderCats(){
   const counts = {}; A.GAMES.forEach(g => counts[g.cat] = (counts[g.cat] || 0) + 1);
-  const list = [['all','🕹️ All', A.GAMES.length]].concat(Object.keys(A.CATS).map(k => [k, A.CATS[k].e + ' ' + A.CATS[k].n, counts[k] || 0]), [['new','✨ Unplayed', '']]);
+  const list = [['all','🕹️ All', A.GAMES.length]].concat(Object.keys(A.CATS).map(k => [k, A.CATS[k].e + ' ' + A.CATS[k].n, counts[k] || 0]), [['fav','⭐ Favorites', Object.keys(A.state.fav || {}).filter(id => A.gameById(id)).length], ['recent','🕘 Recent', ''], ['new','✨ Unplayed', '']]);
   $('#cats').innerHTML = list.map(([k, n, c]) => '<button class="btn small' + (cat === k ? ' on' : '') + '" data-c="' + k + '">' + n + (c !== '' ? ' <span style="opacity:.6">' + c + '</span>' : '') + '</button>').join('');
 }
 $('#cats').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; A.Sfx.click(); cat = b.dataset.c; try { sessionStorage.setItem('ca_cat', cat); } catch(e){} renderCats(); renderCards(); });
@@ -233,13 +233,18 @@ const texCache = {};
 function renderCards(){
   A.load();
   const feat = A.featuredGame().id;
-  const list = A.GAMES.filter(g => {
+  const fav = A.state.fav || (A.state.fav = {});
+  let list = A.GAMES.filter(g => {
     const s = A.state.games[g.id];
     if (cat === 'new' && s && s.plays) return false;
-    if (cat !== 'all' && cat !== 'new' && g.cat !== cat) return false;
+    if (cat === 'fav' && !fav[g.id]) return false;
+    if (cat === 'recent' && !(s && s.ts)) return false;
+    if (A.CATS[cat] && g.cat !== cat) return false;
     if (query && !(g.t + ' ' + g.desc + ' ' + g.tag).toLowerCase().includes(query)) return false;
     return true;
   });
+  if (cat === 'recent') list = list.sort((a, b) => A.state.games[b.id].ts - A.state.games[a.id].ts).slice(0, 12);
+  else if (cat === 'all' && !query) list = list.slice().sort((a, b) => (fav[b.id] ? 1 : 0) - (fav[a.id] ? 1 : 0));
   $('#shown').textContent = list.length + ' game' + (list.length === 1 ? '' : 's');
   $('#cards').innerHTML = list.map(g => {
     const s = A.state.games[g.id], key = g.id;
@@ -247,19 +252,22 @@ function renderCards(){
     const best = s && s.plays ? (['','🥉 ','🥈 ','🥇 '][s.medal || 0]) + '🏆 Best: ' + (s.bestLabel || s.best || '—') + ' · 🎮 ' + s.plays : '✨ Never played. Fresh XP!';
     return '<a class="card" data-id="' + g.id + '" href="games/' + g.file + '">' +
       '<div class="card-thumb" style="background-image:url(' + bg + ')"><div class="card-num">#' + String(g.n).padStart(2,'0') + '</div>' +
+      '<button class="card-fav' + (fav[g.id] ? ' on' : '') + '" data-fav="' + g.id + '" aria-label="Favorite ' + g.t + '" title="Favorite">' + (fav[g.id] ? '★' : '☆') + '</button>' +
       (g.id === feat ? '<div class="ribbon">⭐ 2x XP</div>' : '') +
       (g.icon ? '<div class="card-icon">' + A.icon(g.icon) + '</div><div class="card-emoji">' + g.e + '</div>' : '<div class="big-e">' + g.e + '</div>') + '</div>' +
       '<div class="card-body"><div class="card-title">' + g.t + '</div>' +
       '<div class="card-badges"><span class="badge ' + g.d + '">' + DIFF_LABEL[g.d] + '</span><span class="badge tag">' + A.CATS[g.cat].e + ' ' + A.CATS[g.cat].n.toUpperCase() + '</span></div>' +
       '<p class="card-desc">' + g.desc + '</p><div class="card-best">' + best + '</div></div>' +
       '<div class="card-play">▶ PLAY</div></a>';
-  }).join('') || '<div class="dark-panel">No games match that. Try another search. 🔍</div>';
+  }).join('') || '<div class="dark-panel">' + (cat === 'fav' ? 'No favorites yet. Tap the ☆ on any game card to pin it here. ⭐' : cat === 'recent' ? 'Nothing played yet. Pick any game to start! 🎮' : 'No games match that. Try another search. 🔍') + '</div>';
   $$('.card').forEach(c => {
     const g = A.gameById(c.dataset.id);
     c.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') A.Sfx.hover(); });
     c.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const r = c.getBoundingClientRect(), dx = (e.clientX - r.left) / r.width - .5, dy = (e.clientY - r.top) / r.height - .5; c.style.transform = 'perspective(600px) rotateY(' + (dx*10).toFixed(1) + 'deg) rotateX(' + (-dy*10).toFixed(1) + 'deg) translateY(-4px)'; });
     c.addEventListener('pointerleave', () => { c.style.transform = ''; });
-    c.addEventListener('click', e => { e.preventDefault(); launch(g); });
+    c.addEventListener('click', e => { e.preventDefault();
+      if (e.target.closest('[data-fav]')){ e.stopPropagation(); A.load(); const F = A.state.fav; if (F[g.id]) delete F[g.id]; else { F[g.id] = Date.now(); A.toast && A.toast('⭐ ' + g.t + ' added to Favorites'); } A.Sfx.click(); A.save(); renderCats(); renderCards(); return; }
+      launch(g); });
   });
 }
 
@@ -279,7 +287,7 @@ window.addEventListener('pageshow', () => { launching = false; $('#loading').cla
 $('#randomBtn').addEventListener('click', () => {
   if (launching) return;
   A.Sfx.init();
-  const pool = cat !== 'all' && cat !== 'new' ? A.GAMES.filter(g => g.cat === cat) : A.GAMES;
+  const pool = A.CATS[cat] ? A.GAMES.filter(g => g.cat === cat) : cat === 'fav' && Object.keys(A.state.fav || {}).length ? A.GAMES.filter(g => A.state.fav[g.id]) : A.GAMES;
   const pick = pool[Math.floor(Math.random() * pool.length)], btn = $('#randomBtn');
   btn.disabled = true; let i = 0, delay = 40;
   (function spin(){

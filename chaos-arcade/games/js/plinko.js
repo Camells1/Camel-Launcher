@@ -2,7 +2,7 @@
 (function(){
 const MULT = [10, 4, 2, 1, .5, .2, .5, 1, 2, 4, 10], ROWS = 11, BALLS = 15, COST = 10;
 function layout(k){ const d = k.data, sp = k.W / (MULT.length + 1); d.sp = sp; d.pegs = []; for (let r=0;r<ROWS;r++){ const n = r + 3; for (let i=0;i<n;i++) d.pegs.push({ x:k.W/2 + (i - (n - 1)/2) * sp, y:70 + r * sp * .82, lit:0 }); } d.binY = 70 + ROWS * sp * .82 + 6; }
-Kit.def({
+Kit.def({ noBestBar:true,
   aspect:.78, winAt:151,
   scoreText:(s) => s + '🪙',
   how:'Start with 150 coins and 15 balls. Each drop costs 10. Tap anywhere along the top to drop a ball from there. It bounces through the pegs into a multiplier slot: the edges pay 10x, the middle only 0.2x. Your score is the coins you end with.',

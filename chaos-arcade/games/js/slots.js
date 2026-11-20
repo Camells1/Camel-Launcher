@@ -44,7 +44,7 @@ function payout(k, r){
   d.spinning = false; k.set(d.coins); render(k);
   if (d.coins < COST || d.left <= 0) setTimeout(() => k.over({ score:d.coins, win:d.coins > 100, title:d.coins > 100 ? '💰 YOU BEAT THE HOUSE' : d.coins < COST ? '🪦 BROKE' : '🎰 OUT OF SPINS', lines:['Ended with ' + d.coins + ' coins'] }), 900);
 }
-Kit.def({
+Kit.def({ noBestBar:true,
   dom:true, winAt:101,
   scoreText:(s) => s + '🪙',
   how:'Start with 100 coins and 25 spins. Each spin costs 10. Three of a kind pays out (7️⃣7️⃣7️⃣ = 2500!), two cherries refunds your spin. Sometimes a 🌀 chaos event boosts or robs your stack. Your score is the coins you end with. Space = spin.',

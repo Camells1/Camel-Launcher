@@ -176,6 +176,12 @@ function renderHud(){
   Object.keys(h.extra).forEach(key => { html += '<span class="chip">' + h.extra[key] + '</span>'; });
   if (h.timerLeft != null) html += '<span class="chip ' + (h.timerLeft <= 5 ? 'low' : '') + '">⏱ ' + h.timerLeft.toFixed(1) + '</span>';
   html += '<span class="chip dim">🏆 ' + (def.scoreText ? def.scoreText(best) : best) + '</span>';
+  // live "chasing your best" bar (games where the score only goes up)
+  if (best > 0 && k.running && !def.noBestBar){
+    const f = Math.max(0, Math.min(1, k.score / best)), beat = k.score > best;
+    html += '<div class="kit-pb' + (beat ? ' beat' : '') + '"><i style="width:' + (f * 100).toFixed(1) + '%"></i><span>' + (beat ? '🔥 NEW BEST PACE!' : 'BEST ' + Math.round(f * 100) + '%') + '</span></div>';
+    if (beat && !k._beatShown){ k._beatShown = true; A.bigText('🏆 NEW BEST!', '#ffd700'); A.Sfx.ach(); }
+  }
   $('#kitHud').innerHTML = html;
 }
 
@@ -193,16 +199,16 @@ function showStart(){
 function start(){
   A.Sfx.init(); A.Sfx.click();
   k._reset();
-  k.score = 0; k.combo = 0; k.t = 0; k.ended = false; k.paused = false; k.data = {};
+  k.score = 0; k.combo = 0; k.t = 0; k.ended = false; k.paused = false; k.data = {}; k._beatShown = false;
   $('#kitOv').className = 'kit-ov hide'; $('#kitStage').classList.remove('ended');
   if (k.canvas) sizeCanvas();
   if (def.init) def.init(k);
   renderHud();
   if (def.dom || def.countdown === false){ k.running = true; return; }
-  const ov = $('#kitOv'); let n = 3;
+  const ov = $('#kitOv'); let n = 3; const run = (k.runId = (k.runId || 0) + 1);
   ov.className = 'kit-ov count';
   (function tick(){
-    if (k.ended) return;
+    if (k.ended || k.runId !== run) return;
     ov.innerHTML = '<div class="kit-count">' + (n > 0 ? n : 'GO!') + '</div>';
     A.Sfx.tone(n > 0 ? 520 : 1040, n > 0 ? .1 : .25, 'square', .08);
     if (n <= 0){ setTimeout(() => { ov.className = 'kit-ov hide'; }, 350); k.running = true; return; }
@@ -311,7 +317,7 @@ function bindInput(){
   addEventListener('keydown', e => {
     if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName) && !def.typing) return;
     if (!k.running){
-      if ((e.key === 'Enter' || e.code === 'Space') && !k.paused && !def.typing){ e.preventDefault(); if (!$('#kitOv').classList.contains('hide')) start(); }
+      if ((e.key === 'Enter' || e.code === 'Space') && !k.paused && !def.typing){ e.preventDefault(); const ov = $('#kitOv'); if (!ov.classList.contains('hide') && !ov.classList.contains('count')) start(); }
       return;
     }
     if (k.paused){ k.paused = false; $('#kitOv').className = 'kit-ov hide'; return; }

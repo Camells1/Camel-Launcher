@@ -94,7 +94,50 @@ const NEW_GAMES = [
   ['hoops','Hoop Shot','🏀','medium','sports','Flick the ball into the moving hoop. Swish for bonus.'],
   ['penalty','Penalty Kick','⚽','easy','sports','Aim, power, shoot. The goalie gets smarter each round.'],
   ['minigolf','Mini Golf','⛳','medium','sports','Drag and shoot through 9 tricky holes. Count your strokes.'],
-  ['darts','Dart Toss','🎯','medium','sports','Time your throw on the wobbling aim. Bullseye pays big.']
+  ['darts','Dart Toss','🎯','medium','sports','Time your throw on the wobbling aim. Bullseye pays big.'],
+  ['tankduel','Tank Duel','💣','medium','action','Artillery battle vs a bot. Angle, power and wind decide everything.'],
+  ['cavecopter','Cave Copter','🚁','hard','action','Hold to rise, let go to fall. The cave keeps getting tighter.'],
+  ['laneracer','Lane Racer','🏎️','easy','action','Swerve between lanes, dodge traffic, grab nitro.'],
+  ['zombies','Zombie Siege','🧟','medium','action','Zombies close in from every side. Tap them before they reach you.'],
+  ['bullethell','Bullet Hell','🌀','hard','action','Weave through spiraling bullet patterns. Survive as long as you can.'],
+  ['colorgate','Color Gate','🎨','hard','action','Jump through rotating rings, only through your own color.'],
+  ['duckshoot','Duck Shoot','🦆','easy','action','Classic shooting gallery. Hit ducks, avoid the dogs, watch your ammo.'],
+  ['fishing','Fishing Frenzy','🎣','easy','action','Drop your hook, catch fish on the way up, avoid the jellyfish.'],
+  ['meteor','Meteor Miner','⛏️','medium','action','Tap falling meteors to mine them before they smash the planet.'],
+  ['arena','Snake Arena','🐉','hard','action','Snake vs three hungry AI snakes. Eat or be eaten.'],
+  ['paperplane','Paper Plane','✈️','medium','action','Tilt your paper plane through a windy obstacle course.'],
+  ['cps','Click Speed','👆','easy','reflex','How many taps can you do in 10 seconds?'],
+  ['stopclock','Stop the Clock','⏱️','medium','reflex','Stop the timer at exactly 10.00 seconds. Then it gets harder.'],
+  ['bubblepop','Bubble Pop','🫧','easy','reflex','Pop the rising bubbles. Same colors in a row = combo.'],
+  ['quickdraw','Quick Draw','🤠','medium','reflex','Wild west duel. Draw when it says DRAW, not a moment before.'],
+  ['numberrush','Number Rush','🔟','medium','reflex','Tap 1 to 25 in order as fast as you can.'],
+  ['pipes','Pipe Connect','🚰','medium','puzzle','Rotate the pipes so water flows from start to every tap.'],
+  ['match3','Gem Swap','💎','easy','puzzle','Swap gems to match 3 or more. Chain cascades for huge combos.'],
+  ['blockblast','Block Blast','🟩','medium','puzzle','Fit pieces on the 8×8 board. Fill rows and columns to clear them.'],
+  ['collapse','Collapse','🟥','easy','puzzle','Tap groups of 2+ same-color blocks. Bigger groups score way more.'],
+  ['hanoi','Tower of Hanoi','🗼','medium','puzzle','Move the whole tower, one disc at a time, never big on small.'],
+  ['pegs','Peg Solitaire','📍','hard','puzzle','Jump pegs to remove them. Can you leave just one?'],
+  ['ballsort','Ball Sort','🧪','medium','puzzle','Sort the colored balls so each tube holds one color.'],
+  ['picross','Picross','🖼️','hard','puzzle','Use the number clues to paint the hidden pixel picture.'],
+  ['tiletriple','Tile Triple','🀄','medium','puzzle','Pick tiles into your tray. Three of a kind vanish. Do not fill the tray.'],
+  ['trivia','Trivia Blitz','❓','medium','brain','Fast general knowledge questions. Speed pays.'],
+  ['capitals','Capital Cities','🏛️','medium','brain','Name the capital city before the timer runs out.'],
+  ['sequences','Number Sequences','🔢','hard','brain','Spot the pattern and pick the next number.'],
+  ['visualmem','Visual Memory','🟦','medium','brain','Remember which squares lit up. The grid keeps growing.'],
+  ['countit','Count It','🔵','medium','brain','Shapes flash for a moment. How many did you see?'],
+  ['factorcap','Fact or Cap','🧢','easy','brain','True fact or total cap? Decide fast.'],
+  ['roulette','Roulette','🎡','chaos','luck','Bet on red, black, odd, even or a single number. Spin!'],
+  ['dicepoker','Dice Poker','🎲','medium','luck','Roll five dice, hold the good ones, chase a full house.'],
+  ['scratch','Scratch Cards','🎫','easy','luck','Scratch to reveal symbols. Three matching = prize.'],
+  ['gemmines','Gem Mines','💣','chaos','luck','Pick tiles to find gems, avoid mines, cash out in time.'],
+  ['doubleornothing','Double or Nothing','🪙','chaos','luck','Call the coin flip. Keep doubling or walk away.'],
+  ['wordsearch','Word Search','🔍','easy','words','Find all hidden words in the letter grid. Drag to select.'],
+  ['wordrain','Word Rain','🌧️','medium','words','Type the falling words before they hit the ground.'],
+  ['missingletter','Missing Letter','🔡','easy','words','Pick the letter that completes the word.'],
+  ['opposites','Opposites','↔️','easy','words','Pick the opposite of the word. Quick!'],
+  ['typohunter','Typo Hunter','🕵️','medium','words','Three words are spelled right. Find the typo.'],
+  ['bowling','Bowling','🎳','medium','sports','Aim, spin and knock down the pins. 10 frames.'],
+  ['archery','Archery','🏹','medium','sports','Draw, aim and mind the wind. Hit the gold.']
 ].map(([id, t, e, d, cat, desc]) => ({ id, t, e, d, cat, desc, file:'play.html#' + id, tag:CATS[cat].n.toUpperCase(), bg:CAT_BG[cat] }));
 const GAMES = BLOCK_GAMES.concat(NEW_GAMES).map((g, i) => Object.assign(g, { n:i + 1, ready:true }));
 
@@ -110,13 +153,13 @@ const RANKS = [
 ];
 
 /* ---------- Storage ---------- */
-function blank(){ return { xp:0, name:'', muted:false, games:{}, plays:0, wins:0, lastChest:'', chestStreak:0, lastVisit:'', ach:{}, pid:'', tops:{}, day:null }; }
+function blank(){ return { xp:0, name:'', muted:false, fav:{}, games:{}, plays:0, wins:0, lastChest:'', chestStreak:0, lastVisit:'', ach:{}, pid:'', tops:{}, day:null }; }
 let state;
 function load(){
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e){}
   state = Object.assign(blank(), saved);
-  state.games = saved.games || {}; state.ach = saved.ach || {}; state.tops = saved.tops || {};
+  state.games = saved.games || {}; state.ach = saved.ach || {}; state.tops = saved.tops || {}; state.fav = saved.fav || {};
 }
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
 load();
@@ -173,7 +216,7 @@ function report(id, opts){
   let newBest = false;
   if (typeof opts.score === 'number' && opts.score > g.best){ g.best = opts.score; g.bestLabel = opts.label || ''; newBest = g.plays > 1; }
   if (opts.medal && opts.medal > (g.medal || 0)) g.medal = opts.medal;
-  g.last = dayKey();
+  g.last = dayKey(); g.ts = Date.now();
   let xp = Math.max(5, Math.round(opts.xp || 0));
   const feat = featuredGame().id === id;
   if (feat) xp *= 2;
@@ -303,7 +346,7 @@ async function api(action, body){
   if (!res.ok || !j.ok) throw new Error(j && j.error ? j.error : 'error ' + res.status);
   return j;
 }
-const PROGRESS_KEYS = ['xp','games','plays','wins','tops','ach','chestStreak','lastChest','day'];
+const PROGRESS_KEYS = ['xp','games','plays','wins','tops','ach','chestStreak','lastChest','day','fav'];
 function progressBlob(){ const o = {}; PROGRESS_KEYS.forEach(k => o[k] = state[k]); return o; }
 let syncT = 0;
 function syncSoon(){ if (!state.auth) return; clearTimeout(syncT); syncT = setTimeout(() => { api('progress_save', { data:progressBlob(), rank:rankInfo().rank.i }).catch(() => {}); }, 3000); }

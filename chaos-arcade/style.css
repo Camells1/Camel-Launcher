@@ -302,3 +302,10 @@ a{color:var(--aqua)}
 .kit-lb a{color:var(--aqua)}
 #kitStage.ended .kit-canvas,#kitStage.ended .kit-dom{display:none}
 .kit-ov.end{position:relative;inset:auto;width:100%;min-height:340px;justify-content:flex-start;padding:20px 14px;overflow:visible}
+.kit-pb{flex-basis:100%;height:14px;border:2px solid #000;background:#1a1430;position:relative;overflow:hidden}
+.kit-pb i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#5577ff,#ff55ff);transition:width .2s}
+.kit-pb.beat i{background:linear-gradient(90deg,#ffaa00,#ffff55);animation:blinkk .5s steps(2) infinite}
+.kit-pb span{position:relative;font-size:9.5px;color:#fff;text-shadow:1px 1px 0 #000;padding-left:6px;line-height:10px}
+.card-fav{position:absolute;left:6px;bottom:6px;z-index:3;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;background:rgba(0,0,0,.55);color:#fff;border:2px solid #000;cursor:pointer;padding:0;font-family:inherit}
+.card-fav:hover{background:rgba(0,0,0,.8);transform:scale(1.1)}
+.card-fav.on{color:#ffd23a;background:#3a2a00;text-shadow:0 0 6px #ffd23a}

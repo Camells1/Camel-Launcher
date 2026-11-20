@@ -32,7 +32,7 @@ function settle(k, r){
   setTimeout(() => { if (!k.running) return; if (d.chips < 10 || d.hand >= HANDS) return k.over({ score:d.chips, win:d.chips > 100, title:d.chips > 100 ? '💰 TABLE CLEANED!' : d.chips < 10 ? '🪦 BROKE' : '🙃 THE HOUSE WINS', lines:[d.hist.join('') + ' · ended with ' + d.chips + ' chips'] }); d.phase = 'bet'; d.ph = []; d.dh = []; render(k); }, 1400);
 }
 function A_conf(){ try { Arcade.confetti(); } catch(e){} }
-Kit.def({
+Kit.def({ noBestBar:true,
   dom:true, winAt:101,
   scoreText:(s) => s + '🪙',
   how:'Start with 100 chips and play 10 hands. Get closer to 21 than the dealer without going over. Face cards are 10, aces are 1 or 11. Blackjack pays 3:2, DOUBLE doubles your bet for exactly one more card. Your score is your final chip count.',
