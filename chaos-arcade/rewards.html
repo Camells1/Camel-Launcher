@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090d18">
+<title>VIP Rewards · Chaos Arcade</title>
+<meta name="description" content="Chaos Arcade VIP ranks: rakeback, daily and weekly bonuses for casino play.">
+<link rel="stylesheet" href="style.css">
+<style>
+  .wrap{max-width:1100px}
+  h1.pg{font-size:clamp(26px,5vw,36px);font-weight:900;margin:8px 0 4px;letter-spacing:-.5px}
+  .sub{color:var(--mut);margin:0 0 18px;font-size:14px;font-weight:400}
+  .me{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;padding:20px;border-radius:16px;background:radial-gradient(400px 200px at 0 0,rgba(34,184,240,.18),transparent 70%),linear-gradient(135deg,#17254d,#0f1730);border:1px solid var(--line)}
+  .me .gem{width:84px;height:84px}
+  .me .lab{font-size:12px;letter-spacing:3px;color:var(--mut);font-weight:600}
+  .me .nm{font-size:30px;font-weight:900;margin:2px 0}
+  .me .tot{color:var(--mut);font-size:13.5px}
+  .me .tot b{color:#fff}
+  .bar{height:10px;border-radius:99px;background:#1b2440;overflow:hidden;margin-top:10px}
+  .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cyan),#7cf0ff)}
+  .nx{font-size:12.5px;color:var(--mut);margin-top:6px}
+  .claims{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 30px}
+  @media (max-width:760px){ .claims{grid-template-columns:1fr} }
+  .cl{padding:18px;border-radius:16px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+  .cl .lab{font-size:12px;letter-spacing:3px;color:var(--mut);font-weight:600}
+  .cl .big{font-size:32px;font-weight:900}
+  .cl .big small{font-size:18px}
+  .cl p{margin:0;color:var(--mut);font-size:13px;line-height:1.5;font-weight:400;flex:1}
+  .cl .btn{margin-top:8px}
+  h2.sh{font-size:24px;font-weight:900;margin:0 0 14px}
+  .tiers{display:grid;grid-auto-flow:column;grid-auto-columns:min(300px,78vw);gap:14px;overflow-x:auto;padding:4px 2px 12px;margin:0 -2px 26px;scroll-snap-type:x mandatory}
+  .tc{scroll-snap-align:start;position:relative;padding:22px;border-radius:16px;background:linear-gradient(180deg,#121a30,#0f1629);border:1px solid var(--line);min-height:330px}
+  .tc.cur{border:2px solid #e8ecf5;box-shadow:0 0 0 4px rgba(255,255,255,.06)}
+  .tc .gem{width:52px;height:52px}
+  .tc .tag{position:absolute;right:18px;top:24px;font-size:11px;font-weight:800;letter-spacing:2px;padding:5px 10px;border-radius:7px;background:#163a2a;color:#7af0b0}
+  .tc .ok{position:absolute;right:22px;top:24px;color:var(--mut);font-size:22px}
+  .tc h3{margin:14px 0 4px;font-size:26px;font-weight:900}
+  .tc .need{font-size:30px;font-weight:900;color:#fff}
+  .tc .needl{color:var(--mut);font-size:14px;margin-bottom:14px;font-weight:400}
+  .tc ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .tc li{display:grid;grid-template-columns:22px 1fr;gap:6px;font-size:14px;line-height:1.4;color:#dfe4f2;font-weight:400}
+  .tc li::before{content:"✓";font-weight:800;color:var(--tc)}
+  .how{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  @media (max-width:760px){ .how{grid-template-columns:1fr} }
+  .hw{display:grid;grid-template-columns:56px 1fr;gap:14px;padding:18px;border-radius:16px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line)}
+  .hw .ic{width:56px;height:56px;border-radius:12px;background:#0b1121;display:flex;align-items:center;justify-content:center;font-size:28px}
+  .hw b{font-size:17px;font-weight:800}
+  .hw p{margin:4px 0 0;color:var(--mut);font-size:13.5px;line-height:1.5;font-weight:400}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="arcadeBar"></div>
+  <h1 class="pg">💎 VIP Rewards</h1>
+  <p class="sub">Every coin you bet in the casino counts toward your rank, win or lose. Higher ranks pay back more.</p>
+
+  <div class="me" id="me"></div>
+  <div class="claims" id="claims"></div>
+
+  <h2 class="sh">All ranks</h2>
+  <div class="tiers" id="tiers"></div>
+
+  <h2 class="sh">How it works</h2>
+  <div class="how">
+    <div class="hw"><div class="ic">🎰</div><div><b>Wagering counts every bet</b><p>Every bet in the casino adds its full size to your total wagered, whether it wins or loses. Arcade games don't count.</p></div></div>
+    <div class="hw"><div class="ic">🔒</div><div><b>Ranks never reset</b><p>Your wagering is permanent. A rank you reach is yours for good, and every rank pays a one-time bonus when you reach it.</p></div></div>
+    <div class="hw"><div class="ic">💸</div><div><b>Rakeback on every bet</b><p>A share of the 2.5% house edge on each bet goes back to you. It builds up as you play: claim it whenever you like.</p></div></div>
+    <div class="hw"><div class="ic">📅</div><div><b>Daily and weekly bonus</b><p>The daily bonus pays a share of yesterday's wagers once a day. The weekly bonus (from Amber) pays a share of the last 7 days, every 7 days.</p></div></div>
+  </div>
+  <div class="legal">🪙 Coins are virtual and only for fun. They can't be bought, sold or cashed out.</div>
+</div>
+<script src="arcade.js"></script>
+<script>
+(function(){
+const A = window.Arcade, $ = s => document.querySelector(s), T = A.vip.TIERS;
+A.mountBar('rewards');
+function short(n){ return n >= 1e12 ? +(n / 1e12).toFixed(1) + 'T' : n >= 1e9 ? +(n / 1e9).toFixed(1) + 'B' : n >= 1e6 ? +(n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? +(n / 1e3).toFixed(1) + 'K' : String(Math.floor(n)); }
+function fmt(n){ return Math.floor(n).toLocaleString('en-US'); }
+/* our own faceted gem, tinted per rank */
+function gem(c, top){
+  return '<svg class="gem" viewBox="0 0 64 64" aria-hidden="true">' + (top ? '<circle cx="32" cy="34" r="30" fill="none" stroke="' + c + '" stroke-opacity=".35" stroke-dasharray="2 4"/>' : '') +
+    '<polygon points="16,20 48,20 58,30 32,58 6,30" fill="' + c + '"/><polygon points="16,20 24,30 6,30" fill="#fff" fill-opacity=".35"/><polygon points="24,30 40,30 32,58" fill="#000" fill-opacity=".18"/>' +
+    '<polygon points="16,20 32,20 24,30" fill="#fff" fill-opacity=".5"/><polygon points="32,20 48,20 40,30" fill="#fff" fill-opacity=".2"/><polygon points="40,30 58,30 32,58" fill="#000" fill-opacity=".32"/>' +
+    '<polygon points="16,20 48,20 58,30 32,58 6,30" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="2"/></svg>';
+}
+function until(ts){ const s = Math.max(0, Math.round((ts - Date.now()) / 1000)), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60); return d ? d + 'd ' + h + 'h' : h + 'h ' + m + 'm'; }
+function midnight(){ const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); }
+function render(){
+  const v = A.vip.info(), t = v.t;
+  $('#me').innerHTML = gem(t.c, v.tier >= 6) + '<div><div class="lab">YOUR RANK</div><div class="nm" style="color:' + t.c + '">' + t.n + '</div><div class="tot"><b>' + fmt(v.total) + ' 🪙</b> wagered · today ' + fmt(v.today) + ' 🪙</div>' +
+    (v.next ? '<div class="bar"><i style="width:' + (Math.max(.004, v.frac) * 100).toFixed(2) + '%"></i></div><div class="nx">' + short(v.next.need - v.total) + ' 🪙 more to <b style="color:' + v.next.c + '">' + v.next.n + '</b> (+' + fmt(v.next.bonus) + ' 🪙 rank-up bonus)</div>' : '<div class="nx">👑 You reached the highest rank.</div>') + '</div>';
+  const dl = v.daily, wk = v.weekly;
+  $('#claims').innerHTML =
+    '<div class="cl"><div class="lab">RAKEBACK</div><div class="big">' + fmt(v.rb) + ' <small>🪙</small></div><p><b>' + t.rb + '%</b> of the house edge on every bet (' + +(t.rb * .025).toFixed(4) + '% of each bet). It builds up as you play.</p><button class="btn cyan" id="cRb"' + (v.rb < 1 ? ' disabled' : '') + '>Claim rakeback</button></div>' +
+    '<div class="cl"><div class="lab">DAILY BONUS</div><div class="big">' + (dl.ready ? fmt(dl.amount) : '✓') + ' <small>' + (dl.ready ? '🪙' : '') + '</small></div><p><b>' + t.daily + '%</b> of yesterday\'s wagers (' + short(dl.base) + ' 🪙), once a day.</p><button class="btn cyan" id="cDay"' + (!dl.ready || dl.amount < 1 ? ' disabled' : '') + '>' + (dl.ready ? (dl.amount > 0 ? 'Claim daily bonus' : 'Bet yesterday to earn this') : 'Next in ' + until(midnight())) + '</button></div>' +
+    '<div class="cl"><div class="lab">WEEKLY BONUS</div><div class="big">' + (wk.unlocked ? (wk.ready ? fmt(wk.amount) : '⏳') : '🔒') + ' <small>' + (wk.unlocked && wk.ready ? '🪙' : '') + '</small></div><p>' + (wk.unlocked ? '<b>' + t.weekly + '%</b> of the last 7 days\' wagers (' + short(wk.base) + ' 🪙), every 7 days.' : 'Unlocks at <b style="color:' + T[1].c + '">' + T[1].n + '</b> (' + short(T[1].need) + ' wagered).') + '</p><button class="btn cyan" id="cWk"' + (!wk.ready || wk.amount < 1 ? ' disabled' : '') + '>' + (!wk.unlocked ? 'Locked' : wk.ready ? 'Claim weekly bonus' : 'Next in ' + until(wk.at)) + '</button></div>';
+  const claim = (k) => { const n = A.vip.claim(k); if (n > 0){ A.Sfx.coin(); A.bigText('+' + fmt(n) + ' 🪙', '#ffd23a'); } render(); };
+  $('#cRb').onclick = () => claim('rb'); $('#cDay').onclick = () => claim('daily'); $('#cWk').onclick = () => claim('weekly');
+  $('#tiers').innerHTML = T.map((x, i) => {
+    const perks = [x.rb + '% rakeback', 'Daily bonus: ' + x.daily + '% of wagers'].concat(x.weekly ? ['Weekly bonus: ' + x.weekly + '% of wagers'] : []).concat(x.bonus ? ['+' + fmt(x.bonus) + ' 🪙 when you reach it'] : []).concat(x.perks);
+    return '<div class="tc' + (i === v.tier ? ' cur' : '') + '" style="--tc:' + x.c + '">' + gem(x.c, i >= 6) + (i === v.tier ? '<span class="tag">YOUR RANK</span>' : i < v.tier ? '<span class="ok">✓</span>' : '') +
+      '<h3 style="color:' + x.c + '">' + x.n + '</h3><div class="need">' + short(x.need) + ' 🪙</div><div class="needl">wagered to reach</div><ul>' + perks.map(p => '<li>' + p + '</li>').join('') + '</ul></div>';
+  }).join('');
+}
+render();
+const cur = document.querySelector('.tc.cur'); if (cur) cur.scrollIntoView({ inline:'start', block:'nearest' });
+scrollTo(0, 0);
+setInterval(render, 30000);
+})();
+</script>
+</body>
+</html>

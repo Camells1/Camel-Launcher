@@ -245,6 +245,58 @@ function addCoins(n, reason, quiet){
   clearTimeout(coinSubmitT); coinSubmitT = setTimeout(() => { if (state.coins > 0) lbSubmit('coins', state.coins).catch(() => {}); }, 3000);
   return n;
 }
+/* ---------- 💎 VIP ranks (casino wagering) ----------
+   Every coin bet in the casino counts as "wagered", win or lose. Ranks never reset.
+   rb     = rakeback: % of the house edge on every bet paid back (claim any time)
+   daily  = % of yesterday's wagers, claimable once a day
+   weekly = % of the last 7 days' wagers, claimable every 7 days (from rank 2)
+   bonus  = one-time coins when you reach the rank                                  */
+const VIP_TIERS = [
+  { id:'pebble',   n:'Pebble',   need:0,            rb:2,   daily:.04,  weekly:0,     c:'#9aa3b5', perks:['The daily bonus, from your first bet'] },
+  { id:'amber',    n:'Amber',    need:250e6,        rb:3,   daily:.045, weekly:.015,  c:'#e8a04a', perks:['The weekly bonus unlocks','A bigger daily share'] },
+  { id:'steel',    n:'Steel',    need:1e9,          rb:4,   daily:.05,  weekly:.017,  c:'#c4ccd8', perks:['Bigger daily and weekly shares'] },
+  { id:'topaz',    n:'Topaz',    need:10e9,         rb:4.5, daily:.055, weekly:.019,  c:'#ffd23a', perks:['Your rank gem shows beside your name'] },
+  { id:'sapphire', n:'Sapphire', need:25e9,         rb:5,   daily:.06,  weekly:.021,  c:'#4a7aff', perks:['Bigger daily and weekly shares'] },
+  { id:'ruby',     n:'Ruby',     need:50e9,         rb:5.5, daily:.065, weekly:.023,  c:'#ff4a5a', perks:['A bigger weekly share'] },
+  { id:'crystal',  n:'Crystal',  need:100e9,        rb:6.5, daily:.07,  weekly:.025,  c:'#7ae8ff', perks:['A bigger daily share'] },
+  { id:'jade',     n:'Jade',     need:200e9,        rb:7,   daily:.075, weekly:.027,  c:'#3ad08a', perks:['A bigger daily and weekly share'] },
+  { id:'obsidian', n:'Obsidian', need:500e9,        rb:8,   daily:.085, weekly:.03,   c:'#9a6aff', perks:['The best shares below Nova'] },
+  { id:'nova',     n:'Nova',     need:750e9,        rb:9,   daily:.095, weekly:.033,  c:'#ffffff', perks:['The biggest daily and weekly shares','The highest rank in the arcade'] }
+];
+VIP_TIERS.forEach(t => t.bonus = Math.round(t.need * .00002));
+const DAY_MS = 864e5;
+function vipState(){ load(); const v = state.vip || (state.vip = {}); v.total = v.total || 0; v.days = v.days || {}; v.rb = v.rb || 0; v.tier = v.tier || 0; return v; }
+function vipTierIdx(total){ let i = 0; VIP_TIERS.forEach((t, k) => { if (total >= t.need) i = k; }); return i; }
+function vipWager(amount, edge){
+  amount = Math.max(0, Math.floor(amount)); if (!amount) return;
+  const v = vipState(), t = VIP_TIERS[vipTierIdx(v.total)], d = dayKey();
+  v.total += amount; v.days[d] = (v.days[d] || 0) + amount; if (!v.firstTs) v.firstTs = Date.now();
+  v.rb += amount * (edge || .025) * t.rb / 100;
+  Object.keys(v.days).sort().slice(0, -9).forEach(k => delete v.days[k]);   // keep ~9 days
+  const ni = vipTierIdx(v.total);
+  if (ni > v.tier){ for (let i = v.tier + 1; i <= ni; i++){ const nt = VIP_TIERS[i]; state.coins += nt.bonus; setTimeout(() => { achToast('💎', 'VIP RANK UP!', nt.n + ' · +' + nt.bonus.toLocaleString('en-US') + ' 🪙'); bigText('💎 ' + nt.n.toUpperCase() + '!', nt.c); Sfx.levelup(); }, 400); } v.tier = ni; }
+  save(); syncSoon();
+}
+function vipDayKey(offset){ const d = new Date(Date.now() + offset * DAY_MS); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function vipInfo(){
+  const v = vipState(), i = vipTierIdx(v.total), t = VIP_TIERS[i], next = VIP_TIERS[i + 1] || null;
+  const yWager = v.days[vipDayKey(-1)] || 0;
+  let week = 0; for (let k = 1; k <= 7; k++) week += v.days[vipDayKey(-k)] || 0;
+  const dailyReady = v.lastDaily !== dayKey(), weeklyAt = (v.lastWeekly || v.firstTs || Date.now()) + 7 * DAY_MS;
+  return { total:v.total, tier:i, t, next, frac:next ? (v.total - t.need) / (next.need - t.need) : 1, rb:Math.floor(v.rb),
+    daily:{ ready:dailyReady, amount:Math.floor(yWager * t.daily / 100), base:yWager },
+    weekly:{ unlocked:t.weekly > 0, ready:t.weekly > 0 && Date.now() >= weeklyAt, at:weeklyAt, amount:Math.floor(week * t.weekly / 100), base:week },
+    today:v.days[dayKey()] || 0 };
+}
+function vipClaim(kind){
+  const info = vipInfo(), v = vipState(); let amt = 0;
+  if (kind === 'rb'){ amt = info.rb; v.rb -= amt; }
+  if (kind === 'daily'){ if (!info.daily.ready) return 0; amt = info.daily.amount; v.lastDaily = dayKey(); }
+  if (kind === 'weekly'){ if (!info.weekly.ready) return 0; amt = info.weekly.amount; v.lastWeekly = Date.now(); }
+  save(); if (amt > 0) addCoins(amt, kind === 'rb' ? 'rakeback' : kind + ' bonus'); else syncSoon();
+  return amt;
+}
+
 function coinGoals(){ COIN_GOALS.forEach(([n, id, ic, name]) => { if (state.coins >= n && !state.ach[id]) setTimeout(() => { unlock(id, ic, name); if (n >= 1000000){ bigText('👑 MILLIONAIRE!', '#ffd23a'); confetti && confetti(); } }, 300); }); }
 function coinInfo(){ load(); const d = today(); return { coins:state.coins, earnedToday:d.coins || 0, cap:DAILY_EARN_CAP, perXP:COINS_PER_XP, refill:REFILL, refillBelow:REFILL_BELOW, goals:COIN_GOALS.map(g => g[0]) }; }
 function spendCoins(n){ n = Math.round(n); load(); if (!(n > 0) || n > state.coins) return false; state.coins -= n; save(); syncSoon(); updateBar(); return true; }
@@ -390,10 +442,10 @@ async function api(action, body){
   if (!res.ok || !j.ok) throw new Error(j && j.error ? j.error : 'error ' + res.status);
   return j;
 }
-const PROGRESS_KEYS = ['xp','games','plays','wins','tops','ach','chestStreak','lastChest','day','fav','coins'];
+const PROGRESS_KEYS = ['xp','games','plays','wins','tops','ach','chestStreak','lastChest','day','fav','coins','vip'];
 function progressBlob(){ const o = {}; PROGRESS_KEYS.forEach(k => o[k] = state[k]); return o; }
 let syncT = 0;
-function syncSoon(){ if (!state.auth) return; clearTimeout(syncT); syncT = setTimeout(() => { api('progress_save', { data:progressBlob(), rank:rankInfo().rank.i }).catch(() => {}); }, 3000); }
+function syncSoon(){ if (!state.auth) return; clearTimeout(syncT); syncT = setTimeout(() => { api('progress_save', { data:progressBlob(), rank:(vipTierIdx((state.vip || {}).total || 0) >= 3 ? '💎' : rankInfo().rank.i) }).catch(() => {}); }, 3000); }
 async function afterLogin(j){
   state.auth = { token:j.token, name:j.user.name, id:j.user.id }; state.name = j.user.name; save();
   try {
@@ -658,7 +710,7 @@ window.Arcade = {
   GAMES, RANKS, ROOT, CATS, CAT_BG,
   get state(){ return state; },
   save, load, dayKey, hashStr, mulberry32, h2, rnd, esc,
-  rankInfo, featuredGame, gameById, gameStats, addXP, report, unlock, coins, addCoins, spendCoins, coinInfo, START_COINS,
+  rankInfo, featuredGame, gameById, gameStats, addXP, report, unlock, coins, addCoins, spendCoins, coinInfo, START_COINS, vip:{ TIERS:VIP_TIERS, wager:vipWager, info:vipInfo, claim:vipClaim },
   Sfx, setMuted, buzz,
   px, texture, textureURL, paintBody, icon, ICONS,
   toast, achToast, flash, bigText, shake, burst, confetti,

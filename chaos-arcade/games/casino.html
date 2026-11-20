@@ -71,7 +71,7 @@
   <div class="dark-panel cz-wallet">
     <div class="cz-bal"><small>YOUR COINS</small><span id="czBal">0</span> 🪙</div>
     <div style="text-align:right;font-size:12px;line-height:1.6">Session: <b id="czSess">0</b><br><span id="czRefill"></span></div>
-    <div style="flex-basis:100%;font-size:11px;color:#c8c8c8"><div style="display:flex;justify-content:space-between"><span>👑 Road to 1,000,000</span><span id="czGoalTxt"></span></div><div style="height:10px;border:2px solid #000;background:#222;margin-top:3px"><div id="czGoal" style="height:100%;width:0;background:linear-gradient(90deg,#b08a1a,#ffd23a)"></div></div><div id="czEarn" style="margin-top:3px"></div></div>
+    <div style="flex-basis:100%;font-size:11px;color:#c8c8c8"><div style="display:flex;justify-content:space-between"><span>👑 Road to 1,000,000</span><span id="czGoalTxt"></span></div><div style="height:10px;border:2px solid #000;background:#222;margin-top:3px"><div id="czGoal" style="height:100%;width:0;background:linear-gradient(90deg,#b08a1a,#ffd23a)"></div></div><div id="czEarn" style="margin-top:3px"></div><div id="czVip" style="margin-top:4px;font-size:12px"></div></div>
   </div>
   <div id="czGame"></div>
   <div class="dark-panel cz-panel cz-note">
@@ -109,6 +109,7 @@ function wallet(){
   else r.textContent = '';
   const f = $('#czFree'); if (f) f.onclick = () => { A.load(); A.state.lastRefill = Date.now(); A.save(); A.addCoins(ci.refill, 'free refill'); A.Sfx.coin(); wallet(); };
   const g = Math.min(1, A.state.coins / 1e6); $('#czGoal').style.width = (g * 100).toFixed(2) + '%'; $('#czGoalTxt').textContent = (g * 100).toFixed(g < .01 ? 2 : 1) + '%';
+  const vi = A.vip.info(); $('#czVip').innerHTML = '<a href="../rewards.html" style="color:' + vi.t.c + ';text-decoration:none">💎 ' + vi.t.n + '</a> · rakeback <b>' + fmt(vi.rb) + ' 🪙</b>' + (vi.rb > 0 ? ' <a class="btn small cyan" href="../rewards.html" style="min-height:26px;padding:2px 8px">CLAIM</a>' : '');
   $('#czEarn').textContent = 'Earned from games today: ' + fmt(ci.earnedToday) + ' / ' + fmt(ci.cap) + ' 🪙 · 5 🪙 per XP';
   A.updateBar();
 }
@@ -137,7 +138,7 @@ function bindBet(onChange){
 function takeBet(){
   bet = Math.max(1, Math.floor(+$('#czBet').value) || 1);
   if (!A.spendCoins(bet)){ A.toast(A.state.coins < 1 ? '🪙 Out of coins. Play any arcade game to earn more!' : '🪙 Not enough coins for that bet'); A.Sfx.fail(); return false; }
-  wallet(); return true;
+  A.vip.wager(bet, EDGE); wallet(); return true;
 }
 function lockBet(on){ document.querySelectorAll('#czBet,[data-bx]').forEach(e => e.disabled = on); }
 

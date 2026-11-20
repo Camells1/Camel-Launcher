@@ -215,6 +215,8 @@
   #chatBtn.ga-on{background:var(--gold) !important;color:#2a1c00}
   #loading{background:var(--bg) !important}
   .profile .xptext{color:var(--mut)}
+  .viprow{grid-column:1/-1;display:flex;justify-content:space-between;gap:8px;margin-top:6px;padding:8px 12px;border-radius:10px;background:#0c1222;border:1px solid var(--line);color:var(--mut);text-decoration:none;font-size:13px}
+  .viprow:hover{border-color:var(--cyan);color:#fff}
   .promo .btn{white-space:nowrap}
   .profile .pname::placeholder{color:var(--dim)}
 </style>
@@ -229,7 +231,7 @@
       <a href="#games">🎮 Games</a>
       <a href="games/casino.html">🎰 Casino</a>
       <a href="#" id="navLb">🏆 Leaderboards</a>
-      <a href="#rewards">🎁 Rewards</a>
+      <a href="rewards.html">💎 Rewards</a>
       <a href="#" id="navGa" class="race">🎉 Giveaway <code id="hdrGa">--:--</code></a>
     </nav>
     <div class="right">
@@ -283,6 +285,7 @@
           <div><b id="psTried">0</b>TRIED</div>
         </div>
         <a class="coinbar" id="coinBar" href="games/casino.html" title="Your coins. Bet them in the Casino."><span>🪙 <b id="psCoins">0</b> coins</span><span class="go">🎰 CASINO ▶</span></a>
+        <a class="viprow" id="vipRow" href="rewards.html"></a>
         <div class="goalbar" title="Road to 1,000,000 coins"><i id="psGoal"></i><span id="psGoalTxt"></span></div>
         <div class="ladder" id="ladder"></div>
       </div>
@@ -318,7 +321,7 @@
   <a href="#top" class="on"><span>🏠</span>Home</a>
   <a href="games/casino.html"><span>🎰</span>Casino</a>
   <a href="#games"><span>🎮</span>Games</a>
-  <a href="#rewards"><span>🎁</span>Rewards</a>
+  <a href="rewards.html"><span>💎</span>Rewards</a>
   <a href="#" id="tabChat"><span>💬</span>Chat</a>
   <a href="#" id="tabMenu"><span>☰</span>Menu</a>
 </nav>
@@ -395,6 +398,7 @@ function renderProfile(){
   $('#rankTitle').textContent = ri.rank.t; $('#rankTitle').style.color = ri.rank.c;
   $('#xpFill').style.width = (ri.frac * 100).toFixed(1) + '%';
   $('#xpText').textContent = ri.next ? (st.xp - ri.rank.xp) + ' / ' + (ri.next.xp - ri.rank.xp) + ' XP to ' + ri.next.i + ' ' + ri.next.t : 'MAX RANK · ' + st.xp + ' XP';
+  const vi = A.vip.info(); $('#vipRow').innerHTML = '<span>💎 <b style="color:' + vi.t.c + '">' + vi.t.n + '</b> VIP</span><span>' + (vi.rb > 0 ? '🪙 ' + Math.floor(vi.rb).toLocaleString('en-US') + ' rakeback · ' : '') + 'Rewards ▸</span>';
   $('#psCoins').textContent = Math.floor(st.coins || 0).toLocaleString('en-US');
   const gf = Math.min(1, (st.coins || 0) / 1e6); $('#psGoal').style.width = (gf * 100).toFixed(2) + '%'; $('#psGoalTxt').textContent = gf >= 1 ? '👑 MILLIONAIRE' : '👑 ' + (gf * 100).toFixed(gf < .01 ? 2 : 1) + '% to 1,000,000';
   $('#psXP').textContent = st.xp; $('#psRuns').textContent = st.plays; $('#psWins').textContent = st.wins;
