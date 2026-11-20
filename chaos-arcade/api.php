@@ -10,7 +10,7 @@ ensure_storage();
 $in = input();
 $action = isset($_GET['action']) ? $_GET['action'] : ($in['action'] ?? '');
 $POST = $_SERVER['REQUEST_METHOD'] === 'POST';
-$writeActions = ['register','login','logout','friend_request','friend_accept','friend_decline','friend_remove','block','unblock','progress_save','chat_send','chat_report','chat_delete','ban','giveaway_enter','giveaway_collect'];
+$writeActions = ['register','login','logout','friend_request','friend_accept','friend_decline','friend_remove','block','unblock','progress_save','chat_send','chat_report','chat_delete','ban','giveaway_enter','giveaway_collect','gift_send','gift_collect'];
 if (in_array($action, $writeActions, true) && !$POST) out(405, ['ok'=>false, 'error'=>'use POST']);
 
 function issue_token($uid){
@@ -99,7 +99,9 @@ function giveaway_view($g, $u){
   return ['ok'=>true, 'open'=>$open, 'id'=>$cur['id'] ?? 0, 'prize'=>$cur['prize'] ?? 0, 'winners'=>GIVEAWAY_WINNERS,
     'endsIn'=>$open ? $cur['end'] - $now : 0, 'entries'=>$cur ? count($cur['entries']) : 0,
     'entered'=>$cur && $u && in_array($u['id'], $cur['entries'], true), 'nextIn'=>($slot + 1) * GIVEAWAY_EVERY - $now,
-    'pending'=>$u ? (int)($g['pending'][$u['id']] ?? 0) : 0];
+    'pending'=>$u ? (int)($g['pending'][$u['id']] ?? 0) : 0,
+    'gifts'=>$u ? count(read_file('gifts.json')['pending'][$u['id']] ?? []) : 0,
+    'online'=>(function(){ $n = 0; $now = time(); foreach (read_file('presence.json') as $t) if ($now - $t < 60) $n++; return max(1, $n); })()];
 }
 
 function rm(&$arr, $v){ $arr = array_values(array_filter($arr, function($x) use ($v){ return $x !== $v; })); }
@@ -231,6 +233,33 @@ case 'giveaway_collect': {
   $u = require_user(); $amt = 0;
   with_file('giveaway.json', true, function(&$d) use ($u, &$amt){ $amt = (int)($d['pending'][$u['id']] ?? 0); unset($d['pending'][$u['id']]); });
   out(200, ['ok'=>true, 'coins'=>$amt]);
+}
+
+/* ---------- Coin gifts ----------
+   The sender's browser takes the coins off only after the server accepts the gift; the gift waits
+   server-side until the receiver's browser collects it (checked with the giveaway poll). */
+case 'gift_send': {
+  $u = require_user();
+  $to = strtolower(trim((string)($in['to'] ?? ''))); $amt = filter_var($in['amount'] ?? null, FILTER_VALIDATE_INT);
+  $note = (string)($in['note'] ?? ''); $note = $note === '' ? '' : clean_chat(function_exists('mb_substr') ? mb_substr($note, 0, 60, 'UTF-8') : substr($note, 0, 60));
+  if ($amt === false || $amt < 10 || $amt > 1000000) out(400, ['ok'=>false, 'error'=>'gifts must be between 10 and 1,000,000 coins']);
+  if ($to === $u['id']) out(400, ['ok'=>false, 'error'=>'you cannot gift yourself']);
+  $users = read_file('users.json'); $other = $users[$to] ?? null;
+  if (!$other) out(404, ['ok'=>false, 'error'=>'no player with that name']);
+  if (in_array($u['id'], $other['blocked'] ?? [], true)) out(403, ['ok'=>false, 'error'=>'this player is not accepting gifts']);
+  if (!rate_ok('gift', $u['id'], 10, 3600)) out(429, ['ok'=>false, 'error'=>'max 10 gifts per hour']);
+  with_file('gifts.json', true, function(&$d) use ($u, $to, $amt, $note){
+    $d['pending'][$to][] = ['from'=>$u['name'], 'amount'=>$amt, 'note'=>$note, 'ts'=>time()];
+    if (count($d['pending'][$to]) > 50) $d['pending'][$to] = array_slice($d['pending'][$to], -50);
+    $d['log'][] = [$u['id'], $to, $amt, time()]; if (count($d['log']) > 500) $d['log'] = array_slice($d['log'], -500);
+  });
+  out(200, ['ok'=>true, 'to'=>$other['name'], 'amount'=>$amt]);
+}
+
+case 'gift_collect': {
+  $u = require_user(); $list = [];
+  with_file('gifts.json', true, function(&$d) use ($u, &$list){ $list = $d['pending'][$u['id']] ?? []; unset($d['pending'][$u['id']]); });
+  out(200, ['ok'=>true, 'gifts'=>$list]);
 }
 
 case 'chat_poll': {

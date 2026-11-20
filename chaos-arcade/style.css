@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap');
 /* =========================================================
    CHAOS ARCADE — shared blocky UI styles
    Used by index.html and every page in /games/
@@ -319,3 +320,113 @@ a{color:var(--aqua)}
 .goalbar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#b08a1a,#ffd23a)}
 .goalbar span{position:relative;display:block;text-align:center;font-size:10px;line-height:12px;color:#fff;text-shadow:1px 1px 0 #000}
 .profile .coinbar,.profile .goalbar{grid-column:1/-1}
+
+
+/* =========================================================
+   NEON CASINO THEME (v2) — dark navy, rounded cards, cyan accent.
+   Loaded last, so it restyles every page that uses style.css.
+   ========================================================= */
+:root{
+  --bg:#080c17; --bg2:#0d1324; --card:#121a2f; --card2:#18213b; --line:#222d4b; --line2:#2c3960;
+  --tx:#f5f7fc; --mut:#aab4d4; --dim:#6f7aa0;
+  --cyan:#22b8f0; --cyan-d:#0d84b4; --gold:#ffcf3a; --green:#2fd27a; --red:#ff5a6a; --purple:#a06bff;
+  --r:12px; --font:"Rubik",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+body{background:radial-gradient(1200px 600px at 50% -200px,#16234a 0%,rgba(8,12,23,0) 70%),var(--bg) !important;background-size:auto !important;image-rendering:auto;color:var(--tx);font-family:var(--font);font-weight:500;-webkit-font-smoothing:antialiased}
+#bgBlocks{display:none !important}
+a{color:var(--cyan)}
+.shadow,.shadow-dark{text-shadow:none}
+::selection{background:var(--cyan);color:#001}
+
+/* panels */
+.panel{background:linear-gradient(180deg,var(--card2),var(--card));color:var(--tx);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.dark-panel{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:var(--r);box-shadow:0 10px 30px rgba(0,0,0,.3);color:var(--tx)}
+.book{border-radius:var(--r)}
+
+/* buttons */
+.btn{font-family:var(--font);font-weight:600;letter-spacing:.2px;text-shadow:none;color:var(--tx);background:#1d2742;border:1px solid var(--line2);border-radius:8px;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.35);padding:11px 16px;font-size:15px;min-height:44px;transition:transform .06s,background .15s,filter .15s}
+.btn:hover,.btn:focus-visible{background:#26335a;box-shadow:inset 0 -3px 0 rgba(0,0,0,.35);outline:none}
+.btn:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 rgba(0,0,0,.35)}
+.btn.green,.btn.cyan{background:var(--cyan);border-color:var(--cyan);color:#04121c;box-shadow:inset 0 -4px 0 var(--cyan-d)}
+.btn.green:hover,.btn.green:focus-visible,.btn.cyan:hover{background:#3ec6f6;box-shadow:inset 0 -4px 0 var(--cyan-d)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#2a1c00;text-shadow:none;box-shadow:inset 0 -4px 0 #c99500}
+.btn.gold:hover{background:#ffdb66;box-shadow:inset 0 -4px 0 #c99500}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff;box-shadow:inset 0 -4px 0 #b52434}
+.btn.red:hover{background:#ff7482;box-shadow:inset 0 -4px 0 #b52434}
+.btn.purple{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:inset 0 -4px 0 #6a3ad0}
+.btn.purple:hover{background:#b585ff;box-shadow:inset 0 -4px 0 #6a3ad0}
+.btn.on{background:#24345e;border-color:var(--cyan);color:#fff;box-shadow:inset 0 0 0 1px var(--cyan)}
+.btn.big{font-size:19px;padding:14px 18px}
+.btn.small{font-size:13px;padding:6px 11px;min-height:34px;border-radius:7px}
+.btn.icon{border-radius:8px}
+
+/* chips & badges */
+.chip{background:rgba(18,26,47,.9);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:600;color:var(--tx)}
+.chip.coin{background:#2a2410;border-color:#5a4a14;color:var(--gold)}
+.badge{border:0;border-radius:6px;text-shadow:none;font-weight:700;letter-spacing:.6px;padding:3px 8px}
+.badge.easy{background:#1f8a52} .badge.medium{background:#b88a12} .badge.hard{background:#c23a3a} .badge.chaos{background:#7a3ae0;animation:none}
+.badge.tag{background:#222c48;color:var(--mut)}
+
+/* xp + inputs */
+.xpbar{height:10px;border:0;border-radius:99px;background:#1b2440;overflow:hidden}
+.xpbar > i{background:linear-gradient(90deg,var(--cyan),#7cf0ff);box-shadow:none;border-radius:99px;transition:width .6s}
+.xptext{color:var(--mut)}
+input,select,textarea{border-radius:8px}
+.pname,.kit-name input,.searchrow input,.acct input,.lbmodal select,.cz-in{background:#0c1222 !important;color:var(--tx) !important;border:1px solid var(--line2) !important;border-radius:8px !important}
+.pname:focus,.searchrow input:focus,.acct input:focus,.cz-in:focus{outline:2px solid var(--cyan);outline-offset:0}
+
+/* game page top bar */
+.arcade-bar{background:rgba(9,13,24,.92);border:1px solid var(--line);border-radius:var(--r);padding:6px;backdrop-filter:blur(8px)}
+.arcade-bar .title{font-weight:700;text-shadow:none;font-size:15px}
+.arcade-bar .chip{font-size:12.5px}
+
+/* toasts, achievements, big text, modals */
+#arcadeToast{background:#121a2f;border:1px solid var(--line2);border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.5);font-family:var(--font)}
+#arcadeAch{background:#121a2f;border:1px solid var(--line2);border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.bigtext{font-family:var(--font);font-weight:900;color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.35),0 0 30px rgba(34,184,240,.7)}
+.modal{background:rgba(3,6,14,.78);backdrop-filter:blur(4px)}
+.modal h2{color:var(--tx);font-weight:800}
+.modal .panel{border-radius:16px}
+.legal{color:var(--dim)}
+
+/* kit (canvas & DOM games) */
+.kit-hud .chip b{color:var(--gold)}
+.kit-canvas{border:1px solid var(--line2);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 0 1px rgba(34,184,240,.12);image-rendering:auto}
+.kit-ov{background:rgba(8,12,23,.9);border:1px solid var(--line2);border-radius:14px}
+.kit-ov h2{font-weight:900;text-shadow:none}
+.kit-score{color:#fff;text-shadow:0 0 24px rgba(34,184,240,.6);font-weight:900}
+.kit-quip{color:var(--gold);text-shadow:none;font-weight:800}
+.kit-lb .lbr{border:1px solid var(--line);border-radius:7px;background:rgba(255,255,255,.04)}
+.kit-lb .lbr.me{background:rgba(34,184,240,.18);border-color:var(--cyan)}
+.kit-lb .lbt{color:var(--cyan)}
+.kit-medals span{border:1px solid var(--line);border-radius:6px}
+.kit-medals span.got{border-color:var(--gold)}
+.kit-pop{font-family:var(--font);font-weight:800;text-shadow:0 2px 0 rgba(0,0,0,.5)}
+.kit-pb{border-radius:99px;overflow:hidden}
+.kcell,.kgrid .btn{border-radius:8px}
+
+/* result cards / misc used by block games */
+.result-card .title{color:var(--tx)}
+.result-card .label,.result-card .quip{color:var(--mut)}
+.big-score{color:#fff;text-shadow:0 0 24px rgba(34,184,240,.6)}
+.slot{background:#0c1222;border-radius:10px;box-shadow:inset 0 0 0 1px var(--line2)}
+.pixel-title svg{filter:drop-shadow(0 6px 18px rgba(34,184,240,.25))}
+
+/* casino page */
+.cz-stage{background:radial-gradient(500px 220px at 50% 0,#173058,#0c1426) !important;border:1px solid var(--line2) !important;border-radius:14px;box-shadow:none !important}
+.cz-facts div{background:#0c1222 !important;border:1px solid var(--line) !important;border-radius:8px}
+.cz-seg{border:1px solid var(--line2) !important;border-radius:8px;overflow:hidden}
+.cz-seg button{background:#1d2742 !important}
+.cz-seg button.on{background:var(--cyan) !important;color:#04121c !important}
+.cz-hist span{border:0 !important;border-radius:6px}
+.cz-tabs .btn.on{background:var(--cyan) !important;color:#04121c !important}
+.cz-bal{text-shadow:none !important;font-weight:800}
+.cz-mines button{border:1px solid #0a0f1c !important;border-radius:10px;background:#1d2a4a !important;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35) !important}
+.cz-mines button.gem{background:#0f5a48 !important}
+.cz-mines button.mine{background:#7a1f2a !important}
+.cz-mines button:not(:disabled):hover{background:#2a3c66 !important}
+.coinbar{border-radius:10px;border:1px solid #5a4a14;background:#221d0c}
+.coinbar .go{border:0;border-radius:6px;background:var(--cyan);color:#04121c}
+.goalbar{border-radius:99px;border:0;height:14px;background:#1b2440}
+.goalbar i{border-radius:99px}

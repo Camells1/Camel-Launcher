@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#150f28">
+<meta name="theme-color" content="#090d18">
 <meta name="description" content="Chaos Arcade: 100+ free browser minigames with global leaderboards, daily quests and one shared XP bar. Snake, block puzzles, slots, sudoku, mini golf, cursed crafting and more.">
 <meta property="og:title" content="Chaos Arcade · 100+ games">
 <meta property="og:description" content="100+ chaotic minigames. Global leaderboards. Daily quests. Can you reach Chaos God?">
@@ -75,30 +75,199 @@
   .ch-form input{flex:1;min-width:0;padding:10px;border:3px solid #000;font-weight:700;background:#fff;color:#000}
   .ch-safe{font-size:10.5px;color:#999;text-align:center;padding:0 8px 6px;background:#1d1438}
   .ch-gate{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px;font-size:13px;color:#ddd;line-height:1.5}
+
+  /* ===== neon casino hub layout ===== */
+  body{padding-bottom:0}
+  .gnav{position:sticky;top:0;z-index:120;background:rgba(9,13,24,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .gnav-in{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px max(14px,env(safe-area-inset-left));min-height:64px}
+  .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;font-weight:900;letter-spacing:2px;font-size:19px}
+  .logo .gem{display:inline-flex;width:34px;height:34px;align-items:center;justify-content:center;border-radius:10px;background:linear-gradient(135deg,#22b8f0,#7a5cff);box-shadow:0 0 18px rgba(34,184,240,.55);font-size:18px}
+  .online{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);white-space:nowrap}
+  .online i{width:8px;height:8px;border-radius:50%;background:#2fd27a;box-shadow:0 0 8px #2fd27a}
+  .online b{color:#fff}
+  .links{display:flex;gap:4px;flex:1;min-width:0}
+  .links a{color:var(--mut);text-decoration:none;font-weight:600;font-size:14px;padding:8px 10px;border-radius:8px;white-space:nowrap}
+  .links a:hover{color:#fff;background:#141c33}
+  .links a.race code{font:600 12px ui-monospace,monospace;background:#1b2440;color:var(--gold);padding:2px 6px;border-radius:5px;margin-left:4px}
+  .links a.race.live code{background:var(--gold);color:#2a1c00;animation:gaPulse 1s steps(2) infinite}
+  .gnav .right{display:flex;align-items:center;gap:6px;margin-left:auto}
+  .gnav .right .btn.icon{width:40px;min-height:40px;font-size:17px;position:relative;background:#141c33}
+  #acctBtn{width:auto;padding:8px 16px;font-size:14px;max-width:180px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-height:40px}
+  #hdrCoins{text-decoration:none;font-size:14px}
+  @media (max-width:1100px){ .links{display:none} }
+  @media (max-width:640px){ .hide-sm{display:none !important} .online{display:none} .gnav-in{gap:8px;padding:8px 10px;min-height:56px} .logo b{display:none} #acctBtn{padding:6px 10px;font-size:13px;max-width:120px} #hdrCoins{font-size:12.5px;padding:5px 9px} }
+  .wrap{max-width:1400px;padding-top:16px}
+
+  .promos{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:14px;margin-bottom:22px}
+  @media (max-width:980px){ .promos{grid-template-columns:1fr 1fr} .hero-p{grid-column:1/-1} }
+  @media (max-width:640px){ .promos{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;margin:0 -12px 18px;padding:0 12px 4px;scrollbar-width:none} .promos::-webkit-scrollbar{display:none} .promo{flex:0 0 86%;scroll-snap-align:center} .hero-p{flex-basis:92%} }
+  .promo{position:relative;display:flex;align-items:center;gap:12px;min-height:168px;padding:18px 20px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#1a2648,#111a31);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .promo .txt{flex:1;min-width:0;position:relative;z-index:1}
+  .promo h1{margin:0 0 8px;font-size:clamp(22px,2.4vw,30px);line-height:1.12;font-weight:800;letter-spacing:-.5px}
+  .promo h1 .g{color:var(--gold)}
+  .promo p{margin:0 0 14px;color:var(--mut);font-size:13.5px;line-height:1.5;font-weight:400}
+  .promo b{font-size:17px;font-weight:800}
+  .promo .btn{min-height:38px;padding:8px 16px;font-size:14px}
+  .btn.ghost{background:transparent;border-color:transparent;box-shadow:none;color:#fff}
+  .btn.ghost:hover{background:#1d2742}
+  .hero-p{background:radial-gradient(400px 200px at 85% 50%,rgba(34,184,240,.28),transparent 70%),linear-gradient(135deg,#17254d,#0f1730)}
+  .hero-p .art{position:relative;width:150px;height:140px;flex:none;display:flex;align-items:center;justify-content:center}
+  .hero-p .art span{font-size:92px;filter:drop-shadow(0 12px 18px rgba(0,0,0,.5));animation:floaty 3s ease-in-out infinite}
+  .hero-p .art i{position:absolute;width:4px;height:4px;background:#cfe7ff;border-radius:1px;opacity:.7;animation:twinkle 2.4s ease-in-out infinite}
+  .hero-p .art i:nth-child(2){left:6%;top:12%}.hero-p .art i:nth-child(3){left:88%;top:20%;animation-delay:.6s}.hero-p .art i:nth-child(4){left:16%;top:82%;animation-delay:1.2s}.hero-p .art i:nth-child(5){left:76%;top:88%;animation-delay:.3s}.hero-p .art i:nth-child(6){left:50%;top:2%;animation-delay:1.6s}
+  @keyframes floaty{50%{transform:translateY(-8px) rotate(-3deg)}}
+  @keyframes twinkle{50%{opacity:.15}}
+  @media (max-width:640px){ .hero-p .art{width:96px} .hero-p .art span{font-size:64px} }
+  .promo.chest-box{background:radial-gradient(260px 160px at 85% 60%,rgba(255,180,40,.22),transparent 70%),linear-gradient(135deg,#1c2442,#121a31)}
+  .promo.chest-box .txt{font-size:13px;color:var(--mut);line-height:1.5}
+  .promo.chest-box .txt b{color:#fff;font-size:17px}
+  .promo .chest-ico{width:96px;height:96px}
+  .ga-p{background:radial-gradient(260px 160px at 85% 60%,rgba(160,107,255,.3),transparent 70%),linear-gradient(135deg,#1c2246,#121a31)}
+  .ga-p .art2{font-size:70px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45));animation:floaty 3.4s ease-in-out infinite}
+  .ga-p .live{color:var(--gold);font-size:13px}
+  .btn.dc{background:#5865f2;border-color:#5865f2;color:#fff;box-shadow:inset 0 -3px 0 #3c45b8}
+
+  .sec-h{display:flex;align-items:center;justify-content:space-between;margin:4px 0 12px}
+  .sec-h h2{margin:0;font-size:21px;font-weight:800}
+  .sec-h a{color:var(--mut);font-size:13.5px;font-weight:600;text-decoration:none}
+  .sec-h a:hover{color:#fff}
+  .cover-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);gap:14px;overflow-x:auto;padding-bottom:8px;margin-bottom:22px;scrollbar-width:thin}
+  @media (max-width:640px){ .cover-row{grid-auto-columns:42%} }
+  .searchrow input{padding:11px 14px !important;font-weight:500}
+  .catbar .btn{border-radius:99px;font-size:13px;padding:6px 13px;min-height:34px}
+  .lobby-grid{gap:22px}
+  @media (min-width:1100px){ .lobby-grid{grid-template-columns:minmax(0,1fr) 340px} .lobby-grid main{order:1} .lobby-grid .side{order:2} }
+  @media (max-width:1099px){ .lobby-grid main{order:1} .lobby-grid .side{order:2} }
+  .cards{grid-template-columns:repeat(auto-fill,minmax(160px,1fr)) !important;gap:14px}
+  @media (max-width:640px){ .cards{grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:10px} }
+
+  /* cover tiles */
+  .card.cover{aspect-ratio:3/4;border:0;border-radius:14px;overflow:hidden;color:#fff;text-decoration:none;box-shadow:0 10px 24px rgba(0,0,0,.45);
+    background:radial-gradient(120% 70% at 50% 18%,hsl(var(--h) var(--s) 62%) 0%,hsl(var(--h) var(--s) 42%) 45%,hsl(calc(var(--h) + 20) var(--s) 20%) 100%);transition:transform .15s,box-shadow .15s}
+  .card.cover:hover,.card.cover:focus-visible{transform:translateY(-4px) !important;box-shadow:0 16px 34px rgba(0,0,0,.55),0 0 0 2px hsl(var(--h) 90% 70%)}
+  .card.cover.lit{box-shadow:0 0 0 3px #fff,0 0 40px hsl(var(--h) 90% 60%);transform:scale(1.04)}
+  .cv-glow{position:absolute;inset:0;background:conic-gradient(from 200deg at 50% 38%,transparent 0 20%,rgba(255,255,255,.14) 25%,transparent 32% 60%,rgba(255,255,255,.1) 66%,transparent 72%);mix-blend-mode:overlay}
+  .cv-art{position:absolute;left:0;right:0;top:12%;text-align:center;font-size:clamp(58px,8.5vw,92px);line-height:1;filter:drop-shadow(0 12px 14px rgba(0,0,0,.45));transition:transform .2s}
+  .card.cover:hover .cv-art{transform:scale(1.08) rotate(-4deg)}
+  .cv-foot{position:absolute;left:0;right:0;bottom:0;padding:34px 8px 10px;text-align:center;background:linear-gradient(transparent,rgba(0,0,0,.55) 55%)}
+  .cv-t{font-weight:900;font-size:clamp(15px,1.7vw,20px);letter-spacing:.5px;text-transform:uppercase;line-height:1.05;text-shadow:0 3px 0 rgba(0,0,0,.35)}
+  .cv-s{font-size:9.5px;font-weight:700;letter-spacing:1.6px;opacity:.75;margin-top:4px}
+  .cv-b{display:inline-block;margin-top:6px;font-size:10.5px;font-weight:600;background:rgba(0,0,0,.45);border-radius:99px;padding:2px 8px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cv-rib,.cv-new{position:absolute;left:8px;top:8px;font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 7px;border-radius:6px;background:var(--gold);color:#2a1c00}
+  .cv-new{background:rgba(255,255,255,.9);color:#0a1020}
+  .card.cover .card-fav{left:auto;right:8px;top:8px;bottom:auto;width:30px;height:30px;font-size:16px;border:0;border-radius:8px;background:rgba(0,0,0,.35)}
+  .card.cover .card-fav.on{background:rgba(0,0,0,.55);color:var(--gold)}
+
+  /* sidebar */
+  .side .panel,.side .dark-panel{padding:16px}
+  .pstats div{background:#0c1222;border:1px solid var(--line);border-radius:8px;color:var(--mut)}
+  .pstats b{color:#fff}
+  .ladder span{background:#0c1222;border:1px solid var(--line);border-radius:6px}
+  .ladder span.got{background:#173058;border-color:var(--cyan)}
+  .avatar.slot{border-radius:14px}
+  .profile .rank{text-shadow:none;font-weight:800}
+  .quest{border-bottom:1px solid var(--line)}
+  .quest .qb{border:0;border-radius:99px;background:#1b2440;overflow:hidden;height:7px}
+  .quest .qb i{background:var(--cyan);border-radius:99px}
+  .featured{border:1px solid #6a5410;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.35)}
+  .featured .fi{border:0;border-radius:10px;overflow:hidden}
+  .discord{border:0;border-radius:14px;background:#5865f2;box-shadow:0 10px 24px rgba(0,0,0,.35)}
+  .discord:hover{background:#6a76ff}
+
+  /* bottom tab bar (phones) */
+  .tabbar{display:none}
+  @media (max-width:820px){
+    .tabbar{display:grid;grid-template-columns:repeat(6,1fr);position:fixed;left:0;right:0;bottom:0;z-index:130;background:rgba(9,13,24,.97);border-top:1px solid var(--line);padding:6px 4px max(6px,env(safe-area-inset-bottom));backdrop-filter:blur(10px)}
+    .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--mut);text-decoration:none;font-size:11px;font-weight:600;padding:4px 0}
+    .tabbar a span{font-size:20px;line-height:1.1;filter:grayscale(.5)}
+    .tabbar a.on{color:#fff}.tabbar a.on span{filter:none}
+    .wrap{padding-bottom:90px}
+    #arcadeToast{bottom:84px}
+  }
+
+  /* modals, chat, account in the dark theme */
+  .acct .note,.gift .note{color:var(--mut)}
+  .acct .sec{color:#fff;border-bottom:1px solid var(--line)}
+  .acct .err,.gift .err{color:var(--red);font-size:13px;min-height:18px;margin:6px 0}
+  .frow{background:#0c1222;border:1px solid var(--line);border-radius:8px;color:var(--tx)}
+  .frow small{color:var(--dim) !important}
+  .dot{border:0;border-radius:50%}
+  .lbmodal .lbr{background:#0c1222;border:1px solid var(--line);border-radius:8px;color:var(--tx)}
+  .lbmodal .lbr.me{background:rgba(34,184,240,.18);border-color:var(--cyan)}
+  .lbmodal .lbe{color:var(--mut)}
+  .gift label{display:block;font-size:12px;color:var(--mut);margin:10px 0 4px;font-weight:600}
+  .gift input{width:100%;padding:11px 12px;background:#0c1222;color:#fff;border:1px solid var(--line2);border-radius:8px;font-size:16px}
+  .gift .qa{margin-top:6px}
+  .gift #giftSend{margin-top:6px}
+  .badge-dot{border:0;border-radius:99px;top:-5px;right:-5px}
+  #chat{background:#0b1121;border-left:1px solid var(--line);box-shadow:-20px 0 40px rgba(0,0,0,.5)}
+  .ch-head,.ch-rooms{background:#0f1629;border-bottom:1px solid var(--line)}
+  .ch-head .t{font-weight:800}
+  .msg{background:#18213b;border:1px solid var(--line);border-radius:12px 12px 12px 4px}
+  .msg.mine{background:#0f4a6a;border-color:#1f6a90;border-radius:12px 12px 4px 12px}
+  .msg .who{color:var(--cyan);font-weight:700}
+  .ch-sys.ga{border:0;border-radius:10px;box-shadow:none;background:linear-gradient(90deg,#ffcf3a,#ffb020);color:#2a1c00}
+  .ch-ga{background:#141c33;border-bottom:1px solid var(--line)}
+  .ch-ga.open{background:linear-gradient(90deg,#7a5200,#c79a14)}
+  .ch-ga .in{border:0;border-radius:6px}
+  .ch-form input{background:#0c1222 !important;color:#fff !important;border:1px solid var(--line2) !important;border-radius:8px}
+  .ch-safe{background:#0b1121;color:var(--dim)}
+  #chatBtn.ga-on{background:var(--gold) !important;color:#2a1c00}
+  #loading{background:var(--bg) !important}
+  .profile .xptext{color:var(--mut)}
+  .promo .btn{white-space:nowrap}
+  .profile .pname::placeholder{color:var(--dim)}
 </style>
 
 </head>
 <body>
-<div class="wrap">
-  <div class="ticker" aria-hidden="true"><span id="ticker">Loading chaos…</span></div>
-
-  <div class="lobby-top">
-    <button class="btn icon topbtn" id="acctBtn" title="Account & friends" aria-label="Account and friends">👤 LOG IN</button>
-    <button class="btn icon topbtn" id="chatBtn" title="Chat" aria-label="Chat">💬<span class="badge-dot" id="chatBadge"></span></button>
-    <button class="btn icon" id="lbBtn" title="Leaderboards" aria-label="Leaderboards">🏆</button>
-    <button class="btn icon" id="shareProfile" title="Share your arcade profile" aria-label="Share profile">📤</button>
-    <button class="btn icon" id="muteBtn" title="Toggle sound" aria-label="Toggle sound">🔊</button>
+<header class="gnav" id="top">
+  <div class="gnav-in">
+    <a class="logo" href="index.html" aria-label="Chaos Arcade home"><span class="gem">⚡</span><b>CHAOS</b></a>
+    <span class="online" title="Players online now"><i></i><b id="hdrOnline">1</b> online</span>
+    <nav class="links" aria-label="Main">
+      <a href="#games">🎮 Games</a>
+      <a href="games/casino.html">🎰 Casino</a>
+      <a href="#" id="navLb">🏆 Leaderboards</a>
+      <a href="#rewards">🎁 Rewards</a>
+      <a href="#" id="navGa" class="race">🎉 Giveaway <code id="hdrGa">--:--</code></a>
+    </nav>
+    <div class="right">
+      <a class="chip coin" id="hdrCoins" href="games/casino.html" title="Your coins">🪙 0</a>
+      <button class="btn icon" id="giftBtn" title="Gift coins to a player" aria-label="Gift coins">🎁</button>
+      <button class="btn icon" id="chatBtn" title="Chat" aria-label="Chat">💬<span class="badge-dot" id="chatBadge"></span></button>
+      <button class="btn icon hide-sm" id="lbBtn" title="Leaderboards" aria-label="Leaderboards">🏆</button>
+      <button class="btn icon hide-sm" id="shareProfile" title="Share your arcade profile" aria-label="Share profile">📤</button>
+      <button class="btn icon hide-sm" id="muteBtn" title="Toggle sound" aria-label="Toggle sound">🔊</button>
+      <button class="btn cyan" id="acctBtn" title="Account & friends">Sign in</button>
+    </div>
   </div>
+</header>
+<div class="wrap">
+  <div hidden aria-hidden="true"><span id="ticker"></span><div id="title"></div><div id="tenBadge"></div><div id="splash"></div><span id="gameCount"></span></div>
 
-  <header class="hero">
-    <div class="pixel-title" id="title"></div>
-    <div class="ten" id="tenBadge">100-IN-1</div>
-    <div class="splash" id="splash">Insert coin!</div>
-  </header>
-  <p class="subtitle shadow-dark"><span id="gameCount">57</span> chaotic minigames · global leaderboards · one XP bar.<br>Rank up from 🕹️ Button Masher to 😈 Chaos God.</p>
+  <section class="promos">
+    <div class="promo hero-p">
+      <div class="txt">
+        <h1 id="heroH">Play the arcade.<br>Get <span class="g">2,500 🪙</span> to start.</h1>
+        <p id="heroP"><span id="heroCount">113</span> games, global leaderboards and an hourly giveaway in chat.</p>
+        <div class="row" id="heroBtns"><button class="btn cyan" id="heroSign">Create account</button><button class="btn ghost" id="heroLogin">Sign in</button></div>
+      </div>
+      <div class="art" aria-hidden="true"><span>🕹️</span><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="promo chest-box">
+      <div class="txt" id="chestTxt"></div>
+      <div class="chest-ico" id="chestIco" role="button" aria-label="Daily loot chest"></div>
+    </div>
+    <div class="promo ga-p">
+      <div class="txt"><b>Hourly giveaway</b><p id="gaPromo">3 players win 2,000–5,000 🪙 every hour in global chat.</p>
+        <div class="row"><button class="btn small" id="gaOpen">Open chat</button><a class="btn small dc" href="https://discord.gg/vesperclient" target="_blank" rel="noopener noreferrer">Discord</a></div></div>
+      <div class="art2" aria-hidden="true">🎉</div>
+    </div>
+  </section>
 
   <div class="lobby-grid">
-    <aside class="side">
+    <aside class="side" id="rewards">
       <div class="panel profile">
         <div class="avatar slot" id="avatar">🕹️</div>
         <div>
@@ -128,16 +297,14 @@
       <a class="featured" id="featured" href="#"></a>
 
       <a class="discord" href="https://discord.gg/vesperclient" target="_blank" rel="noopener noreferrer"><span class="ico">💬</span><span><b>JOIN OUR DISCORD</b><small>Giveaway announcements, events and the community. Opens discord.gg</small></span></a>
-      <div class="dark-panel chest-box">
-        <div class="chest-ico" id="chestIco" role="button" aria-label="Daily loot chest"></div>
-        <div class="txt" id="chestTxt"></div>
-      </div>
     </aside>
 
-    <main>
+    <main id="games">
+      <div class="sec-h"><h2>🎰 Casino</h2><a href="games/casino.html">View all →</a></div>
+      <div class="cover-row" id="casinoRow"></div>
+      <div class="sec-h"><h2>🎮 Games</h2><span class="count" id="shown"></span></div>
       <div class="searchrow">
         <input id="search" placeholder="🔍 Search games…" aria-label="Search games">
-        <span class="count shadow-dark" id="shown"></span>
       </div>
       <div class="catbar" id="cats"></div>
       <div class="cards" id="cards"></div>
@@ -146,6 +313,26 @@
 
   <div class="legal">Chaos Arcade · free fan-made browser games. Progress is saved in this browser. The Block World games are a fan-made parody: not an official Minecraft product and not approved by or associated with Mojang or Microsoft.</div>
 </div>
+
+<nav class="tabbar" aria-label="Quick navigation">
+  <a href="#top" class="on"><span>🏠</span>Home</a>
+  <a href="games/casino.html"><span>🎰</span>Casino</a>
+  <a href="#games"><span>🎮</span>Games</a>
+  <a href="#rewards"><span>🎁</span>Rewards</a>
+  <a href="#" id="tabChat"><span>💬</span>Chat</a>
+  <a href="#" id="tabMenu"><span>☰</span>Menu</a>
+</nav>
+
+<div class="modal" id="giftModal"><div class="panel gift"><button class="btn icon x" id="giftClose" aria-label="Close">✖</button><h2>🎁 GIFT COINS</h2>
+  <div class="note" id="giftBal"></div>
+  <label>Player name</label><input id="giftTo" maxlength="16" autocomplete="off" placeholder="username">
+  <label>Amount</label><input id="giftAmt" type="number" min="10" step="1" inputmode="numeric" value="1000">
+  <div class="row qa"><button class="btn small" data-ga="100">100</button><button class="btn small" data-ga="1000">1K</button><button class="btn small" data-ga="10000">10K</button><button class="btn small" data-ga="100000">100K</button></div>
+  <label>Message (optional)</label><input id="giftNote" maxlength="60" autocomplete="off" placeholder="gg!">
+  <div class="err" id="giftErr"></div>
+  <button class="btn cyan big block" id="giftSend">Send gift</button>
+  <div class="note">Gifts arrive within a few seconds while the other player has the arcade open. 10 to 1,000,000 coins per gift, up to 10 gifts an hour. Coins are play money only.</div>
+</div></div>
 
 <div class="modal" id="lbModal"><div class="panel lbmodal"><button class="btn icon x" id="lbClose" aria-label="Close">✖</button><h2>🏆 LEADERBOARDS</h2><div class="row" style="margin-bottom:8px"><button class="btn small on" id="lbG">🌍 Global</button><button class="btn small" id="lbF">👥 Friends</button></div><select id="lbSel" aria-label="Choose leaderboard"></select><div id="lbBody"></div></div></div>
 <div class="modal" id="acctModal"><div class="panel acct"><button class="btn icon x" id="acctClose" aria-label="Close">✖</button><h2 id="acctTitle">👤 ACCOUNT</h2><div id="acctBody"></div></div></div>
@@ -215,7 +402,10 @@ function renderProfile(){
   $('#ladder').innerHTML = A.RANKS.map((r, i) => '<span class="' + (i <= ri.idx ? 'got' : '') + '" title="' + r.t + ' (' + r.xp + ' XP)">' + r.i + '</span>').join('');
   if (document.activeElement !== $('#pname')) $('#pname').value = st.name || '';
   $('#pname').disabled = !!A.acct.user; $('#pname').title = A.acct.user ? 'Logged in: your account name is used everywhere' : '';
-  $('#acctBtn').textContent = A.acct.user ? '👤 ' + A.acct.user.name : '👤 LOG IN';
+  $('#acctBtn').textContent = A.acct.user ? '👤 ' + A.acct.user.name : 'Sign in';
+  $('#hdrCoins').textContent = '🪙 ' + Math.floor(st.coins || 0).toLocaleString('en-US');
+  $('#heroCount').textContent = A.GAMES.length;
+  if (A.acct.user){ $('#heroH').innerHTML = 'Welcome back,<br><span class="g">' + A.esc(A.acct.user.name) + '</span>!'; $('#heroBtns').innerHTML = '<button class="btn cyan" id="heroRand">🎲 Random game</button><a class="btn ghost" href="games/casino.html">🎰 Casino</a>'; $('#heroRand').onclick = () => $('#randomBtn').click(); }
   $('#muteBtn').textContent = st.muted ? '🔇' : '🔊';
 }
 $('#pname').addEventListener('input', e => A.setName(e.target.value));
@@ -247,6 +437,17 @@ function renderCats(){
 $('#cats').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; A.Sfx.click(); cat = b.dataset.c; try { sessionStorage.setItem('ca_cat', cat); } catch(e){} renderCats(); renderCards(); });
 $('#search').addEventListener('input', e => { query = e.target.value.trim().toLowerCase(); renderCards(); });
 const DIFF_LABEL = { easy:'EASY', medium:'MEDIUM', hard:'HARD', chaos:'CHAOS' };
+/* cover art colors per category (hue, saturation); each game shifts the hue a little so neighbours differ */
+const CAT_HUE = { block:[118,55], action:[355,75], reflex:[195,80], puzzle:[150,65], brain:[300,60], luck:[38,85], words:[225,70], sports:[22,80], casino:[265,70], originals:[28,85] };
+function coverHTML(g, fav, feat){
+  const s = A.state.games[g.id], [h0, sat] = CAT_HUE[g.cat] || [220, 60], h = (h0 + (A.hashStr(g.id) % 34) - 17 + 360) % 360;
+  const best = g.cat === 'originals' ? (s && s.plays ? '🎮 ' + s.plays + '×' : '') : s && s.plays ? (['','🥉 ','🥈 ','🥇 '][s.medal || 0]) + '🏆 ' + (s.bestLabel || s.best || '—') : '';
+  return '<a class="card cover" data-id="' + g.id + '" href="games/' + g.file + '" title="' + A.esc(g.desc) + '" style="--h:' + h + ';--s:' + sat + '%">' +
+    '<div class="cv-glow"></div><div class="cv-art">' + g.e + '</div>' +
+    (g.id === feat ? '<div class="cv-rib">2× XP</div>' : (!s || !s.plays ? '<div class="cv-new">NEW</div>' : '')) +
+    '<button class="card-fav' + (fav[g.id] ? ' on' : '') + '" data-fav="' + g.id + '" aria-label="Favorite ' + A.esc(g.t) + '" title="Favorite">' + (fav[g.id] ? '★' : '☆') + '</button>' +
+    '<div class="cv-foot"><div class="cv-t">' + A.esc(g.t) + '</div><div class="cv-s">✦ ' + A.CATS[g.cat].n.toUpperCase() + ' · ' + DIFF_LABEL[g.d] + '</div>' + (best ? '<div class="cv-b">' + A.esc(String(best)) + '</div>' : '') + '</div></a>';
+}
 const texCache = {};
 function renderCards(){
   A.load();
@@ -264,21 +465,10 @@ function renderCards(){
   if (cat === 'recent') list = list.sort((a, b) => A.state.games[b.id].ts - A.state.games[a.id].ts).slice(0, 12);
   else if (cat === 'all' && !query) list = list.slice().sort((a, b) => (fav[b.id] ? 1 : 0) - (fav[a.id] ? 1 : 0));
   $('#shown').textContent = list.length + ' game' + (list.length === 1 ? '' : 's');
-  $('#cards').innerHTML = list.map(g => {
-    const s = A.state.games[g.id], key = g.id;
-    const bg = texCache[key] || (texCache[key] = A.textureURL(g.bg, g.n * 13, 16));
-    const best = g.cat === 'originals' ? (s && s.plays ? '🎮 Played ' + s.plays + '× · daily +25 XP' : '✨ Never played. Fresh XP!') : s && s.plays && g.cat === 'casino' && !s.best ? '🎰 ' + s.plays + ' bets · no wins yet' : s && s.plays ? (['','🥉 ','🥈 ','🥇 '][s.medal || 0]) + '🏆 Best: ' + (s.bestLabel || s.best || '—') + ' · 🎮 ' + s.plays : '✨ Never played. Fresh XP!';
-    return '<a class="card" data-id="' + g.id + '" href="games/' + g.file + '">' +
-      '<div class="card-thumb" style="background-image:url(' + bg + ')"><div class="card-num">#' + String(g.n).padStart(2,'0') + '</div>' +
-      '<button class="card-fav' + (fav[g.id] ? ' on' : '') + '" data-fav="' + g.id + '" aria-label="Favorite ' + g.t + '" title="Favorite">' + (fav[g.id] ? '★' : '☆') + '</button>' +
-      (g.id === feat ? '<div class="ribbon">⭐ 2x XP</div>' : '') +
-      (g.icon ? '<div class="card-icon">' + A.icon(g.icon) + '</div><div class="card-emoji">' + g.e + '</div>' : '<div class="big-e">' + g.e + '</div>') + '</div>' +
-      '<div class="card-body"><div class="card-title">' + g.t + '</div>' +
-      '<div class="card-badges"><span class="badge ' + g.d + '">' + DIFF_LABEL[g.d] + '</span><span class="badge tag">' + A.CATS[g.cat].e + ' ' + A.CATS[g.cat].n.toUpperCase() + '</span></div>' +
-      '<p class="card-desc">' + g.desc + '</p><div class="card-best">' + best + '</div></div>' +
-      '<div class="card-play">▶ PLAY</div></a>';
-  }).join('') || '<div class="dark-panel">' + (cat === 'fav' ? 'No favorites yet. Tap the ☆ on any game card to pin it here. ⭐' : cat === 'recent' ? 'Nothing played yet. Pick any game to start! 🎮' : 'No games match that. Try another search. 🔍') + '</div>';
+  $('#cards').innerHTML = list.map(g => coverHTML(g, fav, feat)).join('') || '<div class="dark-panel">' + (cat === 'fav' ? 'No favorites yet. Tap the ☆ on any game to pin it here. ⭐' : cat === 'recent' ? 'Nothing played yet. Pick any game to start! 🎮' : 'No games match that. Try another search. 🔍') + '</div>';
+  $('#casinoRow').innerHTML = A.GAMES.filter(g => g.cat === 'casino').map(g => coverHTML(g, fav, feat)).join('');
   $$('.card').forEach(c => {
+    if (c.dataset.bound) return; c.dataset.bound = 1;
     const g = A.gameById(c.dataset.id);
     c.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') A.Sfx.hover(); });
     c.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const r = c.getBoundingClientRect(), dx = (e.clientX - r.left) / r.width - .5, dy = (e.clientY - r.top) / r.height - .5; c.style.transform = 'perspective(600px) rotateY(' + (dx*10).toFixed(1) + 'deg) rotateX(' + (-dy*10).toFixed(1) + 'deg) translateY(-4px)'; });
@@ -461,13 +651,14 @@ function drawFriends(me){
   let h = '<div class="note">' + (me.admin ? '🛡️ You are an admin. ' : '') + 'Logged in. Your progress syncs to this account automatically.</div>';
   h += '<div class="sec">➕ ADD A FRIEND</div><input id="fSearch" maxlength="16" placeholder="Search a username…" aria-label="Search players"><div id="fResults"></div>';
   if (me.incoming.length) h += '<div class="sec">📩 FRIEND REQUESTS (' + me.incoming.length + ')</div>' + me.incoming.map(u => row(u, '<button class="btn small green" data-a="friend_accept" data-n="' + u.id + '">✔</button><button class="btn small red" data-a="friend_decline" data-n="' + u.id + '">✖</button>')).join('');
-  h += '<div class="sec">👥 FRIENDS (' + me.friends.length + ')</div>' + (me.friends.length ? me.friends.map(u => row(u, '<button class="btn small purple" data-chat="' + u.id + '">💬</button><button class="btn small" data-a="friend_remove" data-n="' + u.id + '" title="Remove friend">✖</button><button class="btn small" data-a="block" data-n="' + u.id + '" title="Block">🚫</button>')).join('') : '<div class="note">No friends yet. Search for a username above!</div>');
+  h += '<div class="sec">👥 FRIENDS (' + me.friends.length + ')</div>' + (me.friends.length ? me.friends.map(u => row(u, '<button class="btn small gold" data-gift="' + u.name + '" title="Gift coins">🎁</button><button class="btn small purple" data-chat="' + u.id + '">💬</button><button class="btn small" data-a="friend_remove" data-n="' + u.id + '" title="Remove friend">✖</button><button class="btn small" data-a="block" data-n="' + u.id + '" title="Block">🚫</button>')).join('') : '<div class="note">No friends yet. Search for a username above!</div>');
   if (me.outgoing.length) h += '<div class="sec">⏳ SENT REQUESTS</div>' + me.outgoing.map(u => row(u, '<button class="btn small" data-a="friend_decline" data-n="' + u.id + '">Cancel</button>')).join('');
   if (me.blocked.length) h += '<div class="sec">🚫 BLOCKED</div>' + me.blocked.map(id => row({ name:id }, '<button class="btn small" data-a="unblock" data-n="' + id + '">Unblock</button>')).join('');
   h += '<button class="btn red block" id="aOut" style="margin-top:12px">LOG OUT</button>';
   b.innerHTML = h;
   $('#aOut').addEventListener('click', logout);
   b.querySelectorAll('[data-a]').forEach(x => x.addEventListener('click', () => { A.Sfx.click(); A.acct.friend(x.dataset.a, x.dataset.n).then(() => { A.toast({ friend_accept:'🤝 You are now friends!', friend_decline:'Request removed', friend_remove:'Friend removed', block:'🚫 Blocked', unblock:'Unblocked' }[x.dataset.a]); renderAcct(); }).catch(e => A.toast(e.message)); }));
+  b.querySelectorAll('[data-gift]').forEach(x => x.addEventListener('click', () => { $('#acctModal').classList.toggle('show', false); openGift(x.dataset.gift); }));
   b.querySelectorAll('[data-chat]').forEach(x => x.addEventListener('click', () => { $('#acctModal').classList.remove('show'); openChat('dm:' + x.dataset.chat); }));
   let st = 0;
   $('#fSearch').addEventListener('input', e => {
@@ -534,11 +725,12 @@ function addMsg(m){
 function showActs(d, m){
   if (d.querySelector('.acts')){ d.querySelector('.acts').remove(); return; }
   const a = document.createElement('div'); a.className = 'acts';
-  a.innerHTML = '<button class="btn small" data-x="report">🚩 Report</button><button class="btn small" data-x="block">🚫 Block</button><button class="btn small green" data-x="add">➕ Friend</button>' + (meCache && meCache.admin && room === 'global' ? '<button class="btn small red" data-x="del">🗑</button><button class="btn small red" data-x="ban">⛔ Ban</button>' : '');
+  a.innerHTML = '<button class="btn small" data-x="report">🚩 Report</button><button class="btn small" data-x="block">🚫 Block</button><button class="btn small green" data-x="add">➕ Friend</button><button class="btn small gold" data-x="gift">🎁 Gift</button>' + (meCache && meCache.admin && room === 'global' ? '<button class="btn small red" data-x="del">🗑</button><button class="btn small red" data-x="ban">⛔ Ban</button>' : '');
   a.addEventListener('click', e => {
     e.stopPropagation(); const x = e.target.closest('[data-x]'); if (!x) return;
     const act = x.dataset.x;
     const done = (msg) => { A.toast(msg); a.remove(); };
+    if (act === 'gift'){ a.parentNode && a.parentNode.removeChild(a); closeChat(); openGift(m.n); return; }
     if (act === 'report') A.acct.report(room, m.id).then(() => done('🚩 Reported. Thanks for keeping chat friendly.')).catch(err => A.toast(err.message));
     if (act === 'block') A.acct.friend('block', m.u).then(() => { done('🚫 ' + m.n + ' is blocked. You will not see their messages.'); document.querySelectorAll('.msg[data-u="' + m.u + '"]').forEach(n => n.remove()); }).catch(err => A.toast(err.message));
     if (act === 'add') A.acct.friend('friend_request', m.u).then(r => done(r.result === 'friends' ? '🤝 Friends!' : '📨 Friend request sent to ' + m.n)).catch(err => A.toast(err.message));
@@ -565,12 +757,18 @@ function collectGa(j){
   if (!j || !j.pending) return;
   A.acct.giveawayCollect().then(r => { if (r.coins > 0){ A.addCoins(r.coins, '🎁 giveaway prize'); A.bigText('🎉 YOU WON ' + r.coins.toLocaleString('en-US') + ' 🪙!', '#ffd23a'); A.confetti(); A.Sfx.ach ? A.Sfx.ach() : A.Sfx.coin(); renderProfile(); } }).catch(() => {});
 }
+function collectGifts(j){
+  if (!j || !j.gifts) return;
+  A.acct.giftCollect().then(r => { (r.gifts || []).forEach((g, i) => setTimeout(() => { A.addCoins(g.amount, 'gift from ' + g.from); A.bigText('🎁 ' + g.from + ' sent you ' + g.amount.toLocaleString('en-US') + ' 🪙', '#ffd23a'); if (g.note) A.toast('💌 ' + g.from + ': ' + g.note); A.Sfx.coin(); renderProfile(); }, i * 1500)); }).catch(() => {});
+}
+function hdrGa(){ const el = $('#hdrGa'); if (!el || !gaState) return; el.textContent = gaState.open ? 'LIVE ' + mmss(gaState.endsIn) : mmss(gaState.nextIn); $('#navGa').classList.toggle('live', !!gaState.open);
+  $('#gaPromo').innerHTML = gaState.open ? '<b class="live">LIVE NOW</b>: ' + gaState.winners + ' × ' + gaState.prize.toLocaleString('en-US') + ' 🪙 · ' + gaState.entries + ' entered · draw in ' + mmss(gaState.endsIn) : 'Next one in <b>' + mmss(gaState.nextIn) + '</b>. 3 players win 2,000–5,000 🪙 every hour.'; }
 function gaPoll(){
   clearTimeout(gaT);
-  if (!A.acct.user || A.acct.down) return;
-  A.acct.giveaway().then(j => { gaState = j; renderGa(); collectGa(j); $('#chatBtn').classList.toggle('ga-on', !!j.open && !j.entered); }).catch(() => {}).then(() => { gaT = setTimeout(gaPoll, chatOpen && room === 'global' ? 3000 : 15000); });
+  if (A.acct.down) return;
+  A.acct.giveaway().then(j => { gaState = j; renderGa(); hdrGa(); if (j.online) $('#hdrOnline').textContent = j.online; if (A.acct.user){ collectGa(j); collectGifts(j); } $('#chatBtn').classList.toggle('ga-on', !!j.open && !j.entered); }).catch(() => {}).then(() => { gaT = setTimeout(gaPoll, chatOpen && room === 'global' ? 3000 : 15000); });
 }
-setInterval(() => { if (gaState){ if (gaState.open) gaState.endsIn = Math.max(0, gaState.endsIn - 1); gaState.nextIn = Math.max(0, gaState.nextIn - 1); if (chatOpen) renderGa(); if ((gaState.open && gaState.endsIn === 0) || gaState.nextIn === 0) gaPoll(); } }, 1000);
+setInterval(() => { if (gaState){ if (gaState.open) gaState.endsIn = Math.max(0, gaState.endsIn - 1); gaState.nextIn = Math.max(0, gaState.nextIn - 1); if (chatOpen) renderGa(); hdrGa(); if ((gaState.open && gaState.endsIn === 0) || gaState.nextIn === 0) gaPoll(); } }, 1000);
 
 function poll(){
   if (!chatOpen || !A.acct.user) return;
@@ -580,7 +778,7 @@ function poll(){
     const box = $('#chMsgs'), atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
     j.msgs.forEach(m => { if (m.id > (lastId[r] || 0)){ addMsg(m); lastId[r] = m.id; if (A.acct.user && m.u !== A.acct.user.id && document.hidden === false && lastRead(r) && m.id > lastRead(r)) A.Sfx.tone(880, .05, 'triangle', .04); } });
     (j.hidden || []).forEach(id => { const n = box.querySelector('.msg[data-id="' + id + '"]'); if (n) n.remove(); });
-    $('#chOnline').textContent = '● ' + j.online + ' online';
+    $('#chOnline').textContent = '● ' + j.online + ' online'; $('#hdrOnline').textContent = j.online;
     if (atBottom || j.msgs.length) box.scrollTop = box.scrollHeight;
     setRead(r, j.last); unread[r] = false; updateBadge();
   }).catch(err => { if (/login/.test(err.message)) { loadRoom(); return; } }).then(() => { clearTimeout(pollT); if (chatOpen && r === room) pollT = setTimeout(poll, 1000); });
@@ -604,6 +802,41 @@ function startInbox(){
   A.acct.me().then(me => { meCache = me; if (me.incoming.length){ $('#acctBtn').textContent = '👤 ' + A.acct.user.name + ' 📩' + me.incoming.length; } }).catch(() => {});
 }
 if (location.hash === '#account') setTimeout(openAcct, 300);
+
+/* ---------- Gift coins ---------- */
+function openGift(name){
+  A.Sfx.click();
+  if (A.acct.down){ A.toast('🎁 Gifting goes live once the arcade is on your website (needs PHP)'); return; }
+  if (!A.acct.user){ A.toast('🎁 Sign in to gift coins'); openAcct(); return; }
+  $('#giftTo').value = name || $('#giftTo').value || ''; $('#giftErr').textContent = '';
+  $('#giftBal').innerHTML = 'Your balance: <b>' + Math.floor(A.coins()).toLocaleString('en-US') + ' 🪙</b>';
+  $('#giftModal').classList.add('show'); setTimeout(() => (name ? $('#giftAmt') : $('#giftTo')).focus(), 50);
+}
+const hideGift = () => $('#giftModal').classList.toggle('show', false);
+$('#giftBtn').addEventListener('click', () => openGift());
+$('#giftClose').addEventListener('click', hideGift);
+$('#giftModal').addEventListener('click', e => { if (e.target.id === 'giftModal') hideGift(); });
+$$('[data-ga]').forEach(b => b.addEventListener('click', () => { $('#giftAmt').value = b.dataset.ga; A.Sfx.click(); }));
+$('#giftSend').addEventListener('click', () => {
+  const to = $('#giftTo').value.trim(), amt = Math.floor(+$('#giftAmt').value || 0), note = $('#giftNote').value.trim(), err = $('#giftErr');
+  if (!/^[A-Za-z0-9_]{3,16}$/.test(to)){ err.textContent = 'Enter a valid player name.'; return; }
+  if (amt < 10 || amt > 1000000){ err.textContent = 'Gifts are 10 to 1,000,000 coins.'; return; }
+  if (amt > A.coins()){ err.textContent = 'You only have ' + Math.floor(A.coins()).toLocaleString('en-US') + ' 🪙.'; return; }
+  const btn = $('#giftSend'); btn.disabled = true; err.textContent = '';
+  A.acct.giftSend(to, amt, note).then(r => {
+    A.spendCoins(amt);
+    A.Sfx.coin(); A.bigText('🎁 Sent ' + amt.toLocaleString('en-US') + ' 🪙 to ' + r.to + '!', '#55ffff'); A.toast('🎁 ' + r.to + ' gets your gift next time they have the arcade open');
+    hideGift(); $('#giftNote').value = ''; renderProfile();
+  }).catch(e => { err.textContent = e.message; A.Sfx.fail(); }).then(() => { btn.disabled = false; });
+});
+$('#heroSign') && $('#heroSign').addEventListener('click', () => { openAcct(); });
+$('#heroLogin') && $('#heroLogin').addEventListener('click', () => { openAcct(); });
+$('#gaOpen').addEventListener('click', () => openChat('global'));
+$('#navGa').addEventListener('click', e => { e.preventDefault(); openChat('global'); });
+$('#navLb').addEventListener('click', e => { e.preventDefault(); $('#lbBtn').click(); });
+$('#tabChat').addEventListener('click', e => { e.preventDefault(); openChat('global'); });
+$('#tabMenu').addEventListener('click', e => { e.preventDefault(); openAcct(); });
+if (location.hash === '#gift') setTimeout(() => openGift(), 400);
 
 function renderAll(){ renderProfile(); renderQuests(); renderFeatured(); renderCats(); renderCards(); renderChest(); renderTicker(); }
 setInterval(() => { const cd = $('#chestCd'); if (cd) cd.textContent = untilMidnight(); }, 1000);

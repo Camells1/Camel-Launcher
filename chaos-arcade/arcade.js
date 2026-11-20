@@ -421,6 +421,8 @@ const Acct = {
   giveaway(){ return api('giveaway', null, {}); },
   giveawayEnter(){ return api('giveaway_enter', {}); },
   giveawayCollect(){ return api('giveaway_collect', {}); },
+  giftSend(to, amount, note){ return api('gift_send', { to, amount, note }); },
+  giftCollect(){ return api('gift_collect', {}); },
   get down(){ return apiDown; }
 };
 
