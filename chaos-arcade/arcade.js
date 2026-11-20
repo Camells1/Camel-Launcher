@@ -140,11 +140,19 @@ const NEW_GAMES = [
   ['typohunter','Typo Hunter','🕵️','medium','words','Three words are spelled right. Find the typo.'],
   ['bowling','Bowling','🎳','medium','sports','Aim, spin and knock down the pins. 10 frames.'],
   ['archery','Archery','🏹','medium','sports','Draw, aim and mind the wind. Hit the gold.'],
-  // Casino: bets use the shared 🪙 wallet; every game pays back 98% on average (2% house edge)
-  ['cdice','Dice','🎲','chaos','casino','Pick your win chance, roll under it. 98% RTP.','casino.html#dice'],
+  ['bladetoss','Blade Toss','🗡️','hard','reflex','Stick blades in a spinning log. Never hit another blade.'],
+  ['colorecho','Color Echo','🎵','medium','brain','Repeat the growing color sequence. How long can you go?'],
+  ['rockblaster','Rock Blaster','☄️','medium','action','Turret in space. Split the rocks before they hit you.'],
+  ['rhythm','Rhythm Tap','🎶','hard','reflex','Four lanes, one beat. Hit the notes on the line.'],
+  ['bounceblitz','Bounce Blitz','⚪','medium','puzzle','Aim a volley of balls and smash the numbered blocks.'],
+  // Casino: bets use the shared 🪙 wallet; every game pays back 97.5% on average (2.5% house edge)
+  ['cdice','Dice','🎲','chaos','casino','Pick your win chance, roll under it. 97.5% RTP.','casino.html#dice'],
   ['crash','Crash','📈','chaos','casino','Ride the rocket multiplier and cash out before it crashes.','casino.html#crash'],
-  ['coinflip','Coin Flip','🪙','chaos','casino','Heads or tails for 1.96x your bet.','casino.html#coinflip'],
+  ['coinflip','Coin Flip','🪙','chaos','casino','Heads or tails for 1.95x your bet.','casino.html#coinflip'],
   ['mines','Mines','💣','chaos','casino','Uncover gems, dodge the mines, cash out any time.','casino.html#mines'],
+  ['limbo','Limbo','🎯','chaos','casino','Set a target multiplier. Will the result fly past it?','casino.html#limbo'],
+  ['hilo','Hi-Lo','🃏','chaos','casino','Higher or lower? Stack correct guesses, cash out any time.','casino.html#hilo'],
+  ['wheel','Wheel','🎡','chaos','casino','Spin the 40-slice wheel. Low, medium or high risk.','casino.html#wheel'],
   // Originals: full games built outside the arcade
   ['spindel4','Spindel 4','🕷️','medium','originals','Think smart, get 4 in a row on the spider web. Play the computer or a friend.','spindel4.html']
 ].map(([id, t, e, d, cat, desc, file]) => ({ id, t, e, d, cat, desc, file:file || 'play.html#' + id, tag:CATS[cat].n.toUpperCase(), bg:CAT_BG[cat] }));

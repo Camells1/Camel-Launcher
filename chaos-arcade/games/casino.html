@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0a2a1c">
 <title>Chaos Casino</title>
-<meta name="description" content="Chaos Arcade casino: Dice, Crash, Coin Flip and Mines with virtual coins and a fixed 2% house edge.">
+<meta name="description" content="Chaos Arcade casino: Dice, Crash, Coin Flip, Mines, Limbo, Hi-Lo and Wheel with virtual coins and a fixed 2.5% house edge.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%230a2a1c'/%3E%3Crect x='2' y='1' width='4' height='6' fill='%23ffd23a'/%3E%3Crect x='1' y='2' width='6' height='4' fill='%23ffd23a'/%3E%3Crect x='3' y='2' width='2' height='4' fill='%23b08a1a'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="../style.css">
 <style>
   body{background:#0a2a1c}
   .cz-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
-  .cz-tabs .btn{padding:10px 4px;font-size:13px}
+  .cz-tabs .btn{padding:9px 2px;font-size:12px}
   .cz-tabs .btn.on{background:#1fb07a;color:#002a18}
   .cz-wallet{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 12px}
   .cz-bal{font-size:clamp(22px,6vw,30px);color:#ffd23a;text-shadow:3px 3px 0 #000}
@@ -51,6 +51,17 @@
   .cz-seg{display:flex;border:3px solid #000}
   .cz-seg button{flex:1;font:inherit;font-size:13px;padding:9px 4px;border:0;background:#333;color:#fff;cursor:pointer}
   .cz-seg button.on{background:#ffd23a;color:#000}
+  .cz-card{width:110px;height:154px;background:#fff;color:#000;border:4px solid #000;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:48px;line-height:1;box-shadow:0 8px 0 rgba(0,0,0,.4)}
+  .cz-card.red{color:#d02020}
+  .cz-card small{font-size:30px}
+  .cz-card.flip{animation:czcard .35s ease-out}
+  @keyframes czcard{0%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
+  .cz-trail{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;margin-top:10px;min-height:30px}
+  .cz-trail span{background:#fff;color:#000;border:2px solid #000;border-radius:4px;padding:2px 5px;font-size:13px}
+  .cz-trail span.red{color:#d02020}
+  #wCv{width:min(100%,300px);aspect-ratio:1;display:block}
+  .cz-legend{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px;font-size:12px}
+  .cz-legend span{padding:3px 8px;border:2px solid #000}
 </style>
 </head>
 <body>
@@ -63,7 +74,7 @@
   </div>
   <div id="czGame"></div>
   <div class="dark-panel cz-panel cz-note">
-    <b>How the 2% house edge works:</b> every game here pays back <b>98%</b> of what is bet, on average. A win at 50% chance pays <b>1.96×</b> instead of 2×, and a 10% chance pays <b>9.8×</b> instead of 10×. Over many bets you lose about 2 🪙 for every 100 🪙 you bet. Single bets can still win big.<br><br>
+    <span id="czEdgeTxt"></span><br><br>
     🪙 Coins are <b>virtual and only for fun</b>: they can't be bought, sold or cashed out. You earn them by playing any arcade game (same amount as the XP you get) and from the daily loot chest. Results use your browser's secure random generator.
   </div>
   <div class="legal">Chaos Arcade · fan-made browser games. Coins are play money only.</div>
@@ -72,8 +83,8 @@
 <script>
 (function(){
 const A = window.Arcade, $ = s => document.querySelector(s);
-const EDGE = 0.02, RTP = 1 - EDGE;
-const GAMES = { dice:['cdice','🎲 Dice'], crash:['crash','📈 Crash'], coinflip:['coinflip','🪙 Flip'], mines:['mines','💣 Mines'] };
+const EDGE = 0.025, RTP = 1 - EDGE;   // 2.5% house edge: every game pays back 97.5% on average
+const GAMES = { dice:['cdice','🎲 Dice'], crash:['crash','📈 Crash'], coinflip:['coinflip','🪙 Flip'], mines:['mines','💣 Mines'], limbo:['limbo','🎯 Limbo'], hilo:['hilo','🃏 Hi-Lo'], wheel:['wheel','🎡 Wheel'] };
 /* uniform random number in [0, 1) from crypto */
 function rand(){ const a = new Uint32Array(2); crypto.getRandomValues(a); return (a[0] * 2097152 + (a[1] >>> 11)) / 9007199254740992; }
 let cur = GAMES[location.hash.slice(1)] ? location.hash.slice(1) : 'dice', busy = false, session = 0, bet = 10;
@@ -81,8 +92,12 @@ const hist = {};
 try { bet = Math.max(1, +sessionStorage.getItem('cz_bet') || 10); } catch(e){}
 
 /* Pay out x coins. Coins are whole numbers, so the fraction is paid with matching probability
-   (2.4 pays 3 with 40% chance, else 2): the expected payout stays exactly x, so the edge stays exactly 2%. */
+   (2.4 pays 3 with 40% chance, else 2): the expected payout stays exactly x, so the edge stays exactly at EDGE. */
 function payout(x){ const f = Math.floor(x); return f + (rand() < x - f ? 1 : 0); }
+function edgeText(){
+  const pct = +(EDGE * 100).toFixed(2), rtp = +(RTP * 100).toFixed(2);
+  $('#czEdgeTxt').innerHTML = '<b>How the ' + pct + '% house edge works:</b> every game here pays back <b>' + rtp + '%</b> of what is bet, on average. A win at 50% chance pays <b>' + (2 * RTP).toFixed(2) + '×</b> instead of 2×, and a 10% chance pays <b>' + (10 * RTP).toFixed(2) + '×</b> instead of 10×. Over many bets you lose about ' + pct + ' 🪙 for every 100 🪙 you bet. Single bets can still win big.';
+}
 function fmt(n){ return Math.floor(n).toLocaleString('en-US'); }
 function wallet(){
   A.load(); $('#czBal').textContent = fmt(A.state.coins);
@@ -196,8 +211,8 @@ const Flip = {
 };
 
 /* ---------------- 📈 CRASH ---------------- */
-// Crash point = 0.98 / u (u uniform in (0,1]), floored to 0.01. So P(reaching x) = 0.98 / x:
-// cashing out at any x returns 98% on average.
+// Crash point = RTP / u (u uniform in (0,1]), floored to 0.01. So P(reaching x) = RTP / x:
+// cashing out at any x returns RTP on average.
 const Crash = {
   auto:2, state:'idle', m:1, cp:1, t0:0, pts:[], past:[],
   mount(){
@@ -265,7 +280,7 @@ const Crash = {
 };
 
 /* ---------------- 💣 MINES ---------------- */
-// Multiplier after n safe picks = 0.98 / P(n picks all safe). Cashing out at any point returns 98% on average.
+// Multiplier after n safe picks = RTP / P(n picks all safe). Cashing out at any point returns RTP on average.
 const Mines = {
   k:3, state:'idle', grid:[], open:0,
   mult(n){ let p = 1; for (let i=0;i<n;i++) p *= (25 - this.k - i) / (25 - i); return n ? RTP / p : 1; },
@@ -330,7 +345,166 @@ const Mines = {
   key(){ this.action(); }
 };
 
-const IMPL = { dice:Dice, crash:Crash, coinflip:Flip, mines:Mines };
+/* ---------------- 🎯 LIMBO ---------------- */
+// Result = RTP / u (u uniform in (0,1]). P(result >= target) = RTP / target, so any target returns RTP on average.
+const Limbo = {
+  target:2,
+  mount(){
+    $('#czGame').innerHTML = '<div class="cz-stage"><div class="cz-num" id="lNum">1.00×</div><div class="cz-msg" id="lMsg">Win if the result is at least your target</div></div>' +
+      '<div class="dark-panel cz-panel">' + betBox('<div class="cz-row"><label>TARGET ×</label><input class="cz-in" id="lT" type="number" min="1.01" max="1000" step="0.01" value="' + this.target + '">' +
+      '<button class="btn small" data-lt="1.5">1.5</button><button class="btn small" data-lt="2">2</button><button class="btn small" data-lt="10">10</button><button class="btn small" data-lt="100">100</button></div>' +
+      '<div class="cz-facts"><div>Chance<b id="lC"></b></div><div>Payout<b id="lP"></b></div><div>Win<b id="lW"></b></div></div>') +
+      '<button class="btn green big cz-big" id="lGo">🎯 PLAY</button><div class="cz-hist" id="czHist"></div></div>';
+    bindBet(() => this.facts());
+    $('#lT').addEventListener('input', e => { this.target = Math.min(1000, Math.max(1.01, +e.target.value || 1.01)); this.facts(); });
+    $('#lT').addEventListener('change', e => { e.target.value = this.target.toFixed(2); });
+    document.querySelectorAll('[data-lt]').forEach(b => b.onclick = () => { this.target = +b.dataset.lt; $('#lT').value = this.target; this.facts(); });
+    $('#lGo').onclick = () => this.play(); this.facts();
+  },
+  facts(){ $('#lC').textContent = (RTP / this.target * 100).toFixed(3).replace(/0+$/, '').replace(/\.$/, '') + '%'; $('#lP').textContent = this.target.toFixed(2) + '×'; $('#lW').textContent = fmt(Math.round(bet * this.target)) + ' 🪙'; },
+  play(){
+    if (busy || !takeBet()) return; busy = true; lockBet(true); $('#lGo').disabled = true; $('#lT').disabled = true;
+    const t = Math.floor(this.target * 100) / 100, u = 1 - rand(), res = Math.min(1e6, Math.max(1, Math.floor(RTP * 100 / u) / 100)), win = res >= t, num = $('#lNum');
+    num.className = 'cz-num'; const t0 = performance.now(), dur = 600;
+    const step = () => { const k = Math.min(1, (performance.now() - t0) / dur), v = 1 + (res - 1) * (1 - Math.pow(1 - k, 3)); num.textContent = v.toFixed(2) + '×';
+      if (k < 1) return requestAnimationFrame(step);
+      num.className = 'cz-num ' + (win ? 'win' : 'lose');
+      const pay = win ? payout(bet * t) : 0;
+      if (win){ A.addCoins(pay, 'Limbo win', true); A.Sfx.coin(); $('#lMsg').innerHTML = '✅ ' + res.toFixed(2) + '× ≥ ' + t.toFixed(2) + '× · <b style="color:#55ff55">+' + fmt(pay - bet) + ' 🪙</b>'; if (t >= 10) A.bigText('🎯 ' + t.toFixed(2) + '×!', '#ffd23a'); }
+      else { A.Sfx.fail(); $('#lMsg').innerHTML = '❌ ' + res.toFixed(2) + '× is under ' + t.toFixed(2) + '× · <b style="color:#ff7777">−' + fmt(bet) + ' 🪙</b>'; }
+      record(win, pay - bet, res.toFixed(2) + '×'); busy = false; lockBet(false); $('#lGo').disabled = false; $('#lT').disabled = false; };
+    A.Sfx.click(); requestAnimationFrame(step);
+  },
+  key(){ this.play(); }
+};
+
+/* ---------------- 🃏 HI-LO ---------------- */
+// Cards 1 (A) to 13 (K), drawn independently. "Higher or same" wins with (14 - c) / 13, "lower or same" with c / 13.
+// The payout after a streak is RTP / P(all guesses right), so cashing out at any point returns RTP on average.
+const HiLo = {
+  state:'idle', card:7, p:1, trail:[],
+  name(c){ return ['A','2','3','4','5','6','7','8','9','10','J','Q','K'][c - 1]; },
+  draw(){ return 1 + Math.floor(rand() * 13); },
+  suit(){ return ['♠','♥','♦','♣'][Math.floor(rand() * 4)]; },
+  mount(){
+    this.state = 'idle'; this.card = this.draw(); this.s = this.suit(); this.trail = [];
+    $('#czGame').innerHTML = '<div class="cz-stage"><div id="hCard"></div><div class="cz-trail" id="hTrail"></div><div class="cz-msg" id="hMsg">Bet, then guess if the next card is higher or lower</div></div>' +
+      '<div class="dark-panel cz-panel">' + betBox('<div class="cz-row"><button class="btn big" id="hHi" style="flex:1">⬆ HIGHER<br><small id="hHiP"></small></button><button class="btn big" id="hLo" style="flex:1">⬇ LOWER<br><small id="hLoP"></small></button></div>' +
+      '<div class="cz-facts"><div>Streak<b id="hN">0</b></div><div>Now<b id="hNow">—</b></div><div>Cash out<b id="hCash">—</b></div></div>') +
+      '<button class="btn green big cz-big" id="hGo">🃏 DEAL</button><button class="btn small" id="hSkip" style="width:100%;margin-top:6px">⏭ SKIP CARD (free)</button><div class="cz-hist" id="czHist"></div></div>';
+    bindBet(() => this.facts());
+    $('#hHi').onclick = () => this.guess(true); $('#hLo').onclick = () => this.guess(false);
+    $('#hGo').onclick = () => this.action(); $('#hSkip').onclick = () => this.skip();
+    this.paint(); this.facts();
+  },
+  pHi(){ return (14 - this.card) / 13; }, pLo(){ return this.card / 13; },
+  paint(flip){
+    const red = this.s === '♥' || this.s === '♦';
+    $('#hCard').innerHTML = '<div class="cz-card' + (red ? ' red' : '') + (flip ? ' flip' : '') + '">' + this.name(this.card) + '<small>' + this.s + '</small></div>';
+    $('#hTrail').innerHTML = this.trail.map(([c, s]) => '<span class="' + (s === '♥' || s === '♦' ? 'red' : '') + '">' + this.name(c) + s + '</span>').join('');
+  },
+  facts(){
+    const run = this.state === 'run';
+    const base = run ? this.p : 1;
+    $('#hHiP').textContent = (this.pHi() * 100).toFixed(1) + '% → ' + (RTP / (this.pHi() * base)).toFixed(2) + '×';
+    $('#hLoP').textContent = (this.pLo() * 100).toFixed(1) + '% → ' + (RTP / (this.pLo() * base)).toFixed(2) + '×';
+    $('#hHi').disabled = $('#hLo').disabled = !run; $('#hSkip').disabled = busy && !run;
+    $('#hN').textContent = run ? this.trail.length : 0;
+    $('#hNow').textContent = run && this.p < 1 ? (RTP / this.p).toFixed(2) + '×' : '—';
+    $('#hCash').textContent = run && this.p < 1 ? fmt(Math.round(this.betAmt * RTP / this.p)) + ' 🪙' : '—';
+  },
+  action(){
+    if (this.state === 'run') return this.p < 1 ? this.cashout() : null;
+    if (busy || !takeBet()) return; busy = true; lockBet(true);
+    this.state = 'run'; this.p = 1; this.trail = []; this.betAmt = bet; A.Sfx.click();
+    $('#hGo').textContent = '💰 CASH OUT'; $('#hGo').className = 'btn gold big cz-big'; $('#hGo').disabled = true;
+    $('#hMsg').textContent = 'Higher or lower? Ties count as a win for both.'; this.facts();
+  },
+  skip(){ if (this.state === 'run' && this.p < 1) return; this.card = this.draw(); this.s = this.suit(); this.paint(true); this.facts(); A.Sfx.click(); },
+  guess(hi){
+    if (this.state !== 'run') return;
+    const pr = hi ? this.pHi() : this.pLo(), next = this.draw(), ns = this.suit(), ok = hi ? next >= this.card : next <= this.card;
+    this.trail.push([this.card, this.s]); this.card = next; this.s = ns; this.paint(true);
+    if (!ok){
+      this.state = 'done'; A.Sfx.fail(); A.shake && A.shake(document.querySelector('.cz-stage'));
+      $('#hMsg').innerHTML = '❌ ' + this.name(next) + ' · <b style="color:#ff7777">−' + fmt(this.betAmt) + ' 🪙</b>';
+      record(false, -this.betAmt, '🃏 ' + (this.trail.length - 1)); this.end(); return;
+    }
+    this.p *= pr; A.Sfx.coin();
+    const m = RTP / this.p;
+    $('#hMsg').innerHTML = '✅ ' + this.name(next) + '! Cash out now for <b style="color:#55ff55">' + fmt(Math.round(this.betAmt * m)) + ' 🪙</b>';
+    $('#hGo').textContent = '💰 CASH OUT ' + fmt(Math.round(this.betAmt * m)) + ' 🪙'; $('#hGo').disabled = false; this.facts();
+  },
+  cashout(){
+    if (this.state !== 'run') return; this.state = 'done';
+    const m = RTP / this.p, pay = payout(this.betAmt * m);
+    A.addCoins(pay, 'Hi-Lo win', true); A.Sfx.coin();
+    $('#hMsg').innerHTML = '✅ Cashed out at ' + m.toFixed(2) + '× · <b style="color:#55ff55">+' + fmt(pay - this.betAmt) + ' 🪙</b>';
+    if (m >= 10) A.bigText('🃏 ' + m.toFixed(2) + '×!', '#ffd23a');
+    record(true, pay - this.betAmt, m.toFixed(2) + '×'); this.end();
+  },
+  end(){ busy = false; lockBet(false); $('#hGo').textContent = '🃏 DEAL'; $('#hGo').className = 'btn green big cz-big'; $('#hGo').disabled = false; this.facts(); },
+  key(){ this.action(); }
+};
+
+/* ---------------- 🎡 WHEEL ---------------- */
+// 40 equal segments. Each risk level's multipliers add up to 39, so the average payout is 39 / 40 = 97.5%.
+const WHEEL = {
+  low:   [[0, 18, '#333'], [1.5, 16, '#2fb04a'], [2.5, 6, '#3a8aff']],
+  medium:[[0, 25, '#333'], [2, 8, '#2fb04a'], [3, 6, '#3a8aff'], [5, 1, '#ffd23a']],
+  high:  [[0, 39, '#333'], [39, 1, '#ff3a3a']]
+};
+const Wheel = {
+  risk:'medium', rot:0,
+  segs(){ // spread each multiplier evenly around the wheel
+    const list = WHEEL[this.risk], out = Array(40).fill(null), order = list.slice().sort((a, b) => a[1] - b[1]);
+    const free = [...Array(40).keys()];
+    for (const [m, n, c] of order.filter(x => x[0] > 0)){ for (let i=0;i<n;i++){ const want = Math.round(i * 40 / n + 40 / n / 2) % 40; let j = free.indexOf(want); for (let d=1; j < 0; d++) j = free.indexOf((want + d) % 40); out[free[j]] = [m, c]; free.splice(j, 1); } }
+    const zero = list.find(x => x[0] === 0); free.forEach(i => out[i] = [0, zero[2]]);
+    return out;
+  },
+  mount(){
+    $('#czGame').innerHTML = '<div class="cz-stage"><div style="position:relative"><canvas id="wCv" width="600" height="600"></canvas><div style="position:absolute;left:50%;top:-4px;margin-left:-12px;width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:24px solid #fff;filter:drop-shadow(0 2px 0 #000)"></div></div><div class="cz-msg" id="wMsg">Pick a risk level and spin</div><div class="cz-legend" id="wLeg"></div></div>' +
+      '<div class="dark-panel cz-panel">' + betBox('<div class="cz-row"><label>RISK</label><div class="cz-seg" style="flex:1"><button data-r="low">LOW</button><button data-r="medium">MEDIUM</button><button data-r="high">HIGH</button></div></div>') +
+      '<button class="btn green big cz-big" id="wGo">🎡 SPIN</button><div class="cz-hist" id="czHist"></div></div>';
+    bindBet(() => this.facts());
+    document.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { if (busy) return; this.risk = b.dataset.r; this.facts(); this.paint(); });
+    $('#wGo').onclick = () => this.spin(); this.facts(); this.paint();
+  },
+  facts(){
+    document.querySelectorAll('[data-r]').forEach(b => b.className = b.dataset.r === this.risk ? 'on' : '');
+    $('#wLeg').innerHTML = WHEEL[this.risk].map(([m, n, c]) => '<span style="background:' + c + ';color:' + (c === '#ffd23a' ? '#000' : '#fff') + '">' + m + '× · ' + n + '/40</span>').join('');
+  },
+  paint(){
+    const cv = $('#wCv'), x = cv.getContext('2d'), R = 290, segs = this.segs(), a = Math.PI * 2 / 40;
+    x.clearRect(0, 0, 600, 600); x.save(); x.translate(300, 300); x.rotate(this.rot * Math.PI / 180);
+    segs.forEach(([m, c], i) => { x.beginPath(); x.moveTo(0, 0); x.arc(0, 0, R, -Math.PI / 2 + i * a - a / 2, -Math.PI / 2 + i * a + a / 2); x.closePath(); x.fillStyle = c; x.fill(); x.strokeStyle = '#000'; x.lineWidth = 3; x.stroke(); });
+    x.fillStyle = '#062a1c'; x.beginPath(); x.arc(0, 0, 150, 0, Math.PI * 2); x.fill(); x.lineWidth = 6; x.stroke();
+    x.restore(); x.lineWidth = 8; x.strokeStyle = '#000'; x.beginPath(); x.arc(300, 300, R, 0, Math.PI * 2); x.stroke();
+    if (this.last != null){ x.fillStyle = this.last > 0 ? '#55ff55' : '#ff7777'; x.font = 'bold 72px monospace'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(this.last + '×', 300, 300); }
+    this._segs = segs;
+  },
+  spin(){
+    if (busy || !takeBet()) return; busy = true; lockBet(true); $('#wGo').disabled = true; this.last = null;
+    const idx = Math.floor(rand() * 40), segs = this.segs(), [m] = segs[idx];
+    // land with segment idx under the pointer (top): rotation r puts segment i at the top when r = -i * 9 (mod 360)
+    const start = this.rot, endBase = -idx * 9 + (rand() - .5) * 7, turns = 5 * 360;
+    let end = endBase; while (end < start + turns) end += 360;
+    const t0 = performance.now(), dur = 3200; let lastTick = -1;
+    const step = () => { const k = Math.min(1, (performance.now() - t0) / dur), e = 1 - Math.pow(1 - k, 4); this.rot = start + (end - start) * e; this.paint();
+      const tick = Math.floor(this.rot / 9); if (tick !== lastTick){ lastTick = tick; A.Sfx.click(); }
+      if (k < 1) return requestAnimationFrame(step);
+      this.rot = ((end % 360) + 360) % 360; this.last = m; this.paint();
+      const pay = m > 0 ? payout(bet * m) : 0;
+      if (pay > 0){ A.addCoins(pay, 'Wheel win', true); A.Sfx.coin(); $('#wMsg').innerHTML = '✅ ' + m + '× · <b style="color:' + (pay >= bet ? '#55ff55' : '#ffaa00') + '">' + (pay - bet >= 0 ? '+' : '−') + fmt(Math.abs(pay - bet)) + ' 🪙</b>'; if (m >= 10) A.bigText('🎡 ' + m + '× JACKPOT!', '#ffd23a'); }
+      else { A.Sfx.fail(); $('#wMsg').innerHTML = '❌ 0× · <b style="color:#ff7777">−' + fmt(bet) + ' 🪙</b>'; }
+      record(pay > bet, pay - bet, m + '×'); busy = false; lockBet(false); $('#wGo').disabled = false; };
+    requestAnimationFrame(step);
+  },
+  key(){ this.spin(); }
+};
+
+const IMPL = { dice:Dice, crash:Crash, coinflip:Flip, mines:Mines, limbo:Limbo, hilo:HiLo, wheel:Wheel };
 function show(name){
   if (busy) { A.toast('Finish this round first'); return; }
   cur = name; if (location.hash.slice(1) !== name) history.replaceState(null, '', '#' + name);
@@ -347,8 +521,9 @@ addEventListener('keydown', e => { if (e.code === 'Space' && !/INPUT/.test(e.tar
 addEventListener('pointerdown', () => A.Sfx.init(), { once:true });
 addEventListener('beforeunload', e => { if (busy){ e.preventDefault(); e.returnValue = ''; } });
 setInterval(wallet, 30000);
+edgeText();
 show(cur);
-window.__casino = { Dice, Crash, Flip, Mines, RTP };
+window.__casino = { Dice, Crash, Flip, Mines, Limbo, HiLo, Wheel, WHEEL, RTP };
 })();
 </script>
 </body>

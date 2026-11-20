@@ -182,7 +182,7 @@ function buildTitle(){
   });
   $('#title').innerHTML = '<svg viewBox="0 0 ' + (maxW + pad*2 + .6).toFixed(2) + ' ' + (lines.length*lineH + pad).toFixed(2) + '" shape-rendering="crispEdges" role="img" aria-label="Chaos Arcade">' + svg + '</svg>';
 }
-const SPLASHES = ['Insert coin!','100+ games, 0 sleep!','House edge: 2%!','Now with leaderboards!','Combo or die!','Do NOT slice the bomb!','Cash out NOW!','One more run…','High score or bust!','Press the purple button!','Touch grass later!','Certified chaos!','Speedrun the quests!','Chaos God awaits!'];
+const SPLASHES = ['Insert coin!','100+ games, 0 sleep!','House edge: 2.5%!','Now with leaderboards!','Combo or die!','Do NOT slice the bomb!','Cash out NOW!','One more run…','High score or bust!','Press the purple button!','Touch grass later!','Certified chaos!','Speedrun the quests!','Chaos God awaits!'];
 $('#splash').addEventListener('click', () => { A.Sfx.click(); $('#splash').textContent = A.rnd(SPLASHES); });
 
 /* ---------- Profile ---------- */

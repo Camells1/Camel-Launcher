@@ -307,7 +307,7 @@ function local(e){ const r = k.root.getBoundingClientRect(); return [e.clientX -
 function bindInput(){
   const stage = $('#kitStage');
   stage.addEventListener('pointerdown', e => {
-    if (e.target.closest('.kit-ov')) return;
+    if (e.target.closest('.kit-ov') && !(k.running && e.target.closest('.kit-ov.count'))) return;
     A.Sfx.init();
     if (k.paused){ k.paused = false; $('#kitOv').className = 'kit-ov hide'; return; }
     if (!k.running) return;
