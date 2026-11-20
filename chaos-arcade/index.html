@@ -215,6 +215,40 @@
   .ch-safe{background:#0b1121;color:var(--dim)}
   #chatBtn.ga-on{background:var(--gold) !important;color:#2a1c00}
   #loading{background:var(--bg) !important}
+  /* ===== clean pass ===== */
+  .lobby-grid{display:flex !important;flex-direction:column}
+  .lobby-grid main{order:1 !important}.lobby-grid .side{order:2 !important}
+  .side > *{align-self:start}
+  .side{display:grid !important;grid-template-columns:1.1fr 1fr 1fr;gap:16px;margin-top:34px;position:static !important}
+  .side .side-h{grid-column:1/-1;margin:0}
+  .side > .panel.profile{grid-row:span 3}
+  @media (max-width:1000px){ .side{grid-template-columns:1fr 1fr} .side > .panel.profile{grid-column:1/-1;grid-row:auto} }
+  @media (max-width:640px){ .side{grid-template-columns:1fr} }
+  #randomBtn{min-height:56px}
+  .cards{grid-template-columns:repeat(auto-fill,minmax(178px,1fr)) !important;gap:16px}
+  @media (max-width:640px){ .cards{grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:12px} }
+  .cover-row{grid-auto-columns:minmax(178px,1fr);gap:16px}
+  @media (max-width:640px){ .cover-row{grid-auto-columns:44%} }
+  .card.cover{border-radius:16px;box-shadow:0 8px 22px rgba(0,0,0,.4);
+    background:radial-gradient(90% 55% at 50% 30%,hsl(var(--h) var(--s) 58%) 0%,hsl(var(--h) var(--s) 38%) 55%,hsl(calc(var(--h) + 18) var(--s) 18%) 100%)}
+  .cv-glow{background:radial-gradient(60% 30% at 50% 100%,rgba(0,0,0,.35),transparent),linear-gradient(180deg,rgba(255,255,255,.10),transparent 40%);mix-blend-mode:normal}
+  .cv-art{top:6%;bottom:28%;display:flex;align-items:center;justify-content:center}
+  .cv-art.ill svg{width:88%;height:auto;max-height:100%}
+  .cv-e{position:relative;font-size:clamp(60px,8vw,88px);line-height:1;filter:drop-shadow(0 14px 16px rgba(0,0,0,.45))}
+  .cv-e::before{content:"";position:absolute;left:50%;top:56%;width:140%;height:140%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.28),rgba(255,255,255,0) 62%);z-index:-1}
+  .card.cover:hover .cv-art{transform:scale(1.06)}
+  .cv-foot{padding:40px 10px 14px;background:linear-gradient(transparent,rgba(5,8,18,.55) 60%)}
+  .cv-t{font-size:clamp(16px,1.6vw,21px);letter-spacing:.4px}
+  .cv-s{font-size:9.5px;letter-spacing:2px;opacity:.7;margin-top:5px}
+  .cv-b{background:rgba(0,0,0,.4);font-size:10px}
+  .card.cover .card-fav{opacity:0;transition:opacity .15s}
+  .card.cover:hover .card-fav,.card.cover .card-fav.on{opacity:1}
+  @media (hover:none){ .card.cover .card-fav{opacity:.8} }
+  .catbar{gap:6px}
+  .catbar .btn{background:#121a2f;border-color:var(--line)}
+  .catbar .btn.on{background:#1d2b4f;border-color:var(--cyan)}
+  .sec-h h2{font-size:22px;letter-spacing:-.2px}
+
   .profile .xptext{color:var(--mut)}
   .viprow{grid-column:1/-1;display:flex;justify-content:space-between;gap:8px;margin-top:6px;padding:8px 12px;border-radius:10px;background:#0c1222;border:1px solid var(--line);color:var(--mut);text-decoration:none;font-size:13px}
   .viprow:hover{border-color:var(--cyan);color:#fff}
@@ -274,6 +308,7 @@
 
   <div class="lobby-grid">
     <aside class="side" id="rewards">
+      <div class="sec-h side-h"><h2>⭐ You</h2><a href="rewards.html">VIP &amp; rewards →</a></div>
       <div class="panel profile">
         <div class="avatar slot" id="avatar">🕹️</div>
         <div>
@@ -355,6 +390,7 @@
 <div class="peeker" id="peeker" title="?"></div>
 
 <script src="arcade.js"></script>
+<script src="covers.js"></script>
 <script>
 (() => {
 'use strict';
@@ -447,14 +483,15 @@ $('#search').addEventListener('input', e => { query = e.target.value.trim().toLo
 const DIFF_LABEL = { easy:'EASY', medium:'MEDIUM', hard:'HARD', chaos:'CHAOS' };
 /* cover art colors per category (hue, saturation); each game shifts the hue a little so neighbours differ */
 const CAT_HUE = { block:[118,55], action:[355,75], reflex:[195,80], puzzle:[150,65], brain:[300,60], luck:[38,85], words:[225,70], sports:[22,80], casino:[265,70], originals:[28,85] };
+const COVERS = window.ARCADE_COVERS || {};
 function coverHTML(g, fav, feat){
   const s = A.state.games[g.id], [h0, sat] = CAT_HUE[g.cat] || [220, 60], h = (h0 + (A.hashStr(g.id) % 34) - 17 + 360) % 360;
   const best = g.cat === 'originals' ? (s && s.plays ? '🎮 ' + s.plays + '×' : '') : s && s.plays ? (['','🥉 ','🥈 ','🥇 '][s.medal || 0]) + '🏆 ' + (s.bestLabel || s.best || '—') : '';
   return '<a class="card cover" data-id="' + g.id + '" href="games/' + g.file + '" title="' + A.esc(g.desc) + '" style="--h:' + h + ';--s:' + sat + '%">' +
-    '<div class="cv-glow"></div><div class="cv-art">' + g.e + '</div>' +
-    (g.id === feat ? '<div class="cv-rib">2× XP</div>' : (!s || !s.plays ? '<div class="cv-new">NEW</div>' : '')) +
+    '<div class="cv-glow"></div>' + (COVERS[g.id] ? '<div class="cv-art ill">' + COVERS[g.id] + '</div>' : '<div class="cv-art"><span class="cv-e">' + g.e + '</span></div>') +
+    (g.id === feat ? '<div class="cv-rib">2× XP</div>' : '') +
     '<button class="card-fav' + (fav[g.id] ? ' on' : '') + '" data-fav="' + g.id + '" aria-label="Favorite ' + A.esc(g.t) + '" title="Favorite">' + (fav[g.id] ? '★' : '☆') + '</button>' +
-    '<div class="cv-foot"><div class="cv-t">' + A.esc(g.t) + '</div><div class="cv-s">✦ ' + A.CATS[g.cat].n.toUpperCase() + ' · ' + DIFF_LABEL[g.d] + '</div>' + (best ? '<div class="cv-b">' + A.esc(String(best)) + '</div>' : '') + '</div></a>';
+    '<div class="cv-foot"><div class="cv-t">' + A.esc(g.t) + '</div><div class="cv-s">' + (g.cat === 'casino' ? 'CHAOS ORIGINAL' : A.CATS[g.cat].n.toUpperCase()) + '</div>' + (best ? '<div class="cv-b">' + A.esc(String(best)) + '</div>' : '') + '</div></a>';
 }
 const texCache = {};
 function renderCards(){

@@ -10,6 +10,22 @@
 <link rel="stylesheet" href="../style.css">
 <style>
   body{background:#0a2a1c}
+  .cz-wrap{max-width:1180px}
+  @media (min-width:920px){
+    #czGame{display:grid;grid-template-columns:340px minmax(0,1fr);gap:14px;align-items:start}
+    #czGame > .cz-panel{order:-1;margin-top:0;position:sticky;top:12px}
+    #czGame > .cz-stage{min-height:460px !important}
+  }
+  .cz-mode{display:grid;grid-template-columns:1fr 1fr;background:#0c1222;border:1px solid var(--line);border-radius:10px;padding:4px;margin-bottom:10px}
+  .cz-mode button{font:600 14px var(--font);color:var(--mut);background:transparent;border:0;border-radius:7px;padding:8px;cursor:pointer}
+  .cz-mode button.on{background:#1d2742;color:#fff;box-shadow:inset 0 -2px 0 rgba(0,0,0,.35)}
+  .cz-mode button:disabled{cursor:default;opacity:.55}
+  .cz-mode button.on:disabled{opacity:1}
+  .cz-auto{border-top:1px solid var(--line);margin-top:8px;padding-top:6px}
+  .cz-in.sm{flex:0 0 70px;min-width:60px}
+  .cz-hint{font-size:11.5px;color:var(--dim);font-weight:400}
+  #auInfo{margin-top:8px;text-align:center;font-size:12.5px;color:var(--mut)}
+  body.auto-tab #czGame > .cz-panel > .cz-big:not(#auGo){display:none}
   .cz-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
   .cz-tabs .btn{padding:9px 2px;font-size:12px}
   .cz-tabs .btn.on{background:#1fb07a;color:#002a18}
@@ -72,7 +88,7 @@
 </style>
 </head>
 <body>
-<div class="wrap narrow">
+<div class="wrap cz-wrap">
   <div id="arcadeBar"></div>
   <div class="cz-tabs" id="czTabs"></div>
   <div class="dark-panel cz-wallet">
@@ -132,6 +148,7 @@ function vaultPlay(body, btn, done){
     .catch(e => { A.toast('💰 ' + e.message); A.Sfx.fail(); busy = false; lockBet(false); $(btn).disabled = false; });
 }
 function vRecord(won, profit, label){
+  autoAfter(won, profit); STATS.bets++; if (won) STATS.wins++; STATS.wag += bet;
   session += 0; vSession += profit;
   const h = hist[cur] || (hist[cur] = []); h.unshift([won, '💰' + label]); if (h.length > 16) h.pop();
   const el = $('#czHist'); if (el) el.innerHTML = h.map(([w, l]) => '<span class="' + (w ? 'w' : 'l') + '">' + l + '</span>').join('');
@@ -144,7 +161,7 @@ function wallet(){
   $('#czBalLab').textContent = V.on ? 'YOUR VAULT (IN-GAME MONEY)' : 'YOUR COINS'; $('#czCoinIc').style.display = V.on ? 'none' : '';
   document.querySelectorAll('[data-vm]').forEach(b => b.className = 'btn small' + ((b.dataset.vm === '1') === V.on ? ' on' : ''));
   document.body.classList.toggle('vault-on', V.on);
-  $('#czSess').textContent = (session > 0 ? '+' : '') + fmt(session) + ' 🪙'; $('#czSess').style.color = session >= 0 ? '#55ff55' : '#ff7777';
+  $('#czSess').textContent = (session > 0 ? '+' : '') + fmt(session) + ' 🪙 · ' + STATS.bets + ' bets · ' + (STATS.bets ? Math.round(STATS.wins / STATS.bets * 100) : 0) + '% won'; $('#czSess').style.color = session >= 0 ? '#55ff55' : '#ff7777';
   const ci = A.coinInfo(), r = $('#czRefill'), wait = (A.state.lastRefill || 0) + 3600e3 - Date.now();
   if (A.state.coins < ci.refillBelow) r.innerHTML = wait <= 0 ? '<button class="btn small green" id="czFree">🆘 FREE ' + ci.refill + ' 🪙</button>' : 'Free refill in ' + Math.ceil(wait / 60000) + ' min';
   else r.textContent = '';
@@ -155,7 +172,9 @@ function wallet(){
   A.updateBar();
 }
 let lastBet = 0;
+const STATS = { bets:0, wins:0, wag:0 };
 function record(won, profit, label){
+  autoAfter(won, profit); STATS.bets++; if (won) STATS.wins++; STATS.wag += lastBet;
   if (lastBet > 0) A.casinoBet(GAMES[cur][0], lastBet, Math.max(0, (profit + lastBet) / lastBet));
   const id = GAMES[cur][0]; A.load();
   const g = A.state.games[id] || (A.state.games[id] = { best:0, bestLabel:'', plays:0, wins:0, xp:0, last:'' });
@@ -169,8 +188,62 @@ function record(won, profit, label){
 }
 /* shared bet box */
 function betBox(extra){
-  return '<div class="cz-row"><label>BET 🪙</label><input class="cz-in" id="czBet" type="number" min="1" step="1" inputmode="numeric" value="' + bet + '">' +
-    '<button class="btn small" data-bx="half">½</button><button class="btn small" data-bx="dbl">2×</button><button class="btn small" data-bx="max">MAX</button></div>' + (extra || '');
+  const canAuto = AUTO_GAMES.includes(cur);
+  return '<div class="cz-mode">' + (canAuto ? '<button data-mode="manual" class="' + (AUTO.tab === 'auto' ? '' : 'on') + '">Manual</button><button data-mode="auto" class="' + (AUTO.tab === 'auto' ? 'on' : '') + '">Auto</button>' : '<button class="on" disabled>Manual</button><button disabled title="Auto needs a decision every round in this game">Auto</button>') + '</div>' +
+    '<div class="cz-row"><label>BET</label><input class="cz-in" id="czBet" type="number" min="1" step="1" inputmode="numeric" value="' + bet + '">' +
+    '<button class="btn small" data-bx="half">½</button><button class="btn small" data-bx="dbl">2×</button><button class="btn small" data-bx="max">MAX</button></div>' + (extra || '') +
+    (canAuto ? '<div class="cz-auto" id="czAuto"' + (AUTO.tab === 'auto' ? '' : ' hidden') + '>' +
+      '<div class="cz-row"><label>BETS</label><input class="cz-in" id="auN" type="number" min="0" value="' + AUTO.n + '" title="0 = keep going"><span class="cz-hint">0 = no limit</span></div>' +
+      '<div class="cz-row"><label>ON WIN</label><div class="cz-seg" style="flex:1"><button data-aw="reset">Reset</button><button data-aw="up">+%</button></div><input class="cz-in sm" id="auWp" type="number" min="0" value="' + AUTO.winPct + '">%</div>' +
+      '<div class="cz-row"><label>ON LOSS</label><div class="cz-seg" style="flex:1"><button data-al="reset">Reset</button><button data-al="up">+%</button></div><input class="cz-in sm" id="auLp" type="number" min="0" value="' + AUTO.lossPct + '">%</div>' +
+      '<div class="cz-row"><label>STOP AT</label><input class="cz-in" id="auSp" type="number" min="0" placeholder="profit" value="' + (AUTO.stopProfit || '') + '"><input class="cz-in" id="auSl" type="number" min="0" placeholder="loss" value="' + (AUTO.stopLoss || '') + '"></div>' +
+      '<button class="btn cyan big cz-big" id="auGo">▶ START AUTO</button><div class="cz-hint" id="auInfo"></div></div>' : '');
+}
+/* ---------- Auto betting (games where a round needs no decisions) ---------- */
+const AUTO_GAMES = ['dice', 'coinflip', 'limbo', 'keno', 'plinko', 'roulette', 'wheel', 'crash'];
+const AUTO = { tab:'manual', on:false, n:10, done:0, winMode:'reset', winPct:0, lossMode:'reset', lossPct:100, stopProfit:0, stopLoss:0, profit:0, base:0, timer:0 };
+function bindAuto(){
+  document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { if (AUTO.on) return; AUTO.tab = b.dataset.mode; document.querySelectorAll('[data-mode]').forEach(x => x.className = x.dataset.mode === AUTO.tab ? 'on' : ''); const a = $('#czAuto'); if (a) a.hidden = AUTO.tab !== 'auto'; document.body.classList.toggle('auto-tab', AUTO.tab === 'auto'); });
+  document.body.classList.toggle('auto-tab', AUTO.tab === 'auto' && AUTO_GAMES.includes(cur));
+  const paint = () => { document.querySelectorAll('[data-aw]').forEach(b => b.className = b.dataset.aw === AUTO.winMode ? 'on' : ''); document.querySelectorAll('[data-al]').forEach(b => b.className = b.dataset.al === AUTO.lossMode ? 'on' : ''); };
+  document.querySelectorAll('[data-aw]').forEach(b => b.onclick = () => { AUTO.winMode = b.dataset.aw; paint(); });
+  document.querySelectorAll('[data-al]').forEach(b => b.onclick = () => { AUTO.lossMode = b.dataset.al; paint(); });
+  paint();
+  const go = $('#auGo'); if (go) go.onclick = () => AUTO.on ? autoStop('Stopped') : autoStart();
+}
+function autoStart(){
+  if (cur === 'crash' && !(Crash.auto >= 1.01)) { A.toast('📈 Set an auto cash-out (for example 2) to auto-bet Crash'); return; }
+  AUTO.n = Math.max(0, Math.floor(+$('#auN').value || 0)); AUTO.winPct = Math.max(0, +$('#auWp').value || 0); AUTO.lossPct = Math.max(0, +$('#auLp').value || 0);
+  AUTO.stopProfit = Math.max(0, +$('#auSp').value || 0); AUTO.stopLoss = Math.max(0, +$('#auSl').value || 0);
+  AUTO.on = true; AUTO.done = 0; AUTO.started = 0; AUTO.profit = 0; AUTO.base = Math.max(1, Math.floor(+$('#czBet').value) || 1);
+  $('#auGo').textContent = '■ STOP AUTO'; $('#auGo').className = 'btn red big cz-big'; autoInfo(); autoTick();
+}
+function autoStop(why){
+  AUTO.on = false; clearTimeout(AUTO.timer);
+  const go = $('#auGo'); if (go){ go.textContent = '▶ START AUTO'; go.className = 'btn cyan big cz-big'; }
+  autoInfo(why);
+}
+function autoInfo(why){ const el = $('#auInfo'); if (el) el.innerHTML = (why ? '<b>' + why + '.</b> ' : '') + AUTO.done + ' bets · profit <b style="color:' + (AUTO.profit >= 0 ? '#55ff99' : '#ff7a8a') + '">' + (AUTO.profit >= 0 ? '+' : '−') + money(Math.abs(AUTO.profit)) + '</b>'; }
+function autoTick(){
+  clearTimeout(AUTO.timer); if (!AUTO.on) return;
+  const multi = cur === 'plinko';   // Plinko keeps several balls in the air at once
+  if (AUTO.n && AUTO.done >= AUTO.n) return autoStop('Done');
+  if (busy && !multi) { AUTO.timer = setTimeout(autoTick, 120); return; }
+  if (!AUTO.n || AUTO.started < AUTO.n){
+    if (curBal() < (Math.floor(+$('#czBet').value) || 1)) { if (multi && busy) { AUTO.timer = setTimeout(autoTick, 200); return; } return autoStop('Not enough balance'); }
+    if (!multi || Plinko.balls.length < 8){ IMPL[cur].key(); AUTO.started++; }
+  }
+  AUTO.timer = setTimeout(autoTick, cur === 'plinko' ? 260 : 380);
+}
+function autoAfter(won, profit){
+  if (!AUTO.on) return;
+  AUTO.done++; AUTO.profit += profit; autoInfo();
+  const inp = $('#czBet'); let b = Math.floor(+inp.value) || 1;
+  if (won) b = AUTO.winMode === 'reset' ? AUTO.base : Math.ceil(b * (1 + AUTO.winPct / 100));
+  else b = AUTO.lossMode === 'reset' ? AUTO.base : Math.ceil(b * (1 + AUTO.lossPct / 100));
+  inp.value = bet = Math.max(1, b);
+  if (AUTO.stopProfit && AUTO.profit >= AUTO.stopProfit) return autoStop('Profit target reached');
+  if (AUTO.stopLoss && -AUTO.profit >= AUTO.stopLoss) return autoStop('Loss limit reached');
 }
 function bindBet(onChange){
   const inp = $('#czBet');
@@ -772,7 +845,8 @@ function show(name){
   A.mountBar(GAMES[cur][0]);
   document.title = GAMES[cur][1].slice(GAMES[cur][1].indexOf(' ') + 1) + ' · Chaos Casino';
   if (V.on && !VAULT_GAMES.includes(cur)){ V.on = false; A.toast('🪙 Back to coins: the Vault works in Dice, Limbo and Coin Flip'); }
-  IMPL[cur].mount();
+  if (AUTO.on) autoStop('Stopped');
+  IMPL[cur].mount(); bindAuto();
   const h = hist[cur] || []; const el = $('#czHist'); if (el) el.innerHTML = h.map(([w, l]) => '<span class="' + (w ? 'w' : 'l') + '">' + l + '</span>').join('');
   wallet();
 }
