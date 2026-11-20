@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a2a1c">
+<title>Chaos Casino</title>
+<meta name="description" content="Chaos Arcade casino: Dice, Crash, Coin Flip and Mines with virtual coins and a fixed 2% house edge.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%230a2a1c'/%3E%3Crect x='2' y='1' width='4' height='6' fill='%23ffd23a'/%3E%3Crect x='1' y='2' width='6' height='4' fill='%23ffd23a'/%3E%3Crect x='3' y='2' width='2' height='4' fill='%23b08a1a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../style.css">
+<style>
+  body{background:#0a2a1c}
+  .cz-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
+  .cz-tabs .btn{padding:10px 4px;font-size:13px}
+  .cz-tabs .btn.on{background:#1fb07a;color:#002a18}
+  .cz-wallet{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 12px}
+  .cz-bal{font-size:clamp(22px,6vw,30px);color:#ffd23a;text-shadow:3px 3px 0 #000}
+  .cz-bal small{font-size:12px;color:#c8c8c8;text-shadow:none;display:block}
+  .cz-panel{padding:12px;margin-top:8px}
+  .cz-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0}
+  .cz-row label{font-size:12px;color:#c8c8c8;min-width:64px}
+  .cz-in{flex:1;min-width:90px;padding:10px;font:inherit;font-size:18px;font-weight:700;border:3px solid #000;background:#fff;color:#000}
+  .cz-in:disabled{background:#999}
+  .cz-big{width:100%;margin-top:8px;font-size:20px;padding:14px}
+  .cz-stage{position:relative;background:#062a1c;border:3px solid #000;box-shadow:inset 0 0 0 3px #105a40;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;text-align:center;overflow:hidden}
+  .cz-num{font-size:clamp(44px,14vw,72px);text-shadow:4px 4px 0 #000;line-height:1}
+  .cz-num.win{color:#55ff55}.cz-num.lose{color:#ff5555}
+  .cz-msg{margin-top:8px;font-size:15px;min-height:20px}
+  .cz-bar{position:relative;width:100%;height:22px;margin-top:16px;border:3px solid #000;background:#c03030}
+  .cz-bar .fill{position:absolute;top:0;bottom:0;background:#2fb04a}
+  .cz-bar .mark{position:absolute;top:-12px;width:4px;height:40px;margin-left:-2px;background:#fff;box-shadow:0 0 0 2px #000;transition:left .5s cubic-bezier(.2,.9,.3,1)}
+  .cz-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;font-size:12px;text-align:center}
+  .cz-facts div{background:rgba(0,0,0,.4);border:2px solid #000;padding:6px 2px}
+  .cz-facts b{display:block;font-size:16px;color:#ffd23a}
+  .cz-hist{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;min-height:26px}
+  .cz-hist span{font-size:11px;padding:3px 6px;border:2px solid #000}
+  .cz-hist .w{background:#1f7a3a}.cz-hist .l{background:#7a1f1f}
+  .cz-coin{width:130px;height:130px;border-radius:50%;border:5px solid #000;display:flex;align-items:center;justify-content:center;font-size:60px;background:radial-gradient(circle at 35% 35%,#ffe680,#d9a514 60%,#8a6400);box-shadow:0 8px 0 rgba(0,0,0,.4)}
+  .cz-coin.spin{animation:czflip .9s cubic-bezier(.3,.7,.4,1)}
+  @keyframes czflip{0%{transform:rotateX(0) translateY(0)}50%{transform:rotateX(1080deg) translateY(-60px)}100%{transform:rotateX(2160deg) translateY(0)}}
+  .cz-mines{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:min(100%,340px)}
+  .cz-mines button{aspect-ratio:1;border:3px solid #000;background:#2a5a48;box-shadow:inset 3px 3px 0 rgba(255,255,255,.2),inset -3px -3px 0 rgba(0,0,0,.3);font-size:clamp(20px,7vw,30px);cursor:pointer;padding:0}
+  .cz-mines button:disabled{cursor:default}
+  .cz-mines button.gem{background:#105a40}
+  .cz-mines button.mine{background:#7a1f1f}
+  .cz-mines button.dim{opacity:.45}
+  .cz-mines button:not(:disabled):hover{background:#3a7a60}
+  #czCrash{width:100%;height:240px;display:block}
+  .cz-note{font-size:12px;color:#c8c8c8;line-height:1.5}
+  .cz-note b{color:#ffd23a}
+  .cz-seg{display:flex;border:3px solid #000}
+  .cz-seg button{flex:1;font:inherit;font-size:13px;padding:9px 4px;border:0;background:#333;color:#fff;cursor:pointer}
+  .cz-seg button.on{background:#ffd23a;color:#000}
+</style>
+</head>
+<body>
+<div class="wrap narrow">
+  <div id="arcadeBar"></div>
+  <div class="cz-tabs" id="czTabs"></div>
+  <div class="dark-panel cz-wallet">
+    <div class="cz-bal"><small>YOUR COINS</small><span id="czBal">0</span> 🪙</div>
+    <div style="text-align:right;font-size:12px;line-height:1.6">Session: <b id="czSess">0</b><br><span id="czRefill"></span></div>
+  </div>
+  <div id="czGame"></div>
+  <div class="dark-panel cz-panel cz-note">
+    <b>How the 2% house edge works:</b> every game here pays back <b>98%</b> of what is bet, on average. A win at 50% chance pays <b>1.96×</b> instead of 2×, and a 10% chance pays <b>9.8×</b> instead of 10×. Over many bets you lose about 2 🪙 for every 100 🪙 you bet. Single bets can still win big.<br><br>
+    🪙 Coins are <b>virtual and only for fun</b>: they can't be bought, sold or cashed out. You earn them by playing any arcade game (same amount as the XP you get) and from the daily loot chest. Results use your browser's secure random generator.
+  </div>
+  <div class="legal">Chaos Arcade · fan-made browser games. Coins are play money only.</div>
+</div>
+<script src="../arcade.js"></script>
+<script>
+(function(){
+const A = window.Arcade, $ = s => document.querySelector(s);
+const EDGE = 0.02, RTP = 1 - EDGE;
+const GAMES = { dice:['cdice','🎲 Dice'], crash:['crash','📈 Crash'], coinflip:['coinflip','🪙 Flip'], mines:['mines','💣 Mines'] };
+/* uniform random number in [0, 1) from crypto */
+function rand(){ const a = new Uint32Array(2); crypto.getRandomValues(a); return (a[0] * 2097152 + (a[1] >>> 11)) / 9007199254740992; }
+let cur = GAMES[location.hash.slice(1)] ? location.hash.slice(1) : 'dice', busy = false, session = 0, bet = 10;
+const hist = {};
+try { bet = Math.max(1, +sessionStorage.getItem('cz_bet') || 10); } catch(e){}
+
+/* Pay out x coins. Coins are whole numbers, so the fraction is paid with matching probability
+   (2.4 pays 3 with 40% chance, else 2): the expected payout stays exactly x, so the edge stays exactly 2%. */
+function payout(x){ const f = Math.floor(x); return f + (rand() < x - f ? 1 : 0); }
+function fmt(n){ return Math.floor(n).toLocaleString('en-US'); }
+function wallet(){
+  A.load(); $('#czBal').textContent = fmt(A.state.coins);
+  $('#czSess').textContent = (session > 0 ? '+' : '') + fmt(session) + ' 🪙'; $('#czSess').style.color = session >= 0 ? '#55ff55' : '#ff7777';
+  const r = $('#czRefill'), wait = (A.state.lastRefill || 0) + 3600e3 - Date.now();
+  if (A.state.coins < 10) r.innerHTML = wait <= 0 ? '<button class="btn small green" id="czFree">🆘 FREE 100 🪙</button>' : 'Free refill in ' + Math.ceil(wait / 60000) + ' min';
+  else r.textContent = '';
+  const f = $('#czFree'); if (f) f.onclick = () => { A.load(); A.state.lastRefill = Date.now(); A.save(); A.addCoins(100, 'free refill'); A.Sfx.coin(); wallet(); };
+  A.updateBar();
+}
+function record(won, profit, label){
+  const id = GAMES[cur][0]; A.load();
+  const g = A.state.games[id] || (A.state.games[id] = { best:0, bestLabel:'', plays:0, wins:0, xp:0, last:'' });
+  g.plays++; g.ts = Date.now(); g.last = A.dayKey(); if (won) g.wins++;
+  if (won && profit > g.best){ g.best = profit; g.bestLabel = '+' + fmt(profit) + ' 🪙 ' + label; A.save(); A.lb.submit(id, Math.round(profit)).catch(() => {}); }
+  A.save();
+  session += profit;
+  const h = hist[cur] || (hist[cur] = []); h.unshift([won, label]); if (h.length > 16) h.pop();
+  const el = $('#czHist'); if (el) el.innerHTML = h.map(([w, l]) => '<span class="' + (w ? 'w' : 'l') + '">' + l + '</span>').join('');
+  wallet();
+}
+/* shared bet box */
+function betBox(extra){
+  return '<div class="cz-row"><label>BET 🪙</label><input class="cz-in" id="czBet" type="number" min="1" step="1" inputmode="numeric" value="' + bet + '">' +
+    '<button class="btn small" data-bx="half">½</button><button class="btn small" data-bx="dbl">2×</button><button class="btn small" data-bx="max">MAX</button></div>' + (extra || '');
+}
+function bindBet(onChange){
+  const inp = $('#czBet');
+  const set = (v) => { A.load(); bet = Math.max(1, Math.min(Math.floor(v) || 1, Math.max(1, Math.floor(A.state.coins)))); inp.value = bet; try { sessionStorage.setItem('cz_bet', bet); } catch(e){} onChange && onChange(); };
+  inp.addEventListener('change', () => set(+inp.value)); inp.addEventListener('input', () => { bet = Math.max(1, Math.floor(+inp.value) || 1); onChange && onChange(); });
+  document.querySelectorAll('[data-bx]').forEach(b => b.addEventListener('click', () => { A.Sfx.click(); set(b.dataset.bx === 'half' ? bet / 2 : b.dataset.bx === 'dbl' ? bet * 2 : 1e12); }));
+}
+function takeBet(){
+  bet = Math.max(1, Math.floor(+$('#czBet').value) || 1);
+  if (!A.spendCoins(bet)){ A.toast(A.state.coins < 1 ? '🪙 Out of coins. Play any arcade game to earn more!' : '🪙 Not enough coins for that bet'); A.Sfx.fail(); return false; }
+  wallet(); return true;
+}
+function lockBet(on){ document.querySelectorAll('#czBet,[data-bx]').forEach(e => e.disabled = on); }
+
+/* ---------------- 🎲 DICE ---------------- */
+const Dice = {
+  chance:49.5, over:false,
+  mount(){
+    $('#czGame').innerHTML = '<div class="cz-stage" style="min-height:200px"><div class="cz-num" id="dNum">50.00</div><div class="cz-msg" id="dMsg">Roll a number from 0.00 to 99.99</div>' +
+      '<div class="cz-bar"><div class="fill" id="dFill"></div><div class="mark" id="dMark" style="left:50%"></div></div></div>' +
+      '<div class="dark-panel cz-panel">' + betBox(
+      '<div class="cz-row"><label>WIN CHANCE</label><input type="range" id="dCh" min="2" max="95" step="0.5" value="' + this.chance + '" style="flex:1"></div>' +
+      '<div class="cz-row"><label>ROLL</label><div class="cz-seg" style="flex:1"><button id="dU">⬇ UNDER</button><button id="dO">⬆ OVER</button></div></div>' +
+      '<div class="cz-facts"><div>Chance<b id="dC"></b></div><div>Payout<b id="dP"></b></div><div>Win<b id="dW"></b></div></div>') +
+      '<button class="btn green big cz-big" id="dGo">🎲 ROLL</button><div class="cz-hist" id="czHist"></div></div>';
+    bindBet(() => this.facts());
+    $('#dCh').addEventListener('input', e => { this.chance = +e.target.value; this.facts(); });
+    $('#dU').onclick = () => { this.over = false; this.facts(); }; $('#dO').onclick = () => { this.over = true; this.facts(); };
+    $('#dGo').onclick = () => this.roll();
+    this.facts();
+  },
+  mult(){ return RTP * 100 / this.chance; },
+  target(){ return this.over ? 100 - this.chance : this.chance; },
+  facts(){
+    $('#dC').textContent = this.chance.toFixed(1) + '%'; $('#dP').textContent = this.mult().toFixed(4) + '×'; $('#dW').textContent = fmt(Math.round(bet * this.mult())) + ' 🪙';
+    $('#dU').className = this.over ? '' : 'on'; $('#dO').className = this.over ? 'on' : '';
+    const f = $('#dFill'); if (this.over){ f.style.left = (100 - this.chance) + '%'; f.style.right = '0'; } else { f.style.left = '0'; f.style.right = (100 - this.chance) + '%'; }
+    $('#dMsg').textContent = 'Win if the roll is ' + (this.over ? 'over ' + this.target().toFixed(2) : 'under ' + this.target().toFixed(2));
+  },
+  roll(){
+    if (busy || !takeBet()) return; busy = true; lockBet(true); $('#dGo').disabled = true;
+    const r = Math.floor(rand() * 10000) / 100, win = this.over ? r >= 100 - this.chance : r < this.chance, num = $('#dNum');
+    num.className = 'cz-num'; let n = 0; A.Sfx.click();
+    const iv = setInterval(() => { num.textContent = (rand() * 100).toFixed(2); }, 40);
+    $('#dMark').style.left = r + '%';
+    setTimeout(() => {
+      clearInterval(iv); num.textContent = r.toFixed(2); num.className = 'cz-num ' + (win ? 'win' : 'lose');
+      const pay = win ? payout(bet * this.mult()) : 0;
+      if (win){ A.addCoins(pay, 'Dice win', true); A.Sfx.coin(); $('#dMsg').innerHTML = '✅ <b style="color:#55ff55">+' + fmt(pay - bet) + ' 🪙</b>'; if (this.mult() >= 10){ A.bigText('🎲 ' + this.mult().toFixed(1) + '× WIN!', '#ffd23a'); A.confetti && A.confetti(); } }
+      else { A.Sfx.fail(); $('#dMsg').innerHTML = '❌ Rolled ' + r.toFixed(2) + ' · <b style="color:#ff7777">−' + fmt(bet) + ' 🪙</b>'; }
+      record(win, pay - bet, r.toFixed(2));
+      busy = false; lockBet(false); $('#dGo').disabled = false;
+    }, 550);
+  },
+  key(){ this.roll(); }
+};
+
+/* ---------------- 🪙 COIN FLIP ---------------- */
+const Flip = {
+  side:'H',
+  mount(){
+    $('#czGame').innerHTML = '<div class="cz-stage" style="perspective:600px"><div class="cz-coin" id="fCoin">👑</div><div class="cz-msg" id="fMsg">Pick a side · win pays <b>' + (2 * RTP).toFixed(2) + '×</b></div></div>' +
+      '<div class="dark-panel cz-panel">' + betBox('<div class="cz-row"><div class="cz-seg" style="flex:1"><button id="fH">👑 HEADS</button><button id="fT">🦅 TAILS</button></div></div>' +
+      '<div class="cz-facts"><div>Chance<b>50%</b></div><div>Payout<b>' + (2 * RTP).toFixed(2) + '×</b></div><div>Win<b id="fW"></b></div></div>') +
+      '<button class="btn green big cz-big" id="fGo">🪙 FLIP</button><div class="cz-hist" id="czHist"></div></div>';
+    bindBet(() => this.facts());
+    $('#fH').onclick = () => { this.side = 'H'; this.facts(); }; $('#fT').onclick = () => { this.side = 'T'; this.facts(); };
+    $('#fGo').onclick = () => this.flip(); this.facts();
+  },
+  facts(){ $('#fH').className = this.side === 'H' ? 'on' : ''; $('#fT').className = this.side === 'T' ? 'on' : ''; $('#fW').textContent = fmt(Math.round(bet * 2 * RTP)) + ' 🪙'; },
+  flip(){
+    if (busy || !takeBet()) return; busy = true; lockBet(true); $('#fGo').disabled = true;
+    const r = rand() < .5 ? 'H' : 'T', win = r === this.side, c = $('#fCoin');
+    c.classList.remove('spin'); void c.offsetWidth; c.classList.add('spin'); A.Sfx.click();
+    for (let i=0;i<8;i++) setTimeout(() => { c.textContent = i % 2 ? '🦅' : '👑'; }, i * 100);
+    setTimeout(() => {
+      c.textContent = r === 'H' ? '👑' : '🦅';
+      const pay = win ? payout(bet * 2 * RTP) : 0;
+      if (win){ A.addCoins(pay, 'Coin Flip win', true); A.Sfx.coin(); $('#fMsg').innerHTML = '✅ ' + (r === 'H' ? 'Heads' : 'Tails') + '! <b style="color:#55ff55">+' + fmt(pay - bet) + ' 🪙</b>'; }
+      else { A.Sfx.fail(); $('#fMsg').innerHTML = '❌ ' + (r === 'H' ? 'Heads' : 'Tails') + ' · <b style="color:#ff7777">−' + fmt(bet) + ' 🪙</b>'; }
+      record(win, pay - bet, r === 'H' ? '👑' : '🦅');
+      busy = false; lockBet(false); $('#fGo').disabled = false;
+    }, 950);
+  },
+  key(){ this.flip(); }
+};
+
+/* ---------------- 📈 CRASH ---------------- */
+// Crash point = 0.98 / u (u uniform in (0,1]), floored to 0.01. So P(reaching x) = 0.98 / x:
+// cashing out at any x returns 98% on average.
+const Crash = {
+  auto:2, state:'idle', m:1, cp:1, t0:0, pts:[], past:[],
+  mount(){
+    $('#czGame').innerHTML = '<div class="cz-stage" style="padding:0;min-height:0"><canvas id="czCrash"></canvas><div style="position:absolute;top:10px;left:0;right:0"><div class="cz-num" id="cM" style="font-size:clamp(36px,11vw,56px)">1.00×</div><div class="cz-msg" id="cMsg">Place a bet and launch</div></div></div>' +
+      '<div class="dark-panel cz-panel">' + betBox('<div class="cz-row"><label>AUTO CASH</label><input class="cz-in" id="cAuto" type="number" min="1.01" step="0.01" value="' + this.auto + '"><span style="font-size:12px">× (0 = off)</span></div>' +
+      '<div class="cz-facts"><div>Chance to hit<b id="cC"></b></div><div>Payout<b id="cP"></b></div><div>Win<b id="cW"></b></div></div>') +
+      '<button class="btn green big cz-big" id="cGo">🚀 BET &amp; LAUNCH</button><div class="cz-hist" id="czHist"></div></div>';
+    bindBet(() => this.facts());
+    $('#cAuto').addEventListener('input', e => { this.auto = +e.target.value; this.facts(); });
+    $('#cGo').onclick = () => this.action();
+    this.cv = $('#czCrash'); this.facts(); this.draw();
+    if (!this.raf) { const loop = () => { this.raf = requestAnimationFrame(loop); if (cur === 'crash') this.tick(); }; loop(); }
+  },
+  facts(){
+    const a = this.auto >= 1.01 ? this.auto : 0;
+    $('#cC').textContent = a ? (RTP / a * 100).toFixed(2) + '%' : 'manual'; $('#cP').textContent = a ? a.toFixed(2) + '×' : 'you pick';
+    $('#cW').textContent = a ? fmt(Math.round(bet * a)) + ' 🪙' : '—';
+  },
+  action(){
+    if (this.state === 'run') return this.cashout(this.m);
+    if (busy || !takeBet()) return; busy = true; lockBet(true); $('#cAuto').disabled = true;
+    const u = 1 - rand(); this.cp = Math.max(1, Math.floor(RTP * 100 / u) / 100); this.cp = Math.min(this.cp, 1000);
+    this.state = 'run'; this.t0 = performance.now(); this.m = 1; this.pts = []; this.betAmt = bet; this.autoAt = this.auto >= 1.01 ? Math.floor(this.auto * 100) / 100 : 0;
+    $('#cGo').textContent = '💰 CASH OUT'; $('#cGo').className = 'btn gold big cz-big'; $('#cMsg').textContent = 'Flying… cash out before it crashes!'; A.Sfx.click();
+    if (this.cp <= 1) this.crash();
+  },
+  tick(){
+    if (this.state !== 'run') return;
+    const t = (performance.now() - this.t0) / 1000, m = Math.floor(Math.exp(0.11 * t) * 100) / 100;
+    if (this.autoAt && m >= this.autoAt && this.autoAt <= this.cp){ this.m = this.autoAt; return this.cashout(this.autoAt); }
+    if (m >= this.cp){ this.m = this.cp; return this.crash(); }
+    this.m = m; this.pts.push([t, m]);
+    $('#cM').textContent = m.toFixed(2) + '×'; $('#cM').className = 'cz-num';
+    $('#cGo').textContent = '💰 CASH OUT ' + fmt(Math.round(this.betAmt * m)) + ' 🪙';
+    this.draw();
+  },
+  cashout(m){
+    if (this.state !== 'run') return; this.state = 'done';
+    const pay = payout(this.betAmt * m); A.addCoins(pay, 'Crash win', true); A.Sfx.coin();
+    $('#cM').textContent = m.toFixed(2) + '×'; $('#cM').className = 'cz-num win';
+    $('#cMsg').innerHTML = '✅ Cashed out at ' + m.toFixed(2) + '× · <b style="color:#55ff55">+' + fmt(pay - this.betAmt) + ' 🪙</b> · it would have crashed at ' + this.cp.toFixed(2) + '×';
+    if (m >= 10) A.bigText('🚀 ' + m.toFixed(2) + '×!', '#ffd23a');
+    record(true, pay - this.betAmt, m.toFixed(2) + '×'); this.end();
+  },
+  crash(){
+    this.state = 'done'; A.Sfx.fail(); A.shake && A.shake(document.querySelector('.cz-stage'));
+    $('#cM').textContent = '💥 ' + this.cp.toFixed(2) + '×'; $('#cM').className = 'cz-num lose';
+    $('#cMsg').innerHTML = '❌ Crashed · <b style="color:#ff7777">−' + fmt(this.betAmt) + ' 🪙</b>';
+    record(false, -this.betAmt, this.cp.toFixed(2) + '×'); this.end(); this.draw(true);
+  },
+  end(){ busy = false; lockBet(false); $('#cAuto').disabled = false; $('#cGo').textContent = '🚀 BET & LAUNCH'; $('#cGo').className = 'btn green big cz-big'; },
+  draw(crashed){
+    const c = this.cv; if (!c) return; const dpr = devicePixelRatio || 1, W = c.clientWidth, H = c.clientHeight;
+    if (c.width !== Math.round(W * dpr)){ c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); }
+    const x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+    x.strokeStyle = 'rgba(255,255,255,.08)'; for (let i=1;i<6;i++){ x.beginPath(); x.moveTo(0, H * i / 6); x.lineTo(W, H * i / 6); x.stroke(); }
+    if (!this.pts.length) return;
+    const tMax = Math.max(8, this.pts[this.pts.length - 1][0] * 1.15), mMax = Math.max(2, this.m * 1.2);
+    const px = t => 20 + (W - 50) * t / tMax, py = m => H - 20 - (H - 90) * (m - 1) / (mMax - 1);
+    x.strokeStyle = crashed ? '#ff5555' : '#55ff99'; x.lineWidth = 4; x.beginPath();
+    this.pts.forEach(([t, m], i) => i ? x.lineTo(px(t), py(m)) : x.moveTo(px(t), py(m))); x.stroke();
+    const [lt, lm] = this.pts[this.pts.length - 1]; x.font = '28px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(crashed ? '💥' : '🚀', px(lt), py(lm) - 6);
+  },
+  key(){ this.action(); }
+};
+
+/* ---------------- 💣 MINES ---------------- */
+// Multiplier after n safe picks = 0.98 / P(n picks all safe). Cashing out at any point returns 98% on average.
+const Mines = {
+  k:3, state:'idle', grid:[], open:0,
+  mult(n){ let p = 1; for (let i=0;i<n;i++) p *= (25 - this.k - i) / (25 - i); return n ? RTP / p : 1; },
+  mount(){
+    $('#czGame').innerHTML = '<div class="cz-stage"><div class="cz-mines" id="mG"></div><div class="cz-msg" id="mMsg">Pick how many mines, bet, then tap tiles</div></div>' +
+      '<div class="dark-panel cz-panel">' + betBox('<div class="cz-row"><label>MINES</label><input type="range" id="mK" min="1" max="24" step="1" value="' + this.k + '" style="flex:1"><b id="mKv" style="min-width:28px;text-align:right"></b></div>' +
+      '<div class="cz-facts"><div>Next tile safe<b id="mC"></b></div><div>Now<b id="mNow"></b></div><div>Next gem<b id="mNext"></b></div></div>') +
+      '<button class="btn green big cz-big" id="mGo">💣 START</button><div class="cz-hist" id="czHist"></div></div>';
+    bindBet(() => this.facts());
+    $('#mK').addEventListener('input', e => { if (this.state === 'run') return; this.k = +e.target.value; this.facts(); });
+    $('#mGo').onclick = () => this.action();
+    this.renderGrid(); this.facts();
+  },
+  facts(){
+    $('#mKv').textContent = this.k;
+    const n = this.state === 'run' ? this.open : 0, safeLeft = 25 - this.k - n, left = 25 - n;
+    $('#mC').textContent = (safeLeft / left * 100).toFixed(1) + '%';
+    $('#mNow').textContent = this.mult(n).toFixed(2) + '×'; $('#mNext').textContent = safeLeft > 0 ? this.mult(n + 1).toFixed(2) + '×' : '—';
+  },
+  renderGrid(reveal){
+    $('#mG').innerHTML = Array.from({ length:25 }, (_, i) => {
+      const t = this.grid[i], open = t && t.open, show = reveal && t;
+      const cls = open ? (t.mine ? 'mine' : 'gem') : show ? (t.mine ? 'mine dim' : 'gem dim') : '';
+      return '<button data-i="' + i + '" class="' + cls + '"' + (this.state !== 'run' || open ? ' disabled' : '') + '>' + (open || show ? (t.mine ? '💣' : '💎') : '') + '</button>';
+    }).join('');
+    $('#mG').querySelectorAll('button').forEach(b => b.onclick = () => this.pick(+b.dataset.i));
+  },
+  action(){
+    if (this.state === 'run') return this.open ? this.cashout() : null;
+    if (busy || !takeBet()) return; busy = true; lockBet(true); $('#mK').disabled = true;
+    const idx = [...Array(25).keys()]; for (let i=24;i>0;i--){ const j = Math.floor(rand() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+    const mines = new Set(idx.slice(0, this.k));
+    this.grid = Array.from({ length:25 }, (_, i) => ({ mine:mines.has(i), open:false }));
+    this.state = 'run'; this.open = 0; this.betAmt = bet; A.Sfx.click();
+    $('#mGo').textContent = '💰 CASH OUT'; $('#mGo').className = 'btn gold big cz-big'; $('#mGo').disabled = true;
+    $('#mMsg').textContent = 'Tap a tile. Each gem raises your payout.';
+    this.renderGrid(); this.facts();
+  },
+  pick(i){
+    if (this.state !== 'run') return; const t = this.grid[i]; if (t.open) return; t.open = true;
+    if (t.mine){
+      this.state = 'done'; A.Sfx.boom ? A.Sfx.boom() : A.Sfx.fail(); A.shake && A.shake(document.querySelector('.cz-stage'), true);
+      $('#mMsg').innerHTML = '💥 Boom! <b style="color:#ff7777">−' + fmt(this.betAmt) + ' 🪙</b>';
+      record(false, -this.betAmt, '💣 ' + this.open); this.renderGrid(true); this.end(); return;
+    }
+    this.open++; A.Sfx.coin();
+    const m = this.mult(this.open);
+    $('#mMsg').innerHTML = '💎 ' + this.open + ' gem' + (this.open > 1 ? 's' : '') + ' · cash out now for <b style="color:#55ff55">' + fmt(Math.round(this.betAmt * m)) + ' 🪙</b>';
+    $('#mGo').textContent = '💰 CASH OUT ' + fmt(Math.round(this.betAmt * m)) + ' 🪙'; $('#mGo').disabled = false;
+    this.renderGrid(); this.facts();
+    if (this.open === 25 - this.k) this.cashout();
+  },
+  cashout(){
+    if (this.state !== 'run' || !this.open) return; this.state = 'done';
+    const m = this.mult(this.open), pay = payout(this.betAmt * m);
+    A.addCoins(pay, 'Mines win', true); A.Sfx.coin();
+    $('#mMsg').innerHTML = '✅ Cashed out at ' + m.toFixed(2) + '× · <b style="color:#55ff55">+' + fmt(pay - this.betAmt) + ' 🪙</b>';
+    if (m >= 10) A.bigText('💎 ' + m.toFixed(2) + '×!', '#ffd23a');
+    record(true, pay - this.betAmt, m.toFixed(2) + '×'); this.renderGrid(true); this.end();
+  },
+  end(){ busy = false; lockBet(false); $('#mK').disabled = false; $('#mGo').textContent = '💣 START'; $('#mGo').className = 'btn green big cz-big'; $('#mGo').disabled = false; this.facts(); },
+  key(){ this.action(); }
+};
+
+const IMPL = { dice:Dice, crash:Crash, coinflip:Flip, mines:Mines };
+function show(name){
+  if (busy) { A.toast('Finish this round first'); return; }
+  cur = name; if (location.hash.slice(1) !== name) history.replaceState(null, '', '#' + name);
+  $('#czTabs').innerHTML = Object.keys(GAMES).map(k => '<button class="btn' + (k === cur ? ' on' : '') + '" data-g="' + k + '">' + GAMES[k][1] + '</button>').join('');
+  $('#czTabs').querySelectorAll('[data-g]').forEach(b => b.onclick = () => { A.Sfx.click(); show(b.dataset.g); });
+  A.mountBar(GAMES[cur][0]);
+  document.title = GAMES[cur][1].slice(GAMES[cur][1].indexOf(' ') + 1) + ' · Chaos Casino';
+  IMPL[cur].mount();
+  const h = hist[cur] || []; const el = $('#czHist'); if (el) el.innerHTML = h.map(([w, l]) => '<span class="' + (w ? 'w' : 'l') + '">' + l + '</span>').join('');
+  wallet();
+}
+addEventListener('hashchange', () => { const n = location.hash.slice(1); if (IMPL[n] && n !== cur) show(n); });
+addEventListener('keydown', e => { if (e.code === 'Space' && !/INPUT/.test(e.target.tagName)){ e.preventDefault(); A.Sfx.init(); IMPL[cur].key(); } });
+addEventListener('pointerdown', () => A.Sfx.init(), { once:true });
+addEventListener('beforeunload', e => { if (busy){ e.preventDefault(); e.returnValue = ''; } });
+setInterval(wallet, 30000);
+show(cur);
+window.__casino = { Dice, Crash, Flip, Mines, RTP };
+})();
+</script>
+</body>
+</html>

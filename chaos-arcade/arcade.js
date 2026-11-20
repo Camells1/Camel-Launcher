@@ -16,13 +16,15 @@ const ROOT = inGames ? '../' : '';
    Block World games have their own page; all others run in games/play.html#id */
 const CATS = {
   block:{n:'Block World', e:'⛏️'}, action:{n:'Action', e:'💥'}, reflex:{n:'Reflex', e:'⚡'}, puzzle:{n:'Puzzle', e:'🧩'},
-  brain:{n:'Brain', e:'🧠'}, luck:{n:'Luck', e:'🎰'}, words:{n:'Words', e:'🔤'}, sports:{n:'Sports', e:'🏆'}
+  brain:{n:'Brain', e:'🧠'}, luck:{n:'Luck', e:'🎰'}, words:{n:'Words', e:'🔤'}, sports:{n:'Sports', e:'🏆'},
+  casino:{n:'Casino', e:'🪙'}, originals:{n:'Originals', e:'🕷️'}
 };
 const CAT_BG = {
   action:['#2a1458','#3a1f7a','#1f0f44','#5a2fb0'], reflex:['#0f3a4a','#145a6a','#0a2a38','#1f8aa0'],
   puzzle:['#1a3a1a','#24502a','#122a12','#3a8a3a'], brain:['#4a1a3a','#6a2450','#341028','#a03a7a'],
   luck:['#4a3a0a','#6a5410','#342806','#b08a1a'], words:['#1a2a5a','#24387a','#101c40','#3a5ac0'],
-  sports:['#5a2a0a','#7a3a10','#401c06','#c0601a']
+  sports:['#5a2a0a','#7a3a10','#401c06','#c0601a'],
+  casino:['#0a3a2a','#105a40','#062a1c','#1fb07a'], originals:['#e98d3a','#d07a2a','#f0a050','#fbedd8']
 };
 const BLOCK_GAMES = [
   {id:'crafting',  file:'game1.html',  t:'Cursed Crafting Quiz',    e:'🛠️', d:'medium', tag:'QUIZ',
@@ -137,8 +139,15 @@ const NEW_GAMES = [
   ['opposites','Opposites','↔️','easy','words','Pick the opposite of the word. Quick!'],
   ['typohunter','Typo Hunter','🕵️','medium','words','Three words are spelled right. Find the typo.'],
   ['bowling','Bowling','🎳','medium','sports','Aim, spin and knock down the pins. 10 frames.'],
-  ['archery','Archery','🏹','medium','sports','Draw, aim and mind the wind. Hit the gold.']
-].map(([id, t, e, d, cat, desc]) => ({ id, t, e, d, cat, desc, file:'play.html#' + id, tag:CATS[cat].n.toUpperCase(), bg:CAT_BG[cat] }));
+  ['archery','Archery','🏹','medium','sports','Draw, aim and mind the wind. Hit the gold.'],
+  // Casino: bets use the shared 🪙 wallet; every game pays back 98% on average (2% house edge)
+  ['cdice','Dice','🎲','chaos','casino','Pick your win chance, roll under it. 98% RTP.','casino.html#dice'],
+  ['crash','Crash','📈','chaos','casino','Ride the rocket multiplier and cash out before it crashes.','casino.html#crash'],
+  ['coinflip','Coin Flip','🪙','chaos','casino','Heads or tails for 1.96x your bet.','casino.html#coinflip'],
+  ['mines','Mines','💣','chaos','casino','Uncover gems, dodge the mines, cash out any time.','casino.html#mines'],
+  // Originals: full games built outside the arcade
+  ['spindel4','Spindel 4','🕷️','medium','originals','Think smart, get 4 in a row on the spider web. Play the computer or a friend.','spindel4.html']
+].map(([id, t, e, d, cat, desc, file]) => ({ id, t, e, d, cat, desc, file:file || 'play.html#' + id, tag:CATS[cat].n.toUpperCase(), bg:CAT_BG[cat] }));
 const GAMES = BLOCK_GAMES.concat(NEW_GAMES).map((g, i) => Object.assign(g, { n:i + 1, ready:true }));
 
 const RANKS = [
@@ -153,13 +162,15 @@ const RANKS = [
 ];
 
 /* ---------- Storage ---------- */
-function blank(){ return { xp:0, name:'', muted:false, fav:{}, games:{}, plays:0, wins:0, lastChest:'', chestStreak:0, lastVisit:'', ach:{}, pid:'', tops:{}, day:null }; }
+const START_COINS = 1000;
+function blank(){ return { xp:0, coins:START_COINS, name:'', muted:false, fav:{}, games:{}, plays:0, wins:0, lastChest:'', chestStreak:0, lastVisit:'', ach:{}, pid:'', tops:{}, day:null }; }
 let state;
 function load(){
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e){}
   state = Object.assign(blank(), saved);
   state.games = saved.games || {}; state.ach = saved.ach || {}; state.tops = saved.tops || {}; state.fav = saved.fav || {};
+  if (typeof saved.coins !== 'number' || !isFinite(saved.coins)) state.coins = START_COINS;
 }
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
 load();
@@ -183,7 +194,7 @@ function rankInfo(xp){
   return { idx:i, rank:cur, next, frac, xp };
 }
 function featuredGame(){
-  const ready = GAMES.filter(g => g.ready);
+  const ready = GAMES.filter(g => g.ready && g.cat !== 'casino' && g.cat !== 'originals');
   const r = mulberry32(hashStr('featured|' + dayKey()));
   return ready[Math.floor(r() * ready.length)] || GAMES[0];
 }
@@ -204,6 +215,18 @@ function addXP(amount, reason){
   updateBar();
   return amount;
 }
+
+/* ---------- 🪙 Coin wallet (virtual, just for fun) ---------- */
+let coinSubmitT;
+function coins(){ load(); return state.coins; }
+function addCoins(n, reason, quiet){
+  n = Math.round(n); if (!n) return 0;
+  load(); state.coins = Math.max(0, state.coins + n); save(); syncSoon(); updateBar();
+  if (!quiet) toast((n > 0 ? '+' : '') + n + ' 🪙' + (reason ? ' · ' + reason : ''));
+  clearTimeout(coinSubmitT); coinSubmitT = setTimeout(() => { if (state.coins > 0) lbSubmit('coins', state.coins).catch(() => {}); }, 3000);
+  return n;
+}
+function spendCoins(n){ n = Math.round(n); load(); if (!(n > 0) || n > state.coins) return false; state.coins -= n; save(); syncSoon(); updateBar(); return true; }
 
 /* Games call this once per finished run.
    opts: { score, xp, win, label }  — higher score = better. */
@@ -229,6 +252,7 @@ function report(id, opts){
   const gm = gameById(id); if (gm) day.cats[gm.cat] = (day.cats[gm.cat] || 0) + 1;
   save();
   const granted = addXP(xp, feat ? '⭐ 2x Game of the Day' : (newBest ? '🏆 New best!' : ''));
+  addCoins(granted, 'earned playing', true);
   checkQuests();
   const lbp = (typeof opts.score === 'number' && opts.score > 0) ? lbSubmit(id, Math.round(opts.score)) : Promise.resolve(null);
   lbp.catch(() => {});
@@ -346,7 +370,7 @@ async function api(action, body){
   if (!res.ok || !j.ok) throw new Error(j && j.error ? j.error : 'error ' + res.status);
   return j;
 }
-const PROGRESS_KEYS = ['xp','games','plays','wins','tops','ach','chestStreak','lastChest','day','fav'];
+const PROGRESS_KEYS = ['xp','games','plays','wins','tops','ach','chestStreak','lastChest','day','fav','coins'];
 function progressBlob(){ const o = {}; PROGRESS_KEYS.forEach(k => o[k] = state[k]); return o; }
 let syncT = 0;
 function syncSoon(){ if (!state.auth) return; clearTimeout(syncT); syncT = setTimeout(() => { api('progress_save', { data:progressBlob(), rank:rankInfo().rank.i }).catch(() => {}); }, 3000); }
@@ -538,6 +562,7 @@ function shareText(gameId, lines){
 /* ---------- Game page top bar ---------- */
 function updateBar(){
   const xp = $('#abXP'), mute = $('#abMute');
+  const cc = $('#abCoins'); if (cc) cc.textContent = '🪙 ' + Math.floor(state.coins).toLocaleString('en-US');
   if (xp){ const ri = rankInfo(); xp.textContent = ri.rank.i + ' ' + (state.auth ? state.auth.name + ' · ' : '') + state.xp + ' XP'; xp.title = ri.rank.t; }
   if (mute) mute.textContent = state.muted ? '🔇' : '🔊';
 }
@@ -548,7 +573,7 @@ function mountBar(gameId, opts){
   host.className = 'arcade-bar';
   host.innerHTML = '<a class="btn back" href="' + ROOT + 'index.html" title="Back to the arcade">⬅ ARCADE</a>' +
     '<div class="title">' + (g ? g.e + ' ' + esc(g.t) : '') + (g && featuredGame().id === g.id ? ' <span class="badge gold" style="background:#d9a514">⭐ 2x XP</span>' : '') + '</div>' +
-    '<span class="chip" id="abXP"></span>' + '<button class="btn icon" id="abMusic" aria-label="Toggle music" title="Music">🎵</button>' + (opts.noMute ? '' : '<button class="btn icon" id="abMute" aria-label="Toggle sound">🔊</button>');
+    '<span class="chip" id="abXP"></span><span class="chip coin" id="abCoins" title="Your coins. Earn them by playing any game."></span>' + '<button class="btn icon" id="abMusic" aria-label="Toggle music" title="Music">🎵</button>' + (opts.noMute ? '' : '<button class="btn icon" id="abMute" aria-label="Toggle sound">🔊</button>');
   const mu = $('#abMusic');
   if (mu){ mu.style.opacity = state.music ? 1 : .5; mu.addEventListener('click', () => { Sfx.init(); const on = Music.toggle(); mu.style.opacity = on ? 1 : .5; toast(on ? '🎵 Music on' : '🎵 Music off'); }); }
   if (state.music) ['pointerdown','keydown'].forEach(ev => addEventListener(ev, () => Music.start(), { once:true }));
@@ -608,7 +633,7 @@ window.Arcade = {
   GAMES, RANKS, ROOT, CATS, CAT_BG,
   get state(){ return state; },
   save, load, dayKey, hashStr, mulberry32, h2, rnd, esc,
-  rankInfo, featuredGame, gameById, gameStats, addXP, report, unlock,
+  rankInfo, featuredGame, gameById, gameStats, addXP, report, unlock, coins, addCoins, spendCoins, START_COINS,
   Sfx, setMuted, buzz,
   px, texture, textureURL, paintBody, icon, ICONS,
   toast, achToast, flash, bigText, shake, burst, confetti,

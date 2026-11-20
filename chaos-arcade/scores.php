@@ -49,7 +49,7 @@ if (!$post){
 
 if ($me === null) out(400, ['ok'=>false, 'error'=>'bad player id']);
 $score = filter_var($in['score'] ?? null, FILTER_VALIDATE_INT);
-if ($score === false || $score < 1 || $score > ($board === 'xp' ? MAX_XP : MAX_SCORE)) out(400, ['ok'=>false, 'error'=>'bad score']);
+if ($score === false || $score < 1 || $score > ($board === 'xp' ? MAX_XP : ($board === 'coins' ? 1000000000 : MAX_SCORE))) out(400, ['ok'=>false, 'error'=>'bad score']);
 
 if ($user) $name = $user['name'];
 else {

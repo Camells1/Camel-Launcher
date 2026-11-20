@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e98d3a">
+<title>Spindel 4 · Chaos Arcade</title>
+<meta name="description" content="Spindel 4: think smart, get 4 in a row on the spider web. Play the computer or a friend.">
+<link rel="icon" href="spindel4/icons/favicon-32.png">
+<link rel="stylesheet" href="../style.css">
+<style>
+  html,body{height:100%}
+  body{background:#e98d3a;display:flex;flex-direction:column;overflow:hidden}
+  .sp-top{position:relative;z-index:2;padding:6px 8px 0;background:#150f28;border-bottom:3px solid #000}
+  .sp-top .arcade-bar{margin-bottom:6px}
+  .sp-frame{flex:1;width:100%;border:0;display:block;background:#f2b35a}
+  .sp-full{font-size:11px;padding:4px 8px}
+</style>
+</head>
+<body>
+<div class="sp-top"><div id="arcadeBar"></div></div>
+<iframe class="sp-frame" id="spFrame" src="spindel4/index.html" title="Spindel 4" allow="fullscreen; autoplay; clipboard-write" allowfullscreen></iframe>
+<script src="../arcade.js"></script>
+<script>
+(function(){
+  const A = window.Arcade, ID = 'spindel4';
+  A.mountBar(ID);
+  // full-screen button: opens the game on its own page on this same site
+  const bar = document.querySelector('.arcade-bar'), b = document.createElement('a');
+  b.className = 'btn small sp-full'; b.href = 'spindel4/index.html'; b.textContent = '⛶'; const mu = bar.querySelector('#abMusic'); if (mu) mu.remove(); b.title = 'Play full screen';
+  bar.insertBefore(b, bar.querySelector('#abXP'));
+  // count the visit as a play; first play of the day gives XP and coins
+  A.load();
+  const g = A.state.games[ID] || (A.state.games[ID] = { best:0, bestLabel:'', plays:0, wins:0, xp:0, last:'' });
+  const first = g.last !== A.dayKey();
+  g.plays++; A.state.plays++; g.ts = Date.now(); g.last = A.dayKey(); g.bestLabel = g.bestLabel || 'played';
+  const d = A.today(); d.plays++; d.games[ID] = 1; d.cats.originals = (d.cats.originals || 0) + 1;
+  A.save();
+  if (first) setTimeout(() => { const xp = A.addXP(25, 'Spindel 4 · daily play'); g.xp += xp; A.save(); A.addCoins(xp, 'daily play', true); }, 1200);
+})();
+</script>
+</body>
+</html>

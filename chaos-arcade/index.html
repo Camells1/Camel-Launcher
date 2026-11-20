@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#150f28">
-<meta name="description" content="Chaos Arcade: 57 free browser minigames with global leaderboards, daily quests and one shared XP bar. Snake, block puzzles, slots, sudoku, mini golf, cursed crafting and more.">
-<meta property="og:title" content="Chaos Arcade · 57 games">
-<meta property="og:description" content="57 chaotic minigames. Global leaderboards. Daily quests. Can you reach Chaos God?">
+<meta name="description" content="Chaos Arcade: 100+ free browser minigames with global leaderboards, daily quests and one shared XP bar. Snake, block puzzles, slots, sudoku, mini golf, cursed crafting and more.">
+<meta property="og:title" content="Chaos Arcade · 100+ games">
+<meta property="og:description" content="100+ chaotic minigames. Global leaderboards. Daily quests. Can you reach Chaos God?">
 <title>Chaos Arcade</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%23150f28'/%3E%3Crect x='1' y='2' width='6' height='4' fill='%23ff55ff'/%3E%3Crect x='2' y='3' width='1' height='1' fill='%23150f28'/%3E%3Crect x='5' y='3' width='1' height='1' fill='%23150f28'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
@@ -80,7 +80,7 @@
 
   <header class="hero">
     <div class="pixel-title" id="title"></div>
-    <div class="ten" id="tenBadge">57-IN-1</div>
+    <div class="ten" id="tenBadge">100-IN-1</div>
     <div class="splash" id="splash">Insert coin!</div>
   </header>
   <p class="subtitle shadow-dark"><span id="gameCount">57</span> chaotic minigames · global leaderboards · one XP bar.<br>Rank up from 🕹️ Button Masher to 😈 Chaos God.</p>
@@ -101,6 +101,7 @@
           <div><b id="psWins">0</b>WINS</div>
           <div><b id="psTried">0</b>TRIED</div>
         </div>
+        <a class="coinbar" id="coinBar" href="games/casino.html" title="Your coins. Bet them in the Casino."><span>🪙 <b id="psCoins">0</b> coins</span><span class="go">🎰 CASINO ▶</span></a>
         <div class="ladder" id="ladder"></div>
       </div>
 
@@ -121,7 +122,7 @@
 
     <main>
       <div class="searchrow">
-        <input id="search" placeholder="🔍 Search 100 games…" aria-label="Search games">
+        <input id="search" placeholder="🔍 Search games…" aria-label="Search games">
         <span class="count shadow-dark" id="shown"></span>
       </div>
       <div class="catbar" id="cats"></div>
@@ -181,7 +182,7 @@ function buildTitle(){
   });
   $('#title').innerHTML = '<svg viewBox="0 0 ' + (maxW + pad*2 + .6).toFixed(2) + ' ' + (lines.length*lineH + pad).toFixed(2) + '" shape-rendering="crispEdges" role="img" aria-label="Chaos Arcade">' + svg + '</svg>';
 }
-const SPLASHES = ['Insert coin!','57 games, 0 sleep!','Now with leaderboards!','Combo or die!','Do NOT slice the bomb!','Cash out NOW!','One more run…','High score or bust!','Press the purple button!','Touch grass later!','Certified chaos!','Speedrun the quests!','Chaos God awaits!'];
+const SPLASHES = ['Insert coin!','100+ games, 0 sleep!','House edge: 2%!','Now with leaderboards!','Combo or die!','Do NOT slice the bomb!','Cash out NOW!','One more run…','High score or bust!','Press the purple button!','Touch grass later!','Certified chaos!','Speedrun the quests!','Chaos God awaits!'];
 $('#splash').addEventListener('click', () => { A.Sfx.click(); $('#splash').textContent = A.rnd(SPLASHES); });
 
 /* ---------- Profile ---------- */
@@ -192,6 +193,7 @@ function renderProfile(){
   $('#rankTitle').textContent = ri.rank.t; $('#rankTitle').style.color = ri.rank.c;
   $('#xpFill').style.width = (ri.frac * 100).toFixed(1) + '%';
   $('#xpText').textContent = ri.next ? (st.xp - ri.rank.xp) + ' / ' + (ri.next.xp - ri.rank.xp) + ' XP to ' + ri.next.i + ' ' + ri.next.t : 'MAX RANK · ' + st.xp + ' XP';
+  $('#psCoins').textContent = Math.floor(st.coins || 0).toLocaleString('en-US');
   $('#psXP').textContent = st.xp; $('#psRuns').textContent = st.plays; $('#psWins').textContent = st.wins;
   $('#psTried').textContent = A.GAMES.filter(g => st.games[g.id] && st.games[g.id].plays).length + '/' + A.GAMES.length;
   $('#ladder').innerHTML = A.RANKS.map((r, i) => '<span class="' + (i <= ri.idx ? 'got' : '') + '" title="' + r.t + ' (' + r.xp + ' XP)">' + r.i + '</span>').join('');
@@ -249,7 +251,7 @@ function renderCards(){
   $('#cards').innerHTML = list.map(g => {
     const s = A.state.games[g.id], key = g.id;
     const bg = texCache[key] || (texCache[key] = A.textureURL(g.bg, g.n * 13, 16));
-    const best = s && s.plays ? (['','🥉 ','🥈 ','🥇 '][s.medal || 0]) + '🏆 Best: ' + (s.bestLabel || s.best || '—') + ' · 🎮 ' + s.plays : '✨ Never played. Fresh XP!';
+    const best = g.cat === 'originals' ? (s && s.plays ? '🎮 Played ' + s.plays + '× · daily +25 XP' : '✨ Never played. Fresh XP!') : s && s.plays && g.cat === 'casino' && !s.best ? '🎰 ' + s.plays + ' bets · no wins yet' : s && s.plays ? (['','🥉 ','🥈 ','🥇 '][s.medal || 0]) + '🏆 Best: ' + (s.bestLabel || s.best || '—') + ' · 🎮 ' + s.plays : '✨ Never played. Fresh XP!';
     return '<a class="card" data-id="' + g.id + '" href="games/' + g.file + '">' +
       '<div class="card-thumb" style="background-image:url(' + bg + ')"><div class="card-num">#' + String(g.n).padStart(2,'0') + '</div>' +
       '<button class="card-fav' + (fav[g.id] ? ' on' : '') + '" data-fav="' + g.id + '" aria-label="Favorite ' + g.t + '" title="Favorite">' + (fav[g.id] ? '★' : '☆') + '</button>' +
@@ -309,7 +311,7 @@ function renderChest(){
   const ready = A.state.lastChest !== A.dayKey(), ico = $('#chestIco');
   ico.innerHTML = ready ? CHEST : CHEST_OPEN; ico.classList.toggle('ready', ready);
   const streak = A.state.lastChest === A.dayKey() || A.state.lastChest === yesterday() ? A.state.chestStreak : 0;
-  $('#chestTxt').innerHTML = ready ? '<b>🎁 DAILY LOOT CHEST READY!</b><br>Tap it for free XP. Streak: ' + streak + ' 🔥' : '<b>Chest looted.</b> Streak: ' + streak + ' 🔥<br>Next chest in <b id="chestCd">' + untilMidnight() + '</b>';
+  $('#chestTxt').innerHTML = ready ? '<b>🎁 DAILY LOOT CHEST READY!</b><br>Tap it for free XP and coins. Streak: ' + streak + ' 🔥' : '<b>Chest looted.</b> Streak: ' + streak + ' 🔥<br>Next chest in <b id="chestCd">' + untilMidnight() + '</b>';
 }
 $('#chestIco').addEventListener('click', () => {
   A.Sfx.init(); A.load();
@@ -323,7 +325,9 @@ $('#chestIco').addEventListener('click', () => {
     const xp = 15 + Math.floor(Math.random() * 36) + Math.min(50, (streak - 1) * 10);
     ico.classList.remove('opening');
     const r = ico.getBoundingClientRect(); A.burst(r.left + r.width/2, r.top + r.height/2, ['#ffe066','#ffd700','#ffffff','#ff55ff'], 26);
-    A.bigText(loot[0] + ' +' + xp + ' XP');
+    const coins = 100 + Math.min(400, (streak - 1) * 50);
+    A.bigText(loot[0] + ' +' + xp + ' XP · +' + coins + ' 🪙');
+    A.addCoins(coins, 'daily chest', true);
     A.addXP(xp, 'Loot: ' + loot[1] + (streak > 1 ? ' · ' + streak + '-day streak' : ''));
     if (streak >= 7) A.unlock('chest7', '📦', 'Loot Goblin (7-day chest streak)');
     renderAll();
@@ -351,7 +355,7 @@ schedulePeek();
 function openLB(board){
   A.Sfx.init(); A.Sfx.click();
   const sel = $('#lbSel');
-  sel.innerHTML = '<option value="xp">⭐ Arcade XP (all games)</option>' + Object.keys(A.CATS).map(c => '<optgroup label="' + A.CATS[c].e + ' ' + A.CATS[c].n + '">' + A.GAMES.filter(g => g.cat === c).map(g => '<option value="' + g.id + '">' + g.e + ' ' + g.t + '</option>').join('') + '</optgroup>').join('');
+  sel.innerHTML = '<option value="xp">⭐ Arcade XP (all games)</option><option value="coins">🪙 Richest players (peak coins)</option>' + Object.keys(A.CATS).map(c => '<optgroup label="' + A.CATS[c].e + ' ' + A.CATS[c].n + '">' + A.GAMES.filter(g => g.cat === c && g.cat !== 'originals').map(g => '<option value="' + g.id + '">' + g.e + ' ' + g.t + '</option>').join('') + '</optgroup>').join('');
   sel.value = board || 'xp';
   $('#lbModal').classList.add('show');
   loadLB();

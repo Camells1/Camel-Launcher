@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="nl" translate="no" class="notranslate">
+<head>
+  <!-- Spindel 4: geen "Deze pagina vertalen?"-melding van Chrome. De app
+       regelt zelf de taal (6 talen); browservertaling zou de app breken. -->
+  <meta name="google" content="notranslate">
+
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <script>document.write('<base href="' + location.pathname.replace(/[^/]*$/, '') + '">');</script>
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Spindel 4 — denk slim, scoor 4 op een rij. Speel tegen vrienden of de computer.">
+  <meta name="theme-color" content="#E98D3A">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Spindel 4">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+
+  <!-- Open Graph / deel-link-preview (WhatsApp, iMessage, Slack, etc.) -->
+  <meta property="og:title" content="Spindel 4">
+  <meta property="og:description" content="Denk slim, scoor 4 op een rij — speel Spindel 4 online.">
+  <meta property="og:image" content="https://play.spindel4.com/og-image.png">
+  <meta property="og:url" content="https://play.spindel4.com">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Spindel 4">
+  <meta name="twitter:description" content="Denk slim, scoor 4 op een rij — speel Spindel 4 online.">
+  <meta name="twitter:image" content="https://play.spindel4.com/og-image.png">
+
+  <title>Spindel 4</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&display=block" rel="stylesheet">
+
+  <!-- Laadscherm (v0.190/v0.191): zichtbaar zodra de HTML binnen is, terwijl
+       Flutter op de achtergrond laadt. Verdwijnt met een fade bij Flutters
+       eerste beeld (event "flutter-first-frame"). Volgt licht/donker van het
+       toestel. Sinds v0.191: hetzelfde web als het echte bord (7 ringen x 16
+       poten, zelfde geometrie/kleuren als _WebPainter in
+       web_board_widget.dart), de echte spin en mug uit assets/images (in de
+       webbuild te vinden onder assets/assets/images/) en de titel in
+       Bangers, net als VersionedTitle. -->
+  <style>
+    #splash {
+      --bg: #F1BE3C; --text: #4A3828; --bar: rgba(74,56,40,.18);
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: var(--bg);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      transition: opacity .45s ease, visibility .45s ease;
+    }
+    #splash .glow { fill: url(#sp-glow-light); }
+    @media (prefers-color-scheme: dark) {
+      #splash { --bg: #19120F; --text: #F1BE3C; --bar: rgba(241,190,60,.18); }
+      #splash .glow { fill: url(#sp-glow-dark); }
+    }
+    #splash.hidden { opacity: 0; visibility: hidden; }
+    #splash .stage { width: min(82vw, 52vh, 360px); aspect-ratio: 1; }
+    #splash svg { width: 100%; height: 100%; display: block; }
+    /* Zelfde lijnen als het echte bord (_WebPainter): #9C8465, 1.6 dik. */
+    #splash .spoke, #splash .ring {
+      fill: none; stroke: #9C8465; stroke-width: .8; stroke-linecap: round;
+      stroke-dasharray: 700; stroke-dashoffset: 700;
+      animation: sp-draw 1.2s ease-out forwards;
+    }
+    #splash .spoke { animation-duration: .8s; }
+    #splash .ring { animation-delay: var(--d); }
+    #splash .hub { transform-box: view-box; transform-origin: 100.0px 100.0px; transform: scale(0);
+      animation: sp-pop .5s cubic-bezier(.3,1.6,.5,1) 1.4s forwards; }
+    #splash .badge { font-family: "Bangers", Impact, "Arial Black", sans-serif; fill: #E8434B;
+      stroke: #5A1410; stroke-width: .9; paint-order: stroke fill; }
+    #splash .spider-img, #splash .thread { transform-box: view-box; transform-origin: 34.00px 0px; }
+    #splash .thread { stroke: #6B5B4B; stroke-width: .8; animation: sp-stretch 2s ease-in-out infinite; }
+    #splash .spider-img { animation: sp-bob 2s ease-in-out infinite; }
+    #splash .mosquito { transform-box: view-box; transform-origin: 171.00px 169.00px;
+      animation: sp-buzz 1.6s ease-in-out infinite; }
+    #splash h1 { margin: 14px 0 0; font: 400 clamp(40px, 11vw, 56px)/1 "Bangers", Impact, "Arial Black", sans-serif;
+      letter-spacing: 1px; color: #E8434B; -webkit-text-stroke: 5px #5A1410; paint-order: stroke fill; }
+    #splash .bar { position: relative; width: 150px; height: 4px; margin-top: 18px; border-radius: 4px;
+      background: var(--bar); overflow: hidden; }
+    #splash .bar::after { content: ""; position: absolute; top: 0; left: -40%; width: 40%; height: 100%;
+      border-radius: 4px; background: #E8434B; animation: sp-slide 1.2s ease-in-out infinite; }
+    #splash .label { margin-top: 10px; font-size: 14px; color: var(--text); opacity: .8; }
+    @keyframes sp-draw { to { stroke-dashoffset: 0; } }
+    @keyframes sp-pop { to { transform: scale(1); } }
+    @keyframes sp-bob { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(0.80px, 3.00px); } }
+    @keyframes sp-stretch { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    @keyframes sp-buzz { 0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(-1.2px, -2.2px) rotate(-3deg); } 75% { transform: translate(1px, -1px) rotate(2deg); } }
+    @keyframes sp-slide { 0% { left: -40%; } 100% { left: 100%; } }
+    @media (prefers-reduced-motion: reduce) {
+      #splash *, #splash *::after { animation-duration: .01s !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="splash" role="status" aria-live="polite">
+    <div class="stage">
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <defs>
+          <radialGradient id="sp-glow-light"><stop offset="0" stop-color="#FFF6E9"/><stop offset="1" stop-color="#FBEDD8" stop-opacity="0"/></radialGradient>
+          <radialGradient id="sp-glow-dark" r="0.75"><stop offset="0" stop-color="#241C16" stop-opacity=".28"/><stop offset="1" stop-color="#241C16" stop-opacity="0"/></radialGradient>
+          <radialGradient id="sp-hub" cx="0.35" cy="0.35" r="0.75"><stop offset="0" stop-color="#9C8465"/><stop offset="1" stop-color="#6B5643"/></radialGradient>
+          <filter id="sp-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2"/></filter>
+        </defs>
+        <circle class="glow" cx="100.0" cy="100.0" r="100.0"/>
+        <path class="spoke" d="M100.0 100.0L200.00 80.11"/><path class="spoke" d="M100.0 100.0L200.00 119.89"/><path class="spoke" d="M100.0 100.0L200.00 166.82"/><path class="spoke" d="M100.0 100.0L166.82 200.00"/><path class="spoke" d="M100.0 100.0L119.89 200.00"/><path class="spoke" d="M100.0 100.0L80.11 200.00"/><path class="spoke" d="M100.0 100.0L33.18 200.00"/><path class="spoke" d="M100.0 100.0L0.00 166.82"/><path class="spoke" d="M100.0 100.0L0.00 119.89"/><path class="spoke" d="M100.0 100.0L0.00 80.11"/><path class="spoke" d="M100.0 100.0L0.00 33.18"/><path class="spoke" d="M100.0 100.0L33.18 0.00"/><path class="spoke" d="M100.0 100.0L80.11 0.00"/><path class="spoke" d="M100.0 100.0L119.89 0.00"/><path class="spoke" d="M100.0 100.0L166.82 0.00"/><path class="spoke" d="M100.0 100.0L200.00 33.18"/>
+        <path class="ring" style="--d:0.45s" d="M117.26 96.57Q116.19 100.00 117.26 103.43Q114.96 106.20 114.63 109.78Q111.45 111.45 109.78 114.63Q106.20 114.96 103.43 117.26Q100.00 116.19 96.57 117.26Q93.80 114.96 90.22 114.63Q88.55 111.45 85.37 109.78Q85.04 106.20 82.74 103.43Q83.81 100.00 82.74 96.57Q85.04 93.80 85.37 90.22Q88.55 88.55 90.22 85.37Q93.80 85.04 96.57 82.74Q100.00 83.81 103.43 82.74Q106.20 85.04 109.78 85.37Q111.45 88.55 114.63 90.22Q114.96 93.80 117.26 96.57Z"/><path class="ring" style="--d:0.58s" d="M128.77 94.28Q126.99 100.00 128.77 105.72Q124.93 110.33 124.39 116.30Q119.08 119.08 116.30 124.39Q110.33 124.93 105.72 128.77Q100.00 126.99 94.28 128.77Q89.67 124.93 83.70 124.39Q80.92 119.08 75.61 116.30Q75.07 110.33 71.23 105.72Q73.01 100.00 71.23 94.28Q75.07 89.67 75.61 83.70Q80.92 80.92 83.70 75.61Q89.67 75.07 94.28 71.23Q100.00 73.01 105.72 71.23Q110.33 75.07 116.30 75.61Q119.08 80.92 124.39 83.70Q124.93 89.67 128.77 94.28Z"/><path class="ring" style="--d:0.71s" d="M140.28 91.99Q137.78 100.00 140.28 108.01Q134.91 114.46 134.15 122.82Q126.72 126.72 122.82 134.15Q114.46 134.91 108.01 140.28Q100.00 137.78 91.99 140.28Q85.54 134.91 77.18 134.15Q73.28 126.72 65.85 122.82Q65.09 114.46 59.72 108.01Q62.22 100.00 59.72 91.99Q65.09 85.54 65.85 77.18Q73.28 73.28 77.18 65.85Q85.54 65.09 91.99 59.72Q100.00 62.22 108.01 59.72Q114.46 65.09 122.82 65.85Q126.72 73.28 134.15 77.18Q134.91 85.54 140.28 91.99Z"/><path class="ring" style="--d:0.84s" d="M151.79 89.70Q148.58 100.00 151.79 110.30Q144.88 118.59 143.90 129.33Q134.35 134.35 129.33 143.90Q118.59 144.88 110.30 151.79Q100.00 148.58 89.70 151.79Q81.41 144.88 70.67 143.90Q65.65 134.35 56.10 129.33Q55.12 118.59 48.21 110.30Q51.42 100.00 48.21 89.70Q55.12 81.41 56.10 70.67Q65.65 65.65 70.67 56.10Q81.41 55.12 89.70 48.21Q100.00 51.42 110.30 48.21Q118.59 55.12 129.33 56.10Q134.35 65.65 143.90 70.67Q144.88 81.41 151.79 89.70Z"/><path class="ring" style="--d:0.97s" d="M163.29 87.41Q159.37 100.00 163.29 112.59Q154.85 122.72 153.66 135.85Q141.98 141.98 135.85 153.66Q122.72 154.85 112.59 163.29Q100.00 159.37 87.41 163.29Q77.28 154.85 64.15 153.66Q58.02 141.98 46.34 135.85Q45.15 122.72 36.71 112.59Q40.63 100.00 36.71 87.41Q45.15 77.28 46.34 64.15Q58.02 58.02 64.15 46.34Q77.28 45.15 87.41 36.71Q100.00 40.63 112.59 36.71Q122.72 45.15 135.85 46.34Q141.98 58.02 153.66 64.15Q154.85 77.28 163.29 87.41Z"/><path class="ring" style="--d:1.10s" d="M174.80 85.12Q170.17 100.00 174.80 114.88Q164.82 126.85 163.41 142.37Q149.61 149.61 142.37 163.41Q126.85 164.82 114.88 174.80Q100.00 170.17 85.12 174.80Q73.15 164.82 57.63 163.41Q50.39 149.61 36.59 142.37Q35.18 126.85 25.20 114.88Q29.83 100.00 25.20 85.12Q35.18 73.15 36.59 57.63Q50.39 50.39 57.63 36.59Q73.15 35.18 85.12 25.20Q100.00 29.83 114.88 25.20Q126.85 35.18 142.37 36.59Q149.61 50.39 163.41 57.63Q164.82 73.15 174.80 85.12Z"/><path class="ring" style="--d:1.23s" d="M186.31 82.83Q180.96 100.00 186.31 117.17Q174.80 130.98 173.17 148.89Q157.25 157.25 148.89 173.17Q130.98 174.80 117.17 186.31Q100.00 180.96 82.83 186.31Q69.02 174.80 51.11 173.17Q42.75 157.25 26.83 148.89Q25.20 130.98 13.69 117.17Q19.04 100.00 13.69 82.83Q25.20 69.02 26.83 51.11Q42.75 42.75 51.11 26.83Q69.02 25.20 82.83 13.69Q100.00 19.04 117.17 13.69Q130.98 25.20 148.89 26.83Q157.25 42.75 173.17 51.11Q174.80 69.02 186.31 82.83Z"/>
+        <g class="hub">
+          <circle cx="100.0" cy="100.0" r="10.56" fill="rgba(0,0,0,.26)" filter="url(#sp-blur)"/>
+          <circle cx="100.0" cy="100.0" r="10.56" fill="url(#sp-hub)" stroke="rgba(194,59,48,.7)" stroke-width="0.63"/>
+          <text class="badge" x="100.0" y="98.73" text-anchor="middle" font-size="6.55" textLength="16.90" lengthAdjust="spacingAndGlyphs">Spindel</text>
+          <text class="badge" x="100.0" y="108.45" text-anchor="middle" font-size="10.03">4</text>
+        </g>
+        <g class="spider">
+          <line class="thread" x1="34.00" y1="0" x2="42.00" y2="30.00"/>
+          <image class="spider-img" href="assets/assets/images/spider.png" x="21.00" y="10.57" width="42.00" height="38.85"/>
+        </g>
+        <image class="mosquito" href="assets/assets/images/mosquito.png" x="150.00" y="148.00" width="42.00" height="42.00"/>
+      </svg>
+    </div>
+    <h1>Spindel 4</h1>
+    <div class="bar"></div>
+    <div class="label" id="splash-label">Laden…</div>
+  </div>
+  <script>
+    (function () {
+      var lang = (navigator.language || 'nl').slice(0, 2).toLowerCase();
+      var text = { nl: 'Laden…', en: 'Loading…', de: 'Wird geladen…', fr: 'Chargement…',
+                   es: 'Cargando…', pt: 'Carregando…' }[lang] || 'Loading…';
+      document.getElementById('splash-label').textContent = text;
+      function hideSplash() {
+        var el = document.getElementById('splash');
+        if (!el || el.classList.contains('hidden')) return;
+        el.classList.add('hidden');
+        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 600);
+      }
+      // Flutter (web) stuurt dit event zodra het eerste beeld getekend is.
+      window.addEventListener('flutter-first-frame', hideSplash);
+    })();
+  </script>
+  <!--
+    You can customize the "flutter_bootstrap.js" script.
+    This is useful to provide a custom configuration to the Flutter loader
+    or to give the user feedback during the initialization process.
+
+    For more details:
+    * https://docs.flutter.dev/platform-integration/web/initialization
+  -->
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
