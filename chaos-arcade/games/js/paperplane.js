@@ -1,6 +1,6 @@
 /* Paper Plane */
 (function(){
-Kit.def({
+Kit.def({ waitInput:true,
   aspect:.8, winAt:300,
   how:'Your paper plane glides forward on its own. Hold the TOP half of the screen (or ↑) to pull up, the BOTTOM half (or ↓) to dive. Fly through the ⭕ rings for points, avoid the buildings and the storm clouds. Wind gusts push you around.',
   init(k){ const d = k.data; d.y = k.H * .4; d.vy = 0; d.ang = 0; d.ctrl = 0; d.obs = []; d.rings = []; d.next = 1; d.rnext = .6; d.speed = 150; d.dist = 0; d.gust = 0; d.gustT = 4; d.trail = []; },

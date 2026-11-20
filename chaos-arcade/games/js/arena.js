@@ -21,7 +21,7 @@ function think(d, sn){
   });
   sn.dir = bestDir;
 }
-Kit.def({
+Kit.def({ waitInput:true, waitText:'👆 SWIPE TO GO', waitHint:'or press an arrow key / WASD',
   aspect:1, winAt:500,
   how:'You are the 🟩 green snake. Three AI snakes compete for the same food. Steer with swipes or arrows / WASD. If any snake hits your body, it dies and turns into a pile of food. Kill them all to start the next wave. Do not crash yourself!',
   init(k){ const d = k.data; d.snakes = [mkSnake(15, 15, 1, '#55ff55', false)]; d.wave = 0; spawnAI(k); d.food = []; for (let i=0;i<6;i++) d.food.push(freeCell(d)); d.q = []; d.step = 0; d.rate = .12; k.hud('wv', '🐉 wave 1'); },

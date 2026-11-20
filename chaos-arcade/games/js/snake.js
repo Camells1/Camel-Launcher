@@ -8,7 +8,7 @@ function die(k){
   k.burst((h.x+.5)*c, (h.y+.5)*c, ['#55ff55','#b5ff7a','#ffffff'], 30, 320);
   k.over({ lines:['🐍 Length ' + d.s.length + ' · 🍎 ' + d.eaten + ' eaten'] });
 }
-Kit.def({
+Kit.def({ waitInput:true, waitText:'👆 SWIPE TO GO', waitHint:'or press an arrow key / WASD',
   aspect:1, winAt:300,
   how:'Swipe or use the arrow keys / WASD to steer. Eat 🍎 to grow and speed up. ✨ Golden apples are worth 5x but vanish fast. Eat quickly to build a combo multiplier. Walls and your own tail are deadly.',
   init(k){ const d = k.data; d.s = [{x:10,y:10},{x:9,y:10},{x:8,y:10}]; d.dir = {x:1,y:0}; d.q = []; d.step = 0; d.rate = .13; d.f = free(d); d.gold = null; d.last = 0; d.grow = 0; d.eaten = 0; k.hud('len', '🐍 3'); },

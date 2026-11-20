@@ -1,6 +1,6 @@
 /* Cave Copter */
 (function(){
-Kit.def({
+Kit.def({ waitInput:true,
   aspect:.75, winAt:400,
   how:'Hold (tap and hold, or hold SPACE) to lift the copter. Let go to drop. Stay inside the cave and dodge the rock pillars. The cave narrows and speeds up the further you fly. 💎 crystals are +20.',
   init(k){ const d = k.data; d.y = k.H/2; d.vy = 0; d.hold = false; d.segs = []; d.x0 = 0; d.speed = 170; d.gap = k.H * .62; d.mid = k.H/2; d.pillars = []; d.gems = []; d.smoke = []; d.dist = 0;

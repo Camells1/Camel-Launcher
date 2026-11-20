@@ -154,15 +154,24 @@ function sizeCanvas(){
   k.W = w; k.H = h;
   if (changed && def.resize) def.resize(k);
 }
+function drawWait(ctx){
+  const t = k.waitT || 0, a = .75 + Math.sin(t * 6) * .25, w = Math.min(k.W - 30, 300), x = (k.W - w) / 2, y = k.H * .5 - 34;
+  ctx.save(); ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fillRect(x, y, w, 68); ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.strokeRect(x, y, w, 68);
+  ctx.globalAlpha = a; ctx.fillStyle = '#ffff55'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = 'bold 20px monospace';
+  ctx.fillText(def.waitText || '👆 TAP TO GO', k.W / 2, y + 24); ctx.globalAlpha = 1; ctx.fillStyle = '#fff'; ctx.font = '12px monospace';
+  ctx.fillText(def.waitHint || 'or press any key', k.W / 2, y + 50); ctx.restore();
+}
 function frame(now){
   const dt = Math.min(.05, (now - last) / 1000); last = now;
   if (k.running && !k.paused){
-    if (!k._stop(dt)){ k.t += dt; if (def.update) def.update(dt, k); k._tick(dt); }
+    if (k.waiting){ k.waitT = (k.waitT || 0) + dt; k._tick(0); }
+    else if (!k._stop(dt)){ k.t += dt; if (def.update) def.update(dt, k); k._tick(dt); }
   } else k._tick(0);
   if (k.canvas){
     const ctx = k.ctx; ctx.save(); k._pre(ctx);
     if (def.draw) def.draw(ctx, k);
     k._post(ctx); ctx.restore();
+    if (k.waiting && k.running) drawWait(ctx);
   }
   raf = requestAnimationFrame(frame);
 }
@@ -204,6 +213,7 @@ function start(){
   if (k.canvas) sizeCanvas();
   if (def.init) def.init(k);
   renderHud();
+  k.waiting = !!def.waitInput; k.waitT = 0;
   if (def.dom || def.countdown === false){ k.running = true; return; }
   const ov = $('#kitOv'); let n = 3; const run = (k.runId = (k.runId || 0) + 1);
   ov.className = 'kit-ov count';
@@ -302,6 +312,7 @@ function bindInput(){
     if (k.paused){ k.paused = false; $('#kitOv').className = 'kit-ov hide'; return; }
     if (!k.running) return;
     if (k.canvas) e.preventDefault();
+    k.waiting = false;
     const [x, y] = local(e); downAt = { x, y, t:performance.now() };
     if (def.down) def.down(x, y, k, e);
   });
@@ -322,6 +333,7 @@ function bindInput(){
     }
     if (k.paused){ k.paused = false; $('#kitOv').className = 'kit-ov hide'; return; }
     if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key) && !def.typing) e.preventDefault();
+    if (!/^(Shift|Control|Alt|Meta|Tab|Escape)$/.test(e.key)) k.waiting = false;
     if (def.key) def.key(e.key, k, e);
   });
   addEventListener('keyup', e => { if (k.running && def.keyup) def.keyup(e.key, k, e); });

@@ -9,7 +9,7 @@ function obstacle(k){
   if (Math.random() < .35) d.gems.push({ x:x + 70, y:k.rand(PAD + 30, k.H - PAD - 30) });
 }
 function flip(k){ const d = k.data; if (d.dead) return; d.g = -d.g; d.vy *= .3; k.beep(d.g > 0 ? 300 : 600, .05, 'square', .05); d.flips++; }
-Kit.def({
+Kit.def({ waitInput:true,
   aspect:.75, winAt:500,
   how:'Your cube runs on its own. Tap, click or press SPACE to flip gravity between the floor and ceiling. Dodge the spikes, grab 💎 for +25. It speeds up the longer you survive.',
   init(k){ const d = k.data; d.y = k.H - PAD - 14; d.vy = 0; d.g = 1; d.obs = []; d.gems = []; d.next = 1.2; d.speed = 220; d.dist = 0; d.dead = false; d.flips = 0; d.trail = []; },

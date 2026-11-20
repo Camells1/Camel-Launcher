@@ -1,7 +1,7 @@
 /* Jetpack Bird */
 (function(){
 function flap(k){ const d = k.data; if (d.dead) return; d.vy = -330; k.beep(520, .05, 'square', .05); for (let i=0;i<4;i++) d.puffs.push({ x:d.x - 10, y:d.y + 10, t:0 }); }
-Kit.def({
+Kit.def({ waitInput:true,
   aspect:.66, winAt:10,
   how:'Tap, click or press SPACE to fire your jetpack. Fly through the gaps. Grab 🪙 coins for +5. Every 10 pipes the world speeds up. One touch and it is over.',
   scoreText:(s) => s,

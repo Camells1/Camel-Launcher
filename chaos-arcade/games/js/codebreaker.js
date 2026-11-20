@@ -3,18 +3,18 @@
 const COLORS = ['#ff3a3a','#ffaa00','#ffee33','#3ad03a','#3a8aff','#c050ff'], LEN = 4, TRIES = 8;
 function render(k){
   const d = k.data;
-  let h = '<div style="display:flex;flex-direction:column;gap:6px;width:min(100%,360px);margin:0 auto">';
+  let h = '<div style="display:flex;flex-direction:column;gap:4px;width:min(100%,300px);margin:0 auto">';
   for (let r=0;r<TRIES;r++){
     const g = d.rows[r], cur = r === d.rows.length && !d.done;
     const pegs = (g || (cur ? d.cur : [])).concat(Array(LEN).fill(null)).slice(0, LEN);
-    h += '<div style="display:grid;grid-template-columns:repeat(4,1fr) 52px;gap:6px;align-items:center;padding:4px;background:' + (cur ? 'rgba(85,255,255,.12)' : 'rgba(0,0,0,.3)') + ';border:2px solid ' + (cur ? '#55ffff' : '#000') + '">';
+    h += '<div style="display:grid;grid-template-columns:repeat(4,min(11vw,30px,4.6vh)) 30px;justify-content:center;gap:8px;align-items:center;padding:3px;background:' + (cur ? 'rgba(85,255,255,.12)' : 'rgba(0,0,0,.3)') + ';border:2px solid ' + (cur ? '#55ffff' : '#000') + '">';
     pegs.forEach(c => { h += '<div style="aspect-ratio:1;border:3px solid #000;border-radius:50%;background:' + (c == null ? '#222' : COLORS[c]) + ';box-shadow:inset 3px 3px 0 rgba(255,255,255,.3)"></div>'; });
     const fb = d.fb[r];
-    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;width:40px">';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;width:28px">';
     for (let i=0;i<LEN;i++){ const col = fb ? (i < fb[0] ? '#111' : i < fb[0] + fb[1] ? '#fff' : '#444') : '#333'; h += '<div style="aspect-ratio:1;border-radius:50%;background:' + col + ';border:2px solid #000"></div>'; }
     h += '</div></div>';
   }
-  h += '</div><div class="krow" id="cbPad">' + COLORS.map((c, i) => '<button class="kcell" data-c="' + i + '" style="width:48px;height:48px;border-radius:50%;background:' + c + '"></button>').join('') + '</div>' +
+  h += '</div><div class="krow" id="cbPad">' + COLORS.map((c, i) => '<button class="kcell" data-c="' + i + '" style="width:44px;height:44px;border-radius:50%;background:' + c + '"></button>').join('') + '</div>' +
     '<div class="krow"><button class="btn" id="cbDel">⌫ UNDO</button><button class="btn green" id="cbGo">✔ GUESS</button></div><div class="kmsg">⚫ right color, right spot · ⚪ right color, wrong spot</div>';
   k.root.innerHTML = h;
   k.root.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => { if (d.cur.length < LEN && !d.done){ d.cur.push(+b.dataset.c); k.beep(400 + +b.dataset.c * 80, .04); render(k); } }));
