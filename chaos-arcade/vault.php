@@ -45,6 +45,8 @@ function plugin_auth(){
 }
 function valid_uuid($u){ return is_string($u) && preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $u); }
 function valid_mc($n){ return is_string($n) && preg_match('/^[A-Za-z0-9_.]{2,20}$/', $n); }
+/* A player is identified by UUID (server plugin) or by Minecraft name (client mod on an alt account). */
+function player_id($in){ $u = (string)($in['uuid'] ?? ''); if (valid_uuid($u)) return $u; $n = (string)($in['name'] ?? ''); return valid_mc($n) ? 'n:' . strtolower($n) : null; }
 function valid_tx($t){ return is_string($t) && preg_match('/^[A-Za-z0-9-]{8,64}$/', $t); }
 
 switch ($action){
@@ -52,8 +54,8 @@ switch ($action){
 /* ================= website (logged-in player) ================= */
 case 'info': {
   $u = require_user(); $d = read_file('vault.json'); $vu = $d['u'][$u['id']] ?? v_blank_user();
-  $queue = array_values(array_filter($d['q'] ?? [], function($q) use ($u){ return $q['uid'] === $u['id'] && in_array($q['s'], ['queued','sent'], true); }));
-  out(200, ['ok'=>true, 'enabled'=>$secretOk, 'bal'=>$vu['bal'], 'mc'=>$vu['mcName'] ?: null, 'wag'=>$vu['wag'], 'dep'=>$vu['dep'], 'wd'=>$vu['wd'], 'hist'=>array_slice($vu['hist'], 0, 20),
+  $queue = array_values(array_filter($d['q'] ?? [], function($q) use ($u){ return $q['uid'] === $u['id'] && in_array($q['s'], ['queued','sent','review'], true); }));
+  out(200, ['ok'=>true, 'enabled'=>$secretOk, 'bot'=>defined('VAULT_BOT') ? VAULT_BOT : '', 'bal'=>$vu['bal'], 'mc'=>$vu['mcName'] ?: null, 'wag'=>$vu['wag'], 'dep'=>$vu['dep'], 'wd'=>$vu['wd'], 'hist'=>array_slice($vu['hist'], 0, 20),
     'pending'=>array_map(function($q){ return ['a'=>$q['a'], 's'=>$q['s'], 'ts'=>$q['ts']]; }, $queue),
     'limits'=>['minBet'=>V_MIN_BET, 'maxBet'=>V_MAX_BET, 'maxPayout'=>V_MAX_PAYOUT, 'minWithdraw'=>V_MIN_WITHDRAW], 'rtp'=>V_RTP]);
 }
@@ -122,11 +124,25 @@ case 'bet': {
   out(200, ['ok'=>true, 'win'=>$win, 'pay'=>$pay, 'mult'=>round($mult, 4), 'bal'=>$bal] + $res);
 }
 
+case 'review': {
+  // admins: payouts the mod could not confirm. paid=1 marks it paid, paid=0 refunds the player's Vault.
+  $u = require_user(); if (!is_admin($u)) out(403, ['ok'=>false, 'error'=>'admins only']);
+  if ($POST && isset($in['id'])){
+    $id = (int)$in['id']; $paid = !empty($in['paid']);
+    with_file('vault.json', true, function(&$d) use ($id, $paid){ foreach (($d['q'] ?? []) as $i => $q){ if ($q['id'] !== $id || $q['s'] !== 'review') continue;
+      $d['q'][$i]['s'] = $paid ? 'done' : 'failed';
+      if ($paid) $d['u'][$q['uid']]['wd'] += $q['a']; else { $d['u'][$q['uid']]['bal'] += $q['a']; v_hist($d['u'][$q['uid']], 'refund', $q['a'], 'checked by an admin'); } } });
+  }
+  $d = read_file('vault.json'); $users = read_file('users.json');
+  $list = array_values(array_map(function($q) use ($users){ return ['id'=>$q['id'], 'site'=>$users[$q['uid']]['name'] ?? $q['uid'], 'mc'=>$q['name'], 'a'=>$q['a'], 'why'=>$q['why'] ?? '', 'ts'=>$q['ts']]; }, array_filter($d['q'] ?? [], function($q){ return $q['s'] === 'review'; })));
+  out(200, ['ok'=>true, 'list'=>$list, 'house'=>$d['house'] ?? 0]);
+}
+
 /* ================= plugin (signed) ================= */
 case 'mc_link': {
   plugin_auth();
-  $code = strtoupper((string)($in['code'] ?? '')); $uuid = (string)($in['uuid'] ?? ''); $name = (string)($in['name'] ?? '');
-  if (!valid_uuid($uuid) || !valid_mc($name)) out(400, ['ok'=>false, 'error'=>'bad player']);
+  $code = strtoupper((string)($in['code'] ?? '')); $name = (string)($in['name'] ?? ''); $uuid = player_id($in);
+  if (!$uuid || !valid_mc($name)) out(400, ['ok'=>false, 'error'=>'bad player']);
   $err = null; $site = '';
   with_file('vault.json', true, function(&$d) use ($code, $uuid, $name, &$err, &$site){
     $c = $d['codes'][$code] ?? null;
@@ -143,15 +159,15 @@ case 'mc_link': {
 
 case 'mc_deposit': case 'mc_withdraw': {
   plugin_auth();
-  $uuid = (string)($in['uuid'] ?? ''); $tx = (string)($in['tx'] ?? ''); $amt = filter_var($in['amount'] ?? null, FILTER_VALIDATE_INT);
-  if (!valid_uuid($uuid) || !valid_tx($tx)) out(400, ['ok'=>false, 'error'=>'bad request']);
+  $uuid = player_id($in); $tx = (string)($in['tx'] ?? ''); $amt = filter_var($in['amount'] ?? null, FILTER_VALIDATE_INT);
+  if (!$uuid || !valid_tx($tx)) out(400, ['ok'=>false, 'error'=>'bad request']);
   if ($amt === false || $amt < 1 || $amt > V_MAX_DEPOSIT) out(400, ['ok'=>false, 'error'=>'bad amount']);
   if ($action === 'mc_withdraw' && $amt < V_MIN_WITHDRAW) out(400, ['ok'=>false, 'error'=>'minimum withdrawal is ' . number_format(V_MIN_WITHDRAW)]);
   $err = null; $bal = 0; $dup = false;
   with_file('vault.json', true, function(&$d) use ($uuid, $tx, $amt, $action, &$err, &$bal, &$dup){
     if (isset($d['tx'][$tx])) { $dup = true; $uid = $d['mc'][$uuid] ?? null; $bal = $uid ? $d['u'][$uid]['bal'] : 0; return; }
     $uid = $d['mc'][$uuid] ?? null;
-    if (!$uid) { $err = 'your Minecraft account is not linked. Get a code on the website and run /arcade link <code>.'; return; }
+    if (!$uid) { $err = 'your Minecraft account is not linked to the website yet'; return; }
     if ($action === 'mc_withdraw'){
       if ($d['u'][$uid]['bal'] < $amt) { $err = 'not enough in your Vault'; return; }
       $d['u'][$uid]['bal'] -= $amt; $d['u'][$uid]['wd'] += $amt; v_hist($d['u'][$uid], 'withdraw', -$amt, 'in-game');
@@ -161,6 +177,23 @@ case 'mc_deposit': case 'mc_withdraw': {
   });
   if ($err) out(400, ['ok'=>false, 'error'=>$err]);
   out(200, ['ok'=>true, 'bal'=>$bal, 'duplicate'=>$dup]);
+}
+
+case 'mc_request': {
+  // a player asked the casino account in-game for a withdrawal: take it off the Vault and queue the payout
+  plugin_auth(); $uuid = player_id($in); $amt = filter_var($in['amount'] ?? null, FILTER_VALIDATE_INT); $err = null; $bal = 0;
+  if (!$uuid) out(400, ['ok'=>false, 'error'=>'bad player']);
+  if ($amt === false || $amt < V_MIN_WITHDRAW) out(400, ['ok'=>false, 'error'=>'minimum withdrawal is ' . number_format(V_MIN_WITHDRAW)]);
+  with_file('vault.json', true, function(&$d) use ($uuid, $amt, &$err, &$bal){
+    $uid = $d['mc'][$uuid] ?? null;
+    if (!$uid) { $err = 'your Minecraft account is not linked to the website yet'; return; }
+    if ($d['u'][$uid]['bal'] < $amt) { $err = 'not enough in your Vault (you have ' . number_format($d['u'][$uid]['bal']) . ')'; return; }
+    $d['u'][$uid]['bal'] -= $amt; v_hist($d['u'][$uid], 'withdraw', -$amt, 'asked in-game'); $bal = $d['u'][$uid]['bal'];
+    $d['qseq'] = ($d['qseq'] ?? 0) + 1;
+    $d['q'][] = ['id'=>$d['qseq'], 'uid'=>$uid, 'mc'=>$uuid, 'name'=>$d['u'][$uid]['mcName'], 'a'=>$amt, 's'=>'queued', 'ts'=>time()];
+  });
+  if ($err) out(400, ['ok'=>false, 'error'=>$err]);
+  out(200, ['ok'=>true, 'bal'=>$bal]);
 }
 
 case 'mc_refund': {
@@ -173,8 +206,8 @@ case 'mc_refund': {
 }
 
 case 'mc_balance': {
-  plugin_auth(); $uuid = (string)($in['uuid'] ?? '');
-  $d = read_file('vault.json'); $uid = $d['mc'][$uuid] ?? null;
+  plugin_auth(); $uuid = player_id($in);
+  $d = read_file('vault.json'); $uid = $uuid ? ($d['mc'][$uuid] ?? null) : null;
   out(200, ['ok'=>true, 'linked'=>(bool)$uid, 'bal'=>$uid ? $d['u'][$uid]['bal'] : 0]);
 }
 
@@ -189,9 +222,11 @@ case 'mc_queue': {
 }
 
 case 'mc_done': {
-  plugin_auth(); $id = (int)($in['id'] ?? 0); $ok = !empty($in['ok']); $why = substr((string)($in['reason'] ?? ''), 0, 80);
-  with_file('vault.json', true, function(&$d) use ($id, $ok, $why){
+  plugin_auth(); $id = (int)($in['id'] ?? 0); $ok = !empty($in['ok']); $hold = !empty($in['hold']); $why = substr((string)($in['reason'] ?? ''), 0, 80);
+  with_file('vault.json', true, function(&$d) use ($id, $ok, $hold, $why){
     foreach (($d['q'] ?? []) as $i => $q){ if ($q['id'] !== $id || $q['s'] !== 'sent') continue;
+      // hold: the payment may or may not have happened in-game; keep it for an admin to check instead of refunding
+      if ($hold){ $d['q'][$i]['s'] = 'review'; $d['q'][$i]['why'] = $why; v_hist($d['u'][$q['uid']], 'withdraw', 0, 'being checked by an admin'); continue; }
       $d['q'][$i]['s'] = $ok ? 'done' : 'failed';
       if ($ok) $d['u'][$q['uid']]['wd'] += $q['a'];
       else { $d['u'][$q['uid']]['bal'] += $q['a']; v_hist($d['u'][$q['uid']], 'refund', $q['a'], 'payout failed: ' . $why); }

@@ -1,0 +1,13 @@
+pluginManagement {
+    repositories {
+        maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+        maven { name = 'Central'; url = 'https://repo1.maven.org/maven2/' }
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositories {
+        maven { name = 'Central'; url = 'https://repo1.maven.org/maven2/' }
+    }
+}
+rootProject.name = 'ArcadeBridge'

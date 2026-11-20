@@ -487,7 +487,7 @@ async function vapi(action, body){
   if (!res.ok || !j.ok) throw new Error(j && j.error ? j.error : 'error ' + res.status);
   return j;
 }
-const Vault = { info:() => vapi('info'), linkCode:() => vapi('linkcode', {}), unlink:() => vapi('unlink', {}), withdraw:(amount) => vapi('withdraw', { amount }), bet:(b) => vapi('bet', b) };
+const Vault = { info:() => vapi('info'), linkCode:() => vapi('linkcode', {}), unlink:() => vapi('unlink', {}), withdraw:(amount) => vapi('withdraw', { amount }), bet:(b) => vapi('bet', b), review:(id, paid) => vapi('review', id == null ? null : { id, paid }) };
 const PROGRESS_KEYS = ['xp','games','plays','wins','tops','ach','chestStreak','lastChest','day','fav','coins','vip','cq'];
 function progressBlob(){ const o = {}; PROGRESS_KEYS.forEach(k => o[k] = state[k]); return o; }
 let syncT = 0;

@@ -11,6 +11,8 @@ define('ADMINS', []);
 // Vault bridge secret: a long random string, the SAME one as secret: in the ArcadeBridge plugin's config.yml.
 // Leave it containing CHANGE and the Vault stays switched off.
 if (!defined('MC_SECRET')) define('MC_SECRET', 'CHANGE-ME-to-a-long-random-string');
+// The Minecraft account (your alt) running the ArcadeBridge mod: players pay and message this account.
+if (!defined('VAULT_BOT')) define('VAULT_BOT', 'YourAltName');
 define('DATA_DIR', __DIR__ . '/lb-data');
 define('TOKEN_DAYS', 60);
 /* ================================================= */

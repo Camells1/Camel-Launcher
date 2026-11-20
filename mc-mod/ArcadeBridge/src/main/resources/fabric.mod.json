@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "arcadebridge",
+  "version": "${version}",
+  "name": "ArcadeBridge",
+  "description": "Runs on the casino's Minecraft account: credits payments it receives to the Chaos Arcade website Vault and pays out withdrawals.",
+  "environment": "client",
+  "entrypoints": { "client": ["nl.chaosarcade.bridge.ArcadeBridgeClient"] },
+  "depends": { "fabricloader": ">=0.15.0", "minecraft": "~1.21", "fabric-api": "*", "java": ">=21" }
+}
