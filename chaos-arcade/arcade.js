@@ -477,6 +477,17 @@ async function api(action, body){
   if (!res.ok || !j.ok) throw new Error(j && j.error ? j.error : 'error ' + res.status);
   return j;
 }
+/* Vault (server-side in-game money, see vault.php). Only works while logged in. */
+async function vapi(action, body){
+  if (!state.auth) throw new Error('Sign in first');
+  const opts = { method:body ? 'POST' : 'GET', headers:{ 'X-Auth':state.auth.token }, cache:'no-store' };
+  if (body){ opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+  const res = await fetch(API_URL.replace(/api\.php$/, 'vault.php') + '?action=' + action, opts);
+  let j = null; try { j = await res.json(); } catch(e){ throw new Error('The Vault goes live when the arcade runs on your website (needs PHP).'); }
+  if (!res.ok || !j.ok) throw new Error(j && j.error ? j.error : 'error ' + res.status);
+  return j;
+}
+const Vault = { info:() => vapi('info'), linkCode:() => vapi('linkcode', {}), unlink:() => vapi('unlink', {}), withdraw:(amount) => vapi('withdraw', { amount }), bet:(b) => vapi('bet', b) };
 const PROGRESS_KEYS = ['xp','games','plays','wins','tops','ach','chestStreak','lastChest','day','fav','coins','vip','cq'];
 function progressBlob(){ const o = {}; PROGRESS_KEYS.forEach(k => o[k] = state[k]); return o; }
 let syncT = 0;
@@ -749,7 +760,7 @@ window.Arcade = {
   GAMES, RANKS, ROOT, CATS, CAT_BG,
   get state(){ return state; },
   save, load, dayKey, hashStr, mulberry32, h2, rnd, esc,
-  rankInfo, featuredGame, gameById, gameStats, addXP, report, unlock, coins, addCoins, spendCoins, coinInfo, START_COINS, vip:{ TIERS:VIP_TIERS, wager:vipWager, info:vipInfo, claim:vipClaim }, casinoBet, cq:cqInfo,
+  rankInfo, featuredGame, gameById, gameStats, addXP, report, unlock, coins, addCoins, spendCoins, coinInfo, START_COINS, vault:Vault, vip:{ TIERS:VIP_TIERS, wager:vipWager, info:vipInfo, claim:vipClaim }, casinoBet, cq:cqInfo,
   Sfx, setMuted, buzz,
   px, texture, textureURL, paintBody, icon, ICONS,
   toast, achToast, flash, bigText, shake, burst, confetti,

@@ -51,6 +51,9 @@
   .cz-seg{display:flex;border:3px solid #000}
   .cz-seg button{flex:1;font:inherit;font-size:13px;padding:9px 4px;border:0;background:#333;color:#fff;cursor:pointer}
   .cz-seg button.on{background:#ffd23a;color:#000}
+  .cz-vm{display:flex;gap:6px}
+  body.vault-on .cz-wallet{background:radial-gradient(400px 200px at 0 0,rgba(47,210,122,.25),transparent 70%),linear-gradient(135deg,#123a2a,#0f1a2a) !important;border-color:#1f7a4a !important}
+  body.vault-on .cz-bal span#czBal{color:#55ff99}
   .cz-card{width:110px;height:154px;background:#fff;color:#000;border:4px solid #000;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:48px;line-height:1;box-shadow:0 8px 0 rgba(0,0,0,.4)}
   .cz-card.red{color:#d02020}
   .cz-card small{font-size:30px}
@@ -73,7 +76,8 @@
   <div id="arcadeBar"></div>
   <div class="cz-tabs" id="czTabs"></div>
   <div class="dark-panel cz-wallet">
-    <div class="cz-bal"><small>YOUR COINS</small><span id="czBal">0</span> 🪙</div>
+    <div class="cz-bal"><small id="czBalLab">YOUR COINS</small><span id="czBal">0</span> <span id="czCoinIc">🪙</span></div>
+    <div class="cz-vm"><button class="btn small" data-vm="0">🪙 Coins</button><button class="btn small" data-vm="1">💰 Vault</button><a class="btn small" href="../vault.html" title="Deposit / withdraw">⇄</a></div>
     <div style="text-align:right;font-size:12px;line-height:1.6">Session: <b id="czSess">0</b><br><span id="czRefill"></span></div>
     <div style="flex-basis:100%;font-size:11px;color:#c8c8c8"><div style="display:flex;justify-content:space-between"><span>👑 Road to 1,000,000</span><span id="czGoalTxt"></span></div><div style="height:10px;border:2px solid #000;background:#222;margin-top:3px"><div id="czGoal" style="height:100%;width:0;background:linear-gradient(90deg,#b08a1a,#ffd23a)"></div></div><div id="czEarn" style="margin-top:3px"></div><div id="czVip" style="margin-top:4px;font-size:12px"></div></div>
   </div>
@@ -106,9 +110,40 @@ function edgeText(){
   const pct = +(EDGE * 100).toFixed(2), rtp = +(RTP * 100).toFixed(2);
   $('#czEdgeTxt').innerHTML = '<b>How the ' + pct + '% house edge works:</b> every game here pays back <b>' + rtp + '%</b> of what is bet, on average. A win at 50% chance pays <b>' + (2 * RTP).toFixed(2) + '×</b> instead of 2×, and a 10% chance pays <b>' + (10 * RTP).toFixed(2) + '×</b> instead of 10×. Over many bets you lose about ' + pct + ' 🪙 for every 100 🪙 you bet. Single bets can still win big.';
 }
+/* ---------- 💰 Vault mode: bets use the server-side Vault (real in-game money) ---------- */
+const VAULT_GAMES = ['dice', 'limbo', 'coinflip'];
+const V = { on:false, bal:0 };
+try { V.on = sessionStorage.getItem('cz_vault') === '1'; } catch(e){}
+function money(n){ return V.on ? '$' + fmt(n) : fmt(n) + ' 🪙'; }
+function curBal(){ return V.on ? V.bal : (A.load(), A.state.coins); }
+function setVault(on, quiet){
+  if (on && !A.acct.user){ if (!quiet) A.toast('💰 Sign in to play with your Vault'); on = false; }
+  if (on && !VAULT_GAMES.includes(cur)){ if (!quiet) A.toast('💰 The Vault works in Dice, Limbo and Coin Flip'); on = false; }
+  V.on = on; try { sessionStorage.setItem('cz_vault', on ? '1' : '0'); } catch(e){}
+  if (on) A.vault.info().then(j => { if (!j.enabled){ A.toast('💰 The Vault is not switched on yet'); setVault(false, true); return; } V.bal = j.bal; wallet(); }).catch(e => { A.toast(e.message); setVault(false, true); });
+  wallet(); if (IMPL[cur] && IMPL[cur].facts) IMPL[cur].facts();
+}
+function vaultPlay(body, btn, done){
+  if (busy) return;
+  bet = Math.max(1, Math.floor(+$('#czBet').value) || 1);
+  if (bet > V.bal){ A.toast('💰 Not enough in your Vault (you have $' + fmt(V.bal) + ')'); A.Sfx.fail(); return; }
+  busy = true; lockBet(true); $(btn).disabled = true;
+  A.vault.bet(Object.assign({ amount:bet }, body)).then(j => { V.bal = j.bal; busy = false; done(j); })
+    .catch(e => { A.toast('💰 ' + e.message); A.Sfx.fail(); busy = false; lockBet(false); $(btn).disabled = false; });
+}
+function vRecord(won, profit, label){
+  session += 0; vSession += profit;
+  const h = hist[cur] || (hist[cur] = []); h.unshift([won, '💰' + label]); if (h.length > 16) h.pop();
+  const el = $('#czHist'); if (el) el.innerHTML = h.map(([w, l]) => '<span class="' + (w ? 'w' : 'l') + '">' + l + '</span>').join('');
+  wallet();
+}
+let vSession = 0;
 function fmt(n){ return Math.floor(n).toLocaleString('en-US'); }
 function wallet(){
-  A.load(); $('#czBal').textContent = fmt(A.state.coins);
+  A.load(); $('#czBal').textContent = V.on ? '$' + fmt(V.bal) : fmt(A.state.coins);
+  $('#czBalLab').textContent = V.on ? 'YOUR VAULT (IN-GAME MONEY)' : 'YOUR COINS'; $('#czCoinIc').style.display = V.on ? 'none' : '';
+  document.querySelectorAll('[data-vm]').forEach(b => b.className = 'btn small' + ((b.dataset.vm === '1') === V.on ? ' on' : ''));
+  document.body.classList.toggle('vault-on', V.on);
   $('#czSess').textContent = (session > 0 ? '+' : '') + fmt(session) + ' 🪙'; $('#czSess').style.color = session >= 0 ? '#55ff55' : '#ff7777';
   const ci = A.coinInfo(), r = $('#czRefill'), wait = (A.state.lastRefill || 0) + 3600e3 - Date.now();
   if (A.state.coins < ci.refillBelow) r.innerHTML = wait <= 0 ? '<button class="btn small green" id="czFree">🆘 FREE ' + ci.refill + ' 🪙</button>' : 'Free refill in ' + Math.ceil(wait / 60000) + ' min';
@@ -139,9 +174,9 @@ function betBox(extra){
 }
 function bindBet(onChange){
   const inp = $('#czBet');
-  const set = (v) => { A.load(); bet = Math.max(1, Math.min(Math.floor(v) || 1, Math.max(1, Math.floor(A.state.coins)))); inp.value = bet; try { sessionStorage.setItem('cz_bet', bet); } catch(e){} onChange && onChange(); };
+  const set = (v) => { A.load(); bet = V.on ? Math.max(1, Math.floor(v) || 1) : Math.max(1, Math.min(Math.floor(v) || 1, Math.max(1, Math.floor(curBal())))) /* Vault: never silently turn a typo into an all-in */; inp.value = bet; try { sessionStorage.setItem('cz_bet', bet); } catch(e){} onChange && onChange(); };
   inp.addEventListener('change', () => set(+inp.value)); inp.addEventListener('input', () => { bet = Math.max(1, Math.floor(+inp.value) || 1); onChange && onChange(); });
-  document.querySelectorAll('[data-bx]').forEach(b => b.addEventListener('click', () => { A.Sfx.click(); set(b.dataset.bx === 'half' ? bet / 2 : b.dataset.bx === 'dbl' ? bet * 2 : 1e12); }));
+  document.querySelectorAll('[data-bx]').forEach(b => b.addEventListener('click', () => { A.Sfx.click(); set(b.dataset.bx === 'half' ? bet / 2 : b.dataset.bx === 'dbl' ? Math.min(bet * 2, Math.max(1, Math.floor(curBal()))) : Math.max(1, Math.floor(curBal()))); }));
 }
 function takeBet(){
   bet = Math.max(1, Math.floor(+$('#czBet').value) || 1);
@@ -175,18 +210,19 @@ const Dice = {
     const f = $('#dFill'); if (this.over){ f.style.left = (100 - this.chance) + '%'; f.style.right = '0'; } else { f.style.left = '0'; f.style.right = (100 - this.chance) + '%'; }
     $('#dMsg').textContent = 'Win if the roll is ' + (this.over ? 'over ' + this.target().toFixed(2) : 'under ' + this.target().toFixed(2));
   },
-  roll(){
-    if (busy || !takeBet()) return; busy = true; lockBet(true); $('#dGo').disabled = true;
-    const r = Math.floor(rand() * 10000) / 100, win = this.over ? r >= 100 - this.chance : r < this.chance, num = $('#dNum');
+  roll(pre){
+    if (V.on && !pre) return vaultPlay({ game:'dice', chance:this.chance, over:this.over }, '#dGo', j => this.roll({ r:j.roll, win:j.win, pay:j.pay }));
+    if (!pre && (busy || !takeBet())) return; busy = true; lockBet(true); $('#dGo').disabled = true;
+    const r = pre ? pre.r : Math.floor(rand() * 10000) / 100, win = pre ? pre.win : (this.over ? r >= 100 - this.chance : r < this.chance), num = $('#dNum');
     num.className = 'cz-num'; let n = 0; A.Sfx.click();
     const iv = setInterval(() => { num.textContent = (rand() * 100).toFixed(2); }, 40);
     $('#dMark').style.left = r + '%';
     setTimeout(() => {
       clearInterval(iv); num.textContent = r.toFixed(2); num.className = 'cz-num ' + (win ? 'win' : 'lose');
-      const pay = win ? payout(bet * this.mult()) : 0;
-      if (win){ A.addCoins(pay, 'Dice win', true); A.Sfx.coin(); $('#dMsg').innerHTML = '✅ <b style="color:#55ff55">+' + fmt(pay - bet) + ' 🪙</b>'; if (this.mult() >= 10){ A.bigText('🎲 ' + this.mult().toFixed(1) + '× WIN!', '#ffd23a'); A.confetti && A.confetti(); } }
-      else { A.Sfx.fail(); $('#dMsg').innerHTML = '❌ Rolled ' + r.toFixed(2) + ' · <b style="color:#ff7777">−' + fmt(bet) + ' 🪙</b>'; }
-      record(win, pay - bet, r.toFixed(2));
+      const pay = pre ? pre.pay : (win ? payout(bet * this.mult()) : 0);
+      if (win){ if (!pre) A.addCoins(pay, 'Dice win', true); A.Sfx.coin(); $('#dMsg').innerHTML = '✅ <b style="color:#55ff55">+' + money(pay - bet) + '</b>'; if (this.mult() >= 10){ A.bigText('🎲 ' + this.mult().toFixed(1) + '× WIN!', '#ffd23a'); A.confetti && A.confetti(); } }
+      else { A.Sfx.fail(); $('#dMsg').innerHTML = '❌ Rolled ' + r.toFixed(2) + ' · <b style="color:#ff7777">−' + money(bet) + '</b>'; }
+      (pre ? vRecord : record)(win, pay - bet, r.toFixed(2));
       busy = false; lockBet(false); $('#dGo').disabled = false;
     }, 550);
   },
@@ -206,17 +242,18 @@ const Flip = {
     $('#fGo').onclick = () => this.flip(); this.facts();
   },
   facts(){ $('#fH').className = this.side === 'H' ? 'on' : ''; $('#fT').className = this.side === 'T' ? 'on' : ''; $('#fW').textContent = fmt(Math.round(bet * 2 * RTP)) + ' 🪙'; },
-  flip(){
-    if (busy || !takeBet()) return; busy = true; lockBet(true); $('#fGo').disabled = true;
-    const r = rand() < .5 ? 'H' : 'T', win = r === this.side, c = $('#fCoin');
+  flip(pre){
+    if (V.on && !pre) return vaultPlay({ game:'coinflip', side:this.side }, '#fGo', j => this.flip({ r:j.flip, win:j.win, pay:j.pay }));
+    if (!pre && (busy || !takeBet())) return; busy = true; lockBet(true); $('#fGo').disabled = true;
+    const r = pre ? pre.r : (rand() < .5 ? 'H' : 'T'), win = r === this.side, c = $('#fCoin');
     c.classList.remove('spin'); void c.offsetWidth; c.classList.add('spin'); A.Sfx.click();
     for (let i=0;i<8;i++) setTimeout(() => { c.textContent = i % 2 ? '🦅' : '👑'; }, i * 100);
     setTimeout(() => {
       c.textContent = r === 'H' ? '👑' : '🦅';
-      const pay = win ? payout(bet * 2 * RTP) : 0;
-      if (win){ A.addCoins(pay, 'Coin Flip win', true); A.Sfx.coin(); $('#fMsg').innerHTML = '✅ ' + (r === 'H' ? 'Heads' : 'Tails') + '! <b style="color:#55ff55">+' + fmt(pay - bet) + ' 🪙</b>'; }
-      else { A.Sfx.fail(); $('#fMsg').innerHTML = '❌ ' + (r === 'H' ? 'Heads' : 'Tails') + ' · <b style="color:#ff7777">−' + fmt(bet) + ' 🪙</b>'; }
-      record(win, pay - bet, r === 'H' ? '👑' : '🦅');
+      const pay = pre ? pre.pay : (win ? payout(bet * 2 * RTP) : 0);
+      if (win){ if (!pre) A.addCoins(pay, 'Coin Flip win', true); A.Sfx.coin(); $('#fMsg').innerHTML = '✅ ' + (r === 'H' ? 'Heads' : 'Tails') + '! <b style="color:#55ff55">+' + money(pay - bet) + '</b>'; }
+      else { A.Sfx.fail(); $('#fMsg').innerHTML = '❌ ' + (r === 'H' ? 'Heads' : 'Tails') + ' · <b style="color:#ff7777">−' + money(bet) + '</b>'; }
+      (pre ? vRecord : record)(win, pay - bet, r === 'H' ? '👑' : '🦅');
       busy = false; lockBet(false); $('#fGo').disabled = false;
     }, 950);
   },
@@ -375,17 +412,18 @@ const Limbo = {
     $('#lGo').onclick = () => this.play(); this.facts();
   },
   facts(){ $('#lC').textContent = (RTP / this.target * 100).toFixed(3).replace(/0+$/, '').replace(/\.$/, '') + '%'; $('#lP').textContent = this.target.toFixed(2) + '×'; $('#lW').textContent = fmt(Math.round(bet * this.target)) + ' 🪙'; },
-  play(){
-    if (busy || !takeBet()) return; busy = true; lockBet(true); $('#lGo').disabled = true; $('#lT').disabled = true;
-    const t = Math.floor(this.target * 100) / 100, u = 1 - rand(), res = Math.min(1e6, Math.max(1, Math.floor(RTP * 100 / u) / 100)), win = res >= t, num = $('#lNum');
+  play(pre){
+    if (V.on && !pre) return vaultPlay({ game:'limbo', target:this.target }, '#lGo', j => this.play({ res:j.result, win:j.win, pay:j.pay }));
+    if (!pre && (busy || !takeBet())) return; busy = true; lockBet(true); $('#lGo').disabled = true; $('#lT').disabled = true;
+    const t = Math.floor(this.target * 100) / 100, u = 1 - rand(), res = pre ? pre.res : Math.min(1e6, Math.max(1, Math.floor(RTP * 100 / u) / 100)), win = pre ? pre.win : res >= t, num = $('#lNum');
     num.className = 'cz-num'; const t0 = performance.now(), dur = 600;
     const step = () => { const k = Math.min(1, (performance.now() - t0) / dur), v = 1 + (res - 1) * (1 - Math.pow(1 - k, 3)); num.textContent = v.toFixed(2) + '×';
       if (k < 1) return requestAnimationFrame(step);
       num.className = 'cz-num ' + (win ? 'win' : 'lose');
-      const pay = win ? payout(bet * t) : 0;
-      if (win){ A.addCoins(pay, 'Limbo win', true); A.Sfx.coin(); $('#lMsg').innerHTML = '✅ ' + res.toFixed(2) + '× ≥ ' + t.toFixed(2) + '× · <b style="color:#55ff55">+' + fmt(pay - bet) + ' 🪙</b>'; if (t >= 10) A.bigText('🎯 ' + t.toFixed(2) + '×!', '#ffd23a'); }
-      else { A.Sfx.fail(); $('#lMsg').innerHTML = '❌ ' + res.toFixed(2) + '× is under ' + t.toFixed(2) + '× · <b style="color:#ff7777">−' + fmt(bet) + ' 🪙</b>'; }
-      record(win, pay - bet, res.toFixed(2) + '×'); busy = false; lockBet(false); $('#lGo').disabled = false; $('#lT').disabled = false; };
+      const pay = pre ? pre.pay : (win ? payout(bet * t) : 0);
+      if (win){ if (!pre) A.addCoins(pay, 'Limbo win', true); A.Sfx.coin(); $('#lMsg').innerHTML = '✅ ' + res.toFixed(2) + '× ≥ ' + t.toFixed(2) + '× · <b style="color:#55ff55">+' + money(pay - bet) + '</b>'; if (t >= 10) A.bigText('🎯 ' + t.toFixed(2) + '×!', '#ffd23a'); }
+      else { A.Sfx.fail(); $('#lMsg').innerHTML = '❌ ' + res.toFixed(2) + '× is under ' + t.toFixed(2) + '× · <b style="color:#ff7777">−' + money(bet) + '</b>'; }
+      (pre ? vRecord : record)(win, pay - bet, res.toFixed(2) + '×'); busy = false; lockBet(false); $('#lGo').disabled = false; $('#lT').disabled = false; };
     A.Sfx.click(); requestAnimationFrame(step);
   },
   key(){ this.play(); }
@@ -733,6 +771,7 @@ function show(name){
   $('#czTabs').querySelectorAll('[data-g]').forEach(b => b.onclick = () => { A.Sfx.click(); show(b.dataset.g); });
   A.mountBar(GAMES[cur][0]);
   document.title = GAMES[cur][1].slice(GAMES[cur][1].indexOf(' ') + 1) + ' · Chaos Casino';
+  if (V.on && !VAULT_GAMES.includes(cur)){ V.on = false; A.toast('🪙 Back to coins: the Vault works in Dice, Limbo and Coin Flip'); }
   IMPL[cur].mount();
   const h = hist[cur] || []; const el = $('#czHist'); if (el) el.innerHTML = h.map(([w, l]) => '<span class="' + (w ? 'w' : 'l') + '">' + l + '</span>').join('');
   wallet();
@@ -743,7 +782,9 @@ addEventListener('pointerdown', () => A.Sfx.init(), { once:true });
 addEventListener('beforeunload', e => { if (busy){ e.preventDefault(); e.returnValue = ''; } });
 setInterval(wallet, 30000);
 edgeText();
+document.querySelectorAll('[data-vm]').forEach(b => b.onclick = () => { if (busy) return; A.Sfx.click(); setVault(b.dataset.vm === '1'); });
 show(cur);
+if (V.on) setVault(true, true);
 livePoll();
 window.__casino = { Dice, Crash, Flip, Mines, Limbo, HiLo, Wheel, WHEEL, RTP };
 })();

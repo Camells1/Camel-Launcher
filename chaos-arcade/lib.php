@@ -8,6 +8,9 @@
  *   After you register your own account, put its name here, e.g. ['myname'].
  */
 define('ADMINS', []);
+// Vault bridge secret: a long random string, the SAME one as secret: in the ArcadeBridge plugin's config.yml.
+// Leave it containing CHANGE and the Vault stays switched off.
+if (!defined('MC_SECRET')) define('MC_SECRET', 'CHANGE-ME-to-a-long-random-string');
 define('DATA_DIR', __DIR__ . '/lb-data');
 define('TOKEN_DAYS', 60);
 /* ================================================= */

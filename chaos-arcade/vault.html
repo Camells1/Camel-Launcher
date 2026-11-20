@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090d18">
+<title>Vault · Chaos Arcade</title>
+<meta name="description" content="Move in-game money between the Minecraft server and the Chaos Arcade Vault.">
+<link rel="stylesheet" href="style.css">
+<style>
+  .wrap{max-width:900px}
+  h1{font-size:clamp(26px,5vw,36px);font-weight:900;margin:8px 0 4px}
+  h2{font-size:21px;font-weight:900;margin:26px 0 10px}
+  .sub{color:var(--mut);margin:0 0 16px;font-weight:400;line-height:1.5}
+  .box{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+  .bal{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;background:radial-gradient(400px 200px at 0 0,rgba(47,210,122,.22),transparent 70%),linear-gradient(135deg,#17254d,#0f1730)}
+  .bal .lab,.lab{font-size:12px;letter-spacing:3px;color:var(--mut);font-weight:600}
+  .bal .v{font-size:clamp(34px,8vw,48px);font-weight:900;color:#55ff99}
+  .stats{display:flex;gap:16px;font-size:13px;color:var(--mut)}
+  .stats b{display:block;color:#fff;font-size:16px}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media (max-width:720px){ .steps{grid-template-columns:1fr} }
+  .step{padding:16px;border-radius:14px;background:#0c1222;border:1px solid var(--line)}
+  .step .n{width:28px;height:28px;border-radius:50%;background:var(--cyan);color:#04121c;font-weight:900;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+  .step p{margin:4px 0 0;color:var(--mut);font-size:13.5px;line-height:1.5;font-weight:400}
+  code.cmd{display:inline-block;background:#05080f;border:1px solid var(--line2);border-radius:7px;padding:6px 10px;font:600 14px ui-monospace,monospace;color:#7cf0ff;margin-top:8px;user-select:all;-webkit-user-select:all}
+  .code{font:900 34px ui-monospace,monospace;letter-spacing:6px;color:var(--gold)}
+  .row input{flex:1;min-width:140px;padding:11px 12px;background:#0c1222;color:#fff;border:1px solid var(--line2);border-radius:8px;font:700 16px var(--font)}
+  .tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  .tbl th{text-align:left;color:var(--dim);font-size:11px;letter-spacing:1px;padding:7px 8px;border-bottom:1px solid var(--line)}
+  .tbl td{padding:8px;border-bottom:1px solid #161f38;font-weight:400}
+  .msg{font-size:13.5px;margin-top:8px;min-height:18px}
+  .warn{border-color:#5a4a14;background:#1d1a0c;color:#ffe9a0;font-size:13.5px;line-height:1.55;font-weight:400}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="arcadeBar"></div>
+  <h1>💰 Vault</h1>
+  <p class="sub">Your Vault holds real in-game money from the Minecraft server. It is kept on the website's server (not in your browser), and you can move it in and out of the game any time.</p>
+  <div id="app"><div class="box">Loading…</div></div>
+</div>
+<script src="arcade.js"></script>
+<script>
+(function(){
+const A = window.Arcade, $ = s => document.querySelector(s);
+A.mountBar('vault');
+const fmt = n => '$' + Math.floor(n).toLocaleString('en-US');
+const esc = A.esc;
+function render(){
+  if (!A.acct.user){ $('#app').innerHTML = '<div class="box">Sign in on the <a href="index.html#account">arcade home page</a> to use your Vault.</div>'; return; }
+  A.vault.info().then(v => {
+    if (!v.enabled){ $('#app').innerHTML = '<div class="box warn">The Vault isn\'t switched on yet. The site owner needs to set MC_SECRET in lib.php and install the ArcadeBridge plugin on the Minecraft server.</div>'; return; }
+    const linked = !!v.mc;
+    let h = '<div class="box bal"><div><div class="lab">VAULT BALANCE</div><div class="v">' + fmt(v.bal) + '</div></div><div class="stats"><div><b>' + fmt(v.dep) + '</b>deposited</div><div><b>' + fmt(v.wd) + '</b>withdrawn</div><div><b>' + fmt(v.wag) + '</b>wagered</div></div></div>';
+    h += '<h2>1 · Link your Minecraft account</h2><div class="box">' + (linked
+      ? '✅ Linked to Minecraft player <b>' + esc(v.mc) + '</b>. <button class="btn small" id="unl" style="margin-left:6px">Unlink</button>'
+      : '<p class="sub" style="margin:0 0 10px">Get a code, then type the command on the Minecraft server. The code works for 10 minutes.</p><button class="btn cyan" id="getCode">Get link code</button><div id="codeOut"></div>') + '</div>';
+    h += '<h2>2 · Deposit</h2><div class="steps">' +
+      '<div class="step"><div class="n">1</div><b>Join the server</b><p>Log in with the Minecraft account you linked.</p></div>' +
+      '<div class="step"><div class="n">2</div><b>Type the command</b><p>Pick any amount (1k, 2.5m and 1b work):</p><code class="cmd">/arcade deposit 10000</code></div>' +
+      '<div class="step"><div class="n">3</div><b>Done</b><p>It shows up here within a second or two. Paying the casino bank account with <b>/pay</b> works too.</p></div></div>';
+    h += '<h2>3 · Play</h2><div class="box"><p class="sub" style="margin:0 0 10px">In the casino, switch the wallet to <b>💰 Vault</b>. Dice, Limbo and Coin Flip can be played with your Vault (2.5% house edge, settled on the server). Max bet ' + fmt(v.limits.maxBet) + ', max win ' + fmt(v.limits.maxPayout) + ' per bet.</p>' +
+      '<div class="row"><a class="btn cyan" href="games/casino.html#dice">🎲 Dice</a><a class="btn" href="games/casino.html#limbo">🎯 Limbo</a><a class="btn" href="games/casino.html#coinflip">🪙 Coin Flip</a></div></div>';
+    h += '<h2>4 · Withdraw</h2><div class="box">' + (linked
+      ? '<p class="sub" style="margin:0 0 10px">The money is paid to <b>' + esc(v.mc) + '</b> in-game within a few seconds (even if you are offline). Minimum ' + fmt(v.limits.minWithdraw) + '. You can also type <code class="cmd" style="margin:0">/arcade withdraw 10000</code> in-game.</p><div class="row"><input id="wdAmt" type="number" min="' + v.limits.minWithdraw + '" step="1" inputmode="numeric" placeholder="amount"><button class="btn small" id="wdMax">MAX</button><button class="btn cyan" id="wdGo">Withdraw</button></div><div class="msg" id="wdMsg"></div>'
+      : 'Link your Minecraft account first.') +
+      (v.pending.length ? '<div class="msg">⏳ Waiting to be paid: ' + v.pending.map(p => fmt(p.a)).join(', ') + '</div>' : '') + '</div>';
+    h += '<h2>History</h2><div class="box" style="overflow-x:auto">' + (v.hist.length ? '<table class="tbl"><thead><tr><th>When</th><th>What</th><th>Amount</th><th>Balance</th></tr></thead><tbody>' +
+      v.hist.map(x => '<tr><td>' + new Date(x.ts * 1000).toLocaleString() + '</td><td>' + esc(x.t) + (x.n ? ' <small style="color:var(--dim)">' + esc(x.n) + '</small>' : '') + '</td><td style="color:' + (x.a >= 0 ? '#55ff99' : '#ff7a8a') + '">' + (x.a >= 0 ? '+' : '−') + fmt(Math.abs(x.a)) + '</td><td>' + fmt(x.b) + '</td></tr>').join('') + '</tbody></table>' : '<span style="color:var(--mut)">Nothing yet.</span>') + '</div>';
+    h += '<div class="box warn">⚠️ Only play with money you are fine losing. The casino keeps 2.5% of everything bet on average. In-game money should never be bought or sold for real money here.</div>';
+    $('#app').innerHTML = h;
+    const gc = $('#getCode'); if (gc) gc.onclick = () => { gc.disabled = true; A.vault.linkCode().then(r => { $('#codeOut').innerHTML = '<div style="margin-top:12px">Your code: <div class="code">' + r.code + '</div>Type this on the server:<br><code class="cmd">/arcade link ' + r.code + '</code></div>'; }).catch(e => { $('#codeOut').textContent = '❌ ' + e.message; gc.disabled = false; }); };
+    const un = $('#unl'); if (un) un.onclick = () => { if (confirm('Unlink your Minecraft account? You can link it again any time.')) A.vault.unlink().then(render); };
+    const wm = $('#wdMax'); if (wm) wm.onclick = () => { $('#wdAmt').value = Math.floor(v.bal); };
+    const wg = $('#wdGo'); if (wg) wg.onclick = () => { const a = Math.floor(+$('#wdAmt').value || 0); wg.disabled = true;
+      A.vault.withdraw(a).then(() => { A.Sfx.coin(); A.toast('💰 Withdrawal of ' + fmt(a) + ' is on its way in-game'); render(); }).catch(e => { $('#wdMsg').textContent = '❌ ' + e.message; wg.disabled = false; }); };
+  }).catch(e => { $('#app').innerHTML = '<div class="box">' + esc(e.message) + '</div>'; });
+}
+render();
+setInterval(() => { if (!document.hidden && !document.activeElement.matches('input')) render(); }, 15000);
+})();
+</script>
+</body>
+</html>
