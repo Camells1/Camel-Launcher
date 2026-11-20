@@ -153,6 +153,10 @@ const NEW_GAMES = [
   ['limbo','Limbo','🎯','chaos','casino','Set a target multiplier. Will the result fly past it?','casino.html#limbo'],
   ['hilo','Hi-Lo','🃏','chaos','casino','Higher or lower? Stack correct guesses, cash out any time.','casino.html#hilo'],
   ['wheel','Wheel','🎡','chaos','casino','Spin the 40-slice wheel. Low, medium or high risk.','casino.html#wheel'],
+  ['towers','Towers','🗼','chaos','casino','Climb 8 rows of blocks. Each safe row multiplies your bet.','casino.html#towers'],
+  ['keno','Keno','🔢','chaos','casino','Pick up to 10 of 40 numbers. 10 are drawn.','casino.html#keno'],
+  ['cplinko','Plinko Drop','📍','chaos','casino','Drop balls through the pegs. Edge buckets pay big.','casino.html#plinko'],
+  ['croulette','Color Roulette','🔴','chaos','casino','Red, black or the rare green 24×.','casino.html#roulette'],
   // Originals: full games built outside the arcade
   ['spindel4','Spindel 4','🕷️','medium','originals','Think smart, get 4 in a row on the spider web. Play the computer or a friend.','spindel4.html']
 ].map(([id, t, e, d, cat, desc, file]) => ({ id, t, e, d, cat, desc, file:file || 'play.html#' + id, tag:CATS[cat].n.toUpperCase(), bg:CAT_BG[cat] }));
@@ -296,6 +300,37 @@ function vipClaim(kind){
   save(); if (amt > 0) addCoins(amt, kind === 'rb' ? 'rakeback' : kind + ' bonus'); else syncSoon();
   return amt;
 }
+
+/* ---------- 🎯 Casino daily quests + bet reporting ----------
+   Three quests a day (one easy, one medium, one hard, the same for everyone), each paying coins;
+   finishing all three pays a bonus. Only bets of 10 coins or more count. */
+const CQ_POOL = {
+  easy:  [ { id:'win20',  t:'Win 20 bets',      d:'Win 20 bets that pay 1.9× or more.', goal:20,    r:1000,  f:(b, m) => m >= 1.9 },
+           { id:'play60', t:'Place 60 bets',    d:'Place 60 bets on any casino game.',  goal:60,    r:1000,  f:() => true } ],
+  medium:[ { id:'hit10',  t:'Hit 10×',          d:'Win a bet of 100 🪙 or more at 10× or better.', goal:1, r:3000, f:(b, m) => b >= 100 && m >= 10 },
+           { id:'wag25',  t:'Wager 25,000',     d:'Bet 25,000 🪙 in total today.',      goal:25000, r:2500,  f:(b) => true, amt:true } ],
+  hard:  [ { id:'hit100', t:'Hit 100×',         d:'Win any bet at 100× or better.',      goal:1,     r:10000, f:(b, m) => m >= 100 },
+           { id:'win150', t:'Win 150 bets',     d:'Win 150 bets that pay 1.9× or more, 100 🪙 or more each.', goal:150, r:8000, f:(b, m) => b >= 100 && m >= 1.9 } ]
+};
+const CQ_BONUS = 5000;
+function cqToday(){
+  load(); const d = dayKey(), r = mulberry32(hashStr('cq|' + d));
+  if (!state.cq || state.cq.date !== d) state.cq = { date:d, prog:{}, done:{}, bonus:false };
+  return ['easy','medium','hard'].map(lv => Object.assign({ lv }, CQ_POOL[lv][Math.floor(r() * CQ_POOL[lv].length)]));
+}
+function cqInfo(){ const qs = cqToday(); return { quests:qs.map(q => ({ id:q.id, lv:q.lv, t:q.t, d:q.d, goal:q.goal, r:q.r, prog:Math.min(q.goal, state.cq.prog[q.id] || 0), done:!!state.cq.done[q.id] })), bonus:CQ_BONUS, bonusDone:state.cq.bonus }; }
+let betQueue = [], betFlushT = 0;
+function casinoBet(game, bet, mult){
+  bet = Math.floor(bet); if (!(bet >= 1)) return;
+  const qs = cqToday();
+  if (bet >= 10) qs.forEach(q => { if (state.cq.done[q.id] || !q.f(bet, mult)) return; state.cq.prog[q.id] = (state.cq.prog[q.id] || 0) + (q.amt ? bet : 1);
+    if (state.cq.prog[q.id] >= q.goal){ state.cq.done[q.id] = true; state.coins += q.r; setTimeout(() => { achToast('🎯', 'QUEST DONE', q.t + ' · +' + q.r.toLocaleString('en-US') + ' 🪙'); Sfx.ach ? Sfx.ach() : Sfx.coin(); updateBar(); }, 200); } });
+  if (!state.cq.bonus && qs.every(q => state.cq.done[q.id])){ state.cq.bonus = true; state.coins += CQ_BONUS; setTimeout(() => { bigText('🎯 ALL QUESTS! +' + CQ_BONUS.toLocaleString('en-US') + ' 🪙', '#ffd23a'); }, 900); }
+  save(); syncSoon();
+  if (state.auth){ betQueue.push({ g:game, b:bet, m:Math.round(mult * 100) / 100 }); if (!betFlushT) betFlushT = setTimeout(flushBets, 2500); }
+}
+function flushBets(){ betFlushT = 0; if (!betQueue.length || !state.auth) return; const list = betQueue.splice(0, 25); api('bets', { bets:list }).catch(() => {}); if (betQueue.length) betFlushT = setTimeout(flushBets, 2500); }
+addEventListener('pagehide', () => { if (betQueue.length && state.auth && navigator.sendBeacon){ /* best effort; the API needs the auth header, so just try a normal flush */ flushBets(); } });
 
 function coinGoals(){ COIN_GOALS.forEach(([n, id, ic, name]) => { if (state.coins >= n && !state.ach[id]) setTimeout(() => { unlock(id, ic, name); if (n >= 1000000){ bigText('👑 MILLIONAIRE!', '#ffd23a'); confetti && confetti(); } }, 300); }); }
 function coinInfo(){ load(); const d = today(); return { coins:state.coins, earnedToday:d.coins || 0, cap:DAILY_EARN_CAP, perXP:COINS_PER_XP, refill:REFILL, refillBelow:REFILL_BELOW, goals:COIN_GOALS.map(g => g[0]) }; }
@@ -442,7 +477,7 @@ async function api(action, body){
   if (!res.ok || !j.ok) throw new Error(j && j.error ? j.error : 'error ' + res.status);
   return j;
 }
-const PROGRESS_KEYS = ['xp','games','plays','wins','tops','ach','chestStreak','lastChest','day','fav','coins','vip'];
+const PROGRESS_KEYS = ['xp','games','plays','wins','tops','ach','chestStreak','lastChest','day','fav','coins','vip','cq'];
 function progressBlob(){ const o = {}; PROGRESS_KEYS.forEach(k => o[k] = state[k]); return o; }
 let syncT = 0;
 function syncSoon(){ if (!state.auth) return; clearTimeout(syncT); syncT = setTimeout(() => { api('progress_save', { data:progressBlob(), rank:(vipTierIdx((state.vip || {}).total || 0) >= 3 ? '💎' : rankInfo().rank.i) }).catch(() => {}); }, 3000); }
@@ -473,6 +508,10 @@ const Acct = {
   giveaway(){ return api('giveaway', null, {}); },
   giveawayEnter(){ return api('giveaway_enter', {}); },
   giveawayCollect(){ return api('giveaway_collect', {}); },
+  live(){ return api('live', null, {}); },
+  race(){ return api('race', null, {}); },
+  redeem(code){ return api('redeem', { code }); },
+  codeCreate(code, coins, max, hours){ return api('code_create', { code, coins, max, hours }); },
   giftSend(to, amount, note){ return api('gift_send', { to, amount, note }); },
   giftCollect(){ return api('gift_collect', {}); },
   get down(){ return apiDown; }
@@ -710,7 +749,7 @@ window.Arcade = {
   GAMES, RANKS, ROOT, CATS, CAT_BG,
   get state(){ return state; },
   save, load, dayKey, hashStr, mulberry32, h2, rnd, esc,
-  rankInfo, featuredGame, gameById, gameStats, addXP, report, unlock, coins, addCoins, spendCoins, coinInfo, START_COINS, vip:{ TIERS:VIP_TIERS, wager:vipWager, info:vipInfo, claim:vipClaim },
+  rankInfo, featuredGame, gameById, gameStats, addXP, report, unlock, coins, addCoins, spendCoins, coinInfo, START_COINS, vip:{ TIERS:VIP_TIERS, wager:vipWager, info:vipInfo, claim:vipClaim }, casinoBet, cq:cqInfo,
   Sfx, setMuted, buzz,
   px, texture, textureURL, paintBody, icon, ICONS,
   toast, achToast, flash, bigText, shake, burst, confetti,

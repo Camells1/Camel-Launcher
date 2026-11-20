@@ -10,7 +10,7 @@ ensure_storage();
 $in = input();
 $action = isset($_GET['action']) ? $_GET['action'] : ($in['action'] ?? '');
 $POST = $_SERVER['REQUEST_METHOD'] === 'POST';
-$writeActions = ['register','login','logout','friend_request','friend_accept','friend_decline','friend_remove','block','unblock','progress_save','chat_send','chat_report','chat_delete','ban','giveaway_enter','giveaway_collect','gift_send','gift_collect'];
+$writeActions = ['register','login','logout','friend_request','friend_accept','friend_decline','friend_remove','block','unblock','progress_save','chat_send','chat_report','chat_delete','ban','giveaway_enter','giveaway_collect','gift_send','gift_collect','bets','code_create','redeem'];
 if (in_array($action, $writeActions, true) && !$POST) out(405, ['ok'=>false, 'error'=>'use POST']);
 
 function issue_token($uid){
@@ -103,6 +103,30 @@ function giveaway_view($g, $u){
     'gifts'=>$u ? count(read_file('gifts.json')['pending'][$u['id']] ?? []) : 0,
     'online'=>(function(){ $n = 0; $now = time(); foreach (read_file('presence.json') as $t) if ($now - $t < 60) $n++; return max(1, $n); })()];
 }
+
+/* ---------- Live bets feed + daily wager race ----------
+   The casino posts settled bets in small batches. Each bet goes into the live feed (last 60)
+   and adds its stake to today's race (UTC day). When a day ends, the top 5 of that day split
+   the prize pool; prizes are paid through the gift inbox ("Daily Race"). */
+define('RACE_SPLIT', [0.40, 0.25, 0.15, 0.12, 0.08]);
+function race_day($offset = 0){ return gmdate('Ymd', time() + $offset * 86400); }
+function race_pool($total){ return (int)min(2000000, 50000 + floor($total * 0.001)); }
+function race_settle(){
+  $y = race_day(-1);
+  $meta = read_file('race-meta.json');
+  if (($meta['paid'] ?? '') === $y) return;
+  $paid = false;
+  with_file('race-meta.json', true, function(&$m) use ($y, &$paid){ if (($m['paid'] ?? '') === $y) return; $m['paid'] = $y; $paid = true; });
+  if (!$paid) return;
+  $d = read_file('race-' . $y . '.json'); $e = $d['e'] ?? []; arsort($e);
+  $pool = race_pool(array_sum($e)); $users = read_file('users.json'); $win = []; $i = 0;
+  foreach ($e as $uid => $w){ if ($i >= count(RACE_SPLIT)) break; $prize = (int)floor($pool * RACE_SPLIT[$i]); $win[] = ['n'=>$users[$uid]['name'] ?? $uid, 'w'=>$w, 'p'=>$prize];
+    with_file('gifts.json', true, function(&$g) use ($uid, $prize, $i){ $g['pending'][$uid][] = ['from'=>'🏁 Daily Race', 'amount'=>$prize, 'note'=>'You finished #' . ($i + 1) . ' in yesterday\'s race!', 'ts'=>time()]; });
+    $i++; }
+  with_file('race-meta.json', true, function(&$m) use ($y, $win, $pool){ $m['last'] = ['day'=>$y, 'pool'=>$pool, 'win'=>$win]; });
+  if ($win) sys_chat('🏁 Daily race results: ' . implode(', ', array_map(function($w, $k){ return '#' . ($k + 1) . ' ' . $w['n'] . ' +' . number_format($w['p']) . ' 🪙'; }, $win, array_keys($win))) . '. A new race has started!');
+}
+
 
 function rm(&$arr, $v){ $arr = array_values(array_filter($arr, function($x) use ($v){ return $x !== $v; })); }
 
@@ -260,6 +284,68 @@ case 'gift_collect': {
   $u = require_user(); $list = [];
   with_file('gifts.json', true, function(&$d) use ($u, &$list){ $list = $d['pending'][$u['id']] ?? []; unset($d['pending'][$u['id']]); });
   out(200, ['ok'=>true, 'gifts'=>$list]);
+}
+
+case 'bets': {
+  $u = require_user();
+  $list = $in['bets'] ?? null; if (!is_array($list) || !$list) out(400, ['ok'=>false, 'error'=>'no bets']);
+  if (!rate_ok('bets', $u['id'], 40, 60)) out(429, ['ok'=>false, 'error'=>'slow down']);
+  $list = array_slice($list, 0, 25); $clean = []; $sum = 0;
+  foreach ($list as $b){
+    $g = preg_replace('/[^a-z0-9]/', '', strtolower((string)($b['g'] ?? ''))); $bet = (int)($b['b'] ?? 0); $mult = round((float)($b['m'] ?? 0), 2);
+    if (!$g || $bet < 1 || $bet > 1e12 || $mult < 0 || $mult > 1e6) continue;
+    $clean[] = ['g'=>substr($g, 0, 16), 'n'=>$u['name'], 'rk'=>$u['rank'] ?? '', 'b'=>$bet, 'm'=>$mult, 'p'=>(int)floor($bet * $mult), 't'=>time()]; $sum += $bet;
+  }
+  if ($clean){
+    with_file('bets.json', true, function(&$d) use ($clean){ $d['l'] = array_slice(array_merge($d['l'] ?? [], $clean), -60); });
+    $day = race_day();
+    with_file('race-' . $day . '.json', true, function(&$d) use ($u, $sum){ $d['e'][$u['id']] = ($d['e'][$u['id']] ?? 0) + $sum; });
+  }
+  out(200, ['ok'=>true, 'n'=>count($clean)]);
+}
+
+case 'live': {
+  $d = read_file('bets.json'); $l = array_reverse($d['l'] ?? []); $now = time(); $min = 0; $wag = 0; $big = null;
+  foreach ($l as $b){ if ($now - $b['t'] <= 60){ $min++; $wag += $b['b']; } if (!$big || $b['p'] - $b['b'] > $big['p'] - $big['b']) $big = $b; }
+  $on = 0; foreach (read_file('presence.json') as $t) if ($now - $t < 60) $on++;
+  out(200, ['ok'=>true, 'bets'=>array_slice($l, 0, 30), 'perMin'=>$min, 'wagMin'=>$wag, 'big'=>$big, 'online'=>max(1, $on)]);
+}
+
+case 'race': {
+  race_settle(); $u = current_user(); $day = race_day();
+  $d = read_file('race-' . $day . '.json'); $e = $d['e'] ?? []; arsort($e); $users = read_file('users.json');
+  $top = []; $i = 0; $pool = race_pool(array_sum($e)); $mine = null;
+  foreach ($e as $uid => $w){ $row = ['n'=>$users[$uid]['name'] ?? $uid, 'rk'=>$users[$uid]['rank'] ?? '', 'w'=>$w, 'p'=>$i < count(RACE_SPLIT) ? (int)floor($pool * RACE_SPLIT[$i]) : 0, 'me'=>$u && $uid === $u['id']];
+    if ($i < 10) $top[] = $row; if ($row['me']) $mine = ['rank'=>$i + 1, 'w'=>$w]; $i++; }
+  $meta = read_file('race-meta.json');
+  out(200, ['ok'=>true, 'pool'=>$pool, 'split'=>RACE_SPLIT, 'top'=>$top, 'me'=>$mine, 'players'=>count($e), 'endsIn'=>86400 - (time() % 86400), 'last'=>$meta['last'] ?? null]);
+}
+
+/* ---------- Promo codes ----------
+   Admins create codes (coins, max uses, hours valid); every account can redeem each code once. */
+case 'code_create': {
+  $u = require_user(); if (!is_admin($u)) out(403, ['ok'=>false, 'error'=>'admins only']);
+  $code = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', (string)($in['code'] ?? ''))); $coins = (int)($in['coins'] ?? 0); $max = max(1, min(100000, (int)($in['max'] ?? 100))); $hours = max(1, min(24 * 90, (int)($in['hours'] ?? 24)));
+  if (strlen($code) < 3 || strlen($code) > 20) out(400, ['ok'=>false, 'error'=>'code must be 3-20 letters/digits']);
+  if ($coins < 1 || $coins > 10000000) out(400, ['ok'=>false, 'error'=>'coins must be 1 to 10,000,000']);
+  with_file('codes.json', true, function(&$d) use ($code, $coins, $max, $hours, $u){ $d[$code] = ['coins'=>$coins, 'max'=>$max, 'exp'=>time() + $hours * 3600, 'used'=>[], 'by'=>$u['id']]; });
+  out(200, ['ok'=>true, 'code'=>$code]);
+}
+
+case 'redeem': {
+  $u = require_user();
+  if (!rate_ok('redeem', $u['id'], 10, 600)) out(429, ['ok'=>false, 'error'=>'too many tries, wait a few minutes']);
+  $code = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', (string)($in['code'] ?? ''))); $err = null; $coins = 0;
+  with_file('codes.json', true, function(&$d) use ($code, $u, &$err, &$coins){
+    $c = $d[$code] ?? null;
+    if (!$c) { $err = 'that code does not exist'; return; }
+    if (time() > $c['exp']) { $err = 'that code has expired'; return; }
+    if (in_array($u['id'], $c['used'], true)) { $err = 'you already used this code'; return; }
+    if (count($c['used']) >= $c['max']) { $err = 'that code has been fully claimed'; return; }
+    $d[$code]['used'][] = $u['id']; $coins = $c['coins'];
+  });
+  if ($err) out(400, ['ok'=>false, 'error'=>$err]);
+  out(200, ['ok'=>true, 'coins'=>$coins, 'code'=>$code]);
 }
 
 case 'chat_poll': {

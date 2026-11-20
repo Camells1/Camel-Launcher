@@ -86,7 +86,8 @@
   .online i{width:8px;height:8px;border-radius:50%;background:#2fd27a;box-shadow:0 0 8px #2fd27a}
   .online b{color:#fff}
   .links{display:flex;gap:4px;flex:1;min-width:0}
-  .links a{color:var(--mut);text-decoration:none;font-weight:600;font-size:14px;padding:8px 10px;border-radius:8px;white-space:nowrap}
+  .links a{color:var(--mut);text-decoration:none;font-weight:600;font-size:13.5px;padding:8px 7px;border-radius:8px;white-space:nowrap}
+  @media (max-width:1560px){ .links a.opt{display:none} }
   .links a:hover{color:#fff;background:#141c33}
   .links a.race code{font:600 12px ui-monospace,monospace;background:#1b2440;color:var(--gold);padding:2px 6px;border-radius:5px;margin-left:4px}
   .links a.race.live code{background:var(--gold);color:#2a1c00;animation:gaPulse 1s steps(2) infinite}
@@ -94,7 +95,7 @@
   .gnav .right .btn.icon{width:40px;min-height:40px;font-size:17px;position:relative;background:#141c33}
   #acctBtn{width:auto;padding:8px 16px;font-size:14px;max-width:180px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-height:40px}
   #hdrCoins{text-decoration:none;font-size:14px}
-  @media (max-width:1100px){ .links{display:none} }
+  @media (max-width:1180px){ .links{display:none} }
   @media (max-width:640px){ .hide-sm{display:none !important} .online{display:none} .gnav-in{gap:8px;padding:8px 10px;min-height:56px} .logo b{display:none} #acctBtn{padding:6px 10px;font-size:13px;max-width:120px} #hdrCoins{font-size:12.5px;padding:5px 9px} }
   .wrap{max-width:1400px;padding-top:16px}
 
@@ -230,8 +231,10 @@
     <nav class="links" aria-label="Main">
       <a href="#games">🎮 Games</a>
       <a href="games/casino.html">🎰 Casino</a>
-      <a href="#" id="navLb">🏆 Leaderboards</a>
+      <a href="#" id="navLb" class="opt">🏆 Leaderboards</a>
       <a href="rewards.html">💎 Rewards</a>
+      <a href="rewards.html#race" class="race">🏁 Race <code id="hdrRace">--:--:--</code></a>
+      <a href="help.html" class="opt">🛟 Help</a>
       <a href="#" id="navGa" class="race">🎉 Giveaway <code id="hdrGa">--:--</code></a>
     </nav>
     <div class="right">
@@ -314,7 +317,7 @@
     </main>
   </div>
 
-  <div class="legal">Chaos Arcade · free fan-made browser games. Progress is saved in this browser. The Block World games are a fan-made parody: not an official Minecraft product and not approved by or associated with Mojang or Microsoft.</div>
+  <div class="legal"><a href="help.html">Help &amp; Fairness</a> · <a href="rewards.html">VIP Rewards</a> · <a href="https://discord.gg/vesperclient" target="_blank" rel="noopener noreferrer">Discord</a><br>Chaos Arcade · free fan-made browser games. Progress is saved in this browser. The Block World games are a fan-made parody: not an official Minecraft product and not approved by or associated with Mojang or Microsoft.</div>
 </div>
 
 <nav class="tabbar" aria-label="Quick navigation">
@@ -772,6 +775,7 @@ function gaPoll(){
   if (A.acct.down) return;
   A.acct.giveaway().then(j => { gaState = j; renderGa(); hdrGa(); if (j.online) $('#hdrOnline').textContent = j.online; if (A.acct.user){ collectGa(j); collectGifts(j); } $('#chatBtn').classList.toggle('ga-on', !!j.open && !j.entered); }).catch(() => {}).then(() => { gaT = setTimeout(gaPoll, chatOpen && room === 'global' ? 3000 : 15000); });
 }
+setInterval(() => { const s = 86400 - Math.floor(Date.now() / 1000) % 86400, el = document.getElementById('hdrRace'); if (el) el.textContent = [Math.floor(s / 3600), Math.floor(s % 3600 / 60), s % 60].map(x => String(x).padStart(2, '0')).join(':'); }, 1000);
 setInterval(() => { if (gaState){ if (gaState.open) gaState.endsIn = Math.max(0, gaState.endsIn - 1); gaState.nextIn = Math.max(0, gaState.nextIn - 1); if (chatOpen) renderGa(); hdrGa(); if ((gaState.open && gaState.endsIn === 0) || gaState.nextIn === 0) gaPoll(); } }, 1000);
 
 function poll(){

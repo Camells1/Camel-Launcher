@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0a2a1c">
 <title>Chaos Casino</title>
-<meta name="description" content="Chaos Arcade casino: Dice, Crash, Coin Flip, Mines, Limbo, Hi-Lo and Wheel with virtual coins and a fixed 2.5% house edge.">
+<meta name="description" content="Chaos Arcade casino: Dice, Crash, Coin Flip, Mines, Limbo, Hi-Lo, Wheel, Towers, Keno, Plinko and Roulette with virtual coins and a fixed 2.5% house edge.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%230a2a1c'/%3E%3Crect x='2' y='1' width='4' height='6' fill='%23ffd23a'/%3E%3Crect x='1' y='2' width='6' height='4' fill='%23ffd23a'/%3E%3Crect x='3' y='2' width='2' height='4' fill='%23b08a1a'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="../style.css">
 <style>
@@ -62,6 +62,10 @@
   #wCv{width:min(100%,300px);aspect-ratio:1;display:block}
   .cz-legend{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px;font-size:12px}
   .cz-legend span{padding:3px 8px;border:2px solid #000}
+  .cz-live{width:100%;border-collapse:collapse;font-size:12.5px;min-width:460px}
+  .cz-live th{text-align:left;color:#6f7aa0;font-weight:600;font-size:11px;letter-spacing:1px;padding:6px 8px;border-bottom:1px solid #222d4b}
+  .cz-live td{padding:7px 8px;border-bottom:1px solid #161f38;white-space:nowrap}
+  .cz-tabs{grid-template-columns:repeat(auto-fill,minmax(84px,1fr)) !important}
 </style>
 </head>
 <body>
@@ -74,6 +78,8 @@
     <div style="flex-basis:100%;font-size:11px;color:#c8c8c8"><div style="display:flex;justify-content:space-between"><span>👑 Road to 1,000,000</span><span id="czGoalTxt"></span></div><div style="height:10px;border:2px solid #000;background:#222;margin-top:3px"><div id="czGoal" style="height:100%;width:0;background:linear-gradient(90deg,#b08a1a,#ffd23a)"></div></div><div id="czEarn" style="margin-top:3px"></div><div id="czVip" style="margin-top:4px;font-size:12px"></div></div>
   </div>
   <div id="czGame"></div>
+  <div class="dark-panel cz-panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px"><b style="font-size:17px">📡 Live bets</b><div id="czLiveHead" style="display:flex;gap:12px;font-size:12px;color:#aab4d4"></div></div>
+    <div style="overflow-x:auto"><table class="cz-live"><thead><tr><th>Game</th><th>Player</th><th>Time</th><th>Bet</th><th>Multi</th><th>Payout</th></tr></thead><tbody id="czLive"></tbody></table></div></div>
   <div class="dark-panel cz-panel cz-note">
     <span id="czEdgeTxt"></span><br><br>
     🪙 Coins are <b>virtual and only for fun</b>: they can't be bought, sold or cashed out. You earn them by playing any arcade game (5 🪙 per XP, up to 25,000 a day), from the daily loot chest and from the hourly giveaway in global chat. Results use your browser's secure random generator.
@@ -86,7 +92,7 @@
 (function(){
 const A = window.Arcade, $ = s => document.querySelector(s);
 const EDGE = 0.025, RTP = 1 - EDGE;   // 2.5% house edge: every game pays back 97.5% on average
-const GAMES = { dice:['cdice','🎲 Dice'], crash:['crash','📈 Crash'], coinflip:['coinflip','🪙 Flip'], mines:['mines','💣 Mines'], limbo:['limbo','🎯 Limbo'], hilo:['hilo','🃏 Hi-Lo'], wheel:['wheel','🎡 Wheel'] };
+const GAMES = { dice:['cdice','🎲 Dice'], crash:['crash','📈 Crash'], coinflip:['coinflip','🪙 Flip'], mines:['mines','💣 Mines'], limbo:['limbo','🎯 Limbo'], hilo:['hilo','🃏 Hi-Lo'], wheel:['wheel','🎡 Wheel'], towers:['towers','🗼 Towers'], keno:['keno','🔢 Keno'], plinko:['cplinko','📍 Plinko'], roulette:['croulette','🔴 Roulette'] };
 /* uniform random number in [0, 1) from crypto */
 function rand(){ const a = new Uint32Array(2); crypto.getRandomValues(a); return (a[0] * 2097152 + (a[1] >>> 11)) / 9007199254740992; }
 let cur = GAMES[location.hash.slice(1)] ? location.hash.slice(1) : 'dice', busy = false, session = 0, bet = 10;
@@ -113,7 +119,9 @@ function wallet(){
   $('#czEarn').textContent = 'Earned from games today: ' + fmt(ci.earnedToday) + ' / ' + fmt(ci.cap) + ' 🪙 · 5 🪙 per XP';
   A.updateBar();
 }
+let lastBet = 0;
 function record(won, profit, label){
+  if (lastBet > 0) A.casinoBet(GAMES[cur][0], lastBet, Math.max(0, (profit + lastBet) / lastBet));
   const id = GAMES[cur][0]; A.load();
   const g = A.state.games[id] || (A.state.games[id] = { best:0, bestLabel:'', plays:0, wins:0, xp:0, last:'' });
   g.plays++; g.ts = Date.now(); g.last = A.dayKey(); if (won) g.wins++;
@@ -138,7 +146,7 @@ function bindBet(onChange){
 function takeBet(){
   bet = Math.max(1, Math.floor(+$('#czBet').value) || 1);
   if (!A.spendCoins(bet)){ A.toast(A.state.coins < 1 ? '🪙 Out of coins. Play any arcade game to earn more!' : '🪙 Not enough coins for that bet'); A.Sfx.fail(); return false; }
-  A.vip.wager(bet, EDGE); wallet(); return true;
+  lastBet = bet; A.vip.wager(bet, EDGE); wallet(); return true;
 }
 function lockBet(on){ document.querySelectorAll('#czBet,[data-bx]').forEach(e => e.disabled = on); }
 
@@ -509,7 +517,215 @@ const Wheel = {
   key(){ this.spin(); }
 };
 
-const IMPL = { dice:Dice, crash:Crash, coinflip:Flip, mines:Mines, limbo:Limbo, hilo:HiLo, wheel:Wheel };
+
+/* ---------------- 🗼 TOWERS ---------------- */
+// 8 rows. Each row hides bad tiles; the multiplier after k safe rows is RTP / P(k safe rows).
+const TOWER = { easy:[4, 1], medium:[3, 1], hard:[2, 1], expert:[3, 2] };   // [tiles per row, bad tiles]
+const Towers = {
+  diff:'medium', state:'idle', row:0, rows:[], ROWS:8,
+  p(){ const [n, b] = TOWER[this.diff]; return (n - b) / n; },
+  mult(k){ return k ? RTP / Math.pow(this.p(), k) : 1; },
+  mount(){
+    $('#czGame').innerHTML = '<div class="cz-stage"><div id="tG" style="display:flex;flex-direction:column-reverse;gap:6px;width:min(100%,340px)"></div><div class="cz-msg" id="tMsg">Climb row by row. Cash out before you hit a bad block.</div></div>' +
+      '<div class="dark-panel cz-panel">' + betBox('<div class="cz-row"><label>DIFFICULTY</label><div class="cz-seg" style="flex:1">' + Object.keys(TOWER).map(d => '<button data-td="' + d + '">' + d.toUpperCase() + '</button>').join('') + '</div></div>' +
+      '<div class="cz-facts"><div>Row safe<b id="tC"></b></div><div>Now<b id="tNow"></b></div><div>Top<b id="tTop"></b></div></div>') +
+      '<button class="btn green big cz-big" id="tGo">🗼 START</button><div class="cz-hist" id="czHist"></div></div>';
+    bindBet(() => this.facts());
+    document.querySelectorAll('[data-td]').forEach(b => b.onclick = () => { if (this.state === 'run') return; this.diff = b.dataset.td; this.rows = []; this.paint(); this.facts(); });
+    $('#tGo').onclick = () => this.action(); this.paint(); this.facts();
+  },
+  facts(){
+    document.querySelectorAll('[data-td]').forEach(b => b.className = b.dataset.td === this.diff ? 'on' : '');
+    $('#tC').textContent = (this.p() * 100).toFixed(1) + '%'; $('#tNow').textContent = this.mult(this.state === 'run' ? this.row : 0).toFixed(2) + '×'; $('#tTop').textContent = this.mult(this.ROWS).toFixed(this.mult(this.ROWS) > 999 ? 0 : 2) + '×';
+  },
+  paint(reveal){
+    const [n] = TOWER[this.diff];
+    $('#tG').innerHTML = Array.from({ length:this.ROWS }, (_, r) => {
+      const R = this.rows[r], active = this.state === 'run' && r === this.row;
+      return '<div style="display:grid;grid-template-columns:repeat(' + n + ',1fr) 64px;gap:6px;align-items:center;opacity:' + (r > this.row && this.state === 'run' ? .55 : 1) + '">' +
+        Array.from({ length:n }, (_, i) => { const open = R && R.pick === i, show = (reveal || (R && R.pick != null)) && R; const bad = R && R.bad.includes(i);
+          const bg = open ? (bad ? '#7a1f2a' : '#0f5a48') : show && reveal ? (bad ? 'rgba(122,31,42,.5)' : 'rgba(15,90,72,.45)') : active ? '#2a3c66' : '#1d2a4a';
+          return '<button data-tr="' + r + '" data-ti="' + i + '" style="height:38px;border-radius:9px;border:1px solid #0a0f1c;background:' + bg + ';box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);font-size:18px;cursor:' + (active ? 'pointer' : 'default') + '"' + (active ? '' : ' disabled') + '>' + (open || (show && reveal) ? (bad ? '💀' : '💎') : '') + '</button>'; }).join('') +
+        '<div style="font-size:12px;color:' + (r < this.row ? '#55ff99' : '#aab4d4') + ';text-align:right">' + this.mult(r + 1).toFixed(2) + '×</div></div>';
+    }).join('');
+    $('#tG').querySelectorAll('[data-tr]').forEach(b => b.onclick = () => this.pick(+b.dataset.ti));
+  },
+  action(){
+    if (this.state === 'run') return this.row ? this.cashout() : null;
+    if (busy || !takeBet()) return; busy = true; lockBet(true);
+    const [n, bad] = TOWER[this.diff];
+    this.rows = Array.from({ length:this.ROWS }, () => { const idx = [...Array(n).keys()]; for (let i=n-1;i>0;i--){ const j = Math.floor(rand() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; } return { bad:idx.slice(0, bad), pick:null }; });
+    this.state = 'run'; this.row = 0; this.betAmt = bet; A.Sfx.click();
+    $('#tGo').textContent = '💰 CASH OUT'; $('#tGo').className = 'btn gold big cz-big'; $('#tGo').disabled = true; $('#tMsg').textContent = 'Pick a block on row 1.';
+    this.paint(); this.facts();
+  },
+  pick(i){
+    if (this.state !== 'run') return; const R = this.rows[this.row]; R.pick = i;
+    if (R.bad.includes(i)){ this.state = 'done'; A.Sfx.fail(); A.shake && A.shake(document.querySelector('.cz-stage'));
+      $('#tMsg').innerHTML = '💀 Bad block on row ' + (this.row + 1) + ' · <b style="color:#ff7777">−' + fmt(this.betAmt) + ' 🪙</b>'; record(false, -this.betAmt, '🗼 ' + this.row); this.paint(true); this.end(); return; }
+    this.row++; A.Sfx.coin(); const m = this.mult(this.row);
+    $('#tMsg').innerHTML = '💎 Row ' + this.row + ' cleared · cash out for <b style="color:#55ff55">' + fmt(Math.round(this.betAmt * m)) + ' 🪙</b>';
+    $('#tGo').textContent = '💰 CASH OUT ' + fmt(Math.round(this.betAmt * m)) + ' 🪙'; $('#tGo').disabled = false;
+    if (this.row >= this.ROWS) return this.cashout();
+    this.paint(); this.facts();
+  },
+  cashout(){
+    if (this.state !== 'run' || !this.row) return; this.state = 'done';
+    const m = this.mult(this.row), pay = payout(this.betAmt * m); A.addCoins(pay, 'Towers win', true); A.Sfx.coin();
+    $('#tMsg').innerHTML = '✅ Cashed out at ' + m.toFixed(2) + '× · <b style="color:#55ff55">+' + fmt(pay - this.betAmt) + ' 🪙</b>'; if (m >= 10) A.bigText('🗼 ' + m.toFixed(2) + '×!', '#ffd23a');
+    record(true, pay - this.betAmt, m.toFixed(2) + '×'); this.paint(true); this.end();
+  },
+  end(){ busy = false; lockBet(false); $('#tGo').textContent = '🗼 START'; $('#tGo').className = 'btn green big cz-big'; $('#tGo').disabled = false; this.facts(); },
+  key(){ this.action(); }
+};
+
+/* ---------------- 🔢 KENO ---------------- */
+// 40 numbers, 10 drawn. For k picks, hits follow the hypergeometric distribution.
+// Base weights grow with hits; they are scaled so the expected payout is exactly RTP.
+function choose(n, k){ if (k < 0 || k > n) return 0; let r = 1; for (let i=1;i<=k;i++) r = r * (n - k + i) / i; return r; }
+function kenoTable(k){
+  if (!k) return [];
+  const P = h => choose(10, h) * choose(30, k - h) / choose(40, k), need = Math.max(1, Math.ceil(k * 0.4));
+  const w = Array.from({ length:k + 1 }, (_, h) => h < need ? 0 : Math.pow(2.6, h - need));
+  const ev = w.reduce((a, x, h) => a + x * P(h), 0);
+  return w.map((x, h) => ({ h, m:x * RTP / ev, p:P(h) }));
+}
+const Keno = {
+  picks:[], state:'idle', drawn:[],
+  mount(){
+    $('#czGame').innerHTML = '<div class="cz-stage"><div id="kG" style="display:grid;grid-template-columns:repeat(8,1fr);gap:5px;width:min(100%,380px)"></div><div class="cz-msg" id="kMsg">Pick 1 to 10 numbers. 10 are drawn.</div><div class="cz-legend" id="kPay"></div></div>' +
+      '<div class="dark-panel cz-panel">' + betBox('<div class="cz-row"><button class="btn small" id="kAuto">🎲 AUTO PICK</button><button class="btn small" id="kClr">CLEAR</button><span id="kN" style="margin-left:auto;font-size:13px"></span></div>') +
+      '<button class="btn green big cz-big" id="kGo">🔢 DRAW</button><div class="cz-hist" id="czHist"></div></div>';
+    bindBet(() => this.paint());
+    $('#kAuto').onclick = () => { if (busy) return; const idx = [...Array(40).keys()].map(i => i + 1); for (let i=39;i>0;i--){ const j = Math.floor(rand() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; } this.picks = idx.slice(0, 10); this.drawn = []; this.paint(); };
+    $('#kClr').onclick = () => { if (busy) return; this.picks = []; this.drawn = []; this.paint(); };
+    $('#kGo').onclick = () => this.draw(); this.paint();
+  },
+  paint(){
+    const hit = n => this.drawn.includes(n), mine = n => this.picks.includes(n);
+    $('#kG').innerHTML = Array.from({ length:40 }, (_, i) => { const n = i + 1, m = mine(n), h = hit(n);
+      return '<button data-k="' + n + '" style="aspect-ratio:1;border-radius:8px;border:1px solid #0a0f1c;font:600 14px var(--font);color:#fff;cursor:pointer;background:' + (m && h ? '#1f9a5a' : h ? '#3a2a5a' : m ? '#22b8f0' : '#1d2a4a') + ';box-shadow:inset 0 -3px 0 rgba(0,0,0,.35)">' + (m && h ? '💎' : n) + '</button>'; }).join('');
+    $('#kG').querySelectorAll('[data-k]').forEach(b => b.onclick = () => { if (busy) return; const n = +b.dataset.k; if (this.picks.includes(n)) this.picks = this.picks.filter(x => x !== n); else if (this.picks.length < 10) this.picks.push(n); this.drawn = []; this.paint(); });
+    const t = kenoTable(this.picks.length);
+    $('#kN').textContent = this.picks.length + ' / 10 picked';
+    $('#kPay').innerHTML = t.filter(x => x.m > 0).map(x => '<span style="background:#18213b;color:#fff">' + x.h + ' hit' + (x.h > 1 ? 's' : '') + ' · ' + (x.m >= 100 ? Math.round(x.m) : x.m.toFixed(2)) + '×</span>').join('') || '<span style="background:#18213b;color:#aab4d4">pick numbers to see the paytable</span>';
+    $('#kGo').disabled = busy || !this.picks.length;
+  },
+  draw(){
+    if (busy || !this.picks.length || !takeBet()) return; busy = true; lockBet(true); $('#kGo').disabled = true;
+    const idx = [...Array(40).keys()].map(i => i + 1); for (let i=39;i>0;i--){ const j = Math.floor(rand() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+    const draw = idx.slice(0, 10); this.drawn = []; let i = 0;
+    const step = () => { this.drawn.push(draw[i]); A.Sfx.click(); this.paint(); $('#kGo').disabled = true; i++;
+      if (i < 10) return setTimeout(step, 110);
+      const hits = this.picks.filter(n => draw.includes(n)).length, m = kenoTable(this.picks.length)[hits].m, pay = m > 0 ? payout(bet * m) : 0;
+      if (pay > 0){ A.addCoins(pay, 'Keno win', true); A.Sfx.coin(); $('#kMsg').innerHTML = '✅ ' + hits + ' hits · ' + m.toFixed(2) + '× · <b style="color:' + (pay >= bet ? '#55ff55' : '#ffaa00') + '">' + (pay >= bet ? '+' : '−') + fmt(Math.abs(pay - bet)) + ' 🪙</b>'; if (m >= 10) A.bigText('🔢 ' + m.toFixed(1) + '×!', '#ffd23a'); }
+      else { A.Sfx.fail(); $('#kMsg').innerHTML = '❌ ' + hits + ' hit' + (hits === 1 ? '' : 's') + ' · <b style="color:#ff7777">−' + fmt(bet) + ' 🪙</b>'; }
+      record(pay > bet, pay - bet, hits + '/' + this.picks.length); busy = false; lockBet(false); this.paint(); };
+    step();
+  },
+  key(){ this.draw(); }
+};
+
+/* ---------------- 📍 PLINKO ---------------- */
+// The ball lands in bucket k with binomial probability C(n,k)/2^n. Each risk level has a base shape
+// (edges pay more); it is scaled so the expected payout is exactly RTP.
+const PLK_EXP = { low:1.4, medium:2.6, high:4.2 };
+function plinkoTable(n, risk){
+  const e = PLK_EXP[risk], base = Array.from({ length:n + 1 }, (_, k) => Math.pow(Math.abs(k - n / 2) / (n / 2), e) * 1 + (risk === 'low' ? .55 : risk === 'medium' ? .25 : .05));
+  const ev = base.reduce((a, b, k) => a + b * choose(n, k) / Math.pow(2, n), 0);
+  return base.map(b => b * RTP / ev);
+}
+const Plinko = {
+  rows:12, risk:'medium', balls:[],
+  mount(){
+    $('#czGame').innerHTML = '<div class="cz-stage" style="padding:8px"><canvas id="pCv" width="600" height="520" style="width:100%;max-width:440px;display:block"></canvas><div class="cz-msg" id="pMsg">Drop balls. Edge buckets pay the most.</div></div>' +
+      '<div class="dark-panel cz-panel">' + betBox('<div class="cz-row"><label>RISK</label><div class="cz-seg" style="flex:1">' + Object.keys(PLK_EXP).map(r => '<button data-pr="' + r + '">' + r.toUpperCase() + '</button>').join('') + '</div></div>' +
+      '<div class="cz-row"><label>ROWS</label><div class="cz-seg" style="flex:1">' + [8, 12, 16].map(r => '<button data-pn="' + r + '">' + r + '</button>').join('') + '</div></div>') +
+      '<button class="btn green big cz-big" id="pGo">📍 DROP BALL</button><div class="cz-hist" id="czHist"></div></div>';
+    bindBet();
+    document.querySelectorAll('[data-pr]').forEach(b => b.onclick = () => { if (this.balls.length) return; this.risk = b.dataset.pr; this.seg(); this.draw(); });
+    document.querySelectorAll('[data-pn]').forEach(b => b.onclick = () => { if (this.balls.length) return; this.rows = +b.dataset.pn; this.seg(); this.draw(); });
+    $('#pGo').onclick = () => this.drop(); this.seg(); this.draw();
+    if (!this.raf){ const loop = () => { this.raf = requestAnimationFrame(loop); if (cur === 'plinko' && this.balls.length) this.tick(); }; loop(); }
+  },
+  seg(){ document.querySelectorAll('[data-pr]').forEach(b => b.className = b.dataset.pr === this.risk ? 'on' : ''); document.querySelectorAll('[data-pn]').forEach(b => b.className = +b.dataset.pn === this.rows ? 'on' : ''); this.table = plinkoTable(this.rows, this.risk); },
+  geo(){ const W = 600, n = this.rows, gap = W / (n + 3); return { W, n, gap, top:40, rowH:(520 - 110) / n }; },
+  drop(){
+    if (this.balls.length >= 8 || !takeBet()) return;
+    const n = this.rows, path = []; for (let i=0;i<n;i++) path.push(rand() < .5 ? 0 : 1);
+    this.balls.push({ path, k:path.reduce((a, b) => a + b, 0), bet, t:0, n, table:this.table });
+    busy = true; lockBet(true); A.Sfx.click();
+  },
+  pos(b){ const g = this.geo(), step = Math.min(b.n, Math.floor(b.t)), f = b.t - Math.floor(b.t); let x = 0; for (let i=0;i<step;i++) x += b.path[i] ? .5 : -.5;
+    const nx = step < b.n ? x + (b.path[step] ? .5 : -.5) : x, cx = g.W / 2 + (x + (nx - x) * (step < b.n ? f : 0)) * g.gap; const y = g.top + (b.t * g.rowH) - Math.sin(f * Math.PI) * 10; return [cx, Math.min(y, g.top + b.n * g.rowH + 20)]; },
+  tick(){
+    const done = [];
+    this.balls.forEach(b => { b.t += .09; if (Math.floor(b.t) !== Math.floor(b.t - .09) && b.t < b.n) A.Sfx.tone && A.Sfx.tone(600 + Math.random() * 300, .02, 'square', .02); if (b.t >= b.n + .3) done.push(b); });
+    done.forEach(b => { this.balls = this.balls.filter(x => x !== b); const m = b.table[b.k], pay = payout(b.bet * m); if (pay > 0) A.addCoins(pay, 'Plinko', true);
+      lastBet = b.bet; record(pay > b.bet, pay - b.bet, (m >= 10 ? Math.round(m) : m.toFixed(2)) + '×');
+      $('#pMsg').innerHTML = (pay >= b.bet ? '✅ ' : '') + (m >= 10 ? Math.round(m) : m.toFixed(2)) + '× · <b style="color:' + (pay >= b.bet ? '#55ff55' : '#ff7777') + '">' + (pay >= b.bet ? '+' : '−') + fmt(Math.abs(pay - b.bet)) + ' 🪙</b>'; pay > b.bet ? A.Sfx.coin() : 0; if (m >= 20) A.bigText('📍 ' + Math.round(m) + '×!', '#ffd23a'); this.hit = { k:b.k, t:12 }; });
+    if (!this.balls.length){ busy = false; lockBet(false); }
+    this.draw();
+  },
+  draw(){
+    const cv = $('#pCv'); if (!cv) return; const x = cv.getContext('2d'), g = this.geo(); x.clearRect(0, 0, 600, 520);
+    for (let r=0;r<g.n;r++) for (let i=0;i<=r + 2;i++){ const px = g.W / 2 + (i - (r + 2) / 2) * g.gap, py = g.top + (r + .5) * g.rowH; x.fillStyle = '#c8d4f0'; x.beginPath(); x.arc(px, py, 4, 0, Math.PI * 2); x.fill(); }
+    const by = g.top + g.n * g.rowH + 12, bw = g.gap - 4;
+    this.table.forEach((m, k) => { const cx = g.W / 2 + (k - g.n / 2) * g.gap, hot = Math.min(1, Math.log(m + 1) / Math.log(this.table[0] + 1)), lit = this.hit && this.hit.k === k && this.hit.t > 0;
+      x.fillStyle = 'hsl(' + (50 - hot * 50) + ',90%,' + (lit ? 70 : 52) + '%)'; x.fillRect(cx - bw / 2, by + (lit ? 4 : 0), bw, 30); x.fillStyle = '#1a1000'; x.font = 'bold ' + (g.n > 12 ? 10 : 12) + 'px Rubik, sans-serif'; x.textAlign = 'center'; x.fillText(m >= 100 ? Math.round(m) : m >= 10 ? m.toFixed(0) : m.toFixed(1), cx, by + 20 + (lit ? 4 : 0)); });
+    if (this.hit) this.hit.t--;
+    this.balls.forEach(b => { const [bx, byy] = this.pos(b); x.fillStyle = '#ff4a8a'; x.beginPath(); x.arc(bx, byy, 8, 0, Math.PI * 2); x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 2; x.stroke(); });
+  },
+  key(){ this.drop(); }
+};
+
+/* ---------------- 🔴 ROULETTE ---------------- */
+// 25 slots: 12 red, 12 black, 1 green. Payouts are RTP / chance: red/black 2.03×, green 24.38×.
+const RL_SLOTS = (() => { const a = ['G']; for (let i=0;i<24;i++) a.push(i % 2 ? 'B' : 'R'); return a; })();
+const RL_BETS = { R:['🔴 RED', 12 / 25, '#d0303a'], B:['⚫ BLACK', 12 / 25, '#2a2f3a'], G:['🟢 GREEN', 1 / 25, '#1f9a5a'] };
+const Roulette = {
+  pick:'R', off:0, last:[],
+  mount(){
+    $('#czGame').innerHTML = '<div class="cz-stage" style="padding:14px 0"><div style="position:relative;width:100%;overflow:hidden;height:74px"><div id="rS" style="display:flex;gap:6px;position:absolute;left:0;top:6px;will-change:transform"></div><div style="position:absolute;left:50%;top:0;bottom:0;width:4px;margin-left:-2px;background:#ffd23a;box-shadow:0 0 12px #ffd23a"></div></div>' +
+      '<div class="cz-msg" id="rMsg">Pick a color and spin</div><div class="cz-trail" id="rLast"></div></div>' +
+      '<div class="dark-panel cz-panel">' + betBox('<div class="cz-row">' + Object.keys(RL_BETS).map(k => '<button class="btn" data-rb="' + k + '" style="flex:1;background:' + RL_BETS[k][2] + ';border-color:' + RL_BETS[k][2] + ';color:#fff">' + RL_BETS[k][0] + '<br><small>' + (RTP / RL_BETS[k][1]).toFixed(2) + '× · ' + (RL_BETS[k][1] * 100).toFixed(0) + '%</small></button>').join('') + '</div>') +
+      '<button class="btn green big cz-big" id="rGo">🔴 SPIN</button><div class="cz-hist" id="czHist"></div></div>';
+    bindBet(); this.strip(0);
+    document.querySelectorAll('[data-rb]').forEach(b => b.onclick = () => { if (busy) return; this.pick = b.dataset.rb; this.sel(); });
+    $('#rGo').onclick = () => this.spin(); this.sel(); this.trail();
+  },
+  sel(){ document.querySelectorAll('[data-rb]').forEach(b => b.style.outline = b.dataset.rb === this.pick ? '3px solid #fff' : 'none'); },
+  strip(px){ const el = $('#rS'); if (!el.children.length){ let h = ''; for (let rep=0; rep<8; rep++) RL_SLOTS.forEach((c, i) => { h += '<div style="flex:none;width:58px;height:58px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;background:' + RL_BETS[c][2] + ';box-shadow:inset 0 -4px 0 rgba(0,0,0,.35)">' + (c === 'G' ? '🟢' : i) + '</div>'; }); el.innerHTML = h; } el.style.transform = 'translateX(' + px + 'px)'; },
+  trail(){ $('#rLast').innerHTML = this.last.map(c => '<span style="background:' + RL_BETS[c][2] + ';color:#fff;border-color:#000">' + (c === 'G' ? '🟢' : c === 'R' ? 'R' : 'B') + '</span>').join(''); },
+  spin(){
+    if (busy || !takeBet()) return; busy = true; lockBet(true); $('#rGo').disabled = true;
+    const idx = Math.floor(rand() * 25), c = RL_SLOTS[idx], W = 64, box = $('#rS').parentNode.clientWidth;
+    const target = -((5 * 25 + idx) * W + W / 2 - box / 2) + (rand() - .5) * 40, start = -((25 + (this.lastIdx || 0)) * W + W / 2 - box / 2), t0 = performance.now(), dur = 3000; let tick = -1;
+    const step = () => { const k = Math.min(1, (performance.now() - t0) / dur), e = 1 - Math.pow(1 - k, 4), px = start + (target - start) * e; this.strip(px); const t = Math.floor(px / W); if (t !== tick){ tick = t; A.Sfx.click(); }
+      if (k < 1) return requestAnimationFrame(step);
+      this.lastIdx = idx; const win = c === this.pick, m = RTP / RL_BETS[this.pick][1], pay = win ? payout(bet * m) : 0;
+      if (win){ A.addCoins(pay, 'Roulette win', true); A.Sfx.coin(); $('#rMsg').innerHTML = '✅ ' + RL_BETS[c][0] + ' · <b style="color:#55ff55">+' + fmt(pay - bet) + ' 🪙</b>'; if (c === 'G') A.bigText('🟢 GREEN ' + m.toFixed(1) + '×!', '#55ff99'); }
+      else { A.Sfx.fail(); $('#rMsg').innerHTML = '❌ ' + RL_BETS[c][0] + ' · <b style="color:#ff7777">−' + fmt(bet) + ' 🪙</b>'; }
+      this.last.unshift(c); this.last = this.last.slice(0, 16); this.trail();
+      record(win, pay - bet, c === 'G' ? '🟢' : c); busy = false; lockBet(false); $('#rGo').disabled = false; };
+    requestAnimationFrame(step);
+  },
+  key(){ this.spin(); }
+};
+
+/* ---------------- 📡 Live bets (everyone's settled bets, from the server) ---------------- */
+const GAME_NAME = { cdice:'Dice', crash:'Crash', coinflip:'Coin Flip', mines:'Mines', limbo:'Limbo', hilo:'Hi-Lo', wheel:'Wheel', towers:'Towers', keno:'Keno', cplinko:'Plinko', croulette:'Roulette' };
+let liveT = 0;
+function livePoll(){
+  clearTimeout(liveT); const box = $('#czLive'); if (!box) return;
+  A.acct.live().then(j => {
+    $('#czLiveHead').innerHTML = '<span>● <b>' + j.online + '</b> online</span><span><b>' + j.perMin + '</b> bets/min</span><span><b>' + fmt(j.wagMin) + '</b> 🪙/min</span>';
+    box.innerHTML = j.bets.length ? j.bets.map(b => '<tr><td>' + (GAME_NAME[b.g] || b.g) + '</td><td>' + (b.rk || '') + ' ' + A.esc(b.n) + '</td><td>' + new Date(b.t * 1000).toTimeString().slice(0, 5) + '</td><td>' + fmt(b.b) + '</td><td style="color:' + (b.m >= 1 ? '#55ff99' : '#aab4d4') + '">' + b.m.toFixed(2) + '×</td><td style="color:' + (b.p > b.b ? '#55ff99' : '#aab4d4') + '">' + fmt(b.p) + '</td></tr>').join('') : '<tr><td colspan="6" style="color:#aab4d4;text-align:center;padding:14px">No bets yet. Sign in and place one!</td></tr>';
+  }).catch(() => { box.innerHTML = '<tr><td colspan="6" style="color:#aab4d4;text-align:center;padding:14px">Live bets show up once the arcade runs on your website.</td></tr>'; })
+    .then(() => { liveT = setTimeout(livePoll, document.hidden ? 15000 : 4000); });
+}
+
+const IMPL = { dice:Dice, crash:Crash, coinflip:Flip, mines:Mines, limbo:Limbo, hilo:HiLo, wheel:Wheel, towers:Towers, keno:Keno, plinko:Plinko, roulette:Roulette };
 function show(name){
   if (busy) { A.toast('Finish this round first'); return; }
   cur = name; if (location.hash.slice(1) !== name) history.replaceState(null, '', '#' + name);
@@ -528,6 +744,7 @@ addEventListener('beforeunload', e => { if (busy){ e.preventDefault(); e.returnV
 setInterval(wallet, 30000);
 edgeText();
 show(cur);
+livePoll();
 window.__casino = { Dice, Crash, Flip, Mines, Limbo, HiLo, Wheel, WHEEL, RTP };
 })();
 </script>

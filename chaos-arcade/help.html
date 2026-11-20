@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090d18">
+<title>Help &amp; Fairness · Chaos Arcade</title>
+<meta name="description" content="Chaos Arcade help: how coins, the casino, VIP ranks, giveaways and gifts work, and how every game's odds are set.">
+<link rel="stylesheet" href="style.css">
+<style>
+  .wrap{max-width:900px}
+  h1{font-size:clamp(26px,5vw,36px);font-weight:900;margin:8px 0 4px}
+  h2{font-size:22px;font-weight:900;margin:28px 0 12px}
+  .sub{color:var(--mut);margin:0 0 16px;font-weight:400}
+  details{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:12px;margin-bottom:8px;padding:0 16px}
+  summary{cursor:pointer;padding:14px 0;font-weight:700;font-size:15px;list-style:none}
+  summary::after{content:"+";float:right;color:var(--mut)}
+  details[open] summary::after{content:"–"}
+  details p{margin:0 0 14px;color:var(--mut);line-height:1.6;font-weight:400;font-size:14px}
+  .tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  .tbl th{text-align:left;color:var(--dim);font-size:11px;letter-spacing:1px;padding:8px;border-bottom:1px solid var(--line)}
+  .tbl td{padding:9px 8px;border-bottom:1px solid #161f38;color:#dfe4f2;font-weight:400;vertical-align:top}
+  .tbl td:first-child{font-weight:700;white-space:nowrap}
+  .card2{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:14px;padding:18px}
+  .rules li{margin-bottom:8px;color:var(--mut);line-height:1.5;font-weight:400}
+  .rules b{color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="arcadeBar"></div>
+  <h1>🛟 Help &amp; Fairness</h1>
+  <p class="sub">Answers to common questions, the house rules, and exactly how the odds of every casino game are set. Still stuck? <a href="https://discord.gg/vesperclient" target="_blank" rel="noopener noreferrer">Ask on our Discord</a>.</p>
+
+  <h2>Frequently asked</h2>
+  <details><summary>How do I get coins?</summary><p>You start with 2,500 🪙. Every arcade game pays 5 🪙 per XP you earn (up to 25,000 a day), the daily loot chest pays 500 to 3,000, the hourly giveaway in global chat pays 3 winners 2,000 to 5,000 each, casino quests pay up to 10,000, and promo codes from chat or Discord give extra. If you drop below 50, you can claim a free 500 every hour in the casino.</p></details>
+  <details><summary>Are coins real money?</summary><p>No. Coins are play money for fun only. They can't be bought, sold, traded for anything outside the arcade, or cashed out, and nobody here will ever ask you to pay for them.</p></details>
+  <details><summary>What is the house edge?</summary><p>Every casino game pays back 97.5% of what is bet on average, so the house edge is 2.5%. That is already built into every multiplier you see: a 50% chance pays 1.95×, not 2×. Over many bets you lose about 2.5 🪙 per 100 🪙 bet, but single bets can win big.</p></details>
+  <details><summary>How do VIP ranks work?</summary><p>Every coin you bet in the casino counts as wagered, win or lose. Ten ranks from Pebble to Nova give rakeback (a share of the edge back on every bet), a daily and weekly bonus, and a one-time bonus when you reach them. Ranks never reset. See the Rewards page.</p></details>
+  <details><summary>How does the hourly giveaway work?</summary><p>At the start of every hour a giveaway opens in global chat for 10 minutes. Signed-in players tap ENTER above the chat. When it closes, 3 random entrants each win the prize, and it lands in their wallet automatically.</p></details>
+  <details><summary>How does the daily race work?</summary><p>Everything you bet in the casino while signed in counts. The top 5 at 00:00 UTC split the prize pool (40%, 25%, 15%, 12%, 8%), and the prizes arrive in their wallets automatically.</p></details>
+  <details><summary>How do I gift coins to a friend?</summary><p>Tap 🎁 in the top bar, next to a friend, or on someone's chat message. Gifts are 10 to 1,000,000 🪙, up to 10 an hour, and arrive as soon as the other player opens the arcade.</p></details>
+  <details><summary>Why do I need an account?</summary><p>An account saves your progress, coins and ranks on any device, and unlocks chat, friends, gifts, giveaways, the race and promo codes. Pick a gamer name, never your real name.</p></details>
+  <details><summary>I lost my progress</summary><p>Progress lives in your browser and, when you are signed in, on your account. Clearing your browser data removes the local copy; sign in again to load what was saved to your account.</p></details>
+
+  <h2>How every casino game's odds are set</h2>
+  <div class="card2" style="overflow-x:auto">
+    <table class="tbl"><thead><tr><th>Game</th><th>How the payout is set (RTP = 97.5%)</th></tr></thead><tbody>
+      <tr><td>🎲 Dice</td><td>Roll 0.00 to 99.99. Payout = 97.5 ÷ win chance. 49.5% pays 1.97×.</td></tr>
+      <tr><td>🪙 Coin Flip</td><td>50% chance, pays 2 × 0.975 = 1.95×.</td></tr>
+      <tr><td>📈 Crash</td><td>The crash point is 0.975 ÷ u (u random between 0 and 1), so the chance to reach x× is 97.5% ÷ x.</td></tr>
+      <tr><td>🎯 Limbo</td><td>Same draw as Crash: a target of x× wins with chance 97.5% ÷ x.</td></tr>
+      <tr><td>💣 Mines</td><td>After n safe tiles the payout is 0.975 ÷ (chance of n safe tiles in a row).</td></tr>
+      <tr><td>🗼 Towers</td><td>After k safe rows the payout is 0.975 ÷ (chance per row)<sup>k</sup>.</td></tr>
+      <tr><td>🃏 Hi-Lo</td><td>After a streak the payout is 0.975 ÷ (chance of every guess being right).</td></tr>
+      <tr><td>🎡 Wheel</td><td>40 equal slices whose multipliers add up to 39, so the average is 39 ÷ 40 = 97.5%.</td></tr>
+      <tr><td>🔢 Keno</td><td>10 of 40 numbers drawn. The paytable for each number of picks is scaled so the average payout is exactly 97.5%.</td></tr>
+      <tr><td>📍 Plinko Drop</td><td>The ball goes left or right at each peg (50/50). Bucket payouts are scaled so the average is exactly 97.5%.</td></tr>
+      <tr><td>🔴 Color Roulette</td><td>25 slots: 12 red, 12 black, 1 green. Payout = 0.975 ÷ chance: 2.03× and 24.38×.</td></tr>
+    </tbody></table>
+    <p style="color:var(--mut);font-size:13px;line-height:1.6;margin:12px 0 0;font-weight:400">Results come from your browser's cryptographic random generator (<code>crypto.getRandomValues</code>). Coins are whole numbers, so a fractional payout is rounded up or down at random in proportion to the fraction (2.4 pays 3 with 40% chance), which keeps the average exact. The games in the Luck category (Slots, Blackjack and others) use their own per-run chips, not your wallet.</p>
+  </div>
+
+  <h2>House rules</h2>
+  <div class="card2"><ul class="rules">
+    <li><b>Coins are play money.</b> They have no value outside the arcade and can't be cashed out.</li>
+    <li><b>Be kind in chat.</b> No bullying, hate, spam or links. Report messages you don't like; admins can remove messages and ban players.</li>
+    <li><b>Stay private.</b> Never share your real name, address, school, phone number or passwords.</li>
+    <li><b>One account per person.</b> Accounts used to farm giveaways, gifts or codes can be banned.</li>
+    <li><b>Take breaks.</b> The casino is a game of chance. If it stops being fun, close it and play something else.</li>
+  </ul></div>
+  <div class="legal">Chaos Arcade · free fan-made browser games.</div>
+</div>
+<script src="arcade.js"></script>
+<script>Arcade.mountBar('help');</script>
+</body>
+</html>

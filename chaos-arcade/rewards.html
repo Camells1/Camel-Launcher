@@ -46,6 +46,13 @@
   .hw{display:grid;grid-template-columns:56px 1fr;gap:14px;padding:18px;border-radius:16px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line)}
   .hw .ic{width:56px;height:56px;border-radius:12px;background:#0b1121;display:flex;align-items:center;justify-content:center;font-size:28px}
   .hw b{font-size:17px;font-weight:800}
+  .rt{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+  .rt th{text-align:left;color:var(--dim);font-size:11px;letter-spacing:1px;padding:6px 8px;border-bottom:1px solid var(--line)}
+  .rt td{padding:9px 8px;border-bottom:1px solid #161f38}
+  .rt tr.rme td{background:rgba(34,184,240,.12)}
+  .rt td.p{color:var(--gold);font-weight:700}
+  .ai{flex:1;min-width:80px;padding:9px 10px;background:#0c1222;color:#fff;border:1px solid var(--line2);border-radius:8px;font:600 14px var(--font)}
+  .cq .lv{font-size:11px;font-weight:800;letter-spacing:1.5px}
   .hw p{margin:4px 0 0;color:var(--mut);font-size:13.5px;line-height:1.5;font-weight:400}
 </style>
 </head>
@@ -53,10 +60,27 @@
 <div class="wrap">
   <div id="arcadeBar"></div>
   <h1 class="pg">💎 VIP Rewards</h1>
-  <p class="sub">Every coin you bet in the casino counts toward your rank, win or lose. Higher ranks pay back more.</p>
+  <p class="sub">Every coin you bet in the casino counts toward your rank, win or lose. Higher ranks pay back more. Jump to: <a href="#race">🏁 Race</a> · <a href="#quests">🎯 Quests</a> · <a href="#redeem">🎟️ Codes</a></p>
 
   <div class="me" id="me"></div>
   <div class="claims" id="claims"></div>
+
+  <h2 class="sh" id="race">🏁 Daily race</h2>
+  <div class="cl" style="margin-bottom:30px"><div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap"><div><div class="lab">PRIZE POOL · TOP 5 SPLIT IT</div><div class="big" id="rcPool">–</div></div><div style="text-align:right"><div class="lab">ENDS IN</div><div class="big" id="rcEnd" style="font-size:24px;font-variant-numeric:tabular-nums">--:--:--</div></div></div>
+    <p>Every coin you bet in the casino counts. Resets every day at 00:00 UTC. Prizes arrive in your wallet automatically. Sign in to take part.</p>
+    <div style="overflow-x:auto"><table class="rt"><thead><tr><th>#</th><th>Player</th><th>Wagered</th><th>Prize</th></tr></thead><tbody id="rcTop"></tbody></table></div><div id="rcMe" class="nx"></div><div id="rcLast" class="nx"></div></div>
+
+  <h2 class="sh" id="quests">🎯 Casino quests</h2>
+  <p class="sub" id="cqSub" style="margin-top:-6px">Three quests a day, the same for everyone. Finishing all three pays a bonus.</p>
+  <div class="claims" id="cq" style="margin-top:0"></div>
+
+  <h2 class="sh" id="redeem">🎟️ Promo codes</h2>
+  <div class="cl" style="margin-bottom:30px"><p>We drop codes in chat and on our Discord. Each code works once per account.</p>
+    <div class="row"><input id="rdIn" maxlength="20" autocomplete="off" placeholder="ENTER CODE" style="flex:1;min-width:140px;padding:11px 12px;background:#0c1222;color:#fff;border:1px solid var(--line2);border-radius:8px;font:700 16px var(--font);text-transform:uppercase"><button class="btn cyan" id="rdGo">Redeem</button></div>
+    <div id="rdMsg" class="nx"></div>
+    <div id="adm" style="display:none;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)"><div class="lab">ADMIN · CREATE A CODE</div>
+      <div class="row" style="margin-top:8px"><input id="acCode" placeholder="CODE" maxlength="20" class="ai"><input id="acCoins" type="number" placeholder="coins" class="ai"><input id="acMax" type="number" placeholder="max uses" value="100" class="ai"><input id="acHours" type="number" placeholder="hours" value="24" class="ai"><button class="btn gold" id="acGo">Create</button></div><div id="acMsg" class="nx"></div></div>
+  </div>
 
   <h2 class="sh">All ranks</h2>
   <div class="tiers" id="tiers"></div>
@@ -103,10 +127,36 @@ function render(){
       '<h3 style="color:' + x.c + '">' + x.n + '</h3><div class="need">' + short(x.need) + ' 🪙</div><div class="needl">wagered to reach</div><ul>' + perks.map(p => '<li>' + p + '</li>').join('') + '</ul></div>';
   }).join('');
 }
-render();
+/* quests */
+function renderCq(){
+  const q = A.cq(), col = { easy:'#2fd27a', medium:'#ffcf3a', hard:'#ff5a6a' };
+  $('#cq').innerHTML = q.quests.map(x => '<div class="cl cq"><div class="lv" style="color:' + col[x.lv] + '">' + x.lv.toUpperCase() + ' · +' + fmt(x.r) + ' 🪙</div><b style="font-size:19px">' + (x.done ? '✅ ' : '') + x.t + '</b><p>' + x.d + '</p><div class="bar"><i style="width:' + (x.prog / x.goal * 100).toFixed(1) + '%"></i></div><div class="nx">' + fmt(x.prog) + ' / ' + fmt(x.goal) + '</div></div>').join('');
+  $('#cqSub').innerHTML = 'Three quests a day, the same for everyone. Finishing all three pays <b style="color:#ffcf3a">+' + fmt(q.bonus) + ' 🪙</b>' + (q.bonusDone ? ' ✅' : '') + '. Bets of 10 🪙 or more count. New quests at midnight.';
+}
+/* race */
+let raceEnd = 0;
+function renderRace(){
+  A.acct.race().then(j => {
+    raceEnd = Date.now() + j.endsIn * 1000; $('#rcPool').textContent = fmt(j.pool) + ' 🪙';
+    $('#rcTop').innerHTML = j.top.length ? j.top.map((r, i) => '<tr' + (r.me ? ' class="rme"' : '') + '><td>' + (['🥇','🥈','🥉'][i] || '#' + (i + 1)) + '</td><td>' + A.esc(r.rk || '') + ' ' + A.esc(r.n) + '</td><td>' + short(r.w) + '</td><td class="p">' + (r.p ? fmt(r.p) + ' 🪙' : '–') + '</td></tr>').join('') : '<tr><td colspan="4" style="color:#aab4d4">Nobody has bet today yet. Be first!</td></tr>';
+    $('#rcMe').innerHTML = j.me ? 'You are <b>#' + j.me.rank + '</b> with ' + fmt(j.me.w) + ' 🪙 wagered today.' : (A.acct.user ? 'Bet in the casino to join today\'s race.' : 'Sign in on the arcade home page to join the race.');
+    $('#rcLast').innerHTML = j.last && j.last.win && j.last.win.length ? 'Yesterday: ' + j.last.win.map((w, i) => '#' + (i + 1) + ' ' + A.esc(w.n) + ' (+' + fmt(w.p) + ')').join(' · ') : '';
+  }).catch(() => { $('#rcPool').textContent = '–'; $('#rcTop').innerHTML = '<tr><td colspan="4" style="color:#aab4d4">The race goes live once the arcade runs on your website (needs PHP).</td></tr>'; });
+}
+setInterval(() => { if (!raceEnd) return; const s = Math.max(0, Math.round((raceEnd - Date.now()) / 1000)); $('#rcEnd').textContent = [Math.floor(s / 3600), Math.floor(s % 3600 / 60), s % 60].map(x => String(x).padStart(2, '0')).join(':'); if (s === 0){ raceEnd = 0; setTimeout(renderRace, 3000); } }, 1000);
+/* codes */
+$('#rdGo').onclick = () => { const c = $('#rdIn').value.trim(); if (!c) return; $('#rdGo').disabled = true;
+  A.acct.redeem(c).then(r => { A.addCoins(r.coins, 'code ' + r.code); A.Sfx.coin(); A.bigText('🎟️ +' + fmt(r.coins) + ' 🪙', '#ffd23a'); $('#rdMsg').innerHTML = '✅ Code <b>' + r.code + '</b> gave you ' + fmt(r.coins) + ' 🪙'; $('#rdIn').value = ''; })
+    .catch(e => { $('#rdMsg').innerHTML = '❌ ' + A.esc(e.message); A.Sfx.fail(); }).then(() => { $('#rdGo').disabled = false; }); };
+$('#rdIn').addEventListener('keydown', e => { if (e.key === 'Enter') $('#rdGo').click(); });
+if (A.acct.user) A.acct.me().then(me => { if (me.admin) $('#adm').style.display = ''; }).catch(() => {});
+$('#acGo').onclick = () => A.acct.codeCreate($('#acCode').value, +$('#acCoins').value, +$('#acMax').value, +$('#acHours').value).then(r => { $('#acMsg').innerHTML = '✅ Created <b>' + r.code + '</b>. Share it in chat or on Discord.'; }).catch(e => { $('#acMsg').textContent = '❌ ' + e.message; });
+
+render(); renderCq(); renderRace(); setInterval(() => { renderCq(); renderRace(); }, 20000);
 const cur = document.querySelector('.tc.cur'); if (cur) cur.scrollIntoView({ inline:'start', block:'nearest' });
-scrollTo(0, 0);
+if (!location.hash) scrollTo(0, 0);
 setInterval(render, 30000);
+if (location.hash) setTimeout(() => { const el = document.querySelector(location.hash); if (el) el.scrollIntoView(); }, 300);
 })();
 </script>
 </body>
