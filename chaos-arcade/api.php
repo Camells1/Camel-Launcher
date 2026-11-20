@@ -10,7 +10,7 @@ ensure_storage();
 $in = input();
 $action = isset($_GET['action']) ? $_GET['action'] : ($in['action'] ?? '');
 $POST = $_SERVER['REQUEST_METHOD'] === 'POST';
-$writeActions = ['register','login','logout','friend_request','friend_accept','friend_decline','friend_remove','block','unblock','progress_save','chat_send','chat_report','chat_delete','ban'];
+$writeActions = ['register','login','logout','friend_request','friend_accept','friend_decline','friend_remove','block','unblock','progress_save','chat_send','chat_report','chat_delete','ban','giveaway_enter','giveaway_collect'];
 if (in_array($action, $writeActions, true) && !$POST) out(405, ['ok'=>false, 'error'=>'use POST']);
 
 function issue_token($uid){
@@ -47,6 +47,61 @@ function edit_pair($aid, $bid, $fn){
     return $fn($d[$aid], $d[$bid]);
   });
 }
+/* ---------- Hourly chat giveaway ----------
+   Every GIVEAWAY_EVERY seconds a giveaway opens in global chat for GIVEAWAY_OPEN seconds.
+   Logged-in players enter with one tap; when it closes, GIVEAWAY_WINNERS random entrants each win
+   the prize (2,000 to 5,000 coins). Prizes wait server-side until the winner's browser collects them. */
+define('GIVEAWAY_EVERY', max(60, (int)(getenv('CA_GA_EVERY') ?: 3600)));
+define('GIVEAWAY_OPEN', max(20, (int)(getenv('CA_GA_OPEN') ?: 600)));
+define('GIVEAWAY_WINNERS', 3);
+function sys_chat($text){
+  with_file('chat-global.json', true, function(&$d) use ($text){
+    $d['seq'] = ($d['seq'] ?? 0) + 1; $d['msgs'] = $d['msgs'] ?? [];
+    $d['msgs'][] = ['id'=>$d['seq'], 'u'=>'_sys', 'n'=>'🎁 GIVEAWAY', 'rk'=>'', 't'=>$text, 'ts'=>time(), 'rep'=>[], 'hid'=>false, 'sys'=>true];
+    if (count($d['msgs']) > 150) $d['msgs'] = array_slice($d['msgs'], -150);
+  });
+}
+function giveaway_tick(){
+  $now = time(); $slot = intdiv($now, GIVEAWAY_EVERY); $start = $slot * GIVEAWAY_EVERY; $posts = [];
+  // fast path: chat polls every second, so only take the write lock when something changes
+  $peek = read_file('giveaway.json'); $c = $peek['cur'] ?? null;
+  $needDraw = $c && !$c['drawn'] && $now >= $c['end'];
+  $needOpen = (!$c || $c['slot'] !== $slot) && $now < $start + GIVEAWAY_OPEN;
+  if (!$needDraw && !$needOpen) return $peek;
+  $g = with_file('giveaway.json', true, function(&$d) use ($now, $slot, $start, &$posts){
+    $cur = $d['cur'] ?? null;
+    // draw the previous giveaway once it has closed
+    if ($cur && !$cur['drawn'] && $now >= $cur['end']){
+      $e = $cur['entries']; $wins = [];
+      for ($i = 0; $i < GIVEAWAY_WINNERS && $e; $i++){ $k = random_int(0, count($e) - 1); $wins[] = $e[$k]; array_splice($e, $k, 1); }
+      foreach ($wins as $w){ $d['pending'][$w] = ($d['pending'][$w] ?? 0) + $cur['prize']; }
+      $cur['drawn'] = true; $cur['winners'] = $wins;
+      $names = array_map(function($id){ $u = read_file('users.json')[$id] ?? null; return $u ? $u['name'] : $id; }, $wins);
+      $posts[] = $wins ? '🎉 Giveaway #' . $cur['id'] . ' winners: ' . implode(', ', $names) . '! Each wins ' . number_format($cur['prize']) . ' 🪙 (' . count($cur['entries']) . ' entered). Next one in ' . ceil(($start + GIVEAWAY_EVERY - $now) / 60) . ' min.'
+                       : '😴 Giveaway #' . $cur['id'] . ' had no entries. Next one in ' . ceil(($start + GIVEAWAY_EVERY - $now) / 60) . ' min.';
+      $d['cur'] = $cur;
+    }
+    // open a new giveaway at the start of each slot
+    if ((!$cur || $cur['slot'] !== $slot) && $now < $start + GIVEAWAY_OPEN){
+      $prize = random_int(20, 50) * 100;
+      $d['seq'] = ($d['seq'] ?? 0) + 1;
+      $d['cur'] = ['id'=>$d['seq'], 'slot'=>$slot, 'start'=>$start, 'end'=>$start + GIVEAWAY_OPEN, 'prize'=>$prize, 'entries'=>[], 'drawn'=>false, 'winners'=>[]];
+      $posts[] = '🎁 GIVEAWAY #' . $d['seq'] . ' is OPEN! ' . GIVEAWAY_WINNERS . ' winners get ' . number_format($prize) . ' 🪙 each. Tap ENTER above the chat in the next ' . round(GIVEAWAY_OPEN / 60) . ' min!';
+    }
+    return $d;
+  });
+  foreach ($posts as $t) sys_chat($t);
+  return $g;
+}
+function giveaway_view($g, $u){
+  $now = time(); $cur = $g['cur'] ?? null; $slot = intdiv($now, GIVEAWAY_EVERY);
+  $open = $cur && !$cur['drawn'] && $now < $cur['end'];
+  return ['ok'=>true, 'open'=>$open, 'id'=>$cur['id'] ?? 0, 'prize'=>$cur['prize'] ?? 0, 'winners'=>GIVEAWAY_WINNERS,
+    'endsIn'=>$open ? $cur['end'] - $now : 0, 'entries'=>$cur ? count($cur['entries']) : 0,
+    'entered'=>$cur && $u && in_array($u['id'], $cur['entries'], true), 'nextIn'=>($slot + 1) * GIVEAWAY_EVERY - $now,
+    'pending'=>$u ? (int)($g['pending'][$u['id']] ?? 0) : 0];
+}
+
 function rm(&$arr, $v){ $arr = array_values(array_filter($arr, function($x) use ($v){ return $x !== $v; })); }
 
 switch ($action){
@@ -156,8 +211,31 @@ case 'chat_send': {
   out(200, ['ok'=>true, 'msg'=>$msg]);
 }
 
+case 'giveaway': { $u = current_user(); out(200, giveaway_view(giveaway_tick(), $u)); }
+
+case 'giveaway_enter': {
+  $u = require_user();
+  if (!rate_ok('gaenter', $u['id'], 10, 60)) out(429, ['ok'=>false, 'error'=>'slow down']);
+  giveaway_tick(); $err = null;
+  $g = with_file('giveaway.json', true, function(&$d) use ($u, &$err){
+    $cur = $d['cur'] ?? null;
+    if (!$cur || $cur['drawn'] || time() >= $cur['end']) { $err = 'no giveaway is open right now'; return $d; }
+    if (!in_array($u['id'], $cur['entries'], true)) $d['cur']['entries'][] = $u['id'];
+    return $d;
+  });
+  if ($err) out(400, ['ok'=>false, 'error'=>$err]);
+  out(200, giveaway_view($g, $u));
+}
+
+case 'giveaway_collect': {
+  $u = require_user(); $amt = 0;
+  with_file('giveaway.json', true, function(&$d) use ($u, &$amt){ $amt = (int)($d['pending'][$u['id']] ?? 0); unset($d['pending'][$u['id']]); });
+  out(200, ['ok'=>true, 'coins'=>$amt]);
+}
+
 case 'chat_poll': {
   $u = require_user(); $room = (string)($in['room'] ?? 'global'); $file = room_file($room, $u);
+  if ($room === 'global') giveaway_tick();
   $since = max(0, (int)($in['since'] ?? 0));
   $d = read_file($file); $blocked = $u['blocked'] ?? []; $out = [];
   foreach (($d['msgs'] ?? []) as $m){ if ($m['id'] > $since && !$m['hid'] && !in_array($m['u'], $blocked, true)){ unset($m['rep']); $out[] = $m; } }

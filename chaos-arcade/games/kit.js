@@ -247,7 +247,7 @@ function endGame(opts){
     ov.innerHTML = '<div class="kit-quip">' + quip + '</div><div class="kit-score">' + (def.scoreText ? def.scoreText(score) : score) + '</div>' +
       (medal ? '<div class="kit-medal' + (medal > prevMedal ? ' new' : '') + '">' + MEDAL_E[medal] + ' ' + MEDAL_N[medal] + (medal > prevMedal ? ' MEDAL UNLOCKED!' : '') + '</div>' : '') +
       (medals() && medal < 3 ? '<div class="kit-next">Next: ' + MEDAL_E[medal + 1] + ' at ' + (def.scoreText ? def.scoreText(medals()[medal]) : medals()[medal]) + '</div>' : '') +
-      '<div class="kit-lines">' + lines + '<div>+' + (res.xp || 0) + ' XP' + (res.featured ? ' (⭐ 2x)' : '') + ' · <span style="color:#ffd23a">+' + (res.xp || 0) + ' 🪙</span> · best ' + (def.scoreText ? def.scoreText(Math.max(prevBest, score)) : Math.max(prevBest, score)) + '</div></div>' +
+      '<div class="kit-lines">' + lines + '<div>+' + (res.xp || 0) + ' XP' + (res.featured ? ' (⭐ 2x)' : '') + (res.coins ? ' · <span style="color:#ffd23a">+' + res.coins + ' 🪙</span>' : '') + ' · best ' + (def.scoreText ? def.scoreText(Math.max(prevBest, score)) : Math.max(prevBest, score)) + '</div></div>' +
       '<div class="kit-btns"><button class="btn green" id="kitAgain">🔄 AGAIN</button><button class="btn gold" id="kitShare">📋 SHARE</button><a class="btn" href="../index.html">⬅ ARCADE</a></div>' +
       '<div class="kit-lb" id="kitLb"></div>';
     $('#kitAgain').addEventListener('click', start);

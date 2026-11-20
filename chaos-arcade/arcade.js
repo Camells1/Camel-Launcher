@@ -170,7 +170,12 @@ const RANKS = [
 ];
 
 /* ---------- Storage ---------- */
-const START_COINS = 1000;
+/* ---------- Coin economy ----------
+   Income: 5 🪙 per XP from games, quests and the chest (game income capped per day), the daily chest,
+   hourly chat giveaways and a small refill when broke. Spending: casino bets (2.5% house edge).
+   Grinding alone reaches 1,000,000 in about 6 weeks of daily play; the casino can get you there faster (or not). */
+const START_COINS = 2500, COINS_PER_XP = 5, DAILY_EARN_CAP = 25000, REFILL = 500, REFILL_BELOW = 50;
+const COIN_GOALS = [[10000,'coins10k','💰','Five Figures (10,000 🪙)'], [100000,'coins100k','🤑','High Roller (100,000 🪙)'], [1000000,'coins1m','👑','MILLIONAIRE (1,000,000 🪙)']];
 function blank(){ return { xp:0, coins:START_COINS, name:'', muted:false, fav:{}, games:{}, plays:0, wins:0, lastChest:'', chestStreak:0, lastVisit:'', ach:{}, pid:'', tops:{}, day:null }; }
 let state;
 function load(){
@@ -209,14 +214,20 @@ function featuredGame(){
 function gameById(id){ return GAMES.find(g => g.id === id); }
 
 /* Add XP from anywhere. Returns the XP actually granted. */
+let lastEarn = 0;
 function addXP(amount, reason){
   amount = Math.max(0, Math.round(amount));
   if (!amount) return 0;
   load();
   const before = rankInfo().idx;
-  state.xp += amount; today().xp += amount; save(); syncSoon();
+  state.xp += amount; const day = today(); day.xp += amount;
+  // every XP also pays coins, up to the daily earning cap
+  const earn = Math.max(0, Math.min(amount * COINS_PER_XP, DAILY_EARN_CAP - (day.coins || 0)));
+  lastEarn = earn;
+  if (earn){ day.coins = (day.coins || 0) + earn; state.coins += earn; coinGoals(); }
+  save(); syncSoon();
   const after = rankInfo();
-  toast('+' + amount + ' XP' + (reason ? ' · ' + reason : ''));
+  toast('+' + amount + ' XP' + (earn ? ' · +' + earn + ' 🪙' : '') + (reason ? ' · ' + reason : ''));
   if (after.idx > before){
     setTimeout(() => { achToast(after.rank.i, 'RANK UP!', after.rank.t); Sfx.levelup(); }, 600);
   }
@@ -229,11 +240,13 @@ let coinSubmitT;
 function coins(){ load(); return state.coins; }
 function addCoins(n, reason, quiet){
   n = Math.round(n); if (!n) return 0;
-  load(); state.coins = Math.max(0, state.coins + n); save(); syncSoon(); updateBar();
+  load(); state.coins = Math.max(0, state.coins + n); if (n > 0) coinGoals(); save(); syncSoon(); updateBar();
   if (!quiet) toast((n > 0 ? '+' : '') + n + ' 🪙' + (reason ? ' · ' + reason : ''));
   clearTimeout(coinSubmitT); coinSubmitT = setTimeout(() => { if (state.coins > 0) lbSubmit('coins', state.coins).catch(() => {}); }, 3000);
   return n;
 }
+function coinGoals(){ COIN_GOALS.forEach(([n, id, ic, name]) => { if (state.coins >= n && !state.ach[id]) setTimeout(() => { unlock(id, ic, name); if (n >= 1000000){ bigText('👑 MILLIONAIRE!', '#ffd23a'); confetti && confetti(); } }, 300); }); }
+function coinInfo(){ load(); const d = today(); return { coins:state.coins, earnedToday:d.coins || 0, cap:DAILY_EARN_CAP, perXP:COINS_PER_XP, refill:REFILL, refillBelow:REFILL_BELOW, goals:COIN_GOALS.map(g => g[0]) }; }
 function spendCoins(n){ n = Math.round(n); load(); if (!(n > 0) || n > state.coins) return false; state.coins -= n; save(); syncSoon(); updateBar(); return true; }
 
 /* Games call this once per finished run.
@@ -260,7 +273,6 @@ function report(id, opts){
   const gm = gameById(id); if (gm) day.cats[gm.cat] = (day.cats[gm.cat] || 0) + 1;
   save();
   const granted = addXP(xp, feat ? '⭐ 2x Game of the Day' : (newBest ? '🏆 New best!' : ''));
-  addCoins(granted, 'earned playing', true);
   checkQuests();
   const lbp = (typeof opts.score === 'number' && opts.score > 0) ? lbSubmit(id, Math.round(opts.score)) : Promise.resolve(null);
   lbp.catch(() => {});
@@ -270,7 +282,7 @@ function report(id, opts){
   if (tried >= 3) unlock('explorer', '🧭', 'Arcade Explorer');
   if (tried >= 10) unlock('completionist', '🏅', 'Tried Every Game');
   if (state.plays >= 25) unlock('regular', '🎮', 'Arcade Regular');
-  return { xp:granted, newBest, featured:feat, lb:lbp };
+  return { xp:granted, coins:granted ? lastEarn : 0, newBest, featured:feat, lb:lbp };
 }
 function unlock(id, icon, name){
   if (state.ach[id]) return;
@@ -406,6 +418,9 @@ const Acct = {
   report(room, id){ return api('chat_report', { room, id }); },
   del(room, id){ return api('chat_delete', { room, id }); },
   ban(name, on){ return api('ban', { name, on }); },
+  giveaway(){ return api('giveaway', null, {}); },
+  giveawayEnter(){ return api('giveaway_enter', {}); },
+  giveawayCollect(){ return api('giveaway_collect', {}); },
   get down(){ return apiDown; }
 };
 
@@ -641,7 +656,7 @@ window.Arcade = {
   GAMES, RANKS, ROOT, CATS, CAT_BG,
   get state(){ return state; },
   save, load, dayKey, hashStr, mulberry32, h2, rnd, esc,
-  rankInfo, featuredGame, gameById, gameStats, addXP, report, unlock, coins, addCoins, spendCoins, START_COINS,
+  rankInfo, featuredGame, gameById, gameStats, addXP, report, unlock, coins, addCoins, spendCoins, coinInfo, START_COINS,
   Sfx, setMuted, buzz,
   px, texture, textureURL, paintBody, icon, ICONS,
   toast, achToast, flash, bigText, shake, burst, confetti,

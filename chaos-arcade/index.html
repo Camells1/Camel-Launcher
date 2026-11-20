@@ -59,6 +59,18 @@
   .msg .acts{display:flex;gap:4px;margin-top:6px}
   .msg .acts .btn{min-height:28px;font-size:11px;padding:3px 7px}
   .ch-sys{align-self:center;font-size:11.5px;color:#aaa;text-align:center;padding:4px 8px}
+  .ch-sys.ga{color:#3a2600;background:#ffd23a;border:2px solid #000;font-size:12.5px;font-weight:700;margin:4px 0;box-shadow:2px 2px 0 #000}
+  .ch-ga{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;background:#2a2410;border-bottom:3px solid #000;font-size:12px;color:#ffe9a0}
+  .ch-ga small{color:#c8b880}
+  .ch-ga.open{background:linear-gradient(90deg,#6a4a00,#b08a1a);color:#fff;animation:gaPulse 1.2s steps(2) infinite}
+  .ch-ga .in{font-size:11px;background:#1f7a3a;border:2px solid #000;padding:4px 6px;white-space:nowrap}
+  @keyframes gaPulse{50%{filter:brightness(1.15)}}
+  #chatBtn.ga-on{animation:wiggle .6s steps(3) infinite;background:#d9a514}
+  .discord{display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;color:#fff;background:#3a3fa0;border:3px solid #000;box-shadow:inset 3px 3px 0 rgba(255,255,255,.2),0 5px 0 rgba(0,0,0,.35);margin-top:10px}
+  .discord:hover{background:#4a50c0}
+  .discord .ico{font-size:30px}
+  .discord b{display:block;font-size:14px}
+  .discord small{font-size:11px;opacity:.85;line-height:1.4}
   .ch-form{display:flex;gap:6px;padding:8px;border-top:3px solid #000;background:#1d1438}
   .ch-form input{flex:1;min-width:0;padding:10px;border:3px solid #000;font-weight:700;background:#fff;color:#000}
   .ch-safe{font-size:10.5px;color:#999;text-align:center;padding:0 8px 6px;background:#1d1438}
@@ -102,6 +114,7 @@
           <div><b id="psTried">0</b>TRIED</div>
         </div>
         <a class="coinbar" id="coinBar" href="games/casino.html" title="Your coins. Bet them in the Casino."><span>🪙 <b id="psCoins">0</b> coins</span><span class="go">🎰 CASINO ▶</span></a>
+        <div class="goalbar" title="Road to 1,000,000 coins"><i id="psGoal"></i><span id="psGoalTxt"></span></div>
         <div class="ladder" id="ladder"></div>
       </div>
 
@@ -114,6 +127,7 @@
 
       <a class="featured" id="featured" href="#"></a>
 
+      <a class="discord" href="https://discord.gg/vesperclient" target="_blank" rel="noopener noreferrer"><span class="ico">💬</span><span><b>JOIN OUR DISCORD</b><small>Giveaway announcements, events and the community. Opens discord.gg</small></span></a>
       <div class="dark-panel chest-box">
         <div class="chest-ico" id="chestIco" role="button" aria-label="Daily loot chest"></div>
         <div class="txt" id="chestTxt"></div>
@@ -138,6 +152,7 @@
 <aside id="chat" aria-label="Chat">
   <div class="ch-head"><span class="t" id="chTitle">💬 CHAT</span><span class="chip" id="chOnline" style="font-size:11px">● 0 online</span><button class="btn icon" id="chClose" aria-label="Close chat">✖</button></div>
   <div class="ch-rooms" id="chRooms"></div>
+  <div class="ch-ga" id="chGa"></div>
   <div class="ch-msgs" id="chMsgs"></div>
   <form class="ch-form" id="chForm"><input id="chIn" maxlength="200" autocomplete="off" placeholder="Say something nice…" aria-label="Message"><button class="btn green" type="submit">SEND</button></form>
   <div class="ch-safe">🛡️ Be kind. Never share your real name, address, school, phone or passwords. Tap a message to report or block.</div>
@@ -194,6 +209,7 @@ function renderProfile(){
   $('#xpFill').style.width = (ri.frac * 100).toFixed(1) + '%';
   $('#xpText').textContent = ri.next ? (st.xp - ri.rank.xp) + ' / ' + (ri.next.xp - ri.rank.xp) + ' XP to ' + ri.next.i + ' ' + ri.next.t : 'MAX RANK · ' + st.xp + ' XP';
   $('#psCoins').textContent = Math.floor(st.coins || 0).toLocaleString('en-US');
+  const gf = Math.min(1, (st.coins || 0) / 1e6); $('#psGoal').style.width = (gf * 100).toFixed(2) + '%'; $('#psGoalTxt').textContent = gf >= 1 ? '👑 MILLIONAIRE' : '👑 ' + (gf * 100).toFixed(gf < .01 ? 2 : 1) + '% to 1,000,000';
   $('#psXP').textContent = st.xp; $('#psRuns').textContent = st.plays; $('#psWins').textContent = st.wins;
   $('#psTried').textContent = A.GAMES.filter(g => st.games[g.id] && st.games[g.id].plays).length + '/' + A.GAMES.length;
   $('#ladder').innerHTML = A.RANKS.map((r, i) => '<span class="' + (i <= ri.idx ? 'got' : '') + '" title="' + r.t + ' (' + r.xp + ' XP)">' + r.i + '</span>').join('');
@@ -325,7 +341,7 @@ $('#chestIco').addEventListener('click', () => {
     const xp = 15 + Math.floor(Math.random() * 36) + Math.min(50, (streak - 1) * 10);
     ico.classList.remove('opening');
     const r = ico.getBoundingClientRect(); A.burst(r.left + r.width/2, r.top + r.height/2, ['#ffe066','#ffd700','#ffffff','#ff55ff'], 26);
-    const coins = 100 + Math.min(400, (streak - 1) * 50);
+    const coins = 500 + Math.min(2500, (streak - 1) * 250);   // plus 5 🪙 per chest XP
     A.bigText(loot[0] + ' +' + xp + ' XP · +' + coins + ' 🪙');
     A.addCoins(coins, 'daily chest', true);
     A.addXP(xp, 'Loot: ' + loot[1] + (streak > 1 ? ' · ' + streak + '-day streak' : ''));
@@ -499,11 +515,13 @@ function loadRoom(){
     return;
   }
   $('#chForm').style.display = '';
+  renderGa(); gaPoll();
   lastId[room] = 0; sys(room === 'global' ? 'Welcome to global chat! Messages are visible to every player.' : 'Private chat with ' + room.slice(3) + '. Only friends can message each other.');
   if (!meCache) A.acct.me().then(me => { meCache = me; renderRooms(); }).catch(() => {});
   poll();
 }
 function addMsg(m){
+  if (m.sys){ const d = document.createElement('div'); d.className = 'ch-sys ga'; d.dataset.id = m.id; d.textContent = m.t; $('#chMsgs').appendChild(d); return; }
   const mine = A.acct.user && m.u === A.acct.user.id, d = document.createElement('div');
   d.className = 'msg' + (mine ? ' mine' : ''); d.dataset.id = m.id; d.dataset.u = m.u;
   const t = new Date(m.ts * 1000);
@@ -529,6 +547,31 @@ function showActs(d, m){
   });
   d.appendChild(a);
 }
+/* ---------- Hourly giveaway (bar above global chat) ---------- */
+let gaState = null, gaT = 0;
+function mmss(s){ s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+function renderGa(){
+  const el = $('#chGa'); if (!el) return;
+  if (!gaState || room !== 'global' || !A.acct.user){ el.innerHTML = ''; el.style.display = 'none'; return; }
+  el.style.display = '';
+  const g = gaState;
+  el.className = 'ch-ga' + (g.open ? ' open' : '');
+  el.innerHTML = g.open
+    ? '<div><b>🎁 GIVEAWAY #' + g.id + '</b> · ' + g.winners + ' × ' + g.prize.toLocaleString('en-US') + ' 🪙<br><small>' + g.entries + ' entered · draw in ' + mmss(g.endsIn) + '</small></div>' + (g.entered ? '<span class="in">✅ ENTERED</span>' : '<button class="btn small gold" id="gaEnter">ENTER</button>')
+    : '<div>🎁 Next giveaway in <b>' + mmss(g.nextIn) + '</b><br><small>' + g.winners + ' winners · 2,000–5,000 🪙 each · every hour</small></div>';
+  const b = $('#gaEnter'); if (b) b.onclick = () => { b.disabled = true; A.Sfx.click(); A.acct.giveawayEnter().then(j => { gaState = j; renderGa(); A.Sfx.coin(); A.toast('🎁 You are in! Winners are drawn in ' + mmss(j.endsIn)); }).catch(err => { A.toast(err.message); b.disabled = false; }); };
+}
+function collectGa(j){
+  if (!j || !j.pending) return;
+  A.acct.giveawayCollect().then(r => { if (r.coins > 0){ A.addCoins(r.coins, '🎁 giveaway prize'); A.bigText('🎉 YOU WON ' + r.coins.toLocaleString('en-US') + ' 🪙!', '#ffd23a'); A.confetti(); A.Sfx.ach ? A.Sfx.ach() : A.Sfx.coin(); renderProfile(); } }).catch(() => {});
+}
+function gaPoll(){
+  clearTimeout(gaT);
+  if (!A.acct.user || A.acct.down) return;
+  A.acct.giveaway().then(j => { gaState = j; renderGa(); collectGa(j); $('#chatBtn').classList.toggle('ga-on', !!j.open && !j.entered); }).catch(() => {}).then(() => { gaT = setTimeout(gaPoll, chatOpen && room === 'global' ? 3000 : 15000); });
+}
+setInterval(() => { if (gaState){ if (gaState.open) gaState.endsIn = Math.max(0, gaState.endsIn - 1); gaState.nextIn = Math.max(0, gaState.nextIn - 1); if (chatOpen) renderGa(); if ((gaState.open && gaState.endsIn === 0) || gaState.nextIn === 0) gaPoll(); } }, 1000);
+
 function poll(){
   if (!chatOpen || !A.acct.user) return;
   const r = room;
@@ -568,6 +611,7 @@ buildTitle();
 $('#splash').textContent = A.rnd(SPLASHES);
 renderAll();
 startInbox();
+setTimeout(gaPoll, 1500);
 if (A.state.music) ['pointerdown','keydown'].forEach(ev => addEventListener(ev, () => A.Music.start(), { once:true }));
 })();
 </script>

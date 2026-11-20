@@ -315,3 +315,7 @@ a{color:var(--aqua)}
 .coinbar b{font-size:17px}
 .coinbar .go{font-size:11px;color:#fff;background:#1fb07a;border:2px solid #000;padding:3px 6px}
 .coinbar:hover .go{background:#2fd08a}
+.goalbar{position:relative;height:16px;margin-top:4px;background:#222;border:2px solid #000;overflow:hidden}
+.goalbar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#b08a1a,#ffd23a)}
+.goalbar span{position:relative;display:block;text-align:center;font-size:10px;line-height:12px;color:#fff;text-shadow:1px 1px 0 #000}
+.profile .coinbar,.profile .goalbar{grid-column:1/-1}

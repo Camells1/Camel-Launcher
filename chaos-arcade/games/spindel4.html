@@ -36,7 +36,7 @@
   g.plays++; A.state.plays++; g.ts = Date.now(); g.last = A.dayKey(); g.bestLabel = g.bestLabel || 'played';
   const d = A.today(); d.plays++; d.games[ID] = 1; d.cats.originals = (d.cats.originals || 0) + 1;
   A.save();
-  if (first) setTimeout(() => { const xp = A.addXP(25, 'Spindel 4 · daily play'); g.xp += xp; A.save(); A.addCoins(xp, 'daily play', true); }, 1200);
+  if (first) setTimeout(() => { const xp = A.addXP(25, 'Spindel 4 · daily play'); g.xp += xp; A.save(); }, 1200);
 })();
 </script>
 </body>

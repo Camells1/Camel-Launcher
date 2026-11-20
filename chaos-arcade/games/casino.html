@@ -71,12 +71,14 @@
   <div class="dark-panel cz-wallet">
     <div class="cz-bal"><small>YOUR COINS</small><span id="czBal">0</span> 🪙</div>
     <div style="text-align:right;font-size:12px;line-height:1.6">Session: <b id="czSess">0</b><br><span id="czRefill"></span></div>
+    <div style="flex-basis:100%;font-size:11px;color:#c8c8c8"><div style="display:flex;justify-content:space-between"><span>👑 Road to 1,000,000</span><span id="czGoalTxt"></span></div><div style="height:10px;border:2px solid #000;background:#222;margin-top:3px"><div id="czGoal" style="height:100%;width:0;background:linear-gradient(90deg,#b08a1a,#ffd23a)"></div></div><div id="czEarn" style="margin-top:3px"></div></div>
   </div>
   <div id="czGame"></div>
   <div class="dark-panel cz-panel cz-note">
     <span id="czEdgeTxt"></span><br><br>
-    🪙 Coins are <b>virtual and only for fun</b>: they can't be bought, sold or cashed out. You earn them by playing any arcade game (same amount as the XP you get) and from the daily loot chest. Results use your browser's secure random generator.
+    🪙 Coins are <b>virtual and only for fun</b>: they can't be bought, sold or cashed out. You earn them by playing any arcade game (5 🪙 per XP, up to 25,000 a day), from the daily loot chest and from the hourly giveaway in global chat. Results use your browser's secure random generator.
   </div>
+  <a class="btn block" style="margin-top:10px;background:#3a3fa0;color:#fff" href="https://discord.gg/vesperclient" target="_blank" rel="noopener noreferrer">💬 JOIN OUR DISCORD · giveaways &amp; events</a>
   <div class="legal">Chaos Arcade · fan-made browser games. Coins are play money only.</div>
 </div>
 <script src="../arcade.js"></script>
@@ -102,10 +104,12 @@ function fmt(n){ return Math.floor(n).toLocaleString('en-US'); }
 function wallet(){
   A.load(); $('#czBal').textContent = fmt(A.state.coins);
   $('#czSess').textContent = (session > 0 ? '+' : '') + fmt(session) + ' 🪙'; $('#czSess').style.color = session >= 0 ? '#55ff55' : '#ff7777';
-  const r = $('#czRefill'), wait = (A.state.lastRefill || 0) + 3600e3 - Date.now();
-  if (A.state.coins < 10) r.innerHTML = wait <= 0 ? '<button class="btn small green" id="czFree">🆘 FREE 100 🪙</button>' : 'Free refill in ' + Math.ceil(wait / 60000) + ' min';
+  const ci = A.coinInfo(), r = $('#czRefill'), wait = (A.state.lastRefill || 0) + 3600e3 - Date.now();
+  if (A.state.coins < ci.refillBelow) r.innerHTML = wait <= 0 ? '<button class="btn small green" id="czFree">🆘 FREE ' + ci.refill + ' 🪙</button>' : 'Free refill in ' + Math.ceil(wait / 60000) + ' min';
   else r.textContent = '';
-  const f = $('#czFree'); if (f) f.onclick = () => { A.load(); A.state.lastRefill = Date.now(); A.save(); A.addCoins(100, 'free refill'); A.Sfx.coin(); wallet(); };
+  const f = $('#czFree'); if (f) f.onclick = () => { A.load(); A.state.lastRefill = Date.now(); A.save(); A.addCoins(ci.refill, 'free refill'); A.Sfx.coin(); wallet(); };
+  const g = Math.min(1, A.state.coins / 1e6); $('#czGoal').style.width = (g * 100).toFixed(2) + '%'; $('#czGoalTxt').textContent = (g * 100).toFixed(g < .01 ? 2 : 1) + '%';
+  $('#czEarn').textContent = 'Earned from games today: ' + fmt(ci.earnedToday) + ' / ' + fmt(ci.cap) + ' 🪙 · 5 🪙 per XP';
   A.updateBar();
 }
 function record(won, profit, label){
