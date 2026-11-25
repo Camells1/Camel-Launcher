@@ -104,7 +104,7 @@ const FX = (() => {
     const count = Object.keys(P.ach).length;
     if (count >= VAULT_AT && !P.vaultToast) {
       P.vaultToast = true; save();
-      setTimeout(() => { sound('creepy'); toast('<span class="toast-icon">🔓</span><span><b>Something opened…</b>The Vault is unlocked. Click here.</span>', { kind: 'secret', href: 'vault.html', ms: 9000 }); }, 2200);
+      setTimeout(() => { sound('creepy'); toast('<span class="toast-icon">🔓</span><span><b>Something opened…</b>The Vault is unlocked. Click here.</span>', { kind: 'secret', href: 'vault', ms: 9000 }); }, 2200);
     }
     return true;
   }
@@ -148,7 +148,7 @@ const FX = (() => {
         return `<div class="ach ${has ? 'got' : ''}"><span class="ach-icon">${hide ? '❓' : a.icon}</span>
           <span><b>${hide ? '???' : a.name}</b><small>${hide ? 'Secret achievement' : a.desc}</small></span><em>${a.xp}</em></div>`;
       }).join('')}</div>
-      <p class="muted small">${got >= VAULT_AT ? '🔓 <a href="vault.html">The Vault is open.</a>' : `🔒 Something unlocks at ${VAULT_AT} achievements…`} Progress is saved in this browser.</p>
+      <p class="muted small">${got >= VAULT_AT ? '🔓 <a href="vault">The Vault is open.</a>' : `🔒 Something unlocks at ${VAULT_AT} achievements…`} Progress is saved in this browser.</p>
       <button class="btn" data-close>Close</button>`;
     m.classList.add('open');
   }
@@ -266,8 +266,10 @@ const FX = (() => {
     setTimeout(() => unlock('welcome'), 900);
 
     // pages visited
-    const page = (location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '') || 'index';
-    const ALL = ['index', 'stats', 'spinner', 'vote', 'smp', 'leaderboard', 'pedia', 'fun'];
+    const OLD = { stats: 'live', smp: 'server', leaderboard: 'donators', fun: 'games', pedia: 'yokii-pedia' };
+    let page = (location.pathname.split('/').pop() || 'index').replace(/\.html$/, '') || 'index';
+    page = OLD[page] || page;
+    const ALL = ['index', 'live', 'spinner', 'vote', 'server', 'donators', 'yokii-pedia', 'games'];
     if (ALL.includes(page) && !P.pages.includes(page)) { P.pages.push(page); save(); }
     if (ALL.every(p => P.pages.includes(p))) setTimeout(() => unlock('explorer'), 1500);
 
@@ -288,7 +290,7 @@ const FX = (() => {
     if (brand) brand.addEventListener('click', e => {
       P.pokes++; save();
       if (P.pokes >= 10 && !P.ach.poke) { e.preventDefault(); P.pokes = 0; unlock('poke'); explode(); }
-      else if (P.pokes >= 4 && location.pathname.match(/(index\.html|\/)$/)) { e.preventDefault(); sound('pop'); brand.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-6deg)' }, { transform: 'rotate(6deg)' }, { transform: 'rotate(0)' }], { duration: 250 }); }
+      else if (P.pokes >= 4 && location.pathname.match(/(index(\.html)?|\/)$/)) { e.preventDefault(); sound('pop'); brand.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-6deg)' }, { transform: 'rotate(6deg)' }, { transform: 'rotate(0)' }], { duration: 250 }); }
     });
 
     // keyboard secrets

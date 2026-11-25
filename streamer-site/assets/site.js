@@ -76,8 +76,11 @@ const Site = (() => {
     // mobile nav
     const t = $('.nav-toggle'), links = $('.nav-links');
     if (t) t.addEventListener('click', () => links.classList.toggle('open'));
-    const page = location.pathname.split('/').pop() || 'index.html';
-    $$('.nav-links a').forEach(a => { if (a.getAttribute('href') === page) a.classList.add('active'); });
+    const page = (location.pathname.split('/').pop() || 'index').replace(/\.html$/, '');
+    $$('.nav-links a').forEach(a => {
+      const h = (a.getAttribute('href') || '').replace(/^\.\//, '').replace(/\.html$/, '') || 'index';
+      if (h === page) a.classList.add('active');
+    });
 
     const s = await state();
     const st = settings(s);
@@ -97,7 +100,7 @@ const Site = (() => {
       const banner = $('.live-banner');
       const on = L && (L.live || st.live);
       document.documentElement.classList.toggle('is-live', !!on);
-      $$('.nav-links a[href="stats.html"]').forEach(a => a.classList.toggle('nav-live', !!on));
+      $$('.nav-links a[href="live"]').forEach(a => a.classList.toggle('nav-live', !!on));
       if (!banner || !on) return;
       banner.classList.add('on');
       banner.href = tiktokUrl + '/live';

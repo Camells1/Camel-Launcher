@@ -174,3 +174,43 @@
   };
   setTimeout(loop, L && L.autoLive ? 30000 : 120000);
 })();
+
+// =====================================================================
+//  Top 5 most said in chat: pops in like live chat, #1 last
+// =====================================================================
+(async () => {
+  const { $, esc, fmt } = Site;
+  const s = await Site.ready;
+  const top = (s.chatTop || []).slice(0, 5);
+  if (!top.length) return;
+  $('#chatCard').hidden = false;
+  const feed = $('#chatFeed');
+  const COLORS = ['#f6c744', '#25f4ee', '#fe2c55', '#80ff20', '#b18cff'];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rank = i => ['👑', '🥈', '🥉', '#4', '#5'][i];
+
+  function bubble(r, i) {
+    const el = document.createElement('div');
+    el.className = 'chat-msg' + (i === 0 ? ' chat-top' : '');
+    el.innerHTML = `<span class="chat-rank${i < 3 ? ' chat-medal' : ''}">${rank(i)}</span>
+      <span class="chat-body"><b style="color:${COLORS[i]}">chat</b> ${esc(r.msg)}</span>
+      <span class="chat-count">×${fmt(r.count)}</span>`;
+    return el;
+  }
+
+  let shown = false;
+  function play() {
+    feed.innerHTML = '';
+    // lowest first, #1 pops in last and on top
+    const order = top.map((r, i) => [r, i]).reverse();
+    order.forEach(([r, i], n) => {
+      const el = bubble(r, i);
+      if (!reduced) { el.classList.add('pop'); el.style.animationDelay = (n * 0.45) + 's'; }
+      feed.prepend(el);
+    });
+  }
+  // start when the section scrolls into view, replay every 20 s
+  new IntersectionObserver(([e]) => {
+    if (e.isIntersecting && !shown) { shown = true; play(); if (!reduced) setInterval(play, 20000); }
+  }).observe(feed);
+})();

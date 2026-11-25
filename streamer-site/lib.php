@@ -36,6 +36,7 @@ function default_state(): array {
         'builds'      => [],
         'videos'      => [],
         'pedia'       => [],
+        'chatTop'     => [],
     ];
 }
 
@@ -92,6 +93,7 @@ function public_state(array $s): array {
         'builds'      => $s['builds'],
         'videos'      => $s['videos'],
         'pedia'       => $s['pedia'],
+        'chatTop'     => $s['chatTop'],
     ];
 }
 

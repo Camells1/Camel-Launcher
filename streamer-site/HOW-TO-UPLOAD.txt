@@ -36,14 +36,14 @@ DANNY'S HANGOUT WEBSITE — HOW TO PUT IT ONLINE
    - yoursite.com                       -> home page with the pixel world
    - yoursite.com/FOLDER-NAME           -> should say "page not found"
    - yoursite.com/FOLDER-NAME?KEY       -> login screen
-   - Upload a test clip on spinner.html, approve it in admin.
+   - Upload a test clip on yoursite.com/spinner, approve it in admin.
 
 HANDY LINKS TO SAY ON STREAM / PUT IN BIO
    yoursite.com/discord      -> goes straight to the Discord invite
    yoursite.com/tiktok       -> goes to the TikTok
-   yoursite.com/spinner.html -> the clip wheel
+   yoursite.com/spinner -> the clip wheel
 
-LIVE TRACKER (yoursite.com/stats.html, "Live" in the menu)
+LIVE TRACKER (yoursite.com/live, "Live" in the menu)
    The site reads Yokii's public TikTok page by itself: when he's live you
    get the red LIVE banner on every page, the viewer count, peak viewers,
    a viewers-over-time chart, the all-time top viewer count, followers,
@@ -58,7 +58,7 @@ LIVE TRACKER (yoursite.com/stats.html, "Live" in the menu)
      host, admin > Live tracker shows a warning; you can then still use
      "Force the LIVE banner".
 
-YOKII-PEDIA (pedia.html)
+YOKII-PEDIA (yoursite.com/yokii-pedia)
    Inside jokes and catchphrases with an optional sound. Add them in
    admin > Yokii-pedia. Entries with a sound also go on the soundboard.
 
@@ -70,6 +70,7 @@ CLIP SPINNER: ANY CLIP
 
 WHAT TO DO IN ADMIN
    - Live tracker: see stats, add past streams, force the banner if needed
+   - Chat top 5: the 5 most said chat messages, shown on the Live page
    - Yokii-pedia: add inside jokes + sounds
    - Clips: approve or delete uploaded clips before they hit the wheel
    - Polls: make "what should I do next stream?" polls
@@ -89,7 +90,7 @@ WHAT TO DO IN ADMIN
 Visitors earn XP and achievements (green XP bar at the bottom of every
 page, click it to see them). Progress is saved in their browser.
 
-THE VAULT: after 5 achievements a hidden page opens: yoursite.com/vault.html
+THE VAULT: after 5 achievements a hidden page opens: yoursite.com/vault
 It shows the "Vault secret word" you set in admin. Tell people in Discord:
 "type the secret word in #vault to get the Vault Hunter role". Change the
 word now and then. (Make a #vault channel and a role for it in Discord.)

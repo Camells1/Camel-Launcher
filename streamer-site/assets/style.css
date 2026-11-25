@@ -451,3 +451,17 @@ footer.has-gem { position: relative; }
 .entry-play { margin-left: 28px; background: none; border: 0; color: var(--text); font: 600 15px var(--body); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; padding: 0; }
 .entry-play.playing { color: var(--gold); }
 @media (max-width: 560px) { .status-actions { justify-content: center; } }
+
+/* ----- most said in chat ----- */
+.chat-feed { display: flex; flex-direction: column; gap: 10px; min-height: 120px; }
+.chat-msg { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #111318; border: 3px solid var(--line); border-radius: 18px; max-width: 100%; }
+.chat-msg.chat-top { border-color: var(--gold); background: linear-gradient(90deg, rgba(246,199,68,.14), #111318); padding: 14px 16px; }
+.chat-msg.chat-top .chat-body { font-size: 19px; }
+.chat-rank { flex: none; width: 34px; text-align: center; font: 12px var(--pixel); color: var(--muted); }
+.chat-top .chat-rank { font-size: 22px; }
+.chat-body { flex: 1; min-width: 0; font-size: 16px; overflow-wrap: anywhere; }
+.chat-body b { margin-right: 6px; font-weight: 700; }
+.chat-count { flex: none; font: 12px var(--pixel); color: var(--grass); font-variant-numeric: tabular-nums; }
+.chat-msg.pop { opacity: 0; animation: chatpop .45s cubic-bezier(.2,1.4,.4,1) forwards; }
+@keyframes chatpop { from { opacity: 0; transform: translateY(18px) scale(.92); } to { opacity: 1; transform: none; } }
+.chat-rank.chat-medal { font: 22px/1 var(--body); }

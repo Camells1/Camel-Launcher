@@ -2,6 +2,37 @@
 ErrorDocument 404 /404.html
 Options -Indexes
 
+# Clean addresses: citt.nl/live instead of citt.nl/live.html
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  # old page names keep working (and go to the new name)
+  RewriteRule ^stats(\.html)?$ /live [R=301,L]
+  RewriteRule ^smp(\.html)?$ /server [R=301,L]
+  RewriteRule ^leaderboard(\.html)?$ /donators [R=301,L]
+  RewriteRule ^fun(\.html)?$ /games [R=301,L]
+  RewriteRule ^pedia(\.html)?$ /yokii-pedia [R=301,L]
+  RewriteRule ^index(\.html)?$ / [R=301,L]
+  # anything typed with .html: drop the .html
+  RewriteCond %{THE_REQUEST} \s/+([a-z0-9-]+)\.html[\s?]
+  RewriteRule ^ /%1 [R=301,L,NE]
+  # a page with a trailing slash: drop the slash
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^([a-z0-9-]+)/$ /$1 [R=301,L]
+  # citt.nl/live -> serve live.html
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+  RewriteRule ^([a-z0-9-]+)$ $1.html [L]
+</IfModule>
+
+# Pages are always checked for a newer version; images/scripts use ?v= numbers
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
 # Config and helper files are never served directly
 <FilesMatch "^(config|lib)\.php$">
   <IfModule mod_authz_core.c>

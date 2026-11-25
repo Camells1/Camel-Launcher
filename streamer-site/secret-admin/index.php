@@ -185,6 +185,16 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
                     break;
                 }
                 return 'Entry removed.';
+            case 'chat_top':
+                $rows = [];
+                foreach (explode("\n", $_POST['rows'] ?? '') as $line) {
+                    $parts = array_map('trim', explode('|', $line));
+                    if ($parts[0] === '') continue;
+                    $rows[] = ['msg' => clean($parts[0], 60), 'count' => max(0, (int)preg_replace('/\D/', '', $parts[1] ?? '0'))];
+                }
+                usort($rows, fn($a, $b) => $b['count'] <=> $a['count']);
+                $s['chatTop'] = array_slice($rows, 0, 5);
+                return 'Top 5 chat messages saved.';
             case 'videos':
                 $ids = [];
                 foreach (explode("\n", $_POST['videos'] ?? '') as $line) {
@@ -240,7 +250,7 @@ function clip_icon($c) {
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Admin · <?= h($st['siteName']) ?></title>
-<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/style.css?v=9">
 <link rel="icon" href="../assets/favicon.svg">
 </head><body class="admin">
 <header class="topbar"><a class="brand" href="../">⛏ <?= h($st['siteName']) ?></a><nav class="nav-links"><a href="../" target="_blank">View site</a><?php if ($authed): ?><a href="?logout=1">Log out</a><?php endif ?></nav></header>
@@ -254,7 +264,7 @@ function clip_icon($c) {
   </section>
 <?php else: ?>
   <h1>Admin panel</h1>
-  <p class="muted">Jump to: <a href="#tracker">Live tracker</a> · <a href="#pedia">Yokii-pedia</a> · <a href="#clips">Clips (<?= count($pending) ?> waiting)</a> · <a href="#polls">Polls</a> · <a href="#lb">Leaderboard</a> · <a href="#don">Top donators</a> · <a href="#videos">Clip wall</a> · <a href="#builds">Builds</a> · <a href="#settings">Settings</a></p>
+  <p class="muted">Jump to: <a href="#tracker">Live tracker</a> · <a href="#chat">Chat top 5</a> · <a href="#pedia">Yokii-pedia</a> · <a href="#clips">Clips (<?= count($pending) ?> waiting)</a> · <a href="#polls">Polls</a> · <a href="#lb">Leaderboard</a> · <a href="#don">Top donators</a> · <a href="#videos">Clip wall</a> · <a href="#builds">Builds</a> · <a href="#settings">Settings</a></p>
 
   <?php $L = array_merge(live_default(), read_guarded(LIVE_FILE) ?? []); ?>
   <section class="card" id="tracker">
@@ -293,6 +303,15 @@ function clip_icon($c) {
         document.getElementById('streamStartTs').value = v ? Math.floor(new Date(v).getTime() / 1000) : '';
       });
     </script>
+  </section>
+
+  <section class="card" id="chat">
+    <h2>💬 Most said in chat (top 5)</h2>
+    <p class="muted small">Shown on the Live page as chat messages popping up. One per line: <code>message | how many times</code>. Only the top 5 are shown, sorted automatically.</p>
+    <form method="post"><?= hidden('chat_top', 'chat', $csrf) ?>
+      <textarea name="rows" rows="6" placeholder="W stream | 1200&#10;LOL | 950&#10;giveaway when? | 640"><?= h(implode("\n", array_map(fn($r) => $r['msg'] . ' | ' . $r['count'], $s['chatTop'] ?? []))) ?></textarea>
+      <button class="btn btn-grass" style="margin-top:10px">Save top 5</button>
+    </form>
   </section>
 
   <section class="card" id="live">
