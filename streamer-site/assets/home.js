@@ -1,6 +1,6 @@
 (async () => {
   const { $, esc, fmt } = Site;
-  const SPLASHES = ['Also try the SMP!', 'Join the Discord!', 'Live daily!', '100% creeper free!', 'Spin the wheel!', 'Now with more diamonds!', 'Vote on the next stream!', 'Not affiliated with Herobrine!', 'Better with friends!', 'Hardcore when?'];
+  const SPLASHES = ['Play on breezevanilla.eu!', 'Join the Discord!', 'Live daily!', '100% creeper free!', 'Spin the wheel!', 'Now with more diamonds!', 'Vote on the next stream!', 'Not affiliated with Herobrine!', 'Better with friends!', 'Hardcore when?'];
   $('#splash').textContent = SPLASHES[Math.floor(Math.random() * SPLASHES.length)];
 
   // member goal
@@ -40,7 +40,7 @@
     };
     tick();
   } else {
-    $('#countdown').innerHTML = '<div style="min-width:200px"><b>SOON</b><span>date announced in Discord</span></div>';
+    $('#countdown').innerHTML = '<div style="min-width:200px"><b>SOON</b><span>announced in the Discord</span></div>';
   }
 
   // clip wall: picked videos, plus TikTok's own profile embed

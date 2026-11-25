@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SMP · Danny's Hangout</title>
-<meta name="description" content="Play on the community Minecraft server.">
-<meta property="og:title" content="SMP · Danny's Hangout">
-<meta property="og:description" content="Play on the community Minecraft server.">
+<title>Server · Danny's Hangout</title>
+<meta name="description" content="We play Minecraft on breezevanilla.eu. Join us!">
+<meta property="og:title" content="Server · Danny's Hangout">
+<meta property="og:description" content="We play Minecraft on breezevanilla.eu. Join us!">
 <meta name="theme-color" content="#5bae3c">
 <link rel="icon" href="assets/favicon.svg">
 <link rel="apple-touch-icon" href="assets/icon-192.png">
@@ -27,7 +27,7 @@
     <a href="index.html">Home</a>
     <a href="spinner.html">Clip Spinner</a>
     <a href="vote.html">Vote</a>
-    <a href="smp.html">SMP</a>
+    <a href="smp.html">Server</a>
     <a href="leaderboard.html">Top Donators</a>
     <a href="fun.html">Games</a>
     <a data-discord href="https://discord.gg/m7G76JxKnS" target="_blank" rel="noopener" style="color:#fff;background:var(--discord)">Join Discord</a>
@@ -35,37 +35,30 @@
 </header>
 
 <main class="wrap">
-  <h1 class="center">⛏ The Community SMP</h1>
-  <p class="center muted" style="margin-top:-8px">Build, survive and show up on stream. The server is for Discord members.</p>
-  <div class="grid grid-2" style="margin-top:26px">
-    <section class="card">
-      <h2>🔒 Server IP</h2>
-      <p class="muted">The IP is for Discord members. Join, then come back here and it unlocks.</p>
-      <div class="ip-box"><div class="ip locked" id="ip">play.hidden-server.net</div>
-        <button class="btn btn-grass" id="copyIp" hidden>Copy</button></div>
-      <button class="btn btn-discord" id="unlock" style="width:100%">💬 Join Discord to unlock</button>
-      <p class="muted small" id="smpVersion"></p>
-    </section>
-    <section class="card">
-      <h2>📜 Rules</h2>
-      <ol class="muted" style="padding-left:20px;margin:0">
-        <li>No griefing or stealing.</li>
-        <li>No hacked clients or x-ray.</li>
-        <li>Be nice in chat. No hate.</li>
-        <li>No lag machines.</li>
-        <li>Ask before building next to someone.</li>
-        <li>Have fun and maybe end up on stream!</li>
-      </ol>
-    </section>
-  </div>
+  <h1 class="center">🎮 Where we play</h1>
+  <p class="center muted" style="margin-top:-8px">We play on a public server. Hop on, say hi, and you might end up on stream.</p>
+  <section class="card server-card" style="margin-top:26px">
+    <div class="server-row">
+      <div class="server-icon" aria-hidden="true">⛏</div>
+      <div style="min-width:0">
+        <h2 style="margin-bottom:6px" id="serverName">breezevanilla.eu</h2>
+        <p class="muted" style="margin:0">Add this server in Minecraft: <b>Multiplayer → Add Server</b>, paste the address and join.</p>
+      </div>
+    </div>
+    <div class="ip-box"><div class="ip" id="ip">breezevanilla.eu</div>
+      <button class="btn btn-grass" id="copyIp">Copy</button></div>
+    <p class="muted small" id="serverVersion" hidden></p>
+    <p class="muted small" style="margin-bottom:0">Want people to play with? Ask in the Discord and team up.
+      <a data-discord href="#" target="_blank" rel="noopener">Join the Discord →</a></p>
+  </section>
   <section class="card" id="mapCard" hidden style="margin-top:22px">
     <h2>🗺 Live world map</h2>
-    <p class="muted">See every build on the server, live. Find yours!</p>
+    <p class="muted">See every build on the server, live.</p>
     <a class="btn btn-grass" id="mapLink" target="_blank" rel="noopener">Open the map</a>
     <iframe id="mapFrame" style="width:100%;height:520px;border:3px solid var(--line);margin-top:16px;background:#000" loading="lazy" title="World map"></iframe>
   </section>
   <section class="card" style="margin-top:22px">
-    <h2>🏰 Build showcase</h2>
+    <h2>🏰 Our builds</h2>
     <div class="builds-grid" id="builds"></div>
     <p class="muted" id="noBuilds" hidden>No builds posted yet. Post a screenshot of yours in the Discord to get featured here!</p>
   </section>

@@ -1,7 +1,7 @@
 {
   "name": "Danny's Hangout",
   "short_name": "Hangout",
-  "description": "Minecraft streams, clip spinner, polls and the community SMP.",
+  "description": "Minecraft streams, clip spinner, polls and games.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#15171c",

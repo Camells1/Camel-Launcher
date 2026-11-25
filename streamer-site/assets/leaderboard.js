@@ -21,7 +21,7 @@
     <div class="lb-row"><div class="lb-rank">${medal(i)}</div>
       <div><img class="lb-head" src="${head(r.name, 32)}" alt="" loading="lazy"><b>${esc(r.name)}</b>${r.note ? `<div class="muted small" style="margin-left:42px">${esc(r.note)}</div>` : ''}</div>
       <div class="lb-score">${fmt(r.score)}</div></div>`).join('')
-    : '<p class="muted center">The leaderboard is empty. The first event decides who gets on it!</p>';
+    : '<p class="muted center">The leaderboard is empty. Be active in the streams and the Discord to get on it!</p>';
 
   // top donators: podium for the top 3, full list below
   const dons = s.donators || [];

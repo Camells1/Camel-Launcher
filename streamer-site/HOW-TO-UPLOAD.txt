@@ -52,8 +52,8 @@ WHAT TO DO IN ADMIN
      #1 gets the crown on the home page. Check TikTok LIVE top gifters
      after each stream and update it.
    - Clip wall: paste his best TikTok video links for the home page
-   - Builds: upload SMP build screenshots
-   - Settings: next event + date (countdown), SMP IP, seed of the week,
+   - Builds: upload screenshots of builds from breezevanilla.eu
+   - Settings: next giveaway + end date (countdown), server (breezevanilla.eu), seed of the week,
      his Minecraft username (skin viewer), schedule text, and the
      VAULT SECRET WORD (see below).
 

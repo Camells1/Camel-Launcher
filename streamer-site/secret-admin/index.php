@@ -216,7 +216,7 @@ function clip_preview($c) {
     <h2>Polls</h2>
     <form method="post"><?= hidden('poll_create', 'polls', $csrf) ?>
       <label>Question <input name="question" placeholder="What should I do next stream?" required></label>
-      <label>Options (one per line, 2–8) <textarea name="options" rows="4" placeholder="Hardcore attempt&#10;No armor challenge&#10;Build battle with chat"></textarea></label>
+      <label>Options (one per line, 2–8) <textarea name="options" rows="4" placeholder="Hardcore attempt&#10;No armor challenge&#10;Speedrun the Ender Dragon"></textarea></label>
       <button class="btn btn-grass">Create poll</button>
     </form>
     <table class="table"><?php foreach ($s['polls'] as $p): $total = array_sum(array_column($p['options'], 'votes')); ?>
@@ -232,7 +232,7 @@ function clip_preview($c) {
     <form method="post"><?= hidden('leaderboard', 'lb', $csrf) ?>
       <label>Title <input name="lbTitle" value="<?= h($st['leaderboardTitle'] ?? 'Top Viewers') ?>"></label>
       <label>One per line: <code>name | score | note</code> (sorted automatically)
-      <textarea name="rows" rows="8" placeholder="Steve | 1200 | Won build battle&#10;Alex | 950"><?= h(implode("\n", array_map(fn($r) => $r['name'] . ' | ' . $r['score'] . ($r['note'] ? ' | ' . $r['note'] : ''), $s['leaderboard']))) ?></textarea></label>
+      <textarea name="rows" rows="8" placeholder="Steve | 1200 | Never misses a stream&#10;Alex | 950"><?= h(implode("\n", array_map(fn($r) => $r['name'] . ' | ' . $r['score'] . ($r['note'] ? ' | ' . $r['note'] : ''), $s['leaderboard']))) ?></textarea></label>
       <button class="btn btn-grass">Save leaderboard</button>
     </form>
   </section>
@@ -282,11 +282,11 @@ function clip_preview($c) {
       <label>TikTok username <input name="tiktok" value="<?= h($st['tiktok']) ?>"></label>
       <label>Discord invite code or link <input name="discordInvite" value="<?= h($st['discordInvite']) ?>"></label>
       <label class="span2">Stream schedule text <input name="schedule" value="<?= h($st['schedule']) ?>"></label>
-      <label>Next event name <input name="eventTitle" value="<?= h($st['eventTitle']) ?>"></label>
-      <label>Next event date &amp; time (your local time) <input type="datetime-local" name="eventTime" id="eventTime"></label>
+      <label>Next giveaway (what can people win?) <input name="eventTitle" value="<?= h($st['eventTitle']) ?>" placeholder="e.g. Minecraft Java account"></label>
+      <label>Giveaway ends (date &amp; time, your local time) <input type="datetime-local" name="eventTime" id="eventTime"></label>
       <input type="hidden" name="eventTs" id="eventTs" value="<?= h($st['eventTime']) ?>">
-      <label>SMP server IP (shown after joining Discord) <input name="smpIp" value="<?= h($st['smpIp']) ?>" placeholder="play.example.net"></label>
-      <label>SMP version <input name="smpVersion" value="<?= h($st['smpVersion']) ?>"></label>
+      <label>Server we play on (shown on the Server page) <input name="smpIp" value="<?= h($st['smpIp']) ?>" placeholder="breezevanilla.eu"></label>
+      <label>Server version (optional) <input name="smpVersion" value="<?= h($st['smpVersion']) ?>" placeholder="e.g. Java 1.21"></label>
       <label class="span2">Live world map link (BlueMap / Dynmap, optional) <input name="mapUrl" value="<?= h($st['mapUrl']) ?>" placeholder="https://map.example.net"></label>
       <label>Seed of the week <input name="seed" value="<?= h($st['seed']) ?>"></label>
       <label>Seed note <input name="seedNote" value="<?= h($st['seedNote']) ?>" placeholder="Village + ruined portal at spawn"></label>

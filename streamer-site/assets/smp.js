@@ -2,29 +2,17 @@
   const { $, esc } = Site;
   const s = await Site.ready;
   const st = Site.settings(s);
-  let unlocked = false;
-  try { unlocked = localStorage.getItem('smpUnlocked') === '1'; } catch {}
 
-  if (st.smpVersion) $('#smpVersion').textContent = 'Version: ' + st.smpVersion;
-  function reveal() {
-    if (!st.smpIp) {
-      $('#ip').textContent = 'Opening soon!';
-      $('#ip').classList.remove('locked');
-      $('#unlock').textContent = 'The IP will be posted in the Discord';
-      return;
-    }
-    $('#ip').textContent = st.smpIp;
-    $('#ip').classList.remove('locked');
-    $('#copyIp').hidden = false;
-    $('#unlock').hidden = true;
-  }
-  if (unlocked) reveal();
-  $('#unlock').addEventListener('click', () => {
-    window.open('https://discord.gg/' + st.discordInvite, '_blank', 'noopener');
-    $('#unlock').textContent = 'Unlocking…';
-    setTimeout(() => { try { localStorage.setItem('smpUnlocked', '1'); } catch {} reveal(); }, 2500);
+  // The server we play on (set in admin; breezevanilla.eu by default)
+  const ip = st.smpIp || 'breezevanilla.eu';
+  $('#ip').textContent = ip;
+  $('#serverName').textContent = ip;
+  if (st.smpVersion) { $('#serverVersion').textContent = 'Version: ' + st.smpVersion; $('#serverVersion').hidden = false; }
+  $('#copyIp').addEventListener('click', async e => {
+    try { await navigator.clipboard.writeText(ip); e.target.textContent = 'Copied!'; }
+    catch { getSelection().selectAllChildren($('#ip')); e.target.textContent = 'Press Ctrl+C'; }
+    setTimeout(() => e.target.textContent = 'Copy', 1600);
   });
-  $('#copyIp').addEventListener('click', e => { navigator.clipboard.writeText(st.smpIp); e.target.textContent = 'Copied!'; setTimeout(() => e.target.textContent = 'Copy', 1500); });
 
   if (st.mapUrl) {
     $('#mapCard').hidden = false;
