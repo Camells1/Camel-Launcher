@@ -19,7 +19,7 @@ Options -Indexes
   # a page with a trailing slash: drop the slash
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule ^([a-z0-9-]+)/$ /$1 [R=301,L]
-  # citt.nl/live -> serve live.html
+  # yoursite.com/live -> serve live.html
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{DOCUMENT_ROOT}/$1.html -f
