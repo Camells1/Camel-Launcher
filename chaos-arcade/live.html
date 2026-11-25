@@ -77,7 +77,7 @@ function render(){
     h += '<div class="cta"><a class="btn big tk" href="' + esc(d.url) + '" target="_blank" rel="noopener noreferrer">▶ Watch on TikTok</a></div>';
   } else {
     const L = d.last; lastEndMs = L ? (L.end || L.start) * 1000 : 0;
-    h += '<div class="grid"><div class="tile"><div class="lab">OFFLINE FOR</div><div class="v"><span class="clock off" id="clk">' + (lastEndMs ? hms((Date.now() - lastEndMs) / 1000) : '--:--:--') + '</span></div><div class="s">' + (L && L.end ? 'since the last stream ended' : L ? 'since the last stream started' : '') + '</div></div>' +
+    h += '<div class="grid"><div class="tile"><div class="lab">' + (L && !L.end ? 'WENT LIVE' : 'OFFLINE FOR') + '</div><div class="v"><span class="clock off" id="clk">' + (lastEndMs ? hms((Date.now() - lastEndMs) / 1000) : '--:--:--') + '</span></div><div class="s">' + (L && L.end ? 'since the last stream ended' : L ? 'ago (when that stream ended was not recorded)' : '') + '</div></div>' +
       '<div class="tile"><div class="lab">LAST STREAM</div><div class="v" style="font-size:22px">' + (L ? ago(L.start) : 'none yet') + '</div><div class="s">' + (L ? date(L.start) : '') + '</div></div>' +
       '<div class="tile"><div class="lab">LAST STREAM STATS</div><div class="v" style="font-size:22px">' + (L && L.end ? '⏱ ' + dur(L.end - L.start) : '⏱ –') + '</div><div class="s">' + (L && L.peak ? 'peak ' + n(L.peak) + ' watching' : 'viewers not recorded') + '</div></div></div>';
     if (L && L.title) h += '<div class="ttl">Last title: ' + esc(L.title) + '</div>';

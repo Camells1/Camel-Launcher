@@ -9,7 +9,8 @@
  */
 require __DIR__ . '/lib.php';
 ensure_storage();
-if (!defined('LIVE_TIKTOK')) define('LIVE_TIKTOK', 'ohnepixel');
+if (!defined('LIVE_TIKTOK')) define('LIVE_TIKTOK', 'yokii_fn.alt');
+if (!defined('LIVE_NAME')) define('LIVE_NAME', '');
 
 function tiktok_room($user){
   // local testing only: CA_LIVE_FAKE=/path/to/answer.json makes this read a saved answer instead of TikTok
@@ -68,7 +69,7 @@ $hist = with_file('live.json', true, function(&$h) use ($user, $live, $start, $v
 $past = $hist['past'] ?? [];
 $last = $past[0] ?? null;
 if (!$live && !$last && $start) $last = ['start'=>$start, 'end'=>null, 'peak'=>null, 'title'=>$title];   // seen by TikTok, not by us
-$out = ['ok'=>true, 'user'=>$user, 'name'=>(string)($u['nickname'] ?? $user), 'avatar'=>(string)($u['avatarMedium'] ?? ''),
+$out = ['ok'=>true, 'user'=>$user, 'name'=>LIVE_NAME !== '' ? LIVE_NAME : (string)($u['nickname'] ?? $user), 'avatar'=>(string)($u['avatarMedium'] ?? ''),
   'live'=>$live, 'start'=>$live ? $start : null, 'viewers'=>$live ? $viewers : null, 'peak'=>$live ? ($hist['cur']['peak'] ?? $viewers) : null,
   'title'=>$live ? $title : null, 'last'=>$last, 'history'=>array_slice($past, 0, 10), 'checked'=>$now,
   'url'=>'https://www.tiktok.com/@' . $user . ($live ? '/live' : '')];

@@ -14,7 +14,9 @@ if (!defined('MC_SECRET')) define('MC_SECRET', 'CHANGE-ME-to-a-long-random-strin
 // The Minecraft account (your alt) running the ArcadeBridge mod: players pay and message this account.
 if (!defined('VAULT_BOT')) define('VAULT_BOT', 'YourAltName');
 // TikTok account shown on citt.nl/live (Is ___ live right now?). Just the name, without @.
-if (!defined('LIVE_TIKTOK')) define('LIVE_TIKTOK', 'ohnepixel');
+if (!defined('LIVE_TIKTOK')) define('LIVE_TIKTOK', 'yokii_fn.alt');
+// Name shown on the page and banner. Leave empty ('') to use the TikTok display name.
+if (!defined('LIVE_NAME')) define('LIVE_NAME', 'fastdannydog');
 define('DATA_DIR', __DIR__ . '/lb-data');
 define('TOKEN_DAYS', 60);
 /* ================================================= */
