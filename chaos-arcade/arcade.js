@@ -667,7 +667,7 @@ function confetti(){ for (let k=0;k<5;k++) setTimeout(() => burst(innerWidth*(.1
 
 /* ---------- Sharing ---------- */
 function pageURL(){ return /^https?:/.test(location.protocol) ? location.origin + location.pathname + (/play\.html$/.test(location.pathname) ? location.hash : '') : ''; }
-function hubURL(){ return /^https?:/.test(location.protocol) ? new URL(ROOT || './', location.href).href : ''; }
+function hubURL(){ return /^https?:/.test(location.protocol) ? new URL(ROOT + 'home', location.href).href : ''; }
 function copy(text, msg){
   const done = () => { toast(msg || '✔ Copied! Paste it in Discord or TikTok.'); Sfx.coin(); };
   const fallback = () => {
@@ -698,7 +698,7 @@ function mountBar(gameId, opts){
   const g = gameById(gameId);
   const host = $('#arcadeBar') || (() => { const d = document.createElement('div'); d.id = 'arcadeBar'; document.body.prepend(d); return d; })();
   host.className = 'arcade-bar';
-  host.innerHTML = '<a class="btn back" href="' + ROOT + 'index.html" title="Back to the arcade">⬅ ARCADE</a>' +
+  host.innerHTML = '<a class="btn back" href="' + ROOT + 'home" title="Back to the arcade">⬅ ARCADE</a>' +
     '<div class="title">' + (g ? g.e + ' ' + esc(g.t) : '') + (g && featuredGame().id === g.id ? ' <span class="badge gold" style="background:#d9a514">⭐ 2x XP</span>' : '') + '</div>' +
     '<span class="chip" id="abXP"></span><span class="chip coin" id="abCoins" title="Your coins. Earn them by playing any game."></span>' + '<button class="btn icon" id="abMusic" aria-label="Toggle music" title="Music">🎵</button>' + (opts.noMute ? '' : '<button class="btn icon" id="abMute" aria-label="Toggle sound">🔊</button>');
   const mu = $('#abMusic');

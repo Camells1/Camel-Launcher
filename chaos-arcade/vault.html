@@ -48,7 +48,7 @@ A.mountBar('vault');
 const fmt = n => '$' + Math.floor(n).toLocaleString('en-US');
 const esc = A.esc;
 function render(){
-  if (!A.acct.user){ $('#app').innerHTML = '<div class="box">Sign in on the <a href="index.html#account">arcade home page</a> to use your Vault.</div>'; return; }
+  if (!A.acct.user){ $('#app').innerHTML = '<div class="box">Sign in on the <a href="home#account">arcade home page</a> to use your Vault.</div>'; return; }
   A.vault.info().then(v => {
     if (!v.enabled){ $('#app').innerHTML = '<div class="box warn">The Vault isn\'t switched on yet. The site owner needs to set MC_SECRET and VAULT_BOT in lib.php and run the ArcadeBridge mod on the casino Minecraft account.</div>'; return; }
     const linked = !!v.mc;

@@ -23,13 +23,13 @@ const QUIPS_BAD = ['OUCH.','SKILL ISSUE?','WARM-UP ROUND','THAT HAPPENED.','ONE 
 function boot(){
   const id = location.hash.replace('#', '');
   G = A.gameById(id);
-  if (!G || G.cat === 'block'){ location.replace('../index.html'); return; }
+  if (!G || G.cat === 'block'){ location.replace('../home'); return; }
   document.title = G.t + ' · Chaos Arcade';
   A.paintBody(G.bg.map(c => shade(c, -.35)));
   A.mountBar(id);
   const s = document.createElement('script');
   s.src = 'js/' + id + '.js';
-  s.onerror = () => { $('#kitStage').innerHTML = '<div class="kit-ov"><h2>😵 Could not load this game</h2><a class="btn" href="../index.html">⬅ Arcade</a></div>'; };
+  s.onerror = () => { $('#kitStage').innerHTML = '<div class="kit-ov"><h2>😵 Could not load this game</h2><a class="btn" href="../home">⬅ Arcade</a></div>'; };
   document.body.appendChild(s);
 }
 addEventListener('hashchange', () => location.reload());
@@ -248,7 +248,7 @@ function endGame(opts){
       (medal ? '<div class="kit-medal' + (medal > prevMedal ? ' new' : '') + '">' + MEDAL_E[medal] + ' ' + MEDAL_N[medal] + (medal > prevMedal ? ' MEDAL UNLOCKED!' : '') + '</div>' : '') +
       (medals() && medal < 3 ? '<div class="kit-next">Next: ' + MEDAL_E[medal + 1] + ' at ' + (def.scoreText ? def.scoreText(medals()[medal]) : medals()[medal]) + '</div>' : '') +
       '<div class="kit-lines">' + lines + '<div>+' + (res.xp || 0) + ' XP' + (res.featured ? ' (⭐ 2x)' : '') + (res.coins ? ' · <span style="color:#ffd23a">+' + res.coins + ' 🪙</span>' : '') + ' · best ' + (def.scoreText ? def.scoreText(Math.max(prevBest, score)) : Math.max(prevBest, score)) + '</div></div>' +
-      '<div class="kit-btns"><button class="btn green" id="kitAgain">🔄 AGAIN</button><button class="btn gold" id="kitShare">📋 SHARE</button><a class="btn" href="../index.html">⬅ ARCADE</a></div>' +
+      '<div class="kit-btns"><button class="btn green" id="kitAgain">🔄 AGAIN</button><button class="btn gold" id="kitShare">📋 SHARE</button><a class="btn" href="../home">⬅ ARCADE</a></div>' +
       '<div class="kit-lb" id="kitLb"></div>';
     $('#kitAgain').addEventListener('click', start);
     $('#kitShare').addEventListener('click', () => {
@@ -281,7 +281,7 @@ function boardAfter(el, p, score){
   const show = (j) => {
     let h = tabs('g') + '<div class="lbt">🌍 GLOBAL LEADERBOARD</div>' + (j.top.length ? j.top.map((x, i) => rowHtml(i, x.n, x.s, x.me)).join('') : '<div class="lbe">Nobody yet.</div>');
     if (j.you && j.you.rank > j.top.length) h += rowHtml(j.you.rank - 1, A.state.name || 'You', j.you.s, true);
-    h += '<div class="lbe">' + j.count + ' player' + (j.count === 1 ? '' : 's') + (j.you ? ' · you are #' + j.you.rank : '') + (A.acct.user ? '' : ' · <a href="../index.html#account">log in</a> to protect your name') + '</div>';
+    h += '<div class="lbe">' + j.count + ' player' + (j.count === 1 ? '' : 's') + (j.you ? ' · you are #' + j.you.rank : '') + (A.acct.user ? '' : ' · <a href="../home#account">log in</a> to protect your name') + '</div>';
     el.innerHTML = h; bindTabs();
   };
   const offline = () => { el.innerHTML = '<div class="lbt">📱 YOUR TOP RUNS (this device)</div>' + localRows(5) + '<div class="lbe">The global board goes live when the arcade runs on your website.</div>'; };

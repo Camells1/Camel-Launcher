@@ -1,0 +1,22 @@
+# Chaos Arcade: clean addresses
+#   citt.nl/home     -> index.html     (citt.nl/ and citt.nl/index.html redirect here)
+#   citt.nl/rewards  -> rewards.html   (same for /vault and /help)
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Old addresses typed or linked by people -> the clean address (301 = permanent)
+  RewriteCond %{THE_REQUEST} \s/(index\.html)?[\s?]
+  RewriteRule ^(index\.html)?$ /home [R=301,L]
+  RewriteCond %{THE_REQUEST} \s/(rewards|vault|help)\.html[\s?]
+  RewriteRule ^(rewards|vault|help)\.html$ /$1 [R=301,L]
+
+  # A trailing slash would break the page's relative links: /home/ -> /home
+  RewriteRule ^(home|rewards|vault|help)/$ /$1 [R=301,L]
+
+  # Clean address -> the real file (the address bar keeps showing the clean one)
+  RewriteRule ^home$ index.html [L]
+  RewriteRule ^(rewards|vault|help)$ $1.html [L]
+</IfModule>
