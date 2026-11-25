@@ -1,0 +1,254 @@
+<?php
+// Admin panel: approve clips, go live, polls, leaderboard, builds, settings.
+require_once __DIR__ . '/lib.php';
+session_set_cookie_params(['httponly' => true, 'samesite' => 'Strict', 'secure' => !empty($_SERVER['HTTPS'])]);
+session_start();
+header('X-Frame-Options: DENY');
+
+function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
+$flash = '';
+
+// ---------- login / logout ----------
+if (isset($_POST['login'])) {
+    if (!rate_ok('login', 10)) { $flash = 'Too many tries. Wait an hour.'; }
+    elseif (ADMIN_PASSWORD === 'change-me-please') { $flash = 'Set your own ADMIN_PASSWORD in config.php first.'; }
+    elseif (hash_equals(ADMIN_PASSWORD, (string)$_POST['password'])) {
+        session_regenerate_id(true);
+        $_SESSION['admin'] = true;
+        $_SESSION['csrf'] = bin2hex(random_bytes(16));
+        header('Location: admin.php'); exit;
+    } else { $flash = 'Wrong password.'; }
+}
+if (isset($_GET['logout'])) { session_destroy(); header('Location: admin.php'); exit; }
+$authed = !empty($_SESSION['admin']);
+
+// ---------- actions ----------
+if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
+    if (!hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'] ?? '')) { http_response_code(400); exit('Bad token, reload the page.'); }
+    $do = $_POST['do'];
+    $flash = with_state(function (&$s) use ($do) {
+        switch ($do) {
+            case 'live':
+                $s['settings']['live'] = !empty($_POST['live']);
+                $s['settings']['liveNote'] = clean($_POST['liveNote'] ?? '', 120);
+                return $s['settings']['live'] ? '🔴 You are LIVE on the site.' : 'Set to offline.';
+            case 'settings':
+                $text = ['siteName'=>60,'streamerName'=>40,'tiktok'=>40,'discordInvite'=>40,'schedule'=>120,'eventTitle'=>80,
+                         'smpIp'=>80,'smpVersion'=>40,'mapUrl'=>200,'seed'=>40,'seedNote'=>200,'mcUsername'=>16,'clipPerson'=>40];
+                foreach ($text as $k => $max) $s['settings'][$k] = clean($_POST[$k] ?? '', $max);
+                $s['settings']['tiktok'] = ltrim($s['settings']['tiktok'], '@');
+                $s['settings']['discordInvite'] = preg_replace('~^.*/~', '', $s['settings']['discordInvite']);
+                $t = $_POST['eventTime'] ?? '';
+                $s['settings']['eventTime'] = $t ? (string)((int)$_POST['eventTs']) : '';
+                if (!preg_match('~^https?://~', $s['settings']['mapUrl'])) $s['settings']['mapUrl'] = '';
+                return 'Settings saved.';
+            case 'clip_approve':
+                foreach ($s['clips'] as &$c) if ($c['id'] === $_POST['id']) $c['status'] = 'approved';
+                return 'Clip approved — it is on the wheel now.';
+            case 'clip_delete':
+                foreach ($s['clips'] as $i => $c) if ($c['id'] === $_POST['id']) {
+                    if ($c['type'] === 'file') @unlink(__DIR__ . '/' . $c['src']);
+                    array_splice($s['clips'], $i, 1);
+                    break;
+                }
+                return 'Clip deleted.';
+            case 'poll_create':
+                $opts = array_values(array_filter(array_map(fn($o) => clean($o, 80), explode("\n", $_POST['options'] ?? ''))));
+                $q = clean($_POST['question'] ?? '', 120);
+                if (!$q || count($opts) < 2) return 'A poll needs a question and at least 2 options.';
+                array_unshift($s['polls'], ['id' => new_id(), 'question' => $q, 'open' => true, 'created' => time(),
+                    'options' => array_map(fn($o) => ['text' => $o, 'votes' => 0], array_slice($opts, 0, 8)), 'voters' => []]);
+                return 'Poll created.';
+            case 'poll_toggle':
+                foreach ($s['polls'] as &$p) if ($p['id'] === $_POST['id']) $p['open'] = empty($p['open']);
+                return 'Poll updated.';
+            case 'poll_delete':
+                $s['polls'] = array_values(array_filter($s['polls'], fn($p) => $p['id'] !== $_POST['id']));
+                return 'Poll deleted.';
+            case 'leaderboard':
+                $rows = [];
+                foreach (explode("\n", $_POST['rows'] ?? '') as $line) {
+                    $parts = array_map('trim', explode('|', $line));
+                    if ($parts[0] === '') continue;
+                    $rows[] = ['name' => clean($parts[0], 30), 'score' => (int)preg_replace('/[^\d-]/', '', $parts[1] ?? '0'), 'note' => clean($parts[2] ?? '', 60)];
+                }
+                usort($rows, fn($a, $b) => $b['score'] <=> $a['score']);
+                $s['leaderboard'] = array_slice($rows, 0, 50);
+                $s['settings']['leaderboardTitle'] = clean($_POST['lbTitle'] ?? 'Top Viewers', 60);
+                return 'Leaderboard saved.';
+            case 'videos':
+                $ids = [];
+                foreach (explode("\n", $_POST['videos'] ?? '') as $line) {
+                    $line = trim($line);
+                    if ($line && ($id = tiktok_id($line))) $ids[] = $id;
+                }
+                $s['videos'] = array_slice(array_values(array_unique($ids)), 0, 24);
+                return 'Saved ' . count($s['videos']) . ' videos for the clip wall.';
+            case 'build_add':
+                $f = $_FILES['img'] ?? null;
+                if (!$f || $f['error'] !== UPLOAD_ERR_OK) return 'Pick an image.';
+                $info = @getimagesize($f['tmp_name']);
+                $types = [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_WEBP => 'webp', IMAGETYPE_GIF => 'gif'];
+                if (!$info || !isset($types[$info[2]])) return 'Only JPG, PNG, WEBP or GIF images.';
+                $name = new_id() . '.' . $types[$info[2]];
+                move_uploaded_file($f['tmp_name'], __DIR__ . '/uploads/builds/' . $name);
+                $s['builds'][] = ['id' => new_id(), 'img' => 'uploads/builds/' . $name,
+                    'title' => clean($_POST['title'] ?? '', 60), 'by' => clean($_POST['by'] ?? '', 30)];
+                return 'Build added.';
+            case 'build_delete':
+                foreach ($s['builds'] as $i => $b) if ($b['id'] === $_POST['id']) {
+                    @unlink(__DIR__ . '/' . $b['img']);
+                    array_splice($s['builds'], $i, 1);
+                    break;
+                }
+                return 'Build removed.';
+        }
+        return 'Unknown action.';
+    });
+    $_SESSION['flash'] = $flash;
+    header('Location: admin.php' . (isset($_POST['anchor']) ? '#' . preg_replace('/\W/', '', $_POST['anchor']) : ''));
+    exit;
+}
+if (isset($_SESSION['flash'])) { $flash = $_SESSION['flash']; unset($_SESSION['flash']); }
+$s = load_state();
+$st = $s['settings'];
+$csrf = $_SESSION['csrf'] ?? '';
+function hidden($do, $anchor, $csrf, $extra = []) {
+    $o = '<input type="hidden" name="do" value="' . h($do) . '"><input type="hidden" name="anchor" value="' . h($anchor) . '"><input type="hidden" name="csrf" value="' . h($csrf) . '">';
+    foreach ($extra as $k => $v) $o .= '<input type="hidden" name="' . h($k) . '" value="' . h($v) . '">';
+    return $o;
+}
+$pending = array_filter($s['clips'], fn($c) => $c['status'] === 'pending');
+$approved = array_filter($s['clips'], fn($c) => $c['status'] === 'approved');
+function clip_preview($c) {
+    if ($c['type'] === 'file') return '<video src="' . h($c['src']) . '" controls preload="metadata"></video>';
+    return '<iframe src="https://www.tiktok.com/embed/v2/' . h($c['src']) . '" allow="encrypted-media" loading="lazy"></iframe>';
+}
+?><!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Admin · <?= h($st['siteName']) ?></title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/favicon.svg">
+</head><body class="admin">
+<header class="topbar"><a class="brand" href="index.html">⛏ <?= h($st['siteName']) ?></a><nav class="nav-links"><a href="index.html">View site</a><?php if ($authed): ?><a href="?logout=1">Log out</a><?php endif ?></nav></header>
+<main class="wrap">
+<?php if ($flash): ?><div class="flash"><?= h($flash) ?></div><?php endif ?>
+<?php if (!$authed): ?>
+  <section class="card narrow">
+    <h1>Admin login</h1>
+    <form method="post"><label>Password <input type="password" name="password" autofocus required></label>
+    <button class="btn btn-grass" name="login" value="1">Log in</button></form>
+  </section>
+<?php else: ?>
+  <h1>Admin panel</h1>
+  <p class="muted">Jump to: <a href="#live">Live</a> · <a href="#clips">Clips (<?= count($pending) ?> waiting)</a> · <a href="#polls">Polls</a> · <a href="#lb">Leaderboard</a> · <a href="#videos">Clip wall</a> · <a href="#builds">Builds</a> · <a href="#settings">Settings</a></p>
+
+  <section class="card" id="live">
+    <h2>Live status</h2>
+    <form method="post" class="row-form"><?= hidden('live', 'live', $csrf) ?>
+      <label class="switch"><input type="checkbox" name="live" value="1" <?= $st['live'] ? 'checked' : '' ?>> I'm live right now</label>
+      <label>What are you streaming? <input name="liveNote" value="<?= h($st['liveNote']) ?>"></label>
+      <button class="btn btn-tiktok">Save</button>
+    </form>
+    <p class="muted small">Tip: bookmark this page on your phone and flip this on when you go live. The site shows a big red LIVE banner.</p>
+  </section>
+
+  <section class="card" id="clips">
+    <h2>Clips waiting for approval (<?= count($pending) ?>)</h2>
+    <?php if (!$pending): ?><p class="muted">Nothing waiting. 🎉</p><?php endif ?>
+    <div class="admin-clips">
+    <?php foreach ($pending as $c): ?>
+      <div class="admin-clip"><?= clip_preview($c) ?>
+        <b><?= h($c['title']) ?></b><span class="muted small">by <?= h($c['by']) ?> · <?= date('M j, H:i', $c['created']) ?></span>
+        <div class="btn-row">
+          <form method="post"><?= hidden('clip_approve', 'clips', $csrf, ['id' => $c['id']]) ?><button class="btn btn-grass">Approve</button></form>
+          <form method="post" onsubmit="return confirm('Delete this clip?')"><?= hidden('clip_delete', 'clips', $csrf, ['id' => $c['id']]) ?><button class="btn btn-red">Delete</button></form>
+        </div></div>
+    <?php endforeach ?>
+    </div>
+    <h3>On the wheel (<?= count($approved) ?>)</h3>
+    <table class="table"><?php foreach ($approved as $c): ?>
+      <tr><td><?= $c['type'] === 'file' ? '🎬' : '🎵' ?> <?= h($c['title']) ?></td><td class="muted"><?= h($c['by']) ?></td>
+      <td><form method="post" onsubmit="return confirm('Remove from wheel?')"><?= hidden('clip_delete', 'clips', $csrf, ['id' => $c['id']]) ?><button class="btn btn-small btn-red">Remove</button></form></td></tr>
+    <?php endforeach ?></table>
+  </section>
+
+  <section class="card" id="polls">
+    <h2>Polls</h2>
+    <form method="post"><?= hidden('poll_create', 'polls', $csrf) ?>
+      <label>Question <input name="question" placeholder="What should I do next stream?" required></label>
+      <label>Options (one per line, 2–8) <textarea name="options" rows="4" placeholder="Hardcore attempt&#10;No armor challenge&#10;Build battle with chat"></textarea></label>
+      <button class="btn btn-grass">Create poll</button>
+    </form>
+    <table class="table"><?php foreach ($s['polls'] as $p): $total = array_sum(array_column($p['options'], 'votes')); ?>
+      <tr><td><b><?= h($p['question']) ?></b><br><span class="muted small"><?= implode(' · ', array_map(fn($o) => h($o['text']) . ' (' . $o['votes'] . ')', $p['options'])) ?> — <?= $total ?> votes</span></td>
+      <td><?= $p['open'] ? '🟢 open' : '⚫ closed' ?></td>
+      <td class="btn-row"><form method="post"><?= hidden('poll_toggle', 'polls', $csrf, ['id' => $p['id']]) ?><button class="btn btn-small"><?= $p['open'] ? 'Close' : 'Reopen' ?></button></form>
+      <form method="post" onsubmit="return confirm('Delete poll?')"><?= hidden('poll_delete', 'polls', $csrf, ['id' => $p['id']]) ?><button class="btn btn-small btn-red">Delete</button></form></td></tr>
+    <?php endforeach ?></table>
+  </section>
+
+  <section class="card" id="lb">
+    <h2>Leaderboard</h2>
+    <form method="post"><?= hidden('leaderboard', 'lb', $csrf) ?>
+      <label>Title <input name="lbTitle" value="<?= h($st['leaderboardTitle'] ?? 'Top Viewers') ?>"></label>
+      <label>One per line: <code>name | score | note</code> (sorted automatically)
+      <textarea name="rows" rows="8" placeholder="Steve | 1200 | Won build battle&#10;Alex | 950"><?= h(implode("\n", array_map(fn($r) => $r['name'] . ' | ' . $r['score'] . ($r['note'] ? ' | ' . $r['note'] : ''), $s['leaderboard']))) ?></textarea></label>
+      <button class="btn btn-grass">Save leaderboard</button>
+    </form>
+  </section>
+
+  <section class="card" id="videos">
+    <h2>Clip wall (TikTok videos on the home page)</h2>
+    <form method="post"><?= hidden('videos', 'videos', $csrf) ?>
+      <label>Paste TikTok video links, one per line (max 24)
+      <textarea name="videos" rows="6" placeholder="https://www.tiktok.com/@yokii_fn.alt/video/1234567890123456789"><?= h(implode("\n", array_map(fn($id) => 'https://www.tiktok.com/@' . $st['tiktok'] . '/video/' . $id, $s['videos']))) ?></textarea></label>
+      <button class="btn btn-grass">Save clip wall</button>
+    </form>
+  </section>
+
+  <section class="card" id="builds">
+    <h2>Build showcase</h2>
+    <form method="post" enctype="multipart/form-data" class="row-form"><?= hidden('build_add', 'builds', $csrf) ?>
+      <label>Screenshot <input type="file" name="img" accept="image/*" required></label>
+      <label>Title <input name="title" placeholder="Spawn castle"></label>
+      <label>Built by <input name="by" placeholder="yokii"></label>
+      <button class="btn btn-grass">Add build</button>
+    </form>
+    <div class="builds-grid"><?php foreach ($s['builds'] as $b): ?>
+      <figure class="build"><img src="<?= h($b['img']) ?>" alt=""><figcaption><?= h($b['title']) ?> <span class="muted"><?= h($b['by']) ?></span>
+      <form method="post" onsubmit="return confirm('Remove build?')"><?= hidden('build_delete', 'builds', $csrf, ['id' => $b['id']]) ?><button class="btn btn-small btn-red">Remove</button></form></figcaption></figure>
+    <?php endforeach ?></div>
+  </section>
+
+  <section class="card" id="settings">
+    <h2>Site settings</h2>
+    <form method="post" class="grid-form" id="settingsForm"><?= hidden('settings', 'settings', $csrf) ?>
+      <label>Site name <input name="siteName" value="<?= h($st['siteName']) ?>"></label>
+      <label>Streamer name <input name="streamerName" value="<?= h($st['streamerName']) ?>"></label>
+      <label>TikTok username <input name="tiktok" value="<?= h($st['tiktok']) ?>"></label>
+      <label>Discord invite code or link <input name="discordInvite" value="<?= h($st['discordInvite']) ?>"></label>
+      <label class="span2">Stream schedule text <input name="schedule" value="<?= h($st['schedule']) ?>"></label>
+      <label>Next event name <input name="eventTitle" value="<?= h($st['eventTitle']) ?>"></label>
+      <label>Next event date &amp; time (your local time) <input type="datetime-local" name="eventTime" id="eventTime"></label>
+      <input type="hidden" name="eventTs" id="eventTs" value="<?= h($st['eventTime']) ?>">
+      <label>SMP server IP (shown after joining Discord) <input name="smpIp" value="<?= h($st['smpIp']) ?>" placeholder="play.example.net"></label>
+      <label>SMP version <input name="smpVersion" value="<?= h($st['smpVersion']) ?>"></label>
+      <label class="span2">Live world map link (BlueMap / Dynmap, optional) <input name="mapUrl" value="<?= h($st['mapUrl']) ?>" placeholder="https://map.example.net"></label>
+      <label>Seed of the week <input name="seed" value="<?= h($st['seed']) ?>"></label>
+      <label>Seed note <input name="seedNote" value="<?= h($st['seedNote']) ?>" placeholder="Village + ruined portal at spawn"></label>
+      <label>His Minecraft username (for the skin viewer) <input name="mcUsername" value="<?= h($st['mcUsername']) ?>"></label>
+      <label>Clip spinner is about… <input name="clipPerson" value="<?= h($st['clipPerson']) ?>"></label>
+      <button class="btn btn-grass span2">Save settings</button>
+    </form>
+  </section>
+  <script>
+    // datetime-local works in local time; store a unix timestamp so every visitor sees the right countdown.
+    const ts = document.getElementById('eventTs'), dt = document.getElementById('eventTime');
+    if (ts.value) { const d = new Date(ts.value * 1000); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); dt.value = d.toISOString().slice(0, 16); }
+    document.getElementById('settingsForm').addEventListener('submit', () => { ts.value = dt.value ? Math.floor(new Date(dt.value).getTime() / 1000) : ''; });
+  </script>
+<?php endif ?>
+</main></body></html>

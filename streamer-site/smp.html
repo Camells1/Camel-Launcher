@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SMP · Danny's Hangout</title>
+<meta name="description" content="Play on the community Minecraft server.">
+<meta property="og:title" content="SMP · Danny's Hangout">
+<meta property="og:description" content="Play on the community Minecraft server.">
+<meta name="theme-color" content="#5bae3c">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="live-banner" target="_blank" rel="noopener"><span class="live-dot"></span> LIVE NOW ON TIKTOK — <span class="live-note"></span> <u>Watch →</u></a>
+<header class="topbar">
+  <a class="brand" href="index.html">⛏ <span data-site-name>Danny's Hangout</span></a>
+  <button class="nav-toggle" aria-label="Menu">≡</button>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="spinner.html">Clip Spinner</a>
+    <a href="vote.html">Vote</a>
+    <a href="smp.html">SMP</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="fun.html">Games</a>
+    <a data-discord href="https://discord.gg/m7G76JxKnS" target="_blank" rel="noopener" style="color:#fff;background:var(--discord)">Join Discord</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <h1 class="center">⛏ The Community SMP</h1>
+  <p class="center muted" style="margin-top:-8px">Build, survive and show up on stream. The server is for Discord members.</p>
+  <div class="grid grid-2" style="margin-top:26px">
+    <section class="card">
+      <h2>🔒 Server IP</h2>
+      <p class="muted">The IP is for Discord members. Join, then come back here and it unlocks.</p>
+      <div class="ip-box"><div class="ip locked" id="ip">play.hidden-server.net</div>
+        <button class="btn btn-grass" id="copyIp" hidden>Copy</button></div>
+      <button class="btn btn-discord" id="unlock" style="width:100%">💬 Join Discord to unlock</button>
+      <p class="muted small" id="smpVersion"></p>
+    </section>
+    <section class="card">
+      <h2>📜 Rules</h2>
+      <ol class="muted" style="padding-left:20px;margin:0">
+        <li>No griefing or stealing.</li>
+        <li>No hacked clients or x-ray.</li>
+        <li>Be nice in chat. No hate.</li>
+        <li>No lag machines.</li>
+        <li>Ask before building next to someone.</li>
+        <li>Have fun and maybe end up on stream!</li>
+      </ol>
+    </section>
+  </div>
+  <section class="card" id="mapCard" hidden style="margin-top:22px">
+    <h2>🗺 Live world map</h2>
+    <p class="muted">See every build on the server, live. Find yours!</p>
+    <a class="btn btn-grass" id="mapLink" target="_blank" rel="noopener">Open the map</a>
+    <iframe id="mapFrame" style="width:100%;height:520px;border:3px solid var(--line);margin-top:16px;background:#000" loading="lazy" title="World map"></iframe>
+  </section>
+  <section class="card" style="margin-top:22px">
+    <h2>🏰 Build showcase</h2>
+    <div class="builds-grid" id="builds"></div>
+    <p class="muted" id="noBuilds" hidden>No builds posted yet. Post a screenshot of yours in the Discord to get featured here!</p>
+  </section>
+</main>
+<div class="modal" id="imgModal"><div class="modal-box" style="width:min(1000px,100%)"><img id="bigImg" alt="" style="width:100%"><p id="bigCap" style="font-weight:700"></p><button class="btn" onclick="this.closest('.modal').classList.remove('open')">Close</button></div></div>
+<footer>
+  <p><a data-tiktok target="_blank" rel="noopener" href="#">TikTok</a> · <a data-discord target="_blank" rel="noopener" href="#">Discord</a> · <a href="spinner.html">Clip Spinner</a></p>
+  <p class="small">© <span data-year></span> <span data-site-name></span>. Fan site, not affiliated with Mojang, Microsoft or TikTok.</p>
+</footer>
+<script src="assets/site.js"></script>
+<script src="assets/smp.js"></script>
+</body>
+</html>

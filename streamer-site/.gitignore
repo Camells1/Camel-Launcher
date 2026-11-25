@@ -1,0 +1,8 @@
+data/*.json.php
+data/*.tmp
+data/.lock
+data/.ratelock
+uploads/clips/*
+uploads/builds/*
+!uploads/clips/index.php
+!uploads/builds/index.php

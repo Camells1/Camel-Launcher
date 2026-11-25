@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Danny's Hangout · yokii on TikTok</title>
+<meta name="description" content="Minecraft streams live basically every day on TikTok. Join the Discord, spin the clip wheel, vote on the next stream.">
+<meta property="og:title" content="Danny's Hangout · yokii on TikTok">
+<meta property="og:description" content="Minecraft streams live basically every day on TikTok. Join the Discord, spin the clip wheel, vote on the next stream.">
+<meta name="theme-color" content="#5bae3c">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="live-banner" target="_blank" rel="noopener"><span class="live-dot"></span> LIVE NOW ON TIKTOK — <span class="live-note"></span> <u>Watch →</u></a>
+<header class="topbar">
+  <a class="brand" href="index.html">⛏ <span data-site-name>Danny's Hangout</span></a>
+  <button class="nav-toggle" aria-label="Menu">≡</button>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="spinner.html">Clip Spinner</a>
+    <a href="vote.html">Vote</a>
+    <a href="smp.html">SMP</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="fun.html">Games</a>
+    <a data-discord href="https://discord.gg/m7G76JxKnS" target="_blank" rel="noopener" style="color:#fff;background:var(--discord)">Join Discord</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <img class="avatar" data-dc="icon" src="assets/favicon.svg" alt="">
+  <div><span class="tag">🔴 LIVE DAILY ON TIKTOK</span></div>
+  <h1 data-dc="name">Danny's Hangout</h1>
+  <p class="lead">Minecraft streams with <b data-tiktok-name>@yokii_fn.alt</b> basically every day. Come hang out, play on the SMP with us, and vote on what happens next stream.</p>
+  <div class="btn-row">
+    <a class="btn btn-discord btn-big" data-discord href="https://discord.gg/m7G76JxKnS" target="_blank" rel="noopener">💬 Join the Discord</a>
+    <a class="btn btn-tiktok btn-big" data-tiktok href="https://www.tiktok.com/@yokii_fn.alt" target="_blank" rel="noopener">▶ Follow on TikTok</a>
+  </div>
+  <div><span class="splash" id="splash">Also try the SMP!</span></div>
+</section>
+
+<main class="wrap">
+  <div class="stats">
+    <div class="stat"><b data-dc="members">…</b><span>Discord members</span></div>
+    <div class="stat"><b><span class="online-dot"></span><span data-dc="online">…</span></b><span>online right now</span></div>
+    <div class="stat"><b>Daily</b><span>live on TikTok</span></div>
+  </div>
+
+  <section class="card">
+    <h2>🎯 Road to <span id="goalNum">500</span> members</h2>
+    <div class="goal"><div class="goal-bar"><div class="goal-fill" id="goalFill"></div></div>
+    <div class="goal-label"><span id="goalText">Loading…</span><span id="goalLeft"></span></div></div>
+    <p class="muted small" style="margin-bottom:0">Help us hit the goal: share the Discord with a friend who plays Minecraft. Invite link: <a data-discord href="https://discord.gg/m7G76JxKnS" target="_blank" rel="noopener" id="inviteText">discord.gg/m7G76JxKnS</a> <button class="btn btn-small" id="copyInvite">Copy</button></p>
+  </section>
+
+  <div class="grid grid-2">
+    <section class="card center" id="eventCard">
+      <h2>⏳ Next event</h2>
+      <p class="pixel" style="font-size:13px;color:var(--gold)" id="eventTitle">Community Build Battle</p>
+      <div class="countdown" id="countdown"></div>
+      <p class="muted small" id="eventWhen"></p>
+      <a class="btn btn-discord" data-discord href="#" target="_blank" rel="noopener">Get pinged in Discord</a>
+    </section>
+    <section class="card">
+      <h2>📅 When's the stream?</h2>
+      <p id="schedule" style="font-size:18px;font-weight:700">Live basically every day on TikTok</p>
+      <p class="muted">Turn on TikTok notifications so you don't miss a live, and join the Discord to get a ping the moment he goes live.</p>
+      <div class="btn-row"><a class="btn btn-tiktok" data-tiktok-live href="#" target="_blank" rel="noopener">Watch the live</a></div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:22px">
+    <h2>🏆 Why join the Discord?</h2>
+    <div class="grid grid-3">
+      <div><h3>⛏ SMP access</h3><p class="muted">The server IP for the community Minecraft server lives in the Discord.</p></div>
+      <div><h3>🎁 Giveaways</h3><p class="muted">Codes and giveaways are dropped in Discord only, first come first served.</p></div>
+      <div><h3>🔔 Live pings</h3><p class="muted">Get pinged the second a stream starts. Never miss one again.</p></div>
+      <div><h3>🗳 Decide the stream</h3><p class="muted">Vote on challenges and events, then watch them happen live.</p></div>
+      <div><h3>🎬 Clip of the week</h3><p class="muted">Post your funniest clips. The best ones get put on the clip wheel.</p></div>
+      <div><h3>🤝 Play together</h3><p class="muted">Find people to play with, join build battles and community events.</p></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>🎡 Clip Spinner</h2>
+    <p>Spin the wheel and get a random clip of <b data-clip-person>fastdannydog</b>. Got a funny clip? Upload it and it might land on the wheel.</p>
+    <a class="btn btn-gold" href="spinner.html">Spin the wheel →</a>
+  </section>
+
+  <section class="card" id="wallCard">
+    <h2>📺 Latest on TikTok</h2>
+    <div class="video-wall" id="videoWall"></div>
+    <div id="creatorEmbed" class="center"></div>
+  </section>
+
+  <section class="card center">
+    <h2>Ready to hang out?</h2>
+    <p class="muted">There are <b data-dc="members">…</b> people in the Discord already. You're next.</p>
+    <a class="btn btn-discord btn-big" data-discord href="https://discord.gg/m7G76JxKnS" target="_blank" rel="noopener">💬 Join the Discord</a>
+  </section>
+</main>
+<footer>
+  <p><a data-tiktok target="_blank" rel="noopener" href="#">TikTok</a> · <a data-discord target="_blank" rel="noopener" href="#">Discord</a> · <a href="spinner.html">Clip Spinner</a></p>
+  <p class="small">© <span data-year></span> <span data-site-name></span>. Fan site, not affiliated with Mojang, Microsoft or TikTok.</p>
+</footer>
+<script src="assets/site.js"></script>
+<script src="assets/home.js"></script>
+</body>
+</html>

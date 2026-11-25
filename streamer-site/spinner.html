@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clip Spinner · Danny's Hangout</title>
+<meta name="description" content="Spin the wheel for a random clip of fastdannydog, or upload your own.">
+<meta property="og:title" content="Clip Spinner · Danny's Hangout">
+<meta property="og:description" content="Spin the wheel for a random clip of fastdannydog, or upload your own.">
+<meta name="theme-color" content="#5bae3c">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="live-banner" target="_blank" rel="noopener"><span class="live-dot"></span> LIVE NOW ON TIKTOK — <span class="live-note"></span> <u>Watch →</u></a>
+<header class="topbar">
+  <a class="brand" href="index.html">⛏ <span data-site-name>Danny's Hangout</span></a>
+  <button class="nav-toggle" aria-label="Menu">≡</button>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="spinner.html">Clip Spinner</a>
+    <a href="vote.html">Vote</a>
+    <a href="smp.html">SMP</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="fun.html">Games</a>
+    <a data-discord href="https://discord.gg/m7G76JxKnS" target="_blank" rel="noopener" style="color:#fff;background:var(--discord)">Join Discord</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <h1 class="center">🎡 Clip Spinner</h1>
+  <p class="center muted" style="margin-top:-8px">Spin for a random clip of <b data-clip-person>fastdannydog</b>. Upload yours to get it on the wheel!</p>
+  <div class="spinner-wrap" style="margin-top:26px">
+    <section class="card">
+      <div class="wheel-box">
+        <div class="wheel-pointer"></div>
+        <canvas id="wheel" width="1040" height="1040" aria-label="Clip wheel"></canvas>
+        <div class="wheel-center" id="wheelCenter">SPIN</div>
+      </div>
+      <div class="spin-result" id="spinResult"></div>
+      <div class="btn-row" style="justify-content:center;margin-top:10px">
+        <button class="btn btn-gold btn-big" id="spinBtn">🎲 SPIN</button>
+        <button class="btn" id="soundBtn" title="Sound on/off">🔊</button>
+      </div>
+      <p class="center muted small" id="clipCount"></p>
+    </section>
+
+    <section class="card">
+      <h2>📤 Upload a clip</h2>
+      <div class="tabs"><button class="on" data-tab="file">Video file</button><button data-tab="link">TikTok link</button></div>
+      <form id="uploadForm">
+        <div data-pane="file"><label>Video (MP4, WEBM or MOV) <input type="file" name="file" accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v"></label></div>
+        <div data-pane="link" hidden><label>TikTok video link <input type="url" name="link" placeholder="https://www.tiktok.com/@.../video/..."></label></div>
+        <label>Clip title <input name="title" maxlength="60" required placeholder="Danny falls in lava again"></label>
+        <label>Your name <input name="by" maxlength="30" placeholder="Optional"></label>
+        <div class="goal-bar" id="progWrap" hidden><div class="goal-fill" id="prog"></div></div>
+        <button class="btn btn-grass" id="upBtn" style="width:100%;margin-top:6px">Send clip</button>
+        <div class="msg" id="upMsg"></div>
+      </form>
+      <p class="muted small">A mod checks every clip before it goes on the wheel. Only clips of <span data-clip-person>fastdannydog</span>, nothing gross or mean.</p>
+    </section>
+  </div>
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <h2 id="mTitle"></h2>
+    <p class="muted small" id="mBy"></p>
+    <div id="mMedia"></div>
+    <div class="btn-row" style="justify-content:center;margin-top:14px">
+      <button class="btn btn-gold" id="againBtn">🎲 Spin again</button>
+      <button class="btn" id="closeBtn">Close</button>
+    </div>
+  </div>
+</div>
+<footer>
+  <p><a data-tiktok target="_blank" rel="noopener" href="#">TikTok</a> · <a data-discord target="_blank" rel="noopener" href="#">Discord</a> · <a href="spinner.html">Clip Spinner</a></p>
+  <p class="small">© <span data-year></span> <span data-site-name></span>. Fan site, not affiliated with Mojang, Microsoft or TikTok.</p>
+</footer>
+<script src="assets/site.js"></script>
+<script src="assets/spinner.js"></script>
+</body>
+</html>

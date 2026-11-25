@@ -1,0 +1,47 @@
+DANNY'S HANGOUT WEBSITE — HOW TO PUT IT ONLINE
+==============================================
+
+1. SET YOUR ADMIN PASSWORD (important!)
+   Open config.php in Notepad and change:
+       const ADMIN_PASSWORD = 'change-me-please';
+   to your own password. Admin login won't work until you do.
+
+2. UPLOAD WITH FILEZILLA
+   - Connect to your host.
+   - On the right side, open your website folder (often called
+     public_html, htdocs or www).
+   - Drag EVERYTHING inside this folder (not the folder itself) into it.
+     Make sure the hidden .htaccess files in data/ and uploads/ go too
+     (FileZilla: Server > Force showing hidden files).
+
+3. FOLDER PERMISSIONS
+   The site saves clips and votes, so these folders must be writable:
+       data   uploads   uploads/clips   uploads/builds
+   In FileZilla: right-click each one > File permissions > 755
+   (if uploading clips then fails, try 775, never 777 unless your host says so).
+
+4. TEST IT
+   - Open yoursite.com             -> home page with live Discord count
+   - Open yoursite.com/admin.php   -> log in with your password
+   - Upload a test clip on yoursite.com/spinner.html, approve it in admin.
+
+HANDY LINKS TO SAY ON STREAM / PUT IN BIO
+   yoursite.com/discord  -> goes straight to the Discord invite
+   yoursite.com/tiktok   -> goes to the TikTok
+   yoursite.com/spinner.html -> the clip wheel
+
+WHAT TO DO IN ADMIN (yoursite.com/admin.php)
+   - Live status: flip ON when going live -> red LIVE banner on every page
+   - Clips: approve or delete uploaded clips before they hit the wheel
+   - Polls: make "what should I do next stream?" polls
+   - Leaderboard: one line per person, "name | score | note"
+   - Clip wall: paste his best TikTok video links for the home page
+   - Builds: upload SMP build screenshots
+   - Settings: next event + date (countdown), SMP IP, seed of the week,
+     his Minecraft username (skin viewer), schedule text, etc.
+
+NEEDS: a host with PHP 8.0 or newer (almost every normal web host).
+If clip uploads say "too big", your host limits upload size. Ask them to
+raise upload_max_filesize / post_max_size, or people can paste TikTok links.
+
+If you change the Discord invite later, also edit discord/index.html.
