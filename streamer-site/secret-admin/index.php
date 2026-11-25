@@ -2,7 +2,7 @@
 // Admin panel: approve clips, go live, polls, leaderboard, builds, settings.
 // It lives in its own folder; rename the folder to something secret (see HOW-TO-UPLOAD.txt).
 const ROOT = __DIR__ . '/..';
-// This folder's own address, e.g. /hdbahedehuyuf/
+// This folder's own address, e.g. /my-admin-folder/
 $SELF = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/') . '/';
 require_once ROOT . '/lib.php';
 session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'secure' => !empty($_SERVER['HTTPS'])]);
