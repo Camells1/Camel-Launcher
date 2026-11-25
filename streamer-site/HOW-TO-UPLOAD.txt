@@ -1,36 +1,55 @@
 DANNY'S HANGOUT WEBSITE — HOW TO PUT IT ONLINE
 ==============================================
 
-1. SET YOUR ADMIN PASSWORD (important!)
-   Open config.php in Notepad and change:
-       const ADMIN_PASSWORD = 'change-me-please';
-   to your own password. Admin login won't work until you do.
+1. SET YOUR SECRET KEY AND PASSWORD (important!)
+   Open config.php in Notepad and change these two lines:
 
-2. UPLOAD WITH FILEZILLA
+       const ADMIN_SECRET   = 'change-this-secret';
+       const ADMIN_PASSWORD = 'change-me-please';
+
+   ADMIN_SECRET: a long random mix of letters and numbers, at least 12
+   characters (just mash your keyboard, e.g. 'k8Rq2xLm9vTz4hWp').
+   ADMIN_PASSWORD: a normal password, at least 8 characters.
+   Don't share either of them with anyone.
+
+2. YOUR SECRET ADMIN LINK
+   Your admin panel is ONLY reachable through this link:
+
+       yoursite.com/admin.php?k=YOUR-ADMIN_SECRET
+
+   Bookmark it. Without the key, admin.php shows a normal "page not
+   found", so nobody can even tell the admin panel exists. After the link
+   you still need the password. "Log out" closes it again, then you need
+   the secret link again. 10 wrong passwords = locked out for an hour.
+
+3. UPLOAD WITH FILEZILLA
    - Connect to your host.
    - On the right side, open your website folder (often called
      public_html, htdocs or www).
    - Drag EVERYTHING inside this folder (not the folder itself) into it.
-     Make sure the hidden .htaccess files in data/ and uploads/ go too
+     Turn on hidden files so the .htaccess files go too
      (FileZilla: Server > Force showing hidden files).
+   - UPDATING an older version? Upload everything EXCEPT the data and
+     uploads folders, so you keep your clips, votes and settings.
+     (config.php has 2 new settings, so do step 1 again.)
 
-3. FOLDER PERMISSIONS
-   The site saves clips and votes, so these folders must be writable:
-       data   uploads   uploads/clips   uploads/builds
+4. FOLDER PERMISSIONS
+   These folders must be writable:  data  uploads  uploads/clips  uploads/builds
    In FileZilla: right-click each one > File permissions > 755
-   (if uploading clips then fails, try 775, never 777 unless your host says so).
+   (if uploading clips then fails, try 775).
 
-4. TEST IT
-   - Open yoursite.com             -> home page with live Discord count
-   - Open yoursite.com/admin.php   -> log in with your password
-   - Upload a test clip on yoursite.com/spinner.html, approve it in admin.
+5. TEST IT
+   - yoursite.com                       -> home page with the pixel world
+   - yoursite.com/admin.php             -> should say "page not found"
+   - yoursite.com/admin.php?k=YOURKEY   -> login screen
+   - Upload a test clip on spinner.html, approve it in admin.
 
 HANDY LINKS TO SAY ON STREAM / PUT IN BIO
-   yoursite.com/discord  -> goes straight to the Discord invite
-   yoursite.com/tiktok   -> goes to the TikTok
+   yoursite.com/discord      -> goes straight to the Discord invite
+   yoursite.com/tiktok       -> goes to the TikTok
    yoursite.com/spinner.html -> the clip wheel
 
-WHAT TO DO IN ADMIN (yoursite.com/admin.php)
+WHAT TO DO IN ADMIN
    - Live status: flip ON when going live -> red LIVE banner on every page
    - Clips: approve or delete uploaded clips before they hit the wheel
    - Polls: make "what should I do next stream?" polls
@@ -41,10 +60,46 @@ WHAT TO DO IN ADMIN (yoursite.com/admin.php)
    - Clip wall: paste his best TikTok video links for the home page
    - Builds: upload SMP build screenshots
    - Settings: next event + date (countdown), SMP IP, seed of the week,
-     his Minecraft username (skin viewer), schedule text, etc.
+     his Minecraft username (skin viewer), schedule text, and the
+     VAULT SECRET WORD (see below).
+
+==============================================
+ 🤫 SPOILERS: ALL THE SECRETS (for you and him only)
+==============================================
+Visitors earn XP and achievements (green XP bar at the bottom of every
+page, click it to see them). Progress is saved in their browser.
+
+THE VAULT: after 5 achievements a hidden page opens: yoursite.com/vault.html
+It shows the "Vault secret word" you set in admin. Tell people in Discord:
+"type the secret word in #vault to get the Vault Hunter role". Change the
+word now and then. (Make a #vault channel and a role for it in Discord.)
+Note: the word isn't truly uncrackable, a tech-savvy person could find it,
+so use it for fun roles, not real prizes.
+
+Secret achievements and Easter eggs:
+  - Mine the ground on the home page (click the blocks). 64 blocks = secret.
+    Rare diamond ore in the stone = secret.
+  - Hidden diamonds: sometimes a tiny diamond hides in a corner of a box
+    on any page. Click it. 5 found = Diamond Hoarder.
+  - Konami code on the keyboard: ↑ ↑ ↓ ↓ ← → ← → B A  -> the page explodes
+  - Click the logo (top left) 10 times -> also explodes
+  - Type "herobrine" anywhere -> something stares at you
+  - Type "diamond", "danny", "party" or "boom" for little surprises
+  - Visit between midnight and 5 AM -> Night Owl (+ maybe a visitor…)
+  - Clip wheel: 1 in 30 spins is a GOLDEN SPIN
+  - Visit 3 days in a row -> Regular
+  - Catch Danny game (Games page): score 25+
+  - The home page sky follows the visitor's real time: day, sunset, night
+  - Open the browser console (F12) for a hidden message
+
+Tease these on stream ("there are secret achievements on the site, first
+person to find the Vault gets a shoutout") to get people to the site
+and into the Discord.
 
 NEEDS: a host with PHP 8.0 or newer (almost every normal web host).
 If clip uploads say "too big", your host limits upload size. Ask them to
 raise upload_max_filesize / post_max_size, or people can paste TikTok links.
 
 If you change the Discord invite later, also edit discord/index.html.
+The custom "page not found" needs the site in the main folder of your
+domain (not in a subfolder).

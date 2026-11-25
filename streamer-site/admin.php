@@ -1,9 +1,29 @@
 <?php
 // Admin panel: approve clips, go live, polls, leaderboard, builds, settings.
 require_once __DIR__ . '/lib.php';
-session_set_cookie_params(['httponly' => true, 'samesite' => 'Strict', 'secure' => !empty($_SERVER['HTTPS'])]);
+session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'secure' => !empty($_SERVER['HTTPS'])]);
 session_start();
 header('X-Frame-Options: DENY');
+header('X-Robots-Tag: noindex, nofollow');
+header('Referrer-Policy: no-referrer');
+
+// ---------- secret link gate ----------
+// Without ?k=ADMIN_SECRET (or a session that already passed it) this page
+// looks exactly like any other missing page.
+$secretOk = strlen(ADMIN_SECRET) >= 12 && ADMIN_SECRET !== 'change-this-secret';
+if (empty($_SESSION['gate'])) {
+    $k = (string)($_GET['k'] ?? '');
+    if ($secretOk && $k !== '' && hash_equals(ADMIN_SECRET, $k)) {
+        session_regenerate_id(true);
+        $_SESSION['gate'] = true;
+        header('Location: admin.php'); // drop the key from the address bar / history
+        exit;
+    }
+    http_response_code(404);
+    header('Content-Type: text/html; charset=utf-8');
+    readfile(__DIR__ . '/404.html');
+    exit;
+}
 
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 $flash = '';
@@ -11,7 +31,7 @@ $flash = '';
 // ---------- login / logout ----------
 if (isset($_POST['login'])) {
     if (!rate_ok('login', 10)) { $flash = 'Too many tries. Wait an hour.'; }
-    elseif (ADMIN_PASSWORD === 'change-me-please') { $flash = 'Set your own ADMIN_PASSWORD in config.php first.'; }
+    elseif (ADMIN_PASSWORD === 'change-me-please' || strlen(ADMIN_PASSWORD) < 8) { $flash = 'Set your own ADMIN_PASSWORD (8+ characters) in config.php first.'; }
     elseif (hash_equals(ADMIN_PASSWORD, (string)$_POST['password'])) {
         session_regenerate_id(true);
         $_SESSION['admin'] = true;
@@ -19,7 +39,7 @@ if (isset($_POST['login'])) {
         header('Location: admin.php'); exit;
     } else { $flash = 'Wrong password.'; }
 }
-if (isset($_GET['logout'])) { session_destroy(); header('Location: admin.php'); exit; }
+if (isset($_GET['logout'])) { $_SESSION = []; session_destroy(); header('Location: index.html'); exit; }
 $authed = !empty($_SESSION['admin']);
 
 // ---------- actions ----------
@@ -34,7 +54,7 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
                 return $s['settings']['live'] ? '🔴 You are LIVE on the site.' : 'Set to offline.';
             case 'settings':
                 $text = ['siteName'=>60,'streamerName'=>40,'tiktok'=>40,'discordInvite'=>40,'schedule'=>120,'eventTitle'=>80,
-                         'smpIp'=>80,'smpVersion'=>40,'mapUrl'=>200,'seed'=>40,'seedNote'=>200,'mcUsername'=>16,'clipPerson'=>40];
+                         'smpIp'=>80,'smpVersion'=>40,'mapUrl'=>200,'seed'=>40,'seedNote'=>200,'mcUsername'=>16,'clipPerson'=>40,'secretWord'=>40];
                 foreach ($text as $k => $max) $s['settings'][$k] = clean($_POST[$k] ?? '', $max);
                 $s['settings']['tiktok'] = ltrim($s['settings']['tiktok'], '@');
                 $s['settings']['discordInvite'] = preg_replace('~^.*/~', '', $s['settings']['discordInvite']);
@@ -268,6 +288,8 @@ function clip_preview($c) {
       <label>Seed note <input name="seedNote" value="<?= h($st['seedNote']) ?>" placeholder="Village + ruined portal at spawn"></label>
       <label>His Minecraft username (for the skin viewer) <input name="mcUsername" value="<?= h($st['mcUsername']) ?>"></label>
       <label>Clip spinner is about… <input name="clipPerson" value="<?= h($st['clipPerson']) ?>"></label>
+      <label class="span2">🔐 Vault secret word (people who find the secret Vault page see this; they type it in Discord for a special role)
+        <input name="secretWord" value="<?= h($st['secretWord'] ?? '') ?>" placeholder="e.g. diamondpickaxe42"></label>
       <button class="btn btn-grass span2">Save settings</button>
     </form>
   </section>

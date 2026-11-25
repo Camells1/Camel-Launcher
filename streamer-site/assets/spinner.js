@@ -3,7 +3,8 @@
   const canvas = $('#wheel'), ctx = canvas.getContext('2d');
   const COLORS = ['#5bae3c', '#7a5230', '#5865f2', '#fe2c55', '#d79b1c', '#25a5b8', '#8b5cf6', '#3e7f27', '#c2410c', '#0e7490'];
   const MAX_SLICES = 16;
-  let all = [], slices = [], angle = 0, spinning = false, sound = true, audio;
+  const GOLD = ['#f6c744', '#d79b1c', '#ffe066', '#b7791f'];
+  let all = [], slices = [], angle = 0, spinning = false, sound = true, audio, golden = false;
 
   // ---------- drawing ----------
   function draw() {
@@ -13,8 +14,9 @@
     const n = Math.max(slices.length, 1), arc = Math.PI * 2 / n;
     for (let i = 0; i < n; i++) {
       ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, R, i * arc, (i + 1) * arc); ctx.closePath();
-      ctx.fillStyle = slices.length ? COLORS[i % COLORS.length] : '#2b3039';
-      if (slices.length > 1 && n % COLORS.length === 1 && i === n - 1) ctx.fillStyle = COLORS[2]; // no same-colour neighbours
+      const pal = golden ? GOLD : COLORS;
+      ctx.fillStyle = slices.length ? pal[i % pal.length] : '#2b3039';
+      if (slices.length > 1 && n % pal.length === 1 && i === n - 1) ctx.fillStyle = pal[2]; // no same-colour neighbours
       ctx.fill(); ctx.lineWidth = 8; ctx.strokeStyle = '#0c0d10'; ctx.stroke();
       ctx.save(); ctx.rotate(i * arc + arc / 2);
       ctx.fillStyle = '#fff'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
@@ -68,6 +70,9 @@
     closeModal();
     if (all.length > MAX_SLICES) { pickSlices(); draw(); }
     spinning = true; $('#spinBtn').disabled = true; $('#spinResult').textContent = '';
+    golden = Math.random() < 1 / 30; // rare golden spin!
+    $('.wheel-box').classList.toggle('golden', golden);
+    if (golden) $('#spinResult').textContent = '✨ GOLDEN SPIN… ✨';
     const n = slices.length, arc = Math.PI * 2 / n;
     const win = Math.floor(Math.random() * n);
     // Pointer is at the top (-90°). Land somewhere inside the winning slice, not on its edge.
@@ -89,7 +94,8 @@
       if (p < 1) requestAnimationFrame(frame);
       else {
         angle %= Math.PI * 2; spinning = false; $('#spinBtn').disabled = false;
-        ding(); confetti(); show(slices[win]);
+        ding(); confetti(); if (golden) setTimeout(confetti, 350); show(slices[win]);
+        if (window.FX) { FX.unlock('spin'); if (golden) FX.unlock('golden'); }
       }
     };
     requestAnimationFrame(frame);
@@ -97,7 +103,8 @@
 
   // ---------- result modal ----------
   function show(clip) {
-    $('#spinResult').textContent = '🎉 ' + clip.title;
+    $('#spinResult').textContent = (golden ? '✨ GOLDEN: ' : '🎉 ') + clip.title;
+    $('.modal-box').classList.toggle('golden', golden);
     $('#mTitle').textContent = clip.title;
     $('#mBy').textContent = 'uploaded by ' + (clip.by || 'anonymous');
     $('#mMedia').innerHTML = clip.type === 'file'
@@ -117,7 +124,8 @@
     cv.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:200';
     cv.width = innerWidth; cv.height = innerHeight; document.body.appendChild(cv);
     const c = cv.getContext('2d');
-    const bits = Array.from({ length: 120 }, () => ({ x: innerWidth / 2, y: innerHeight / 3, vx: (Math.random() - .5) * 16, vy: -Math.random() * 14 - 4, s: 6 + Math.random() * 8, col: COLORS[Math.floor(Math.random() * COLORS.length)] }));
+    const pal = golden ? GOLD : COLORS;
+    const bits = Array.from({ length: 120 }, () => ({ x: innerWidth / 2, y: innerHeight / 3, vx: (Math.random() - .5) * 16, vy: -Math.random() * 14 - 4, s: 6 + Math.random() * 8, col: pal[Math.floor(Math.random() * pal.length)] }));
     let f = 0;
     (function loop() {
       c.clearRect(0, 0, cv.width, cv.height);
@@ -154,7 +162,7 @@
       let res; try { res = JSON.parse(xhr.responseText); } catch { res = { error: xhr.status === 413 ? 'That file is too big for this server.' : 'Upload failed. Is PHP enabled on your host?' }; }
       msg.textContent = res.error || res.message;
       msg.className = 'msg ' + (res.error ? 'err' : 'ok');
-      if (!res.error) form.reset();
+      if (!res.error) { form.reset(); window.FX && FX.unlock('upload'); }
     };
     xhr.send(fd);
   });

@@ -27,7 +27,8 @@
     const card = btn.closest('[data-poll]'), id = card.dataset.poll, i = +btn.dataset.i;
     card.querySelectorAll('.poll-opt').forEach(b => b.disabled = true);
     const res = await Site.api('vote', { poll: id, option: i });
-    if (res.error && !/already/i.test(res.error)) alert(res.error);
+    if (res.error && !/already/i.test(res.error)) FX.toast(`<span class="toast-icon">⚠️</span><span><b>Hmm</b>${esc(res.error)}</span>`);
+    else FX.unlock('voted');
     voted[id] = res.error ? -1 : i;
     try { localStorage.setItem('voted', JSON.stringify(voted)); } catch {}
     const s = await Site.api('state');

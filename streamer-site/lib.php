@@ -27,6 +27,7 @@ function default_state(): array {
             'seedNote'      => '',
             'mcUsername'    => '',
             'clipPerson'    => 'fastdannydog',
+            'secretWord'    => '',
         ],
         'clips'       => [],
         'polls'       => [],

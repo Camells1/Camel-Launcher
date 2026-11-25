@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>??? · Danny's Hangout</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#5bae3c">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta property="og:image" content="assets/og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="live-banner" target="_blank" rel="noopener"><span class="live-dot"></span> LIVE NOW ON TIKTOK — <span class="live-note"></span> <u>Watch →</u></a>
+<header class="topbar">
+  <a class="brand" href="index.html">⛏ <span data-site-name>Danny's Hangout</span></a>
+  <button class="nav-toggle" aria-label="Menu">≡</button>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="spinner.html">Clip Spinner</a>
+    <a href="vote.html">Vote</a>
+    <a href="smp.html">SMP</a>
+    <a href="leaderboard.html">Top Donators</a>
+    <a href="fun.html">Games</a>
+    <a data-discord href="https://discord.gg/m7G76JxKnS" target="_blank" rel="noopener" style="color:#fff;background:var(--discord)">Join Discord</a>
+  </nav>
+</header>
+
+<main class="wrap center" style="max-width:680px">
+  <div class="vault-door" id="door">🔒</div>
+  <div id="locked">
+    <h1>The Vault</h1>
+    <p class="muted">This door is sealed. Only true explorers get in.</p>
+    <p class="pixel" style="font-size:12px;color:var(--gold)" id="need"></p>
+    <p class="muted small">Hint: click the green XP bar at the bottom to see your achievements. Some are secret… try poking things, typing things, looking in corners, and staying up late. 🌙</p>
+  </div>
+  <div id="open" hidden>
+    <h1>You found the Vault</h1>
+    <p>Only a few people ever make it here. Here is the secret word:</p>
+    <div class="secret-word" id="word">…</div>
+    <p class="muted">Type it in the Discord and tell a mod you found the Vault to get the secret <b>Vault Hunter</b> role. Don't share it, keep it secret! 🤫</p>
+    <a class="btn btn-discord btn-big" data-discord href="#" target="_blank" rel="noopener">💬 Claim it in Discord</a>
+    <section class="card" style="margin-top:28px;text-align:left">
+      <h2>📊 Your stats</h2>
+      <div class="stats" id="myStats" style="margin:0"></div>
+    </section>
+  </div>
+</main>
+<footer>
+  <p><a data-tiktok target="_blank" rel="noopener" href="#">TikTok</a> · <a data-discord target="_blank" rel="noopener" href="#">Discord</a> · <a href="spinner.html">Clip Spinner</a></p>
+  <p class="small">© <span data-year></span> <span data-site-name></span>. Fan site, not affiliated with Mojang, Microsoft or TikTok.</p>
+</footer>
+<script src="assets/site.js"></script>
+<script src="assets/fx.js"></script>
+<script>
+(async () => {
+  const s = await Site.ready;
+  const st = Site.settings(s);
+  const n = FX.count(), need = FX.VAULT_AT;
+  if (n < need && !FX.has('vault')) {
+    document.getElementById('need').textContent = `${n} / ${need} achievements`;
+    return;
+  }
+  document.getElementById('locked').hidden = true;
+  document.getElementById('open').hidden = false;
+  const door = document.getElementById('door');
+  door.textContent = '🔓'; door.classList.add('open');
+  FX.sound('levelup');
+  FX.unlock('vault');
+  document.getElementById('word').textContent = st.secretWord || 'Ask a mod in Discord, the word changes every season!';
+  const p = FX.progress();
+  document.getElementById('myStats').innerHTML = [
+    [p.level, 'level'], [p.xp, 'XP'], [Object.keys(p.ach).length, 'achievements'], [p.diamonds, 'diamonds found'], [p.mined, 'blocks mined'], [p.streak, 'day streak'],
+  ].map(([v, l]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('');
+  FX.rain(['💎', '✨', '🔑'], 40);
+})();
+</script>
+</body>
+</html>

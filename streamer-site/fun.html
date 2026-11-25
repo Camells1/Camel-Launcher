@@ -9,6 +9,11 @@
 <meta property="og:description" content="Minecraft quiz, seed of the week and skin viewer.">
 <meta name="theme-color" content="#5bae3c">
 <link rel="icon" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta property="og:image" content="assets/og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
@@ -31,7 +36,19 @@
 
 <main class="wrap">
   <h1 class="center">🎮 Games &amp; Tools</h1>
-  <section class="card" id="quiz" style="margin-top:26px">
+  <p class="center muted" style="margin-top:-8px">Play, unlock achievements, level up. Some things here are hidden… 👀</p>
+  <div class="btn-row" style="justify-content:center;margin:18px 0 26px"><button class="btn btn-gold" id="achBtn">🏆 My achievements</button></div>
+
+  <section class="card" id="game">
+    <h2>🐶 Catch Danny!</h2>
+    <p class="muted">Danny keeps popping out of the ground. Tap him as fast as you can, but <b>don't hit the TNT!</b> 30 seconds. Score 25+ for an achievement.</p>
+    <div class="game-hud"><span>Score <b id="gScore">0</b></span><span>Time <b id="gTime">30</b></span><span>Best <b id="gBest">0</b></span></div>
+    <div class="holes" id="holes"></div>
+    <div class="center" style="margin-top:16px"><button class="btn btn-grass btn-big" id="gStart">▶ Start</button></div>
+    <p class="center muted small" id="gMsg"></p>
+  </section>
+
+  <section class="card" id="quiz">
     <h2>🧠 Minecraft Quiz</h2>
     <div id="quizBody"></div>
   </section>
@@ -54,6 +71,7 @@
   <p class="small">© <span data-year></span> <span data-site-name></span>. Fan site, not affiliated with Mojang, Microsoft or TikTok.</p>
 </footer>
 <script src="assets/site.js"></script>
+<script src="assets/fx.js"></script>
 <script src="assets/fun.js"></script>
 </body>
 </html>
