@@ -37,7 +37,7 @@ const Site = (() => {
     if (c.type === 'tiktok') return frame(`https://www.tiktok.com/embed/v2/${id}`);
     if (c.type === 'embed') {
       const url = {
-        'youtube': `https://www.youtube-nocookie.com/embed/${id}?autoplay=${auto}&rel=0`,
+        'youtube': `https://www.youtube-nocookie.com/embed/${id}?autoplay=${auto}&rel=0` + ['clip', 'clipt', 'start', 'end'].filter(k => c[k]).map(k => `&${k}=${encodeURIComponent(c[k])}`).join(''),
         'twitch-clip': `https://clips.twitch.tv/embed?clip=${id}&parent=${host}&autoplay=${!!auto}`,
         'twitch-vod': `https://player.twitch.tv/?video=${id}&parent=${host}&autoplay=${!!auto}`,
         'instagram': `https://www.instagram.com/reel/${id}/embed`,

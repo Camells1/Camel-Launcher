@@ -21,7 +21,6 @@ if ($a === 'submit_clip') {
     $title = clean($_POST['title'] ?? '', 60);
     $by    = clean($_POST['by'] ?? '', 30);
     $link  = trim($_POST['link'] ?? '');
-    if ($title === '') json_out(['error' => 'Give your clip a title.'], 400);
     if ($by === '') $by = 'anonymous';
 
     $hasFile = isset($_FILES['file']) && $_FILES['file']['error'] !== UPLOAD_ERR_NO_FILE;
@@ -43,7 +42,11 @@ if ($a === 'submit_clip') {
     } else {
         $fromLink = clip_from_link($link);
         if (!$fromLink) json_out(['error' => 'That link does not work. Copy the full link (starting with https://) from the clip and paste it here.'], 400);
+        // no title typed? use the video's own title (YouTube)
+        if ($title === '' && ($fromLink['provider'] ?? '') === 'youtube') $title = $fromLink['autoTitle'] ?? yt_title($link);
+        unset($fromLink['autoTitle']);
     }
+    if ($title === '') json_out(['error' => 'Give your clip a title.'], 400);
 
     if (!rate_ok('upload', UPLOADS_PER_HOUR)) json_out(['error' => 'Slow down! You can send ' . UPLOADS_PER_HOUR . ' clips per hour.'], 429);
 

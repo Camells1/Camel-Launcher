@@ -78,7 +78,7 @@ function with_state(callable $fn) {
 
 function public_state(array $s): array {
     $clips = array_values(array_filter($s['clips'], fn($c) => ($c['status'] ?? '') === 'approved'));
-    $clips = array_map(fn($c) => array_intersect_key($c, array_flip(['id','type','provider','src','link','title','by','created'])), $clips);
+    $clips = array_map(fn($c) => array_intersect_key($c, array_flip(['id','type','provider','src','link','title','by','created','start','end','clip','clipt'])), $clips);
     $polls = array_map(function ($p) {
         unset($p['voters']);
         return $p;
@@ -342,12 +342,23 @@ function clip_from_link(string $url): ?array {
 
     // TikTok (also short vm./vt. links)
     if (str_ends_with($host, 'tiktok.com') && ($id = tiktok_id($url))) return ['type' => 'tiktok', 'src' => $id, 'link' => $url];
-    // YouTube: watch, shorts, youtu.be, embed, live
-    if (in_array($host, ['youtube.com', 'music.youtube.com', 'youtube-nocookie.com'], true)) {
-        if (!empty($q['v']) && preg_match('~^[\w-]{11}$~', $q['v'])) return $embed('youtube', $q['v']);
-        if (preg_match('~^/(?:shorts|embed|live|v)/([\w-]{11})~', $path, $m)) return $embed('youtube', $m[1]);
+    // YouTube: watch, shorts, youtu.be, embed, live, timestamps (?t=1m30s) and Clips (/clip/Ugkx…)
+    if (in_array($host, ['youtube.com', 'music.youtube.com', 'youtube-nocookie.com'], true) && preg_match('~^/clip/([\w-]{20,60})~', $path, $m)) {
+        return yt_clip($url, $m[1]);
     }
-    if ($host === 'youtu.be' && preg_match('~^/([\w-]{11})~', $path, $m)) return $embed('youtube', $m[1]);
+    $ytId = null;
+    if (in_array($host, ['youtube.com', 'music.youtube.com', 'youtube-nocookie.com'], true)) {
+        if (!empty($q['v']) && preg_match('~^[\w-]{11}$~', $q['v'])) $ytId = $q['v'];
+        elseif (preg_match('~^/(?:shorts|embed|live|v)/([\w-]{11})~', $path, $m)) $ytId = $m[1];
+    }
+    if ($host === 'youtu.be' && preg_match('~^/([\w-]{11})~', $path, $m)) $ytId = $m[1];
+    if ($ytId) {
+        $c = $embed('youtube', $ytId);
+        $t = yt_seconds((string)($q['t'] ?? $q['start'] ?? ''));
+        if ($t) $c['start'] = $t;
+        if (!empty($q['end']) && ($e = yt_seconds((string)$q['end'])) > $t) $c['end'] = $e;
+        return $c;
+    }
     // Twitch clips and VODs
     if ($host === 'clips.twitch.tv') {
         $slug = $q['clip'] ?? trim($path, '/');
@@ -377,6 +388,57 @@ function clip_from_link(string $url): ?array {
     return ['type' => 'link', 'provider' => $known[$host] ?? 'web', 'src' => $url, 'link' => $url];
 }
 
+/** "90", "90s", "1m30s", "1h2m3s" -> seconds */
+function yt_seconds(string $t): int {
+    if (preg_match('~^\d+$~', $t)) return (int)$t;
+    if (preg_match('~^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$~', $t, $m) && $t !== '') return (int)($m[1] ?? 0) * 3600 + (int)($m[2] ?? 0) * 60 + (int)($m[3] ?? 0);
+    return 0;
+}
+
+/** Title of a YouTube video via YouTube's public oEmbed (used when no title is given). */
+function yt_title(string $url): string {
+    $j = tt_get('https://www.youtube.com/oembed?format=json&url=' . rawurlencode($url));
+    $d = $j ? json_decode($j, true) : null;
+    return is_array($d) ? clean((string)($d['title'] ?? ''), 60) : '';
+}
+
+/**
+ * A YouTube Clip link (youtube.com/clip/Ugkx…). We need the video it was cut
+ * from and its start/end. 1) YouTube's oEmbed, 2) the clip page itself,
+ * 3) if YouTube blocks both: keep it as a "Watch on YouTube" link.
+ */
+function yt_clip(string $url, string $clipId): array {
+    $j = tt_get('https://www.youtube.com/oembed?format=json&url=' . rawurlencode($url));
+    $d = $j ? json_decode($j, true) : null;
+    if (is_array($d) && preg_match('~/embed/([\w-]{11})(\?[^"\\\\]*)?~', (string)($d['html'] ?? ''), $m)) {
+        $c = ['type' => 'embed', 'provider' => 'youtube', 'src' => $m[1], 'link' => $url, 'ytclip' => $clipId, 'autoTitle' => clean((string)($d['title'] ?? ''), 60)];
+        parse_str(html_entity_decode(ltrim($m[2] ?? '', '?')), $p);
+        if (!empty($p['clip']) && preg_match('~^[\w-]{10,80}$~', $p['clip'])) $c['clip'] = $p['clip'];
+        if (!empty($p['clipt']) && preg_match('~^[\w=%-]{4,80}$~', $p['clipt'])) $c['clipt'] = $p['clipt'];
+        if (!empty($p['start'])) $c['start'] = (int)$p['start'];
+        if (!empty($p['end'])) $c['end'] = (int)$p['end'];
+        if (!empty($c['clip']) || !empty($c['start'])) return $c;
+        $base = $c; // video known, times not yet
+    }
+    $html = tt_get($url);
+    if ($html && preg_match('~"clipConfig":\{[^}]*"startTimeMs":"(\d+)"[^}]*"endTimeMs":"(\d+)"~', $html, $t)
+        && preg_match('~"videoId":"([\w-]{11})"~', $html, $v)) {
+        return ($base ?? ['type' => 'embed', 'provider' => 'youtube', 'link' => $url, 'ytclip' => $clipId])
+            + ['src' => $v[1]] + ['start' => intdiv((int)$t[1], 1000), 'end' => (int)ceil((int)$t[2] / 1000)];
+    }
+    if (isset($base)) return $base; // whole video is better than nothing
+    return ['type' => 'link', 'provider' => 'youtube', 'src' => $url, 'link' => $url];
+}
+
+/** Query string for a YouTube player: clip / start / end times. */
+function yt_params(array $c): string {
+    $p = [];
+    foreach (['clip', 'clipt'] as $k) if (!empty($c[$k])) $p[$k] = $c[$k];
+    if (!empty($c['start'])) $p['start'] = (int)$c['start'];
+    if (!empty($c['end'])) $p['end'] = (int)$c['end'];
+    return $p ? '&' . http_build_query($p) : '';
+}
+
 /** Server-side player HTML (admin preview). Mirrors Site.clipHtml() in site.js. */
 function clip_player_html(array $c, string $base = ''): string {
     $e = fn($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
@@ -391,7 +453,7 @@ function clip_player_html(array $c, string $base = ''): string {
         case 'embed':
             $id = rawurlencode($c['src']);
             switch ($c['provider']) {
-                case 'youtube': return $frame("https://www.youtube-nocookie.com/embed/$id");
+                case 'youtube': return $frame("https://www.youtube-nocookie.com/embed/$id?rel=0" . yt_params($c));
                 case 'twitch-clip': return $frame("https://clips.twitch.tv/embed?clip=$id&parent=$host&autoplay=false");
                 case 'twitch-vod': return $frame("https://player.twitch.tv/?video=$id&parent=$host&autoplay=false");
                 case 'instagram': return $frame("https://www.instagram.com/reel/$id/embed");

@@ -144,6 +144,15 @@
     $$('.tabs button').forEach(x => x.classList.toggle('on', x === b));
     $$('[data-pane]').forEach(p => p.hidden = p.dataset.pane !== mode);
   }));
+  const linkInput = $('input[name=link]'), titleInput = $('input[name=title]');
+  const ytCheck = () => {
+    const yt = mode === 'link' && /(^|\.)youtu(\.be|be\.com)\//i.test(linkInput.value.replace(/^https?:\/\/(www\.|m\.)?/i, ''));
+    titleInput.required = !yt;
+    $('#titleHint').hidden = !yt;
+  };
+  linkInput.addEventListener('input', ytCheck);
+  $$('.tabs button').forEach(b => b.addEventListener('click', ytCheck));
+
   $('#uploadForm').addEventListener('submit', e => {
     e.preventDefault();
     const form = e.target, msg = $('#upMsg');
