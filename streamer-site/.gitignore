@@ -6,3 +6,7 @@ uploads/clips/*
 uploads/builds/*
 !uploads/clips/index.php
 !uploads/builds/index.php
+uploads/sounds/*
+!uploads/sounds/index.php
+data/live.json.php
+data/.livelock

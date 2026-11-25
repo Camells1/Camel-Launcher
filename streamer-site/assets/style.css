@@ -383,3 +383,71 @@ footer.has-gem { position: relative; }
 .server-row { display: flex; gap: 16px; align-items: center; margin-bottom: 8px; }
 .server-icon { flex: none; width: 64px; height: 64px; display: grid; place-items: center; font-size: 30px; background: linear-gradient(var(--grass) 0 34%, var(--dirt) 34%); border: 4px solid var(--line); }
 .server-card h2 { overflow-wrap: anywhere; }
+
+/* =====================================================================
+   Live tracker, charts, Yokii-pedia, clip player
+   ===================================================================== */
+.nav-links a.nav-live { color: #fff; background: var(--tiktok); }
+.nav-links a.nav-live::before { content: "● "; animation: pulse 1.2s infinite; }
+
+.status-card { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; padding: 30px; }
+.status-avatar { width: 150px; height: 150px; border-radius: 50%; flex: none; border: 4px solid var(--line); box-shadow: 0 0 0 4px #3a3f4a; background: #000; }
+.status-card.on-air .status-avatar { box-shadow: 0 0 0 4px var(--tiktok), 0 0 30px rgba(254,44,85,.5); animation: airglow 1.6s ease-in-out infinite; }
+@keyframes airglow { 50% { box-shadow: 0 0 0 4px var(--tiktok), 0 0 8px rgba(254,44,85,.2); } }
+.status-body { flex: 1; min-width: 240px; }
+.air-badge { display: inline-flex; align-items: center; gap: 8px; font: 11px var(--pixel); color: #fff; background: var(--tiktok); padding: 8px 12px; border: 3px solid var(--line); }
+.air-badge.off { background: #3a3f4a; color: var(--muted); }
+.air-title { font-size: clamp(18px, 3.4vw, 28px); margin: 14px 0 12px; overflow-wrap: anywhere; }
+.air-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 0 0 18px; }
+.air-stats div { background: #111318; border: 3px solid var(--line); padding: 10px 12px; }
+.air-stats b { display: block; font: 18px var(--pixel); color: var(--text); margin-bottom: 4px; font-variant-numeric: tabular-nums; }
+.air-stats span { color: var(--muted); font-size: 13px; }
+@media (max-width: 560px) { .status-card { justify-content: center; text-align: center; } .status-avatar { width: 120px; height: 120px; } }
+
+.tiles { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin: 0 0 22px; }
+.stat small { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+.stat-hero { border-color: var(--gold); background: linear-gradient(rgba(246,199,68,.12), var(--card2)); }
+.stat-hero b::before { content: "🏆 "; font-size: .8em; }
+
+.chart-wrap { position: relative; }
+.chart { width: 100%; height: auto; display: block; overflow: visible; touch-action: pan-y; }
+.ch-grid { stroke: rgba(255,255,255,.07); stroke-width: 1; }
+.ch-axis { fill: var(--muted); font: 12px var(--body); font-variant-numeric: tabular-nums; }
+.ch-line { fill: none; stroke: var(--grass); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.ch-area { fill: rgba(91,174,60,.14); }
+.ch-end { fill: var(--grass); stroke: var(--card); stroke-width: 2; }
+.ch-cross { stroke: rgba(255,255,255,.35); stroke-width: 1; stroke-dasharray: 3 3; }
+.ch-dot { fill: var(--grass); stroke: var(--card); stroke-width: 2; }
+.ch-tip { position: absolute; transform: translate(-50%, -100%); pointer-events: none; background: #0c0d10; border: 2px solid #3a3f4a; padding: 6px 10px; font-size: 13px; white-space: nowrap; }
+.ch-tip b { font-variant-numeric: tabular-nums; }
+.ch-tip span { color: var(--muted); font-size: 12px; }
+.ch-table { margin-top: 10px; }
+.ch-table summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+.table-scroll { overflow-x: auto; max-height: 340px; overflow-y: auto; }
+.table th { text-align: left; color: var(--muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; padding: 8px; border-bottom: 2px solid var(--line); }
+.hist td { font-variant-numeric: tabular-nums; }
+.hist td:last-child, .hist th:last-child { text-align: right; }
+.hist tr.record td { background: rgba(246,199,68,.08); }
+
+/* clip player */
+.clip-frame { width: 100%; height: min(700px, 68vh); border: 0; background: #000; display: block; }
+.clip-gif { width: 100%; display: block; }
+.clip-link { padding: 30px 16px; background: #111318; border: 3px solid var(--line); }
+.clip-link-icon { font-size: 40px; }
+.clip-link p { margin: 8px 0 16px; }
+.admin-clip img { width: 100%; }
+
+/* Yokii-pedia */
+.soundboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.sb-btn { display: flex; align-items: center; gap: 8px; padding: 14px; font: 600 15px var(--body); color: var(--text); text-align: left; background: #111318; border: 3px solid var(--line); cursor: pointer; overflow-wrap: anywhere; }
+.sb-btn:hover { border-color: var(--grass); }
+.sb-btn.playing { border-color: var(--gold); background: rgba(246,199,68,.12); }
+.sb-btn.playing span { animation: pulse .6s infinite; }
+.search-label { margin: 4px 0 18px; }
+.entries { display: flex; flex-direction: column; gap: 34px; padding: 8px 4px 20px; }
+.entry-term { font: 800 clamp(26px, 5vw, 38px)/1.1 var(--body); letter-spacing: .02em; text-transform: uppercase; margin: 0 0 10px; display: flex; align-items: center; gap: 14px; overflow-wrap: anywhere; }
+.entry-term::before { content: ""; flex: none; width: 14px; height: 14px; background: var(--grass); box-shadow: 3px 3px 0 var(--grass-d); }
+.entry p { margin: 0 0 8px 28px; color: #cfd3da; font-size: 17px; max-width: 65ch; }
+.entry-play { margin-left: 28px; background: none; border: 0; color: var(--text); font: 600 15px var(--body); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; padding: 0; }
+.entry-play.playing { color: var(--gold); }
+@media (max-width: 560px) { .status-actions { justify-content: center; } }

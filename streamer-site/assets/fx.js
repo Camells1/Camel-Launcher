@@ -267,7 +267,7 @@ const FX = (() => {
 
     // pages visited
     const page = (location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '') || 'index';
-    const ALL = ['index', 'spinner', 'vote', 'smp', 'leaderboard', 'fun'];
+    const ALL = ['index', 'stats', 'spinner', 'vote', 'smp', 'leaderboard', 'pedia', 'fun'];
     if (ALL.includes(page) && !P.pages.includes(page)) { P.pages.push(page); save(); }
     if (ALL.every(p => P.pages.includes(p))) setTimeout(() => unlock('explorer'), 1500);
 

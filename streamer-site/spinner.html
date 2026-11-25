@@ -25,10 +25,12 @@
   <button class="nav-toggle" aria-label="Menu">≡</button>
   <nav class="nav-links">
     <a href="index.html">Home</a>
+    <a href="stats.html">Live</a>
     <a href="spinner.html">Clip Spinner</a>
     <a href="vote.html">Vote</a>
     <a href="smp.html">Server</a>
     <a href="leaderboard.html">Top Donators</a>
+    <a href="pedia.html">Yokii-pedia</a>
     <a href="fun.html">Games</a>
     <a data-discord href="https://discord.gg/m7G76JxKnS" target="_blank" rel="noopener" style="color:#fff;background:var(--discord)">Join Discord</a>
   </nav>
@@ -54,10 +56,11 @@
 
     <section class="card">
       <h2>📤 Upload a clip</h2>
-      <div class="tabs"><button class="on" data-tab="file">Video file</button><button data-tab="link">TikTok link</button></div>
+      <div class="tabs"><button class="on" data-tab="file">Video file</button><button data-tab="link">Link</button></div>
       <form id="uploadForm">
-        <div data-pane="file"><label>Video (MP4, WEBM or MOV) <input type="file" name="file" accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v"></label></div>
-        <div data-pane="link" hidden><label>TikTok video link <input type="url" name="link" placeholder="https://www.tiktok.com/@.../video/..."></label></div>
+        <div data-pane="file"><label>Video file (MP4, MOV, WEBM, MKV, AVI, GIF…) <input type="file" name="file" accept="video/*,image/gif,.mkv,.avi,.mov,.m4v,.3gp"></label></div>
+        <div data-pane="link" hidden><label>Link to the clip <input type="url" name="link" placeholder="https://…"></label>
+          <p class="muted small" style="margin-top:-6px">Works with TikTok, YouTube &amp; Shorts, Twitch clips, Instagram reels, Streamable, Medal, Kick, X, Discord video links, or any other link.</p></div>
         <label>Clip title <input name="title" maxlength="60" required placeholder="Danny falls in lava again"></label>
         <label>Your name <input name="by" maxlength="30" placeholder="Optional"></label>
         <div class="goal-bar" id="progWrap" hidden><div class="goal-fill" id="prog"></div></div>

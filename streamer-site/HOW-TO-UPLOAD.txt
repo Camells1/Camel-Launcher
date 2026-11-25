@@ -28,7 +28,7 @@ DANNY'S HANGOUT WEBSITE — HOW TO PUT IT ONLINE
      Delete the old admin.php from your host if it is still there.
 
 4. FOLDER PERMISSIONS
-   These folders must be writable:  data  uploads  uploads/clips  uploads/builds
+   These folders must be writable:  data  uploads  uploads/clips  uploads/builds  uploads/sounds
    In FileZilla: right-click each one > File permissions > 755
    (if uploading clips then fails, try 775).
 
@@ -43,8 +43,34 @@ HANDY LINKS TO SAY ON STREAM / PUT IN BIO
    yoursite.com/tiktok       -> goes to the TikTok
    yoursite.com/spinner.html -> the clip wheel
 
+LIVE TRACKER (yoursite.com/stats.html, "Live" in the menu)
+   The site reads Yokii's public TikTok page by itself: when he's live you
+   get the red LIVE banner on every page, the viewer count, peak viewers,
+   a viewers-over-time chart, the all-time top viewer count, followers,
+   likes and a history of every stream. No switch to flip.
+   - It checks TikTok at most once a minute, whenever someone visits.
+   - TIP for perfect stats even when nobody is on the site: in your host's
+     control panel, add a "cron job" that runs every 2 minutes:
+         curl -s https://yoursite.com/api.php?a=live > /dev/null
+   - Streams from before the site existed (like the 311-viewer one) can be
+     added by hand in admin > Live tracker > Add a past stream.
+   - Needs PHP with curl (almost every host has it). If TikTok blocks your
+     host, admin > Live tracker shows a warning; you can then still use
+     "Force the LIVE banner".
+
+YOKII-PEDIA (pedia.html)
+   Inside jokes and catchphrases with an optional sound. Add them in
+   admin > Yokii-pedia. Entries with a sound also go on the soundboard.
+
+CLIP SPINNER: ANY CLIP
+   People can upload any video file (MP4, MOV, WEBM, MKV, AVI, GIF…) or
+   paste a link from TikTok, YouTube/Shorts, Twitch, Instagram, Streamable,
+   Medal, Kick, X, Discord, or any other site. Known sites play right on
+   the wheel; other links get a "Watch it there" button.
+
 WHAT TO DO IN ADMIN
-   - Live status: flip ON when going live -> red LIVE banner on every page
+   - Live tracker: see stats, add past streams, force the banner if needed
+   - Yokii-pedia: add inside jokes + sounds
    - Clips: approve or delete uploaded clips before they hit the wheel
    - Polls: make "what should I do next stream?" polls
    - Leaderboard: one line per person, "name | score | note"

@@ -30,6 +30,45 @@ if (empty($_SESSION['gate'])) {
 }
 
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
+
+/** Live tracker admin actions. */
+function tracker_action(string $do): string {
+    $user = load_state()['settings']['tiktok'] ?: 'yokii_fn.alt';
+    if ($do === 'tracker_check') {
+        $L = live_refresh($user, true);
+        if (!$L['ok']) return 'Could not reach TikTok from your web host right now. The site will keep trying every minute.';
+        return !empty($L['now']['live']) ? '🔴 Checked: LIVE with ' . $L['now']['viewers'] . ' viewers.' : 'Checked: not live right now. Followers: ' . ($L['profile']['followers'] ?? '?');
+    }
+    $lock = fopen(ROOT . '/data/.livelock', 'c'); flock($lock, LOCK_EX);
+    $L = array_merge(live_default(), read_guarded(LIVE_FILE) ?? []);
+    $msg = '';
+    if ($do === 'stream_add') {
+        $start = (int)($_POST['startTs'] ?? 0);
+        $mins = max(0, (int)($_POST['minutes'] ?? 0));
+        $peak = max(0, (int)($_POST['peak'] ?? 0));
+        $total = max(0, (int)($_POST['total'] ?? 0));
+        if (!$start) $msg = 'Pick the date and time the stream started.';
+        else {
+            $L['streams'][] = ['roomId' => 'manual-' . new_id(), 'title' => clean($_POST['title'] ?? '', 120), 'start' => $start,
+                'end' => $mins ? $start + $mins * 60 : null, 'peak' => $peak ?: null, 'total' => $total, 'samples' => [], 'manual' => true,
+                'partial' => $mins ? false : true];
+            usort($L['streams'], fn($a, $b) => $a['start'] <=> $b['start']);
+            if ($peak && (!$L['peak'] || $peak > $L['peak']['viewers'])) $L['peak'] = ['viewers' => $peak, 'at' => $start, 'title' => clean($_POST['title'] ?? '', 120)];
+            $msg = 'Stream added to the history.';
+        }
+    } elseif ($do === 'stream_delete') {
+        $L['streams'] = array_values(array_filter($L['streams'], fn($x) => ($x['roomId'] ?? '') !== ($_POST['id'] ?? '')));
+        $msg = 'Stream removed.';
+    } elseif ($do === 'tracker_reset_peak') {
+        $best = null;
+        foreach ($L['streams'] as $x) if (!empty($x['peak']) && (!$best || $x['peak'] > $best['viewers'])) $best = ['viewers' => $x['peak'], 'at' => $x['start'], 'title' => $x['title']];
+        $L['peak'] = $best;
+        $msg = 'Top viewer count recalculated from the stream history.';
+    }
+    write_guarded(LIVE_FILE, $L);
+    flock($lock, LOCK_UN); fclose($lock);
+    return $msg;
+}
 $flash = '';
 
 // ---------- login / logout ----------
@@ -50,6 +89,12 @@ $authed = !empty($_SESSION['admin']);
 if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
     if (!hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'] ?? '')) { http_response_code(400); exit('Bad token, reload the page.'); }
     $do = $_POST['do'];
+    if (in_array($do, ['tracker_check', 'stream_add', 'stream_delete', 'tracker_reset_peak'], true)) {
+        $flash = tracker_action($do);
+        $_SESSION['flash'] = $flash;
+        header('Location: ' . $SELF . '#tracker');
+        exit;
+    }
     $flash = with_state(function (&$s) use ($do) {
         switch ($do) {
             case 'live':
@@ -113,6 +158,33 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
                 $s['settings']['donateUnit'] = clean($_POST['donateUnit'] ?? 'coins', 12);
                 $s['settings']['donateUrl'] = preg_match('~^https?://~', $_POST['donateUrl'] ?? '') ? clean($_POST['donateUrl'], 200) : '';
                 return 'Top donators saved.';
+            case 'pedia_add':
+                $term = clean($_POST['term'] ?? '', 40);
+                $desc = clean($_POST['desc'] ?? '', 400);
+                if ($term === '') return 'Give the entry a word or name.';
+                $entry = ['id' => new_id(), 'term' => $term, 'desc' => $desc, 'sound' => ''];
+                $f = $_FILES['sound'] ?? null;
+                if ($f && $f['error'] !== UPLOAD_ERR_NO_FILE) {
+                    if ($f['error'] !== UPLOAD_ERR_OK || $f['size'] > 5 * 1024 * 1024) return 'Sound upload failed (max 5 MB).';
+                    $ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
+                    if (!in_array($ext, ['mp3', 'ogg', 'wav', 'm4a', 'aac', 'webm'], true)) return 'Sounds must be MP3, OGG, WAV or M4A.';
+                    $mime = function_exists('finfo_open') ? (string)finfo_file(finfo_open(FILEINFO_MIME_TYPE), $f['tmp_name']) : 'audio/';
+                    if (!preg_match('~^(audio/|video/webm|application/octet-stream)~', $mime)) return "That doesn't look like a sound file.";
+                    if (!is_dir(ROOT . '/uploads/sounds')) mkdir(ROOT . '/uploads/sounds', 0755, true);
+                    $name = new_id() . '.' . $ext;
+                    move_uploaded_file($f['tmp_name'], ROOT . '/uploads/sounds/' . $name);
+                    $entry['sound'] = 'uploads/sounds/' . $name;
+                }
+                $s['pedia'][] = $entry;
+                usort($s['pedia'], fn($a, $b) => strcasecmp($a['term'], $b['term']));
+                return 'Added "' . $term . '" to the Yokii-pedia.';
+            case 'pedia_delete':
+                foreach ($s['pedia'] as $i => $e) if ($e['id'] === $_POST['id']) {
+                    if ($e['sound']) @unlink(ROOT . '/' . $e['sound']);
+                    array_splice($s['pedia'], $i, 1);
+                    break;
+                }
+                return 'Entry removed.';
             case 'videos':
                 $ids = [];
                 foreach (explode("\n", $_POST['videos'] ?? '') as $line) {
@@ -157,9 +229,11 @@ function hidden($do, $anchor, $csrf, $extra = []) {
 }
 $pending = array_filter($s['clips'], fn($c) => $c['status'] === 'pending');
 $approved = array_filter($s['clips'], fn($c) => $c['status'] === 'approved');
-function clip_preview($c) {
-    if ($c['type'] === 'file') return '<video src="../' . h($c['src']) . '" controls preload="metadata"></video>';
-    return '<iframe src="https://www.tiktok.com/embed/v2/' . h($c['src']) . '" allow="encrypted-media" loading="lazy"></iframe>';
+function clip_preview($c) { return clip_player_html($c, '../'); }
+function clip_icon($c) {
+    if ($c['type'] === 'file') return '🎬';
+    $p = $c['type'] === 'tiktok' ? 'tiktok' : ($c['provider'] ?? 'web');
+    return ['tiktok' => '🎵', 'youtube' => '▶️', 'twitch-clip' => '💜', 'twitch-vod' => '💜', 'instagram' => '📸', 'streamable' => '🎞', 'medal' => '🏅', 'kick' => '🟩', 'x' => '✖️'][$p] ?? '🔗';
 }
 ?><!doctype html>
 <html lang="en"><head>
@@ -180,16 +254,70 @@ function clip_preview($c) {
   </section>
 <?php else: ?>
   <h1>Admin panel</h1>
-  <p class="muted">Jump to: <a href="#live">Live</a> · <a href="#clips">Clips (<?= count($pending) ?> waiting)</a> · <a href="#polls">Polls</a> · <a href="#lb">Leaderboard</a> · <a href="#don">Top donators</a> · <a href="#videos">Clip wall</a> · <a href="#builds">Builds</a> · <a href="#settings">Settings</a></p>
+  <p class="muted">Jump to: <a href="#tracker">Live tracker</a> · <a href="#pedia">Yokii-pedia</a> · <a href="#clips">Clips (<?= count($pending) ?> waiting)</a> · <a href="#polls">Polls</a> · <a href="#lb">Leaderboard</a> · <a href="#don">Top donators</a> · <a href="#videos">Clip wall</a> · <a href="#builds">Builds</a> · <a href="#settings">Settings</a></p>
+
+  <?php $L = array_merge(live_default(), read_guarded(LIVE_FILE) ?? []); ?>
+  <section class="card" id="tracker">
+    <h2>📈 Live tracker</h2>
+    <p>The site checks <b>@<?= h($st['tiktok']) ?></b> on TikTok by itself (at most once a minute, when someone visits) and shows the LIVE banner, viewer count and stream history automatically.</p>
+    <p class="muted small">Last check: <?= $L['checkedAt'] ? date('M j, H:i:s', $L['checkedAt']) . ($L['ok'] ? ' ✅ worked' : ' ⚠️ TikTok did not answer') : 'never' ?>
+      <?php if (!empty($L['now']['live'])): ?> · <b style="color:var(--tiktok)">🔴 LIVE, <?= (int)$L['now']['viewers'] ?> watching</b><?php endif ?>
+      · Followers: <?= h($L['profile']['followers'] ?? '?') ?> · Top viewer count: <?= h($L['peak']['viewers'] ?? '—') ?></p>
+    <div class="btn-row">
+      <form method="post"><?= hidden('tracker_check', 'tracker', $csrf) ?><button class="btn btn-grass">Check TikTok now</button></form>
+      <form method="post"><?= hidden('tracker_reset_peak', 'tracker', $csrf) ?><button class="btn btn-small">Recalculate top viewers</button></form>
+    </div>
+
+    <h3>Add a past stream</h3>
+    <p class="muted small">For streams from before the site existed (like the one with 311 viewers). Leave a field empty if you don't know it.</p>
+    <form method="post" class="grid-form" id="streamForm"><?= hidden('stream_add', 'tracker', $csrf) ?>
+      <label>Started (your local time) <input type="datetime-local" id="streamStart" required></label>
+      <input type="hidden" name="startTs" id="streamStartTs">
+      <label>Title <input name="title" placeholder="breezevanilla.eu"></label>
+      <label>How long (minutes) <input type="number" name="minutes" min="0" placeholder="120"></label>
+      <label>Most viewers at once (peak) <input type="number" name="peak" min="0" placeholder="80"></label>
+      <label>Total viewers (TikTok's "kijkers") <input type="number" name="total" min="0" placeholder="311"></label>
+      <button class="btn btn-gold span2">Add stream</button>
+    </form>
+
+    <h3>Stream history (<?= count($L['streams']) ?>)</h3>
+    <table class="table"><?php foreach (array_reverse(array_slice($L['streams'], -30)) as $x): ?>
+      <tr><td><?= date('D M j, H:i', $x['start']) ?><br><span class="muted small"><?= h($x['title'] ?: 'untitled') ?><?= !empty($x['manual']) ? ' · added by hand' : '' ?></span></td>
+        <td class="muted small"><?= $x['end'] ? round(($x['end'] - $x['start']) / 60) . ' min' : ($x['end'] === null && empty($x['partial']) ? '🔴 live' : '?') ?></td>
+        <td class="muted small">peak <?= h($x['peak'] ?? '?') ?> · total <?= h($x['total'] ?: '?') ?></td>
+        <td><form method="post" onsubmit="return confirm('Remove this stream from the history?')"><?= hidden('stream_delete', 'tracker', $csrf, ['id' => $x['roomId']]) ?><button class="btn btn-small btn-red">Remove</button></form></td></tr>
+    <?php endforeach ?></table>
+    <script>
+      document.getElementById('streamForm').addEventListener('submit', () => {
+        const v = document.getElementById('streamStart').value;
+        document.getElementById('streamStartTs').value = v ? Math.floor(new Date(v).getTime() / 1000) : '';
+      });
+    </script>
+  </section>
 
   <section class="card" id="live">
-    <h2>Live status</h2>
+    <h2>Force the LIVE banner</h2>
+    <p class="muted small">Normally not needed, the tracker above does this by itself. Use it if TikTok can't be reached from your host.</p>
     <form method="post" class="row-form"><?= hidden('live', 'live', $csrf) ?>
-      <label class="switch"><input type="checkbox" name="live" value="1" <?= $st['live'] ? 'checked' : '' ?>> I'm live right now</label>
-      <label>What are you streaming? <input name="liveNote" value="<?= h($st['liveNote']) ?>"></label>
+      <label class="switch"><input type="checkbox" name="live" value="1" <?= $st['live'] ? 'checked' : '' ?>> Show LIVE banner</label>
+      <label>Banner text <input name="liveNote" value="<?= h($st['liveNote']) ?>"></label>
       <button class="btn btn-tiktok">Save</button>
     </form>
-    <p class="muted small">Tip: bookmark this page on your phone and flip this on when you go live. The site shows a big red LIVE banner.</p>
+  </section>
+
+  <section class="card" id="pedia">
+    <h2>📖 Yokii-pedia &amp; soundboard</h2>
+    <p class="muted small">Inside jokes, catchphrases, names chat always says. Add a sound and it also shows on the soundboard.</p>
+    <form method="post" enctype="multipart/form-data" class="grid-form"><?= hidden('pedia_add', 'pedia', $csrf) ?>
+      <label>Word / name <input name="term" maxlength="40" required placeholder="e.g. a catchphrase"></label>
+      <label>Sound (optional, MP3/OGG/WAV/M4A, max 5 MB) <input type="file" name="sound" accept="audio/*"></label>
+      <label class="span2">What it means <textarea name="desc" rows="3" maxlength="400" placeholder="Where it comes from and why chat keeps saying it."></textarea></label>
+      <button class="btn btn-grass span2">Add to Yokii-pedia</button>
+    </form>
+    <table class="table"><?php foreach ($s['pedia'] as $e): ?>
+      <tr><td><b><?= h($e['term']) ?></b> <?= $e['sound'] ? '🔊' : '' ?><br><span class="muted small"><?= h($e['desc']) ?></span></td>
+      <td><form method="post" onsubmit="return confirm('Remove this entry?')"><?= hidden('pedia_delete', 'pedia', $csrf, ['id' => $e['id']]) ?><button class="btn btn-small btn-red">Remove</button></form></td></tr>
+    <?php endforeach ?></table>
   </section>
 
   <section class="card" id="clips">
@@ -198,7 +326,7 @@ function clip_preview($c) {
     <div class="admin-clips">
     <?php foreach ($pending as $c): ?>
       <div class="admin-clip"><?= clip_preview($c) ?>
-        <b><?= h($c['title']) ?></b><span class="muted small">by <?= h($c['by']) ?> · <?= date('M j, H:i', $c['created']) ?></span>
+        <b><?= clip_icon($c) ?> <?= h($c['title']) ?></b><span class="muted small">by <?= h($c['by']) ?> · <?= date('M j, H:i', $c['created']) ?><?php if (!empty($c['link'])): ?> · <a href="<?= h($c['link']) ?>" target="_blank" rel="noopener noreferrer">original</a><?php endif ?></span>
         <div class="btn-row">
           <form method="post"><?= hidden('clip_approve', 'clips', $csrf, ['id' => $c['id']]) ?><button class="btn btn-grass">Approve</button></form>
           <form method="post" onsubmit="return confirm('Delete this clip?')"><?= hidden('clip_delete', 'clips', $csrf, ['id' => $c['id']]) ?><button class="btn btn-red">Delete</button></form>
@@ -207,7 +335,7 @@ function clip_preview($c) {
     </div>
     <h3>On the wheel (<?= count($approved) ?>)</h3>
     <table class="table"><?php foreach ($approved as $c): ?>
-      <tr><td><?= $c['type'] === 'file' ? '🎬' : '🎵' ?> <?= h($c['title']) ?></td><td class="muted"><?= h($c['by']) ?></td>
+      <tr><td><?= clip_icon($c) ?> <?= h($c['title']) ?></td><td class="muted"><?= h($c['by']) ?></td>
       <td><form method="post" onsubmit="return confirm('Remove from wheel?')"><?= hidden('clip_delete', 'clips', $csrf, ['id' => $c['id']]) ?><button class="btn btn-small btn-red">Remove</button></form></td></tr>
     <?php endforeach ?></table>
   </section>

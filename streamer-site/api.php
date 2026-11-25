@@ -8,6 +8,12 @@ if ($a === 'state') {
     json_out(public_state(load_state()));
 }
 
+// ---------- Live tracker (also safe to call from a cron job every 1-2 minutes) ----------
+if ($a === 'live') {
+    $st = load_state()['settings'];
+    json_out(live_public(live_refresh($st['tiktok'] ?: 'yokii_fn.alt'), $st));
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => 'Use POST'], 405);
 
 // ---------- Submit a clip (file or TikTok link) ----------
@@ -19,7 +25,7 @@ if ($a === 'submit_clip') {
     if ($by === '') $by = 'anonymous';
 
     $hasFile = isset($_FILES['file']) && $_FILES['file']['error'] !== UPLOAD_ERR_NO_FILE;
-    if (!$hasFile && $link === '') json_out(['error' => 'Pick a video file or paste a TikTok link.'], 400);
+    if (!$hasFile && $link === '') json_out(['error' => 'Pick a video file or paste a link to the clip.'], 400);
 
     if ($hasFile) {
         $f = $_FILES['file'];
@@ -28,27 +34,26 @@ if ($a === 'submit_clip') {
         if ($f['error'] !== UPLOAD_ERR_OK) json_out(['error' => 'Upload failed (code ' . $f['error'] . '). Try again.'], 400);
         if ($f['size'] > MAX_CLIP_MB * 1024 * 1024) json_out(['error' => 'Max file size is ' . MAX_CLIP_MB . ' MB.'], 400);
         $ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
-        $allowed = ['mp4' => 'mp4', 'webm' => 'webm', 'mov' => 'mp4', 'm4v' => 'mp4'];
-        if (!isset($allowed[$ext])) json_out(['error' => 'Only MP4, WEBM or MOV videos.'], 400);
+        if (!in_array($ext, VIDEO_EXT, true)) json_out(['error' => 'That file type is not supported. Use a video file (MP4, MOV, WEBM, MKV, AVI…) or a GIF.'], 400);
         if (function_exists('finfo_open')) {
-            $mime = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $f['tmp_name']);
-            if (!str_starts_with((string)$mime, 'video/') && $mime !== 'application/octet-stream')
+            $mime = (string)finfo_file(finfo_open(FILEINFO_MIME_TYPE), $f['tmp_name']);
+            if (!str_starts_with($mime, 'video/') && !in_array($mime, ['image/gif', 'application/octet-stream', 'application/ogg'], true))
                 json_out(['error' => "That doesn't look like a video file."], 400);
         }
     } else {
-        $vid = tiktok_id($link);
-        if (!$vid) json_out(['error' => 'Could not read that TikTok link. Open the video in a browser and copy the full link (it has /video/ in it).'], 400);
+        $fromLink = clip_from_link($link);
+        if (!$fromLink) json_out(['error' => 'That link does not work. Copy the full link (starting with https://) from the clip and paste it here.'], 400);
     }
 
     if (!rate_ok('upload', UPLOADS_PER_HOUR)) json_out(['error' => 'Slow down! You can send ' . UPLOADS_PER_HOUR . ' clips per hour.'], 429);
 
     if ($hasFile) {
-        $name = new_id() . '.' . $allowed[$ext];
+        $name = new_id() . '.' . $ext;
         if (!move_uploaded_file($f['tmp_name'], __DIR__ . '/uploads/clips/' . $name))
             json_out(['error' => 'Server could not save the file (check the uploads folder permissions).'], 500);
         $clip = ['type' => 'file', 'src' => 'uploads/clips/' . $name];
     } else {
-        $clip = ['type' => 'tiktok', 'src' => $vid];
+        $clip = $fromLink;
     }
     $clip += ['id' => new_id(), 'title' => $title, 'by' => $by, 'status' => 'pending', 'created' => time()];
     with_state(function (&$s) use ($clip) { $s['clips'][] = $clip; });

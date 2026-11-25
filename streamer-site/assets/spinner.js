@@ -107,9 +107,7 @@
     $('.modal-box').classList.toggle('golden', golden);
     $('#mTitle').textContent = clip.title;
     $('#mBy').textContent = 'uploaded by ' + (clip.by || 'anonymous');
-    $('#mMedia').innerHTML = clip.type === 'file'
-      ? `<video src="${esc(clip.src)}" controls autoplay playsinline></video>`
-      : `<iframe src="https://www.tiktok.com/embed/v2/${esc(clip.src)}" allow="encrypted-media; autoplay; fullscreen" title="TikTok clip"></iframe>`;
+    $('#mMedia').innerHTML = Site.clipHtml(clip, { autoplay: true });
     $('#modal').classList.add('open');
   }
   function closeModal() { $('#modal').classList.remove('open'); $('#mMedia').innerHTML = ''; }

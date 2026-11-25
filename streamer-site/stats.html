@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Tracker · Danny's Hangout</title>
+<meta name="description" content="Is Yokii live? Viewers, top viewer count, followers and every stream.">
+<meta property="og:title" content="Live Tracker · Danny's Hangout">
+<meta property="og:description" content="Is Yokii live? Viewers, top viewer count, followers and every stream.">
+<meta name="theme-color" content="#5bae3c">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta property="og:image" content="assets/og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="live-banner" target="_blank" rel="noopener"><span class="live-dot"></span> LIVE NOW ON TIKTOK — <span class="live-note"></span> <u>Watch →</u></a>
+<header class="topbar">
+  <a class="brand" href="index.html">⛏ <span data-site-name>Danny's Hangout</span></a>
+  <button class="nav-toggle" aria-label="Menu">≡</button>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="stats.html">Live</a>
+    <a href="spinner.html">Clip Spinner</a>
+    <a href="vote.html">Vote</a>
+    <a href="smp.html">Server</a>
+    <a href="leaderboard.html">Top Donators</a>
+    <a href="pedia.html">Yokii-pedia</a>
+    <a href="fun.html">Games</a>
+    <a data-discord href="https://discord.gg/m7G76JxKnS" target="_blank" rel="noopener" style="color:#fff;background:var(--discord)">Join Discord</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="card status-card" id="statusCard">
+    <img class="status-avatar" src="assets/yokii.png" alt="Yokii">
+    <div id="status" class="status-body"><p class="muted">Checking TikTok…</p></div>
+  </section>
+
+  <div class="stats tiles" id="tiles"></div>
+
+  <section class="card">
+    <h2 id="viewersTitle">Viewers</h2>
+    <div id="viewersChart"></div>
+  </section>
+
+  <section class="card">
+    <h2>TikTok followers <span class="muted small" id="followersNote"></span></h2>
+    <div id="followersChart"></div>
+  </section>
+
+  <section class="card">
+    <h2>📜 Every stream</h2>
+    <div id="history"></div>
+  </section>
+  <p class="center muted small" id="updated"></p>
+</main>
+<footer>
+  <p><a data-tiktok target="_blank" rel="noopener" href="#">TikTok</a> · <a data-discord target="_blank" rel="noopener" href="#">Discord</a> · <a href="spinner.html">Clip Spinner</a></p>
+  <p class="small">© <span data-year></span> <span data-site-name></span>. Fan site, not affiliated with Mojang, Microsoft or TikTok.</p>
+</footer>
+<script src="assets/site.js"></script>
+<script src="assets/fx.js"></script>
+<script src="assets/stats.js"></script>
+</body>
+</html>
