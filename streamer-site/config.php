@@ -4,7 +4,7 @@
 // ================================================================
 
 // THE ADMIN PANEL lives in the folder "secret-admin". Rename that folder to
-// something random (e.g. "hdbahedehuyuf"), then set the key below.
+// something random (e.g. "x7k2folder9q"), then set the key below.
 // Your admin link is:   yoursite.com/FOLDER-NAME?YOUR-SECRET-KEY
 // Without the key the folder just shows "page not found".
 

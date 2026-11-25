@@ -3,7 +3,7 @@ DANNY'S HANGOUT WEBSITE — HOW TO PUT IT ONLINE
 
 1. SET UP THE SECRET ADMIN
    a) Rename the folder "secret-admin" to something random that only you
-      know, e.g. "hdbahedehuyuf".
+      know, e.g. "x7k2folder9q".
    b) Open config.php in Notepad and set:
         ADMIN_SECRET   = a random key, letters and numbers, 12+ characters
         ADMIN_PASSWORD = your password (8+ characters)
