@@ -126,8 +126,29 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
                 $q = clean($_POST['question'] ?? '', 120);
                 if (!$q || count($opts) < 2) return 'A poll needs a question and at least 2 options.';
                 array_unshift($s['polls'], ['id' => new_id(), 'question' => $q, 'open' => true, 'created' => time(),
+                    'closes' => (int)($_POST['closesTs'] ?? 0) ?: null,
                     'options' => array_map(fn($o) => ['text' => $o, 'votes' => 0], array_slice($opts, 0, 8)), 'voters' => []]);
-                return 'Poll created.';
+                return 'Poll created. It is live on the Vote page now.';
+            case 'poll_edit':
+                foreach ($s['polls'] as &$p) if ($p['id'] === $_POST['id']) {
+                    $q = clean($_POST['question'] ?? '', 120);
+                    $opts = array_values(array_filter(array_map(fn($o) => clean($o, 80), explode("\n", $_POST['options'] ?? ''))));
+                    if (!$q || count($opts) < 2) return 'A poll needs a question and at least 2 options.';
+                    $old = array_column($p['options'], 'votes', 'text'); // keep votes of options that stayed the same
+                    $p['question'] = $q;
+                    $p['options'] = array_map(fn($o) => ['text' => $o, 'votes' => $old[$o] ?? 0], array_slice($opts, 0, 8));
+                    $p['closes'] = (int)($_POST['closesTs'] ?? 0) ?: null;
+                    if ($p['closes'] && $p['closes'] > time()) $p['open'] = true;
+                    return 'Poll saved.';
+                }
+                return 'Poll not found.';
+            case 'poll_reset':
+                foreach ($s['polls'] as &$p) if ($p['id'] === $_POST['id']) {
+                    foreach ($p['options'] as &$o) $o['votes'] = 0;
+                    unset($o);
+                    $p['voters'] = [];
+                }
+                return 'Votes reset to 0. Everyone can vote again.';
             case 'poll_toggle':
                 foreach ($s['polls'] as &$p) if ($p['id'] === $_POST['id']) $p['open'] = empty($p['open']);
                 return 'Poll updated.';
@@ -185,6 +206,16 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
                     break;
                 }
                 return 'Entry removed.';
+            case 'chat_hide':
+                $m = chat_norm((string)($_POST['msg'] ?? ''));
+                if ($m !== '' && !in_array($m, $s['settings']['chatHidden'] ?? [], true)) $s['settings']['chatHidden'][] = $m;
+                return 'Hidden: "' . $m . '" will never show on the site.';
+            case 'chat_unhide':
+                $s['settings']['chatHidden'] = array_values(array_filter($s['settings']['chatHidden'] ?? [], fn($x) => $x !== ($_POST['msg'] ?? '')));
+                return 'Shown again.';
+            case 'chat_reset':
+                write_guarded(CHAT_FILE, ['all' => [], 'streams' => [], 'updated' => 0, 'total' => 0]);
+                return 'All automatic chat counts were reset.';
             case 'chat_top':
                 $rows = [];
                 foreach (explode("\n", $_POST['rows'] ?? '') as $line) {
@@ -250,7 +281,7 @@ function clip_icon($c) {
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Admin · <?= h($st['siteName']) ?></title>
-<link rel="stylesheet" href="../assets/style.css?v=9">
+<link rel="stylesheet" href="../assets/style.css?v=10">
 <link rel="icon" href="../assets/favicon.svg">
 </head><body class="admin">
 <header class="topbar"><a class="brand" href="../">⛏ <?= h($st['siteName']) ?></a><nav class="nav-links"><a href="../" target="_blank">View site</a><?php if ($authed): ?><a href="?logout=1">Log out</a><?php endif ?></nav></header>
@@ -305,9 +336,55 @@ function clip_icon($c) {
     </script>
   </section>
 
+  <?php
+    $C = chat_load(); arsort($C['all']);
+    $latestKey = array_key_first($C['streams']);
+    $latest = $latestKey ? $C['streams'][$latestKey]['counts'] : [];
+    arsort($latest);
+    $hidden = $st['chatHidden'] ?? [];
+    $siteUrl = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'localhost');
+    $ttUser = $st['tiktok'] ?: 'yokii_fn.alt';
+    $collector = "// ==UserScript==\n// @name         Chat collector for " . ($_SERVER['HTTP_HOST'] ?? 'the site') . "\n// @description  Counts what chat says on @$ttUser's TikTok LIVE and sends the counts to the website.\n// @match        https://www.tiktok.com/@$ttUser/live*\n// @grant        GM_xmlhttpRequest\n// @connect      " . preg_replace('~:\d+$~', '', $_SERVER['HTTP_HOST'] ?? 'localhost') . "\n// @version      1.0\n// ==/UserScript==\n" . str_replace(['%API%', '%TOKEN%'], [$siteUrl . '/api.php', chat_token()], file_get_contents(ROOT . '/assets/collector.tpl.js'));
+    $row = function ($m, $c) use ($csrf, $hidden) {
+        $isHidden = in_array((string)$m, $hidden, true);
+        return '<tr' . ($isHidden ? ' style="opacity:.45"' : '') . '><td>' . h($m) . '</td><td class="muted">×' . (int)$c . '</td><td><form method="post">' . hidden($isHidden ? 'chat_unhide' : 'chat_hide', 'chat', $csrf, ['msg' => $m]) . '<button class="btn btn-small' . ($isHidden ? '' : ' btn-red') . '">' . ($isHidden ? 'Show' : 'Hide') . '</button></form></td></tr>';
+    };
+  ?>
   <section class="card" id="chat">
-    <h2>💬 Most said in chat (top 5)</h2>
-    <p class="muted small">Shown on the Live page as chat messages popping up. One per line: <code>message | how many times</code>. Only the top 5 are shown, sorted automatically.</p>
+    <h2>💬 Most said in chat (automatic)</h2>
+    <p>While the <b>chat collector</b> runs in a browser tab with Yokii's live open, every chat message is counted and the top 5 on the Live page update by themselves. Only the counts are saved, not who said it.</p>
+    <p class="muted small">Status: <?= $C['updated'] ? 'last message received ' . date('M j, H:i:s', $C['updated']) . ' · ' . number_format($C['total']) . ' messages counted' : 'the collector has not sent anything yet' ?></p>
+
+    <details class="admin-edit" <?= $C['updated'] ? '' : 'open' ?>><summary>📡 Set up the chat collector (one time, 2 minutes)</summary>
+      <ol class="setup-steps">
+        <li>On the PC/laptop that has the live open during streams (Yokii's or a mod's), install the free browser extension <b>Tampermonkey</b> (Chrome Web Store / Firefox Add-ons / Edge Add-ons).</li>
+        <li>Click the Tampermonkey icon → <b>Create a new script</b>. Delete everything in it.</li>
+        <li>Click <b>Copy script</b> below, paste it in, press <b>Ctrl+S</b>.</li>
+        <li>During a stream, open <b>tiktok.com/@<?= h($ttUser) ?>/live</b> in that browser and leave the tab open. A small "📡 Chat collector" badge shows in the corner with how many messages it sent.</li>
+      </ol>
+      <p class="muted small">⚠️ Keep this script private: it has a secret key that lets it send chat counts to your site.</p>
+      <textarea id="collectorCode" rows="8" readonly style="font:12px monospace"><?= h($collector) ?></textarea>
+      <button class="btn btn-gold" type="button" id="copyCollector" style="margin-top:10px">Copy script</button>
+      <script>
+        document.getElementById('copyCollector').addEventListener('click', async e => {
+          const ta = document.getElementById('collectorCode');
+          try { await navigator.clipboard.writeText(ta.value); } catch { ta.select(); document.execCommand('copy'); }
+          e.target.textContent = 'Copied! Now paste it in Tampermonkey';
+        });
+      </script>
+    </details>
+
+    <?php if ($C['all']): ?>
+    <div class="grid grid-2" style="margin-top:16px">
+      <div><h3>Latest stream</h3><table class="table"><?php foreach (array_slice($latest, 0, 15, true) as $m => $c) echo $row($m, $c); ?></table></div>
+      <div><h3>All time</h3><table class="table"><?php foreach (array_slice($C['all'], 0, 15, true) as $m => $c) echo $row($m, $c); ?></table></div>
+    </div>
+    <p class="muted small">"Hide" keeps a message off the website forever (for rude stuff or spam).</p>
+    <form method="post" onsubmit="return confirm('Reset ALL automatic chat counts? This cannot be undone.')"><?= hidden('chat_reset', 'chat', $csrf) ?><button class="btn btn-small btn-red">Reset all counts</button></form>
+    <?php endif ?>
+
+    <h3>Backup list (used only until the collector has counted something)</h3>
+    <p class="muted small">One per line: <code>message | how many times</code>.</p>
     <form method="post"><?= hidden('chat_top', 'chat', $csrf) ?>
       <textarea name="rows" rows="6" placeholder="W stream | 1200&#10;LOL | 950&#10;giveaway when? | 640"><?= h(implode("\n", array_map(fn($r) => $r['msg'] . ' | ' . $r['count'], $s['chatTop'] ?? []))) ?></textarea>
       <button class="btn btn-grass" style="margin-top:10px">Save top 5</button>
@@ -364,14 +441,44 @@ function clip_icon($c) {
     <form method="post"><?= hidden('poll_create', 'polls', $csrf) ?>
       <label>Question <input name="question" placeholder="What should I do next stream?" required></label>
       <label>Options (one per line, 2–8) <textarea name="options" rows="4" placeholder="Hardcore attempt&#10;No armor challenge&#10;Speedrun the Ender Dragon"></textarea></label>
+      <label>Closes automatically at (optional, your local time) <input type="datetime-local" data-ts="closesTs"></label>
+      <input type="hidden" name="closesTs">
       <button class="btn btn-grass">Create poll</button>
     </form>
-    <table class="table"><?php foreach ($s['polls'] as $p): $total = array_sum(array_column($p['options'], 'votes')); ?>
-      <tr><td><b><?= h($p['question']) ?></b><br><span class="muted small"><?= implode(' · ', array_map(fn($o) => h($o['text']) . ' (' . $o['votes'] . ')', $p['options'])) ?> — <?= $total ?> votes</span></td>
-      <td><?= $p['open'] ? '🟢 open' : '⚫ closed' ?></td>
-      <td class="btn-row"><form method="post"><?= hidden('poll_toggle', 'polls', $csrf, ['id' => $p['id']]) ?><button class="btn btn-small"><?= $p['open'] ? 'Close' : 'Reopen' ?></button></form>
-      <form method="post" onsubmit="return confirm('Delete poll?')"><?= hidden('poll_delete', 'polls', $csrf, ['id' => $p['id']]) ?><button class="btn btn-small btn-red">Delete</button></form></td></tr>
-    <?php endforeach ?></table>
+    <div class="admin-polls"><?php foreach ($s['polls'] as $p):
+        $total = array_sum(array_column($p['options'], 'votes'));
+        $isOpen = $p['open'] && (empty($p['closes']) || $p['closes'] > time()); ?>
+      <div class="admin-poll">
+        <div class="admin-poll-head"><b><?= h($p['question']) ?></b>
+          <span><?= $isOpen ? '🟢 open' : '⚫ closed' ?><?= !empty($p['closes']) ? ' · ' . ($p['closes'] > time() ? 'closes ' : 'closed ') . date('M j, H:i', $p['closes']) : '' ?> · <?= $total ?> votes</span></div>
+        <?php foreach ($p['options'] as $o): $pct = $total ? round(100 * $o['votes'] / $total) : 0; ?>
+          <div class="admin-bar"><span style="width:<?= $pct ?>%"></span><em><?= h($o['text']) ?></em><b><?= $o['votes'] ?> · <?= $pct ?>%</b></div>
+        <?php endforeach ?>
+        <div class="btn-row" style="margin-top:10px">
+          <form method="post"><?= hidden('poll_toggle', 'polls', $csrf, ['id' => $p['id']]) ?><button class="btn btn-small"><?= $p['open'] ? 'Close now' : 'Reopen' ?></button></form>
+          <form method="post" onsubmit="return confirm('Set all votes back to 0?')"><?= hidden('poll_reset', 'polls', $csrf, ['id' => $p['id']]) ?><button class="btn btn-small">Reset votes</button></form>
+          <form method="post" onsubmit="return confirm('Delete poll?')"><?= hidden('poll_delete', 'polls', $csrf, ['id' => $p['id']]) ?><button class="btn btn-small btn-red">Delete</button></form>
+        </div>
+        <details class="admin-edit"><summary>✏️ Edit</summary>
+          <form method="post"><?= hidden('poll_edit', 'polls', $csrf, ['id' => $p['id']]) ?>
+            <label>Question <input name="question" value="<?= h($p['question']) ?>" required></label>
+            <label>Options (one per line; options you don't change keep their votes) <textarea name="options" rows="4"><?= h(implode("\n", array_column($p['options'], 'text'))) ?></textarea></label>
+            <label>Closes at (optional) <input type="datetime-local" data-ts="closesTs" data-value="<?= h($p['closes'] ?? '') ?>"></label>
+            <input type="hidden" name="closesTs" value="<?= h($p['closes'] ?? '') ?>">
+            <button class="btn btn-grass btn-small">Save poll</button>
+          </form>
+        </details>
+      </div>
+    <?php endforeach ?></div>
+    <script>
+      // date pickers work in local time; the site stores a timestamp
+      document.querySelectorAll('input[data-ts]').forEach(inp => {
+        const hid = inp.form.querySelector('input[name="' + inp.dataset.ts + '"]');
+        const v = +inp.dataset.value;
+        if (v) { const d = new Date(v * 1000); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); inp.value = d.toISOString().slice(0, 16); }
+        inp.form.addEventListener('submit', () => { hid.value = inp.value ? Math.floor(new Date(inp.value).getTime() / 1000) : ''; });
+      });
+    </script>
   </section>
 
   <section class="card" id="lb">

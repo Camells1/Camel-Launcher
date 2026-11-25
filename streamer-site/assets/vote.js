@@ -3,6 +3,13 @@
   const box = $('#polls');
   const voted = (() => { try { return JSON.parse(localStorage.getItem('voted') || '{}'); } catch { return {}; } })();
 
+  function closesIn(t) {
+    const d = t - Date.now() / 1000;
+    if (d < 3600) return `in ${Math.max(1, Math.round(d / 60))} min`;
+    if (d < 86400) return `in ${Math.round(d / 3600)} hours`;
+    return new Date(t * 1000).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  }
+
   function render(polls) {
     if (!polls.length) { box.innerHTML = '<section class="card center"><p class="muted">No polls right now. Check back after the next stream!</p></section>'; return; }
     box.innerHTML = polls.map(p => {
@@ -16,7 +23,7 @@
             <div class="fill" style="width:${showResults ? pct : 0}%"></div>
             <span><b>${esc(o.text)}</b>${showResults ? `<em>${pct}% · ${o.votes}</em>` : ''}</span></button>`;
         }).join('')}
-        <p class="muted small" style="margin:6px 0 0">${total} vote${total === 1 ? '' : 's'} · ${p.open ? (p.id in voted ? '✅ You voted' : '🟢 Open — tap to vote') : '⚫ Closed'}</p>
+        <p class="muted small" style="margin:6px 0 0">${total} vote${total === 1 ? '' : 's'} · ${p.open ? (p.id in voted ? '✅ You voted' : '🟢 Open — tap to vote') : '⚫ Closed'}${p.open && p.closes ? ' · closes ' + closesIn(p.closes) : ''}</p>
       </section>`;
     }).join('');
   }

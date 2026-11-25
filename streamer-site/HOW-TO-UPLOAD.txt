@@ -68,9 +68,20 @@ CLIP SPINNER: ANY CLIP
    Medal, Kick, X, Discord, or any other site. Known sites play right on
    the wheel; other links get a "Watch it there" button.
 
+MOST SAID IN CHAT (automatic)
+   TikTok doesn't let websites read live chat, so a small "chat collector"
+   runs in a normal browser tab that has the live open (Yokii's PC or a
+   mod's). It reads the chat on screen and sends the messages to the site,
+   which counts them. Only the text is counted, never who said it.
+   Setup (once): admin > Most said in chat > "Set up the chat collector".
+   Install the free Tampermonkey extension, paste the script, done. During
+   streams just keep tiktok.com/@yokii_fn.alt/live open in that browser.
+   Rude messages: click "Hide" in admin and they never show on the site.
+
 WHAT TO DO IN ADMIN
    - Live tracker: see stats, add past streams, force the banner if needed
-   - Chat top 5: the 5 most said chat messages, shown on the Live page
+   - Chat top 5: counted automatically by the chat collector (see below)
+   - Polls: create, edit, reset votes, set an automatic closing time
    - Yokii-pedia: add inside jokes + sounds
    - Clips: approve or delete uploaded clips before they hit the wheel
    - Polls: make "what should I do next stream?" polls

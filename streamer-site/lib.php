@@ -82,6 +82,7 @@ function public_state(array $s): array {
     $clips = array_map(fn($c) => array_intersect_key($c, array_flip(['id','type','provider','src','link','title','by','created','start','end','clip','clipt'])), $clips);
     $polls = array_map(function ($p) {
         unset($p['voters']);
+        if (!empty($p['closes']) && $p['closes'] <= time()) $p['open'] = false;
         return $p;
     }, $s['polls']);
     return [
@@ -94,6 +95,7 @@ function public_state(array $s): array {
         'videos'      => $s['videos'],
         'pedia'       => $s['pedia'],
         'chatTop'     => $s['chatTop'],
+        'chat'        => chat_public($s),
     ];
 }
 
@@ -464,4 +466,80 @@ function clip_player_html(array $c, string $base = ''): string {
             }
     }
     return '<a class="btn btn-small" href="' . $e($c['link'] ?? $c['src']) . '" target="_blank" rel="noopener noreferrer">Open link ↗</a> <span class="muted small">' . $e(parse_url($c['link'] ?? $c['src'], PHP_URL_HOST)) . '</span>';
+}
+
+// =====================================================================
+//  Chat counter
+//  A small "collector" script running in a browser tab on the TikTok live
+//  page sends the chat messages it sees. We count them per stream and for
+//  all time. Only the counts are kept, never who said what.
+// =====================================================================
+const CHAT_FILE = __DIR__ . '/data/chat.json.php';
+
+/** Secret key the collector uses. Derived from the admin secrets, so it is never stored or shown publicly. */
+function chat_token(): string {
+    return substr(hash_hmac('sha256', 'chat-collector', ADMIN_SECRET . '|' . ADMIN_PASSWORD_HASH . '|' . ADMIN_PASSWORD), 0, 32);
+}
+
+function chat_norm(string $m): string {
+    $m = preg_replace('/[\x{200B}-\x{200D}\x{FEFF}]/u', '', $m);
+    $m = mb_strtolower(trim(preg_replace('/\s+/u', ' ', $m)));
+    if ($m === '' || mb_strlen($m) > 80 || preg_match('~https?://|www\.|\.com\b~i', $m)) return '';
+    return mb_substr($m, 0, 60);
+}
+
+function chat_load(): array {
+    return array_merge(['all' => [], 'streams' => [], 'updated' => 0, 'total' => 0], read_guarded(CHAT_FILE) ?? []);
+}
+
+/** Add a batch of chat messages to the counts. */
+function chat_add(array $msgs): int {
+    $live = read_guarded(LIVE_FILE) ?? [];
+    $key = !empty($live['now']['live']) && !empty($live['now']['roomId']) ? 'room-' . $live['now']['roomId'] : 'day-' . gmdate('Y-m-d');
+    $lock = fopen(__DIR__ . '/data/.chatlock', 'c'); flock($lock, LOCK_EX);
+    $C = chat_load();
+    $n = 0;
+    foreach (array_slice($msgs, 0, 500) as $m) {
+        $m = chat_norm((string)$m);
+        if ($m === '') continue;
+        $C['all'][$m] = ($C['all'][$m] ?? 0) + 1;
+        $C['streams'][$key]['counts'][$m] = ($C['streams'][$key]['counts'][$m] ?? 0) + 1;
+        $n++;
+    }
+    if ($n) {
+        $C['streams'][$key]['updated'] = time();
+        $C['updated'] = time();
+        $C['total'] += $n;
+        // keep files small: top 400 messages, last 30 streams
+        arsort($C['all']); $C['all'] = array_slice($C['all'], 0, 400, true);
+        arsort($C['streams'][$key]['counts']); $C['streams'][$key]['counts'] = array_slice($C['streams'][$key]['counts'], 0, 400, true);
+        uasort($C['streams'], fn($a, $b) => ($b['updated'] ?? 0) <=> ($a['updated'] ?? 0));
+        $C['streams'] = array_slice($C['streams'], 0, 30, true);
+        write_guarded(CHAT_FILE, $C);
+    }
+    flock($lock, LOCK_UN); fclose($lock);
+    return $n;
+}
+
+function chat_top(array $counts, array $hidden, int $n = 5): array {
+    $out = [];
+    foreach ($counts as $m => $c) {
+        if (in_array((string)$m, $hidden, true)) continue;
+        $out[] = ['msg' => (string)$m, 'count' => $c];
+        if (count($out) >= $n) break;
+    }
+    return $out;
+}
+
+/** What the Live page shows: automatic counts if the collector has been used, else the hand-made list. */
+function chat_public(array $state): array {
+    $hidden = $state['settings']['chatHidden'] ?? [];
+    $C = chat_load();
+    if (!$C['all']) return ['source' => 'manual', 'top' => $state['chatTop'] ?? [], 'all' => []];
+    arsort($C['all']);
+    $latest = reset($C['streams']) ?: ['counts' => [], 'updated' => 0];
+    $live = read_guarded(LIVE_FILE)['now']['live'] ?? false;
+    arsort($latest['counts']);
+    return ['source' => 'auto', 'live' => (bool)$live, 'updated' => $C['updated'],
+            'top' => chat_top($latest['counts'], $hidden), 'all' => chat_top($C['all'], $hidden)];
 }

@@ -59,3 +59,8 @@ Options -Indexes
 <IfModule mod_mime.c>
   AddType application/manifest+json .webmanifest
 </IfModule>
+<FilesMatch "\.tpl\.js$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</FilesMatch>

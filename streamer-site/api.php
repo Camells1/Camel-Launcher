@@ -14,6 +14,11 @@ if ($a === 'live') {
     json_out(live_public(live_refresh($st['tiktok'] ?: 'yokii_fn.alt'), $st));
 }
 
+// ---------- Top chat messages (Live page refreshes this) ----------
+if ($a === 'chat') {
+    json_out(chat_public(load_state()));
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => 'Use POST'], 405);
 
 // ---------- Submit a clip (file or TikTok link) ----------
@@ -63,6 +68,14 @@ if ($a === 'submit_clip') {
     json_out(['ok' => true, 'message' => 'Thanks! Your clip will show up on the wheel once a mod approves it.']);
 }
 
+// ---------- Chat collector sends messages ----------
+if ($a === 'chat_push') {
+    if (!hash_equals(chat_token(), (string)($_POST['token'] ?? ''))) json_out(['error' => 'Wrong collector key.'], 403);
+    $msgs = json_decode((string)($_POST['msgs'] ?? '[]'), true);
+    if (!is_array($msgs)) json_out(['error' => 'Bad data.'], 400);
+    json_out(['ok' => true, 'counted' => chat_add($msgs)]);
+}
+
 // ---------- Vote in a poll ----------
 if ($a === 'vote') {
     $pollId = $_POST['poll'] ?? '';
@@ -71,7 +84,7 @@ if ($a === 'vote') {
     $res = with_state(function (&$s) use ($pollId, $opt, $voter) {
         foreach ($s['polls'] as &$p) {
             if ($p['id'] !== $pollId) continue;
-            if (empty($p['open'])) return ['error' => 'This poll is closed.'];
+            if (empty($p['open']) || (!empty($p['closes']) && $p['closes'] <= time())) return ['error' => 'This poll is closed.'];
             if (in_array($voter, $p['voters'] ?? [], true)) return ['error' => 'You already voted!'];
             if (!isset($p['options'][$opt])) return ['error' => 'Unknown option.'];
             $p['options'][$opt]['votes']++;

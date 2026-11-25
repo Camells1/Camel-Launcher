@@ -176,18 +176,19 @@
 })();
 
 // =====================================================================
-//  Top 5 most said in chat: pops in like live chat, #1 last
+//  Top 5 most said in chat: counted automatically by the chat collector
+//  (or the backup list from admin). Pops in like live chat, #1 last.
 // =====================================================================
 (async () => {
-  const { $, esc, fmt } = Site;
+  const { $, $$, esc, fmt } = Site;
   const s = await Site.ready;
-  const top = (s.chatTop || []).slice(0, 5);
-  if (!top.length) return;
-  $('#chatCard').hidden = false;
+  let chat = s.chat || { source: 'manual', top: s.chatTop || [] };
+  let view = 'top';
   const feed = $('#chatFeed');
   const COLORS = ['#f6c744', '#25f4ee', '#fe2c55', '#80ff20', '#b18cff'];
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const rank = i => ['👑', '🥈', '🥉', '#4', '#5'][i];
+  let lastKey = '';
 
   function bubble(r, i) {
     const el = document.createElement('div');
@@ -198,19 +199,42 @@
     return el;
   }
 
-  let shown = false;
-  function play() {
+  function list() { return ((view === 'all' ? chat.all : chat.top) || []).slice(0, 5); }
+
+  function play(animate = true) {
+    const top = list();
+    $('#chatCard').hidden = !(chat.top || []).length && !(chat.all || []).length;
+    const tabs = $('#chatTabs');
+    tabs.hidden = chat.source !== 'auto';
+    if (chat.source === 'auto') {
+      tabs.querySelector('[data-v=top]').textContent = chat.live ? '🔴 This stream' : 'Last stream';
+      $$('#chatTabs button').forEach(b => b.classList.toggle('on', b.dataset.v === view));
+      $('#chatNote').textContent = chat.updated ? `Counted automatically from the live chat · updated ${new Date(chat.updated * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : '';
+    }
     feed.innerHTML = '';
-    // lowest first, #1 pops in last and on top
-    const order = top.map((r, i) => [r, i]).reverse();
-    order.forEach(([r, i], n) => {
+    if (!top.length) { feed.innerHTML = '<p class="muted">Nothing counted yet.</p>'; return; }
+    top.map((r, i) => [r, i]).reverse().forEach(([r, i], n) => {
       const el = bubble(r, i);
-      if (!reduced) { el.classList.add('pop'); el.style.animationDelay = (n * 0.45) + 's'; }
+      if (animate && !reduced) { el.classList.add('pop'); el.style.animationDelay = (n * 0.4) + 's'; }
       feed.prepend(el);
     });
   }
-  // start when the section scrolls into view, replay every 20 s
+
+  $$('#chatTabs button').forEach(b => b.addEventListener('click', () => { view = b.dataset.v; play(); }));
+
+  let shown = false;
   new IntersectionObserver(([e]) => {
-    if (e.isIntersecting && !shown) { shown = true; play(); if (!reduced) setInterval(play, 20000); }
-  }).observe(feed);
+    if (e.isIntersecting && !shown) { shown = true; play(); }
+  }).observe($('#chatCard'));
+  play(false);
+
+  // refresh every 30 s; only re-animate when the ranking changed
+  setInterval(async () => {
+    const fresh = await Site.api('chat').catch(() => null);
+    if (!fresh || fresh.error) return;
+    chat = fresh;
+    const key = JSON.stringify(list());
+    if (key !== lastKey) { lastKey = key; play(shown); }
+  }, 30000);
+  lastKey = JSON.stringify(list());
 })();
