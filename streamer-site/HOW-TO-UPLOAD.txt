@@ -1,26 +1,20 @@
 DANNY'S HANGOUT WEBSITE — HOW TO PUT IT ONLINE
 ==============================================
 
-1. SET YOUR SECRET KEY AND PASSWORD (important!)
-   Open config.php in Notepad and change these two lines:
-
-       const ADMIN_SECRET   = 'change-this-secret';
-       const ADMIN_PASSWORD = 'change-me-please';
-
-   ADMIN_SECRET: a long random mix of letters and numbers, at least 12
-   characters (just mash your keyboard, e.g. 'k8Rq2xLm9vTz4hWp').
-   ADMIN_PASSWORD: a normal password, at least 8 characters.
-   Don't share either of them with anyone.
+1. SET UP THE SECRET ADMIN
+   a) Rename the folder "secret-admin" to something random that only you
+      know, e.g. "hdbahedehuyuf".
+   b) Open config.php in Notepad and set:
+        ADMIN_SECRET   = a random key, letters and numbers, 12+ characters
+        ADMIN_PASSWORD = your password (8+ characters)
+      (Advanced: put a password hash in ADMIN_PASSWORD_HASH instead, so the
+       password itself is never written in the file.)
 
 2. YOUR SECRET ADMIN LINK
-   Your admin panel is ONLY reachable through this link:
-
-       yoursite.com/admin.php?k=YOUR-ADMIN_SECRET
-
-   Bookmark it. Without the key, admin.php shows a normal "page not
-   found", so nobody can even tell the admin panel exists. After the link
-   you still need the password. "Log out" closes it again, then you need
-   the secret link again. 10 wrong passwords = locked out for an hour.
+       yoursite.com/FOLDER-NAME?SECRET-KEY
+   Bookmark it. Without the key the folder shows a normal "page not found",
+   so nobody can tell the admin exists. After the link you still need the
+   password. "Log out" locks it again. 10 wrong passwords = locked for 1 hour.
 
 3. UPLOAD WITH FILEZILLA
    - Connect to your host.
@@ -31,7 +25,7 @@ DANNY'S HANGOUT WEBSITE — HOW TO PUT IT ONLINE
      (FileZilla: Server > Force showing hidden files).
    - UPDATING an older version? Upload everything EXCEPT the data and
      uploads folders, so you keep your clips, votes and settings.
-     (config.php has 2 new settings, so do step 1 again.)
+     Delete the old admin.php from your host if it is still there.
 
 4. FOLDER PERMISSIONS
    These folders must be writable:  data  uploads  uploads/clips  uploads/builds
@@ -40,8 +34,8 @@ DANNY'S HANGOUT WEBSITE — HOW TO PUT IT ONLINE
 
 5. TEST IT
    - yoursite.com                       -> home page with the pixel world
-   - yoursite.com/admin.php             -> should say "page not found"
-   - yoursite.com/admin.php?k=YOURKEY   -> login screen
+   - yoursite.com/FOLDER-NAME           -> should say "page not found"
+   - yoursite.com/FOLDER-NAME?KEY       -> login screen
    - Upload a test clip on spinner.html, approve it in admin.
 
 HANDY LINKS TO SAY ON STREAM / PUT IN BIO

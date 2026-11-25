@@ -1,6 +1,10 @@
 <?php
 // Admin panel: approve clips, go live, polls, leaderboard, builds, settings.
-require_once __DIR__ . '/lib.php';
+// It lives in its own folder; rename the folder to something secret (see HOW-TO-UPLOAD.txt).
+const ROOT = __DIR__ . '/..';
+// This folder's own address, e.g. /hdbahedehuyuf/
+$SELF = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/') . '/';
+require_once ROOT . '/lib.php';
 session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'secure' => !empty($_SERVER['HTTPS'])]);
 session_start();
 header('X-Frame-Options: DENY');
@@ -8,20 +12,20 @@ header('X-Robots-Tag: noindex, nofollow');
 header('Referrer-Policy: no-referrer');
 
 // ---------- secret link gate ----------
-// Without ?k=ADMIN_SECRET (or a session that already passed it) this page
-// looks exactly like any other missing page.
+// Without the secret key after the "?" (or a session that already passed it)
+// this page looks exactly like any other missing page.
 $secretOk = strlen(ADMIN_SECRET) >= 12 && ADMIN_SECRET !== 'change-this-secret';
 if (empty($_SESSION['gate'])) {
-    $k = (string)($_GET['k'] ?? '');
+    $k = isset($_GET['k']) ? (string)$_GET['k'] : trim(rawurldecode((string)($_SERVER['QUERY_STRING'] ?? '')), '/');
     if ($secretOk && $k !== '' && hash_equals(ADMIN_SECRET, $k)) {
         session_regenerate_id(true);
         $_SESSION['gate'] = true;
-        header('Location: admin.php'); // drop the key from the address bar / history
+        header('Location: ' . $SELF); // drop the key from the address bar / history
         exit;
     }
     http_response_code(404);
     header('Content-Type: text/html; charset=utf-8');
-    readfile(__DIR__ . '/404.html');
+    readfile(ROOT . '/404.html');
     exit;
 }
 
@@ -31,15 +35,15 @@ $flash = '';
 // ---------- login / logout ----------
 if (isset($_POST['login'])) {
     if (!rate_ok('login', 10)) { $flash = 'Too many tries. Wait an hour.'; }
-    elseif (ADMIN_PASSWORD === 'change-me-please' || strlen(ADMIN_PASSWORD) < 8) { $flash = 'Set your own ADMIN_PASSWORD (8+ characters) in config.php first.'; }
-    elseif (hash_equals(ADMIN_PASSWORD, (string)$_POST['password'])) {
+    elseif (ADMIN_PASSWORD_HASH === '' && (ADMIN_PASSWORD === 'change-me-please' || strlen(ADMIN_PASSWORD) < 8)) { $flash = 'Set your own password in config.php first.'; }
+    elseif (ADMIN_PASSWORD_HASH !== '' ? password_verify((string)$_POST['password'], ADMIN_PASSWORD_HASH) : hash_equals(ADMIN_PASSWORD, (string)$_POST['password'])) {
         session_regenerate_id(true);
         $_SESSION['admin'] = true;
         $_SESSION['csrf'] = bin2hex(random_bytes(16));
-        header('Location: admin.php'); exit;
+        header('Location: ' . $SELF); exit;
     } else { $flash = 'Wrong password.'; }
 }
-if (isset($_GET['logout'])) { $_SESSION = []; session_destroy(); header('Location: index.html'); exit; }
+if (isset($_GET['logout'])) { $_SESSION = []; session_destroy(); header('Location: ../'); exit; }
 $authed = !empty($_SESSION['admin']);
 
 // ---------- actions ----------
@@ -67,7 +71,7 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
                 return 'Clip approved — it is on the wheel now.';
             case 'clip_delete':
                 foreach ($s['clips'] as $i => $c) if ($c['id'] === $_POST['id']) {
-                    if ($c['type'] === 'file') @unlink(__DIR__ . '/' . $c['src']);
+                    if ($c['type'] === 'file') @unlink(ROOT . '/' . $c['src']);
                     array_splice($s['clips'], $i, 1);
                     break;
                 }
@@ -124,13 +128,13 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
                 $types = [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_WEBP => 'webp', IMAGETYPE_GIF => 'gif'];
                 if (!$info || !isset($types[$info[2]])) return 'Only JPG, PNG, WEBP or GIF images.';
                 $name = new_id() . '.' . $types[$info[2]];
-                move_uploaded_file($f['tmp_name'], __DIR__ . '/uploads/builds/' . $name);
+                move_uploaded_file($f['tmp_name'], ROOT . '/uploads/builds/' . $name);
                 $s['builds'][] = ['id' => new_id(), 'img' => 'uploads/builds/' . $name,
                     'title' => clean($_POST['title'] ?? '', 60), 'by' => clean($_POST['by'] ?? '', 30)];
                 return 'Build added.';
             case 'build_delete':
                 foreach ($s['builds'] as $i => $b) if ($b['id'] === $_POST['id']) {
-                    @unlink(__DIR__ . '/' . $b['img']);
+                    @unlink(ROOT . '/' . $b['img']);
                     array_splice($s['builds'], $i, 1);
                     break;
                 }
@@ -139,7 +143,7 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
         return 'Unknown action.';
     });
     $_SESSION['flash'] = $flash;
-    header('Location: admin.php' . (isset($_POST['anchor']) ? '#' . preg_replace('/\W/', '', $_POST['anchor']) : ''));
+    header('Location: ' . $SELF . (isset($_POST['anchor']) ? '#' . preg_replace('/\W/', '', $_POST['anchor']) : ''));
     exit;
 }
 if (isset($_SESSION['flash'])) { $flash = $_SESSION['flash']; unset($_SESSION['flash']); }
@@ -154,7 +158,7 @@ function hidden($do, $anchor, $csrf, $extra = []) {
 $pending = array_filter($s['clips'], fn($c) => $c['status'] === 'pending');
 $approved = array_filter($s['clips'], fn($c) => $c['status'] === 'approved');
 function clip_preview($c) {
-    if ($c['type'] === 'file') return '<video src="' . h($c['src']) . '" controls preload="metadata"></video>';
+    if ($c['type'] === 'file') return '<video src="../' . h($c['src']) . '" controls preload="metadata"></video>';
     return '<iframe src="https://www.tiktok.com/embed/v2/' . h($c['src']) . '" allow="encrypted-media" loading="lazy"></iframe>';
 }
 ?><!doctype html>
@@ -162,10 +166,10 @@ function clip_preview($c) {
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Admin · <?= h($st['siteName']) ?></title>
-<link rel="stylesheet" href="assets/style.css">
-<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/favicon.svg">
 </head><body class="admin">
-<header class="topbar"><a class="brand" href="index.html">⛏ <?= h($st['siteName']) ?></a><nav class="nav-links"><a href="index.html">View site</a><?php if ($authed): ?><a href="?logout=1">Log out</a><?php endif ?></nav></header>
+<header class="topbar"><a class="brand" href="../">⛏ <?= h($st['siteName']) ?></a><nav class="nav-links"><a href="../" target="_blank">View site</a><?php if ($authed): ?><a href="?logout=1">Log out</a><?php endif ?></nav></header>
 <main class="wrap">
 <?php if ($flash): ?><div class="flash"><?= h($flash) ?></div><?php endif ?>
 <?php if (!$authed): ?>
@@ -265,7 +269,7 @@ function clip_preview($c) {
       <button class="btn btn-grass">Add build</button>
     </form>
     <div class="builds-grid"><?php foreach ($s['builds'] as $b): ?>
-      <figure class="build"><img src="<?= h($b['img']) ?>" alt=""><figcaption><?= h($b['title']) ?> <span class="muted"><?= h($b['by']) ?></span>
+      <figure class="build"><img src="../<?= h($b['img']) ?>" alt=""><figcaption><?= h($b['title']) ?> <span class="muted"><?= h($b['by']) ?></span>
       <form method="post" onsubmit="return confirm('Remove build?')"><?= hidden('build_delete', 'builds', $csrf, ['id' => $b['id']]) ?><button class="btn btn-small btn-red">Remove</button></form></figcaption></figure>
     <?php endforeach ?></div>
   </section>
