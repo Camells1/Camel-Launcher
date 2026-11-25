@@ -215,6 +215,19 @@
   .ch-safe{background:#0b1121;color:var(--dim)}
   #chatBtn.ga-on{background:var(--gold) !important;color:#2a1c00}
   #loading{background:var(--bg) !important}
+  /* live banner */
+  .livebar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;max-width:1400px;margin:12px auto 0;padding:10px 16px;border-radius:12px;text-decoration:none;color:var(--mut);font-size:13.5px;background:#0f1629;border:1px solid var(--line);width:calc(100% - 24px)}
+  .livebar b{color:#fff}
+  .livebar .go{margin-left:auto;color:var(--cyan);font-weight:700}
+  .livebar .ttl{color:#dfe4f2;max-width:42ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .livebar.on{background:linear-gradient(90deg,rgba(255,59,79,.22),rgba(255,59,79,.06) 60%,#0f1629);border-color:rgba(255,59,79,.55);color:#ffd9de}
+  .livebar .lt{font:700 15px ui-monospace,monospace;color:#ff3b4f;background:#05070d;border-radius:6px;padding:2px 8px;letter-spacing:1px}
+  .ldot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#4a5578;margin-right:2px}
+  .livebar.on .ldot,#navLive.on .ldot{background:#ff3b4f;animation:lping 1.4s infinite}
+  #navLive .ldot{margin-right:6px;vertical-align:1px}
+  @keyframes lping{0%{box-shadow:0 0 0 0 rgba(255,59,79,.7)}70%{box-shadow:0 0 0 9px rgba(255,59,79,0)}100%{box-shadow:0 0 0 0 rgba(255,59,79,0)}}
+  @media (max-width:640px){ .livebar{font-size:12.5px;gap:8px;padding:9px 12px} .livebar .ttl{display:none} }
+
   /* ===== clean pass ===== */
   .lobby-grid{display:flex !important;flex-direction:column}
   .lobby-grid main{order:1 !important}.lobby-grid .side{order:2 !important}
@@ -266,6 +279,7 @@
       <a href="#games">🎮 Games</a>
       <a href="games/casino.html">🎰 Casino</a>
       <a href="#" id="navLb" class="opt">🏆 Leaderboards</a>
+      <a href="live" id="navLive"><span class="ldot"></span>Live</a>
       <a href="vault">💰 Vault</a>
       <a href="rewards">💎 Rewards</a>
       <a href="rewards#race" class="race">🏁 Race <code id="hdrRace">--:--:--</code></a>
@@ -283,6 +297,7 @@
     </div>
   </div>
 </header>
+<a class="livebar" id="liveBar" href="live" hidden></a>
 <div class="wrap">
   <div hidden aria-hidden="true"><span id="ticker"></span><div id="title"></div><div id="tenBadge"></div><div id="splash"></div><span id="gameCount"></span></div>
 
@@ -883,6 +898,25 @@ $('#navLb').addEventListener('click', e => { e.preventDefault(); $('#lbBtn').cli
 $('#tabChat').addEventListener('click', e => { e.preventDefault(); openChat('global'); });
 $('#tabMenu').addEventListener('click', e => { e.preventDefault(); openAcct(); });
 if (location.hash === '#gift') setTimeout(() => openGift(), 400);
+
+/* ---------- TikTok live banner (live.php) ---------- */
+let liveSt = null;
+function liveHms(sec){ sec = Math.max(0, Math.floor(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), x = sec % 60; return [h, m, x].map(v => String(v).padStart(2, '0')).join(':'); }
+function liveAgo(ts){ const s = Date.now() / 1000 - ts; if (s < 3600) return Math.max(1, Math.round(s / 60)) + ' min ago'; if (s < 86400) return Math.round(s / 3600) + 'h ago'; return Math.round(s / 86400) + ' days ago'; }
+function renderLive(){
+  const b = $('#liveBar'), d = liveSt; if (!d) return;
+  $('#navLive').classList.toggle('on', d.live);
+  if (d.live){
+    b.hidden = false; b.className = 'livebar on';
+    b.innerHTML = '<span class="ldot"></span><b>' + A.esc(d.name) + ' is LIVE</b><span class="lt" id="liveClk">' + liveHms(Date.now() / 1000 - d.start) + '</span><span>👀 ' + Number(d.viewers).toLocaleString('en-US') + ' watching</span>' + (d.title ? '<span class="ttl">' + A.esc(d.title) + '</span>' : '') + '<span class="go">Watch →</span>';
+  } else if (d.last){
+    b.hidden = false; b.className = 'livebar';
+    b.innerHTML = '<span class="ldot"></span><b>' + A.esc(d.name) + ' is offline</b><span>last live ' + liveAgo(d.last.start) + (d.last.end ? ' · ' + (m => m >= 60 ? Math.floor(m / 60) + 'h ' + (m % 60) + 'm' : m + 'm')(Math.max(1, Math.round((d.last.end - d.last.start) / 60))) : '') + (d.last.peak ? ' · peak ' + Number(d.last.peak).toLocaleString('en-US') : '') + '</span><span class="go">Details →</span>';
+  } else b.hidden = true;
+}
+function loadLive(){ fetch('live.php', { cache:'no-store' }).then(r => r.json()).then(j => { if (j.ok){ liveSt = j; renderLive(); } }).catch(() => {}); }
+loadLive(); setInterval(loadLive, 60000);
+setInterval(() => { const c = document.getElementById('liveClk'); if (c && liveSt && liveSt.live) c.textContent = liveHms(Date.now() / 1000 - liveSt.start); }, 1000);
 
 function renderAll(){ renderProfile(); renderQuests(); renderFeatured(); renderCats(); renderCards(); renderChest(); renderTicker(); }
 setInterval(() => { const cd = $('#chestCd'); if (cd) cd.textContent = untilMidnight(); }, 1000);

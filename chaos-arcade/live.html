@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090d18">
+<title>Live? · Chaos Arcade</title>
+<meta name="description" content="Is the streamer live on TikTok right now? Live timer, viewers and the last stream.">
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  .wrap{max-width:1000px}
+  .q{font-family:"Silkscreen",monospace;font-weight:700;line-height:.95;letter-spacing:-1px;text-transform:uppercase;margin:18px 0 0;font-size:clamp(34px,8.5vw,84px);color:#fff}
+  .ans{font-family:"Silkscreen",monospace;font-weight:700;line-height:1;font-size:clamp(90px,25vw,230px);margin:6px 0 4px;letter-spacing:-4px}
+  .ans.yes{color:#ff3b4f;text-shadow:0 0 40px rgba(255,59,79,.45)}
+  .ans.no{color:#4a5578}
+  .who{display:flex;align-items:center;gap:12px;margin-top:6px;color:var(--mut);font-size:14px}
+  .who img{width:44px;height:44px;border-radius:50%;border:2px solid var(--line2);object-fit:cover;background:#0c1222}
+  .who b{color:#fff;font-size:16px}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#4a5578;margin-right:6px;vertical-align:middle}
+  .dot.on{background:#ff3b4f;box-shadow:0 0 0 0 rgba(255,59,79,.7);animation:ping 1.4s infinite}
+  @keyframes ping{70%{box-shadow:0 0 0 12px rgba(255,59,79,0)}100%{box-shadow:0 0 0 0 rgba(255,59,79,0)}}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}
+  @media (max-width:720px){ .grid{grid-template-columns:1fr} }
+  .tile{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:14px;padding:16px}
+  .tile .lab{font-size:11px;letter-spacing:3px;color:var(--mut);font-weight:600}
+  .tile .v{font-size:28px;font-weight:900;margin-top:6px}
+  .tile .s{font-size:12.5px;color:var(--dim);margin-top:4px;font-weight:400}
+  .clock{display:inline-block;font:700 clamp(28px,6vw,44px) ui-monospace,"Courier New",monospace;color:#ff3b4f;background:#05070d;border:2px solid #2a0f16;border-radius:10px;padding:8px 14px;letter-spacing:2px;text-shadow:0 0 14px rgba(255,59,79,.6);font-variant-numeric:tabular-nums}
+  .clock.off{color:#7a86a8;border-color:var(--line);text-shadow:none}
+  .ttl{font-size:15px;color:#dfe4f2;margin:10px 0 0;font-weight:500}
+  .cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .tk{background:#fe2c55;border-color:#fe2c55;color:#fff;box-shadow:inset 0 -4px 0 #b01a3a}
+  h2{font-size:21px;font-weight:900;margin:30px 0 10px}
+  .tbl{width:100%;border-collapse:collapse;font-size:14px}
+  .tbl th{text-align:left;color:var(--dim);font-size:11px;letter-spacing:1px;padding:8px;border-bottom:1px solid var(--line)}
+  .tbl td{padding:9px 8px;border-bottom:1px solid #161f38;font-weight:400}
+  .note{font-size:12px;color:var(--dim);margin-top:10px;line-height:1.5;font-weight:400}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="arcadeBar"></div>
+  <div class="q" id="q">Is the streamer live right now?</div>
+  <div class="ans no" id="ans">…</div>
+  <div class="who" id="who"></div>
+  <div id="body"></div>
+  <h2>📼 Recent streams</h2>
+  <div class="tile" style="overflow-x:auto" id="hist"><span style="color:var(--mut)">Loading…</span></div>
+  <p class="note">Checked on TikTok about every minute. Stream length and peak viewers are recorded by this site while it watches, so streams from before it started tracking only show their start time.</p>
+</div>
+<script src="arcade.js"></script>
+<script>
+(function(){
+const A = window.Arcade, $ = s => document.querySelector(s), esc = A.esc;
+A.mountBar('live');
+let st = null, startMs = 0, lastEndMs = 0;
+const n = x => Number(x).toLocaleString('en-US');
+function hms(sec){ sec = Math.max(0, Math.floor(sec)); const d = Math.floor(sec / 86400), h = Math.floor(sec % 86400 / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60; return (d ? d + 'd ' : '') + [h, m, s].map(v => String(v).padStart(2, '0')).join(':'); }
+function dur(sec){ sec = Math.max(0, Math.round(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60); return h ? h + 'h ' + m + 'm' : m + 'm'; }
+function ago(ts){ const s = Date.now() / 1000 - ts; if (s < 3600) return Math.max(1, Math.round(s / 60)) + ' min ago'; if (s < 86400){ const h = Math.round(s / 3600); return h === 1 ? '1 hour ago' : h + ' hours ago'; } const d = Math.round(s / 86400); return d === 1 ? 'yesterday' : d + ' days ago'; }
+function date(ts){ return new Date(ts * 1000).toLocaleString([], { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
+function render(){
+  const d = st; if (!d) return;
+  document.title = (d.live ? '🔴 LIVE · ' : '') + d.name + ' · Live?';
+  $('#q').textContent = 'Is ' + d.name + ' live right now?';
+  $('#ans').textContent = d.live ? 'YES.' : 'NO.'; $('#ans').className = 'ans ' + (d.live ? 'yes' : 'no');
+  $('#who').innerHTML = (d.avatar ? '<img src="' + esc(d.avatar) + '" alt="" referrerpolicy="no-referrer">' : '') + '<span><span class="dot' + (d.live ? ' on' : '') + '"></span><b>' + esc(d.name) + '</b> on TikTok · @' + esc(d.user) + (d.stale ? ' · <i>TikTok is slow, showing the last check</i>' : '') + '</span>';
+  let h = '';
+  if (d.live){
+    startMs = d.start * 1000;
+    h += '<div class="grid"><div class="tile"><div class="lab">LIVE FOR</div><div class="v"><span class="clock" id="clk">' + hms((Date.now() - startMs) / 1000) + '</span></div><div class="s">since ' + date(d.start) + '</div></div>' +
+      '<div class="tile"><div class="lab">WATCHING NOW</div><div class="v">👀 ' + n(d.viewers) + '</div><div class="s">peak this stream: ' + n(d.peak || d.viewers) + '</div></div>' +
+      '<div class="tile"><div class="lab">LAST STREAM</div><div class="v" style="font-size:20px">' + (d.last ? ago(d.last.start) : '–') + '</div><div class="s">' + (d.last && d.last.end ? dur(d.last.end - d.last.start) + (d.last.peak ? ' · peak ' + n(d.last.peak) : '') : '') + '</div></div></div>';
+    if (d.title) h += '<div class="ttl">🎙️ ' + esc(d.title) + '</div>';
+    h += '<div class="cta"><a class="btn big tk" href="' + esc(d.url) + '" target="_blank" rel="noopener noreferrer">▶ Watch on TikTok</a></div>';
+  } else {
+    const L = d.last; lastEndMs = L ? (L.end || L.start) * 1000 : 0;
+    h += '<div class="grid"><div class="tile"><div class="lab">OFFLINE FOR</div><div class="v"><span class="clock off" id="clk">' + (lastEndMs ? hms((Date.now() - lastEndMs) / 1000) : '--:--:--') + '</span></div><div class="s">' + (L && L.end ? 'since the last stream ended' : L ? 'since the last stream started' : '') + '</div></div>' +
+      '<div class="tile"><div class="lab">LAST STREAM</div><div class="v" style="font-size:22px">' + (L ? ago(L.start) : 'none yet') + '</div><div class="s">' + (L ? date(L.start) : '') + '</div></div>' +
+      '<div class="tile"><div class="lab">LAST STREAM STATS</div><div class="v" style="font-size:22px">' + (L && L.end ? '⏱ ' + dur(L.end - L.start) : '⏱ –') + '</div><div class="s">' + (L && L.peak ? 'peak ' + n(L.peak) + ' watching' : 'viewers not recorded') + '</div></div></div>';
+    if (L && L.title) h += '<div class="ttl">Last title: ' + esc(L.title) + '</div>';
+    h += '<div class="cta"><a class="btn big" href="' + esc(d.url) + '" target="_blank" rel="noopener noreferrer">Open TikTok profile</a></div>';
+  }
+  $('#body').innerHTML = h;
+  const rows = (d.history || []).filter(x => x.end);
+  $('#hist').innerHTML = rows.length ? '<table class="tbl"><thead><tr><th>When</th><th>Length</th><th>Peak viewers</th><th>Title</th></tr></thead><tbody>' +
+    rows.map(x => '<tr><td>' + date(x.start) + '</td><td>' + dur(x.end - x.start) + '</td><td>' + (x.peak ? n(x.peak) : '–') + '</td><td>' + esc(x.title || '') + '</td></tr>').join('') + '</tbody></table>'
+    : '<span style="color:var(--mut)">No streams recorded yet. The next stream will show up here.</span>';
+}
+function load(){
+  fetch('live.php', { cache:'no-store' }).then(r => r.json()).then(j => { if (j.ok){ st = j; render(); } else { $('#ans').textContent = '?'; $('#body').innerHTML = '<div class="tile">' + esc(j.error || 'Could not check TikTok right now.') + '</div>'; } })
+    .catch(() => { $('#ans').textContent = '?'; $('#body').innerHTML = '<div class="tile">The live check works once the site runs on your web host (it needs PHP).</div>'; });
+}
+setInterval(() => { const c = $('#clk'); if (!c || !st) return; c.textContent = st.live ? hms((Date.now() - startMs) / 1000) : (lastEndMs ? hms((Date.now() - lastEndMs) / 1000) : '--:--:--'); }, 1000);
+load(); setInterval(load, 30000);
+})();
+</script>
+</body>
+</html>

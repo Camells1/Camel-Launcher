@@ -10,13 +10,13 @@ DirectoryIndex index.html
   # Old addresses typed or linked by people -> the clean address (301 = permanent)
   RewriteCond %{THE_REQUEST} \s/(index\.html)?[\s?]
   RewriteRule ^(index\.html)?$ /home [R=301,L]
-  RewriteCond %{THE_REQUEST} \s/(rewards|vault|help)\.html[\s?]
-  RewriteRule ^(rewards|vault|help)\.html$ /$1 [R=301,L]
+  RewriteCond %{THE_REQUEST} \s/(rewards|vault|help|live)\.html[\s?]
+  RewriteRule ^(rewards|vault|help|live)\.html$ /$1 [R=301,L]
 
   # A trailing slash would break the page's relative links: /home/ -> /home
-  RewriteRule ^(home|rewards|vault|help)/$ /$1 [R=301,L]
+  RewriteRule ^(home|rewards|vault|help|live)/$ /$1 [R=301,L]
 
   # Clean address -> the real file (the address bar keeps showing the clean one)
   RewriteRule ^home$ index.html [L]
-  RewriteRule ^(rewards|vault|help)$ $1.html [L]
+  RewriteRule ^(rewards|vault|help|live)$ $1.html [L]
 </IfModule>
