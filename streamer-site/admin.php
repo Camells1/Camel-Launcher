@@ -76,6 +76,19 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
                 $s['leaderboard'] = array_slice($rows, 0, 50);
                 $s['settings']['leaderboardTitle'] = clean($_POST['lbTitle'] ?? 'Top Viewers', 60);
                 return 'Leaderboard saved.';
+            case 'donators':
+                $rows = [];
+                foreach (explode("\n", $_POST['rows'] ?? '') as $line) {
+                    $parts = array_map('trim', explode('|', $line));
+                    if ($parts[0] === '') continue;
+                    $amt = (float)str_replace(',', '.', preg_replace('/[^\d.,]/', '', $parts[1] ?? '0'));
+                    $rows[] = ['name' => clean($parts[0], 30), 'amount' => $amt, 'note' => clean($parts[2] ?? '', 60)];
+                }
+                usort($rows, fn($a, $b) => $b['amount'] <=> $a['amount']);
+                $s['donators'] = array_slice($rows, 0, 50);
+                $s['settings']['donateUnit'] = clean($_POST['donateUnit'] ?? 'coins', 12);
+                $s['settings']['donateUrl'] = preg_match('~^https?://~', $_POST['donateUrl'] ?? '') ? clean($_POST['donateUrl'], 200) : '';
+                return 'Top donators saved.';
             case 'videos':
                 $ids = [];
                 foreach (explode("\n", $_POST['videos'] ?? '') as $line) {
@@ -143,7 +156,7 @@ function clip_preview($c) {
   </section>
 <?php else: ?>
   <h1>Admin panel</h1>
-  <p class="muted">Jump to: <a href="#live">Live</a> · <a href="#clips">Clips (<?= count($pending) ?> waiting)</a> · <a href="#polls">Polls</a> · <a href="#lb">Leaderboard</a> · <a href="#videos">Clip wall</a> · <a href="#builds">Builds</a> · <a href="#settings">Settings</a></p>
+  <p class="muted">Jump to: <a href="#live">Live</a> · <a href="#clips">Clips (<?= count($pending) ?> waiting)</a> · <a href="#polls">Polls</a> · <a href="#lb">Leaderboard</a> · <a href="#don">Top donators</a> · <a href="#videos">Clip wall</a> · <a href="#builds">Builds</a> · <a href="#settings">Settings</a></p>
 
   <section class="card" id="live">
     <h2>Live status</h2>
@@ -198,6 +211,20 @@ function clip_preview($c) {
       <textarea name="rows" rows="8" placeholder="Steve | 1200 | Won build battle&#10;Alex | 950"><?= h(implode("\n", array_map(fn($r) => $r['name'] . ' | ' . $r['score'] . ($r['note'] ? ' | ' . $r['note'] : ''), $s['leaderboard']))) ?></textarea></label>
       <button class="btn btn-grass">Save leaderboard</button>
     </form>
+  </section>
+
+  <section class="card" id="don">
+    <h2>👑 Top donators</h2>
+    <form method="post"><?= hidden('donators', 'don', $csrf) ?>
+      <div class="grid-form">
+        <label>What are amounts counted in? <input name="donateUnit" value="<?= h($st['donateUnit'] ?? 'coins') ?>" placeholder="coins, €, $, gifts…"></label>
+        <label>Donate / support link (optional) <input name="donateUrl" value="<?= h($st['donateUrl'] ?? '') ?>" placeholder="https://ko-fi.com/…"></label>
+      </div>
+      <label>One per line: <code>name | amount | note</code> (biggest first automatically; #1 gets the crown on the home page)
+      <textarea name="rows" rows="8" placeholder="Steve | 5000 | Sent a Lion 🦁&#10;Alex | 1200"><?= h(implode("\n", array_map(fn($r) => $r['name'] . ' | ' . (+$r['amount']) . ($r['note'] ? ' | ' . $r['note'] : ''), $s['donators'] ?? []))) ?></textarea></label>
+      <button class="btn btn-gold">Save top donators</button>
+    </form>
+    <p class="muted small">Tip: after each stream, check the TikTok LIVE top gifters and update the numbers here.</p>
   </section>
 
   <section class="card" id="videos">

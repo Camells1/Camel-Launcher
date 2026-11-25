@@ -227,3 +227,19 @@ footer a { color: var(--muted); }
 .table td:last-child { text-align: right; }
 code { background: #111318; padding: 2px 6px; }
 @media (max-width: 520px) { .live-banner { gap: 6px; font-size: 14px; padding: 8px 12px; } }
+
+/* ----- top donators ----- */
+.crown-row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; padding: 16px; background: linear-gradient(90deg, rgba(246,199,68,.16), transparent); border: 3px solid var(--gold); }
+.crown-head { width: 72px; height: 72px; image-rendering: pixelated; border: 3px solid var(--line); background: var(--card2); }
+.crown-name { font-size: 16px; color: var(--gold); margin-bottom: 6px; overflow-wrap: anywhere; }
+.crown-name::before { content: "👑 "; }
+.crown-amt { font: 18px var(--pixel); color: var(--gold); }
+.podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: end; margin-bottom: 18px; text-align: center; }
+.podium > div { background: #111318; border: 3px solid var(--line); padding: 12px 6px; min-width: 0; }
+.podium img { width: 56px; height: 56px; image-rendering: pixelated; display: block; margin: 0 auto 8px; }
+.podium b { display: block; overflow-wrap: anywhere; }
+.podium .amt { font: 11px var(--pixel); color: var(--gold); margin-top: 6px; display: block; }
+.podium .p1 { padding-top: 30px; border-color: var(--gold); background: linear-gradient(rgba(246,199,68,.18), #111318); }
+.podium .p2 { padding-top: 18px; }
+.podium .p3 { padding-top: 10px; }
+@media (max-width: 420px) { .podium img { width: 40px; height: 40px; } .podium .amt { font-size: 9px; } }

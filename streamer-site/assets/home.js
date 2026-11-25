@@ -51,3 +51,20 @@
   sc.src = 'https://www.tiktok.com/embed.js'; sc.async = true;
   document.body.appendChild(sc);
 })();
+
+// Top donator spotlight on the home page
+(async () => {
+  const { $, fmt } = Site;
+  const s = await Site.ready;
+  const dons = s.donators || [];
+  if (!dons.length) return;
+  const st = Site.settings(s), unit = st.donateUnit || 'coins';
+  const money = n => /^[€$£]$/.test(unit) ? unit + fmt(n) : fmt(n) + ' ' + unit;
+  const d = dons[0];
+  $('#topDonCard').hidden = false;
+  $('#topDonName').textContent = d.name;
+  $('#topDonNote').textContent = d.note || 'Thank you for the support! 💛';
+  $('#topDonAmt').textContent = money(d.amount);
+  $('#topDonHead').src = `https://mc-heads.net/avatar/${encodeURIComponent(/^\w{3,16}$/.test(d.name) ? d.name : 'MHF_Steve')}/72`;
+  if (dons.length > 1) $('#topDonRunners').textContent = 'Runners-up: ' + dons.slice(1, 3).map(r => `${r.name} (${money(r.amount)})`).join(' · ');
+})();

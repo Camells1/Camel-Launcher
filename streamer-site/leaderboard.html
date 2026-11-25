@@ -23,7 +23,7 @@
     <a href="spinner.html">Clip Spinner</a>
     <a href="vote.html">Vote</a>
     <a href="smp.html">SMP</a>
-    <a href="leaderboard.html">Leaderboard</a>
+    <a href="leaderboard.html">Top Donators</a>
     <a href="fun.html">Games</a>
     <a data-discord href="https://discord.gg/m7G76JxKnS" target="_blank" rel="noopener" style="color:#fff;background:var(--discord)">Join Discord</a>
   </nav>
@@ -31,8 +31,14 @@
 
 <main class="wrap" style="max-width:760px">
   <h1 class="center">🏆 <span id="lbTitle">Leaderboard</span></h1>
-  <p class="center muted" style="margin-top:-8px">Show up, win events, climb the board. Top 3 get shoutouts on stream.</p>
-  <section class="card" style="margin-top:26px"><div id="lb"></div></section>
+  <p class="center muted" style="margin-top:-8px">Biggest supporters and most active viewers. Top 3 get shoutouts on stream.</p>
+  <div class="tabs" style="margin-top:26px"><button class="on" data-board="don">👑 Top Donators</button><button data-board="lb">🏆 <span id="lbTab">Top Viewers</span></button></div>
+  <section class="card" data-pane="don">
+    <div id="donTop"></div>
+    <div id="don"></div>
+    <div class="center" id="donCta" style="margin-top:16px"></div>
+  </section>
+  <section class="card" data-pane="lb" hidden><div id="lb"></div></section>
   <section class="card center">
     <h2>How do I get on here?</h2>
     <p class="muted">Win build battles, show up to events, post clips and be active in the Discord.</p>

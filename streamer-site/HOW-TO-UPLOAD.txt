@@ -35,6 +35,9 @@ WHAT TO DO IN ADMIN (yoursite.com/admin.php)
    - Clips: approve or delete uploaded clips before they hit the wheel
    - Polls: make "what should I do next stream?" polls
    - Leaderboard: one line per person, "name | score | note"
+   - Top donators: one line per person, "name | amount | note".
+     #1 gets the crown on the home page. Check TikTok LIVE top gifters
+     after each stream and update it.
    - Clip wall: paste his best TikTok video links for the home page
    - Builds: upload SMP build screenshots
    - Settings: next event + date (countdown), SMP IP, seed of the week,

@@ -31,6 +31,7 @@ function default_state(): array {
         'clips'       => [],
         'polls'       => [],
         'leaderboard' => [],
+        'donators'    => [],
         'builds'      => [],
         'videos'      => [],
     ];
@@ -85,6 +86,7 @@ function public_state(array $s): array {
         'clips'       => $clips,
         'polls'       => $polls,
         'leaderboard' => $s['leaderboard'],
+        'donators'    => $s['donators'],
         'builds'      => $s['builds'],
         'videos'      => $s['videos'],
     ];
