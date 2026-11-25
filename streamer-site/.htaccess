@@ -2,7 +2,7 @@
 ErrorDocument 404 /404.html
 Options -Indexes
 
-# Clean addresses: citt.nl/live instead of citt.nl/live.html
+# Clean addresses: yoursite.com/live instead of yoursite.com/live.html
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
