@@ -148,6 +148,7 @@ dust_path([(2, 7, 2), (1, 7, 2), (1, 7, 1)], "clock_loop", seed=15)
 
 # T -> H1 lock line: dust ends on block (6,5,1) next to H1, powering it = H1 locked
 put((6, 5, 1), "stone")                            # must conduct: it is what locks H1
+put((5, 6, 1), "stone")                            # step-down support: power only flows down a step over a CONDUCTING block
 dust((4, 7, 1), "h1_lock")
 dust((5, 7, 1), "h1_lock")
 dust((6, 6, 1), "h1_lock")
@@ -178,10 +179,12 @@ wall_torch((13, 6, -10), "north", lit=True)                           # TRL: dra
 repeater((-1, 6, -8), "south", delay=4)
 dust((-1, 6, -9), "inject")
 repeater((-1, 6, -10), "south", delay=4)
-repeater((-1, 6, -11), "south", delay=1)
-repeater((-1, 6, -12), "south", delay=1)
-repeater((-1, 6, -13), "south", delay=1)
-put((-1, 6, -14), "stone")                                            # J: powers the dropper
+dust((-1, 6, -11), "inject2")
+dust((-2, 6, -11), "inject2")
+repeater((-2, 6, -12), "south", delay=1)
+put((-2, 6, -13), "stone")                                            # J: strongly powered
+dust((-2, 7, -13), "inject3")                                         # ...so the dust on it is too
+repeater((-1, 7, -13), "west", delay=1)                               # fires the injector dropper
 
 # ---------------------------------------------------------------------------------------------
 # Advance pulse: falling edge of T
@@ -192,8 +195,8 @@ dust((3, 8, -1), "t_tap")
 dust((2, 8, -1), "t_tap")
 repeater((2, 8, -2), "south", delay=1)            # side path (fast)
 dust((2, 8, -3), "t_side")
-repeater((3, 8, -2), "south", delay=2)            # rear path (slow)
-comparator((3, 8, -3), "south", mode="subtract")  # CA: 1 rt pulse on T falling edge
+repeater((3, 8, -2), "south", delay=3)            # rear path (slow): 2 rt window, comparators drop 1 rt pulses
+comparator((3, 8, -3), "south", mode="subtract")  # CA: 2 rt pulse on T falling edge
 put((3, 8, -4), "stone")                          # QA
 wall_torch((3, 8, -5), "north", lit=True)         # TA: counter-lock inverter
 repeater((3, 8, -6), "south", powered=True)
@@ -229,8 +232,9 @@ repeater((13, CY + 1, CZ + 1), "south", powered=True)              # counter-loc
 SEEDS[(13, CY + 1, CZ)] = 15
 repeater((13, CY - 1, CZ + 3), "south", powered=True)              # drain-lock feed
 SEEDS[(13, CY - 1, CZ + 2)] = 15
-put((-1, CY, CZ), "dropper", CONTAINER, facing="east", triggered=False)   # token injector
-TILES[(-1, CY, CZ)] = Compound({"id": String("minecraft:dropper"), "Items": List[Compound](
+# injector sits SOUTH of Hc1: at the row's west end the lock dust would quasi-power it
+put((0, CY, CZ + 1), "dropper", CONTAINER, facing="north", triggered=False)   # token injector
+TILES[(0, CY, CZ + 1)] = Compound({"id": String("minecraft:dropper"), "Items": List[Compound](
     [item(s, TOKEN["item_id"], 64, name=TOKEN["name"]) for s in range(9)])})
 put((-1, CY - 2, CZ), "barrel", CONTAINER, facing="up", open=False)       # used tokens
 TILES[(-1, CY - 2, CZ)] = Compound({"id": String("minecraft:barrel"), "Items": List[Compound]([])})
@@ -311,6 +315,8 @@ def connections(pos):
         if not conductor((x, y + 1, z)) and sturdy_top(n) and bid(up) == "redstone_wire":
             conn[d] = "up"
             links.append(up)
+            if not conductor(n):
+                raise RuntimeError(f"dust step at {pos}->{up} sits on non-conducting {bid(n)}: power would not flow down it")
         elif b == "redstone_wire":
             conn[d] = "side"
             links.append(n)
