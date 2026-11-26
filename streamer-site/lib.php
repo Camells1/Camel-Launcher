@@ -89,8 +89,9 @@ function public_state(array $s): array {
         'settings'    => $s['settings'],
         'clips'       => $clips,
         'polls'       => $polls,
-        'leaderboard' => $s['leaderboard'],
-        'donators'    => $s['donators'],
+        'leaderboard' => auto_leaderboard($s),
+        'donators'    => auto_donators($s),
+        'gifts'       => gift_public($s),
         'builds'      => $s['builds'],
         'videos'      => $s['videos'],
         'pedia'       => $s['pedia'],
@@ -489,16 +490,31 @@ function chat_norm(string $m): string {
 }
 
 function chat_load(): array {
-    return array_merge(['all' => [], 'streams' => [], 'updated' => 0, 'total' => 0], read_guarded(CHAT_FILE) ?? []);
+    return array_merge(['all' => [], 'streams' => [], 'updated' => 0, 'total' => 0, 'users' => [], 'gifts' => [], 'giftLog' => [], 'unknownGifts' => []], read_guarded(CHAT_FILE) ?? []);
 }
 
 /** Add a batch of chat messages to the counts. */
-function chat_add(array $msgs): int {
+/** Coin value of TikTok gifts (editable in admin; unknown gifts count as 1 coin until you set them). */
+const GIFT_COINS = [
+    'rose' => 1, 'tiktok' => 1, 'gg' => 1, 'ice cream cone' => 1, 'heart me' => 1, 'thumbs up' => 1, 'heart' => 1, 'cake slice' => 1,
+    'glow stick' => 1, 'love you' => 1, 'enjoy music' => 1, 'finger heart' => 5, 'friendship necklace' => 10, 'rosa' => 10,
+    'perfume' => 20, 'doughnut' => 30, 'cap' => 99, 'paper crane' => 99, 'hand hearts' => 100, 'confetti' => 100, 'hand heart' => 100,
+    'sunglasses' => 199, 'corgi' => 299, 'boxing gloves' => 299, 'money gun' => 500, 'swan' => 699, 'train' => 899, 'galaxy' => 1000,
+    'fireworks' => 1088, 'whale diving' => 2150, 'motorcycle' => 2988, 'private jet' => 4888, 'sports car' => 7000,
+    'rosa nebula' => 15000, 'lion' => 29999, 'universe' => 34999,
+];
+
+function gift_values(array $settings): array {
+    return array_merge(GIFT_COINS, $settings['giftValues'] ?? []);
+}
+
+function chat_add(array $msgs, array $users = [], array $gifts = []): int {
     $live = read_guarded(LIVE_FILE) ?? [];
     $key = !empty($live['now']['live']) && !empty($live['now']['roomId']) ? 'room-' . $live['now']['roomId'] : 'day-' . gmdate('Y-m-d');
+    $values = gift_values(load_state()['settings']);
     $lock = fopen(__DIR__ . '/data/.chatlock', 'c'); flock($lock, LOCK_EX);
     $C = chat_load();
-    $n = 0;
+    $n = 0; $extra = 0;
     foreach (array_slice($msgs, 0, 500) as $m) {
         $m = chat_norm((string)$m);
         if ($m === '') continue;
@@ -506,7 +522,46 @@ function chat_add(array $msgs): int {
         $C['streams'][$key]['counts'][$m] = ($C['streams'][$key]['counts'][$m] ?? 0) + 1;
         $n++;
     }
-    if ($n) {
+    // who chats the most (Top Viewers)
+    foreach (array_slice($users, 0, 500) as $u) {
+        $u = clean((string)$u, 30);
+        if ($u === '') continue;
+        $C['users'][$u] = ($C['users'][$u] ?? 0) + 1;
+        $extra++;
+    }
+    // gifts -> Top Donators (in coins)
+    foreach (array_slice($gifts, 0, 200) as $g) {
+        $u = clean((string)($g['u'] ?? ''), 30);
+        $name = mb_strtolower(clean((string)($g['g'] ?? ''), 40));
+        $cnt = max(1, min(10000, (int)($g['n'] ?? 1)));
+        if ($u === '' || $name === '') continue;
+        if (!isset($values[$name])) $C['unknownGifts'][$name] = ($C['unknownGifts'][$name] ?? 0) + $cnt;
+        $coins = ($values[$name] ?? 1) * $cnt;
+        // a combo (Rose ×1, ×2, ×3…) arrives in pieces: merge it into one gift
+        $last = -1;
+        for ($k = count($C['giftLog']) - 1; $k >= max(0, count($C['giftLog']) - 15); $k--) {
+            $x = $C['giftLog'][$k];
+            if ($x['u'] === $u && $x['g'] === $name && time() - $x['t'] < 90) { $last = $k; break; }
+        }
+        if ($last >= 0) {
+            $C['giftLog'][$last]['n'] += $cnt; $C['giftLog'][$last]['coins'] += $coins; $C['giftLog'][$last]['t'] = time();
+            $entry = $C['giftLog'][$last];
+        } else {
+            $entry = ['u' => $u, 'g' => $name, 'n' => $cnt, 'coins' => $coins, 't' => time()];
+            $C['giftLog'][] = $entry;
+        }
+        $d = $C['gifts'][$u] ?? ['coins' => 0, 'gifts' => 0, 'top' => '', 'topCoins' => 0];
+        $d['coins'] += $coins; $d['gifts'] += $cnt;
+        if ($entry['coins'] >= $d['topCoins']) { $d['top'] = $name . ($entry['n'] > 1 ? ' ×' . $entry['n'] : ''); $d['topCoins'] = $entry['coins']; }
+        $C['gifts'][$u] = $d;
+        $C['streams'][$key]['coins'] = ($C['streams'][$key]['coins'] ?? 0) + $coins;
+        $extra++;
+    }
+    if ($n || $extra) {
+        arsort($C['users']); $C['users'] = array_slice($C['users'], 0, 500, true);
+        uasort($C['gifts'], fn($a, $b) => $b['coins'] <=> $a['coins']); $C['gifts'] = array_slice($C['gifts'], 0, 500, true);
+        $C['giftLog'] = array_slice($C['giftLog'], -60);
+        $C['streams'][$key]['counts'] = $C['streams'][$key]['counts'] ?? [];
         $C['streams'][$key]['updated'] = time();
         $C['updated'] = time();
         $C['total'] += $n;
@@ -542,4 +597,45 @@ function chat_public(array $state): array {
     arsort($latest['counts']);
     return ['source' => 'auto', 'live' => (bool)$live, 'updated' => $C['updated'],
             'top' => chat_top($latest['counts'], $hidden), 'all' => chat_top($C['all'], $hidden)];
+}
+
+
+/** Top Donators: gifts counted by the collector (coins) + anything added by hand in admin. */
+function auto_donators(array $s): array {
+    $C = chat_load();
+    $hidden = array_map('mb_strtolower', $s['settings']['userHidden'] ?? []);
+    $rows = [];
+    foreach ($s['donators'] as $r) $rows[mb_strtolower($r['name'])] = $r;
+    foreach ($C['gifts'] as $u => $d) {
+        $k = mb_strtolower((string)$u);
+        if (isset($rows[$k])) { $rows[$k]['amount'] += $d['coins']; continue; }
+        $rows[$k] = ['name' => (string)$u, 'amount' => $d['coins'], 'note' => 'Biggest gift: ' . $d['top']];
+    }
+    $rows = array_values(array_filter($rows, fn($r) => !in_array(mb_strtolower($r['name']), $hidden, true)));
+    usort($rows, fn($a, $b) => $b['amount'] <=> $a['amount']);
+    return array_slice($rows, 0, 50);
+}
+
+/** Top Viewers: most messages in chat (automatic) — or the hand-made list if the collector hasn't counted anyone yet. */
+function auto_leaderboard(array $s): array {
+    $C = chat_load();
+    if (!$C['users'] || !empty($s['settings']['leaderboardManual'])) return $s['leaderboard'];
+    $hidden = array_map('mb_strtolower', $s['settings']['userHidden'] ?? []);
+    $rows = [];
+    foreach ($C['users'] as $u => $c) {
+        if (in_array(mb_strtolower((string)$u), $hidden, true)) continue;
+        $rows[] = ['name' => (string)$u, 'score' => $c, 'note' => 'messages in chat'];
+        if (count($rows) >= 30) break;
+    }
+    return $rows;
+}
+
+/** Gifts for the Live page: this stream's coins + the latest gifts. */
+function gift_public(array $s): array {
+    $C = chat_load();
+    if (!$C['giftLog']) return ['coins' => 0, 'latest' => []];
+    $hidden = array_map('mb_strtolower', $s['settings']['userHidden'] ?? []);
+    $latest = array_values(array_filter(array_reverse($C['giftLog']), fn($g) => !in_array(mb_strtolower($g['u']), $hidden, true)));
+    $stream = reset($C['streams']) ?: [];
+    return ['coins' => (int)($stream['coins'] ?? 0), 'latest' => array_slice($latest, 0, 6)];
 }

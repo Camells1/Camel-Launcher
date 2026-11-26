@@ -16,7 +16,8 @@ if ($a === 'live') {
 
 // ---------- Top chat messages (Live page refreshes this) ----------
 if ($a === 'chat') {
-    json_out(chat_public(load_state()));
+    $st = load_state();
+    json_out(chat_public($st) + ['gifts' => gift_public($st)]);
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => 'Use POST'], 405);
@@ -72,8 +73,10 @@ if ($a === 'submit_clip') {
 if ($a === 'chat_push') {
     if (!hash_equals(chat_token(), (string)($_POST['token'] ?? ''))) json_out(['error' => 'Wrong collector key.'], 403);
     $msgs = json_decode((string)($_POST['msgs'] ?? '[]'), true);
-    if (!is_array($msgs)) json_out(['error' => 'Bad data.'], 400);
-    json_out(['ok' => true, 'counted' => chat_add($msgs)]);
+    $users = json_decode((string)($_POST['users'] ?? '[]'), true);
+    $gifts = json_decode((string)($_POST['gifts'] ?? '[]'), true);
+    if (!is_array($msgs) || !is_array($users) || !is_array($gifts)) json_out(['error' => 'Bad data.'], 400);
+    json_out(['ok' => true, 'counted' => chat_add($msgs, $users, $gifts)]);
 }
 
 // ---------- Vote in a poll ----------

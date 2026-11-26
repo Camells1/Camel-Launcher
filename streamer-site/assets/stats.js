@@ -228,10 +228,23 @@
   }).observe($('#chatCard'));
   play(false);
 
+  // gifts: this stream's coins + latest gifts
+  function gifts(g) {
+    if (!g || !g.latest || !g.latest.length) return;
+    $('#giftCard').hidden = false;
+    $('#giftTotal').textContent = g.coins ? `${fmt(g.coins)} coins this stream` : '';
+    const ago = t => { const d = Date.now() / 1000 - t; return d < 90 ? 'just now' : d < 3600 ? Math.round(d / 60) + ' min ago' : Math.round(d / 3600) + ' h ago'; };
+    $('#giftList').innerHTML = g.latest.map(x => `<div class="gift-row"><span class="gift-icon">🎁</span>
+      <span class="gift-text"><b>${esc(x.u)}</b> sent <b>${esc(x.g)}</b>${x.n > 1 ? ` ×${fmt(x.n)}` : ''}</span>
+      <span class="gift-coins">${fmt(x.coins)} 🪙</span><span class="muted small">${ago(x.t)}</span></div>`).join('');
+  }
+  gifts(s.gifts);
+
   // refresh every 30 s; only re-animate when the ranking changed
   setInterval(async () => {
     const fresh = await Site.api('chat').catch(() => null);
     if (!fresh || fresh.error) return;
+    gifts(fresh.gifts);
     chat = fresh;
     const key = JSON.stringify(list());
     if (key !== lastKey) { lastKey = key; play(shown); }

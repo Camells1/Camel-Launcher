@@ -481,3 +481,11 @@ footer.has-gem { position: relative; }
 .admin-edit { margin-top: 10px; }
 .admin-edit summary { cursor: pointer; font-weight: 600; margin-bottom: 10px; }
 .setup-steps { padding-left: 20px; line-height: 1.7; }
+
+/* gifts on the live page */
+.gift-total { font: 12px var(--pixel); color: var(--gold); }
+.gift-list { display: flex; flex-direction: column; gap: 8px; }
+.gift-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 14px; background: #111318; border: 3px solid var(--line); }
+.gift-icon { font-size: 20px; }
+.gift-text { flex: 1; min-width: 160px; overflow-wrap: anywhere; }
+.gift-coins { font: 12px var(--pixel); color: var(--gold); font-variant-numeric: tabular-nums; }

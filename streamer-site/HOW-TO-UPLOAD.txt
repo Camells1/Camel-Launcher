@@ -68,15 +68,20 @@ CLIP SPINNER: ANY CLIP
    Medal, Kick, X, Discord, or any other site. Known sites play right on
    the wheel; other links get a "Watch it there" button.
 
-MOST SAID IN CHAT (automatic)
-   TikTok doesn't let websites read live chat, so a small "chat collector"
+LIVE COLLECTOR: CHAT, TOP VIEWERS AND GIFTS, ALL AUTOMATIC
+   TikTok doesn't let websites read the live, so a small "live collector"
    runs in a normal browser tab that has the live open (Yokii's PC or a
-   mod's). It reads the chat on screen and sends the messages to the site,
-   which counts them. Only the text is counted, never who said it.
-   Setup (once): admin > Most said in chat > "Set up the chat collector".
+   mod's). Every 10 seconds it sends what it sees to the site:
+     - chat messages  -> "Most said in chat" top 5 on the Live page
+     - who chats      -> Top Viewers (most active in chat)
+     - gifts          -> Top Donators (in TikTok coins) + gifts on the Live page
+   Setup (once): admin > Most said in chat > "Set up the live collector".
    Install the free Tampermonkey extension, paste the script, done. During
    streams just keep tiktok.com/@yokii_fn.alt/live open in that browser.
-   Rude messages: click "Hide" in admin and they never show on the site.
+   - Rude messages or names: click "Hide" in admin.
+   - Gift worth wrong / unknown gift: admin > Top donators > Gift coin values.
+   - Badge says "waiting for chat…" on a real stream? Click the badge: it
+     copies a report. Send that report so the script can be fixed.
 
 WHAT TO DO IN ADMIN
    - Live tracker: see stats, add past streams, force the banner if needed

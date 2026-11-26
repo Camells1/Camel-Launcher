@@ -216,6 +216,32 @@ if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
             case 'chat_reset':
                 write_guarded(CHAT_FILE, ['all' => [], 'streams' => [], 'updated' => 0, 'total' => 0]);
                 return 'All automatic chat counts were reset.';
+            case 'user_hide':
+                $u = clean((string)($_POST['user'] ?? ''), 30);
+                if ($u !== '' && !in_array($u, $s['settings']['userHidden'] ?? [], true)) $s['settings']['userHidden'][] = $u;
+                return 'Hidden: ' . $u . ' will not show in Top Donators or Top Viewers.';
+            case 'user_unhide':
+                $s['settings']['userHidden'] = array_values(array_filter($s['settings']['userHidden'] ?? [], fn($x) => $x !== ($_POST['user'] ?? '')));
+                return 'Shown again.';
+            case 'gift_values':
+                $vals = [];
+                foreach (explode("\n", $_POST['rows'] ?? '') as $line) {
+                    $p = array_map('trim', explode('|', $line));
+                    if (($p[0] ?? '') === '' || !isset($p[1])) continue;
+                    $vals[mb_strtolower(clean($p[0], 40))] = max(0, (int)preg_replace('/\D/', '', $p[1]));
+                }
+                $s['settings']['giftValues'] = $vals;
+                return 'Gift values saved. They count for new gifts from now on.';
+            case 'lb_mode':
+                $s['settings']['leaderboardManual'] = !empty($_POST['manual']);
+                return $s['settings']['leaderboardManual'] ? 'Top Viewers now uses your own list.' : 'Top Viewers is automatic again (most active in chat).';
+            case 'gifts_reset':
+                $lock = fopen(ROOT . '/data/.chatlock', 'c'); flock($lock, LOCK_EX);
+                $C = chat_load(); $C['gifts'] = []; $C['giftLog'] = []; $C['unknownGifts'] = [];
+                foreach ($C['streams'] as &$x) unset($x['coins']);
+                unset($x);
+                write_guarded(CHAT_FILE, $C); flock($lock, LOCK_UN); fclose($lock);
+                return 'Automatic gift totals were reset.';
             case 'chat_top':
                 $rows = [];
                 foreach (explode("\n", $_POST['rows'] ?? '') as $line) {
@@ -281,7 +307,7 @@ function clip_icon($c) {
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Admin · <?= h($st['siteName']) ?></title>
-<link rel="stylesheet" href="../assets/style.css?v=10">
+<link rel="stylesheet" href="../assets/style.css?v=11">
 <link rel="icon" href="../assets/favicon.svg">
 </head><body class="admin">
 <header class="topbar"><a class="brand" href="../">⛏ <?= h($st['siteName']) ?></a><nav class="nav-links"><a href="../" target="_blank">View site</a><?php if ($authed): ?><a href="?logout=1">Log out</a><?php endif ?></nav></header>
@@ -344,7 +370,7 @@ function clip_icon($c) {
     $hidden = $st['chatHidden'] ?? [];
     $siteUrl = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'localhost');
     $ttUser = $st['tiktok'] ?: 'yokii_fn.alt';
-    $collector = "// ==UserScript==\n// @name         Chat collector for " . ($_SERVER['HTTP_HOST'] ?? 'the site') . "\n// @description  Counts what chat says on @$ttUser's TikTok LIVE and sends the counts to the website.\n// @match        https://www.tiktok.com/@$ttUser/live*\n// @grant        GM_xmlhttpRequest\n// @connect      " . preg_replace('~:\d+$~', '', $_SERVER['HTTP_HOST'] ?? 'localhost') . "\n// @version      1.0\n// ==/UserScript==\n" . str_replace(['%API%', '%TOKEN%'], [$siteUrl . '/api.php', chat_token()], file_get_contents(ROOT . '/assets/collector.tpl.js'));
+    $collector = "// ==UserScript==\n// @name         Live collector for " . ($_SERVER['HTTP_HOST'] ?? 'the site') . "\n// @description  Counts chat, active chatters and gifts on @$ttUser's TikTok LIVE and sends them to the website.\n// @match        https://www.tiktok.com/@$ttUser/live*\n// @grant        GM_xmlhttpRequest\n// @connect      " . preg_replace('~:\d+$~', '', $_SERVER['HTTP_HOST'] ?? 'localhost') . "\n// @version      2.0\n// ==/UserScript==\n" . str_replace(['%API%', '%TOKEN%'], [$siteUrl . '/api.php', chat_token()], file_get_contents(ROOT . '/assets/collector.tpl.js'));
     $row = function ($m, $c) use ($csrf, $hidden) {
         $isHidden = in_array((string)$m, $hidden, true);
         return '<tr' . ($isHidden ? ' style="opacity:.45"' : '') . '><td>' . h($m) . '</td><td class="muted">×' . (int)$c . '</td><td><form method="post">' . hidden($isHidden ? 'chat_unhide' : 'chat_hide', 'chat', $csrf, ['msg' => $m]) . '<button class="btn btn-small' . ($isHidden ? '' : ' btn-red') . '">' . ($isHidden ? 'Show' : 'Hide') . '</button></form></td></tr>';
@@ -352,15 +378,17 @@ function clip_icon($c) {
   ?>
   <section class="card" id="chat">
     <h2>💬 Most said in chat (automatic)</h2>
-    <p>While the <b>chat collector</b> runs in a browser tab with Yokii's live open, every chat message is counted and the top 5 on the Live page update by themselves. Only the counts are saved, not who said it.</p>
+    <p>While the <b>live collector</b> runs in a browser tab with Yokii's live open, it does everything by itself: the <b>top 5 chat messages</b>, <b>Top Viewers</b> (who chats the most) and <b>Top Donators</b> (gifts, in coins) all update automatically.</p>
     <p class="muted small">Status: <?= $C['updated'] ? 'last message received ' . date('M j, H:i:s', $C['updated']) . ' · ' . number_format($C['total']) . ' messages counted' : 'the collector has not sent anything yet' ?></p>
 
-    <details class="admin-edit" <?= $C['updated'] ? '' : 'open' ?>><summary>📡 Set up the chat collector (one time, 2 minutes)</summary>
+    <details class="admin-edit" <?= $C['updated'] ? '' : 'open' ?>><summary>📡 Set up the live collector (one time, 2 minutes)</summary>
       <ol class="setup-steps">
         <li>On the PC/laptop that has the live open during streams (Yokii's or a mod's), install the free browser extension <b>Tampermonkey</b> (Chrome Web Store / Firefox Add-ons / Edge Add-ons).</li>
         <li>Click the Tampermonkey icon → <b>Create a new script</b>. Delete everything in it.</li>
         <li>Click <b>Copy script</b> below, paste it in, press <b>Ctrl+S</b>.</li>
-        <li>During a stream, open <b>tiktok.com/@<?= h($ttUser) ?>/live</b> in that browser and leave the tab open. A small "📡 Chat collector" badge shows in the corner with how many messages it sent.</li>
+        <li>During a stream, open <b>tiktok.com/@<?= h($ttUser) ?>/live</b> in that browser and leave the tab open. A small "📡 Collector" badge shows in the corner with how much it sent.</li>
+        <li><b>Already installed the older version?</b> Open Tampermonkey's dashboard, click the old script, replace everything with the new one and press Ctrl+S.</li>
+        <li>Something looks wrong on stream (badge keeps saying "waiting for chat…" or gifts don't count)? <b>Click the badge</b>: it copies a short report you can send to whoever set this up.</li>
       </ol>
       <p class="muted small">⚠️ Keep this script private: it has a secret key that lets it send chat counts to your site.</p>
       <textarea id="collectorCode" rows="8" readonly style="font:12px monospace"><?= h($collector) ?></textarea>
@@ -481,8 +509,22 @@ function clip_icon($c) {
     </script>
   </section>
 
+  <?php $CG = chat_load(); $vals = gift_values($st); $uh = $st['userHidden'] ?? []; ?>
   <section class="card" id="lb">
-    <h2>Leaderboard</h2>
+    <h2>Top Viewers</h2>
+    <p><b>Automatic:</b> the people who chat the most (counted by the live collector).
+      <?= !empty($CG['users']) ? count($CG['users']) . ' chatters counted so far.' : 'Nobody counted yet, so the list below is shown for now.' ?></p>
+    <form method="post" class="row-form"><?= hidden('lb_mode', 'lb', $csrf) ?>
+      <label class="switch"><input type="checkbox" name="manual" value="1" <?= !empty($st['leaderboardManual']) ? 'checked' : '' ?>> Use my own list below instead of the automatic one</label>
+      <button class="btn btn-small">Save</button>
+    </form>
+    <?php if (!empty($CG['users'])): ?>
+      <table class="table"><?php foreach (array_slice($CG['users'], 0, 10, true) as $u => $c): $hid = in_array((string)$u, $uh, true); ?>
+        <tr<?= $hid ? ' style="opacity:.45"' : '' ?>><td><?= h($u) ?></td><td class="muted"><?= (int)$c ?> messages</td>
+        <td><form method="post"><?= hidden($hid ? 'user_unhide' : 'user_hide', 'lb', $csrf, ['user' => $u]) ?><button class="btn btn-small<?= $hid ? '' : ' btn-red' ?>"><?= $hid ? 'Show' : 'Hide' ?></button></form></td></tr>
+      <?php endforeach ?></table>
+    <?php endif ?>
+    <h3>Own list</h3>
     <form method="post"><?= hidden('leaderboard', 'lb', $csrf) ?>
       <label>Title <input name="lbTitle" value="<?= h($st['leaderboardTitle'] ?? 'Top Viewers') ?>"></label>
       <label>One per line: <code>name | score | note</code> (sorted automatically)
@@ -493,6 +535,25 @@ function clip_icon($c) {
 
   <section class="card" id="don">
     <h2>👑 Top donators</h2>
+    <p><b>Automatic:</b> every gift the live collector sees is added here in TikTok coins. Names you type below are added on top (use coins too).</p>
+    <?php if ($CG['gifts']): ?>
+      <table class="table"><?php foreach (array_slice($CG['gifts'], 0, 20, true) as $u => $d): $hid = in_array((string)$u, $uh, true); ?>
+        <tr<?= $hid ? ' style="opacity:.45"' : '' ?>><td><b><?= h($u) ?></b><br><span class="muted small">biggest: <?= h($d['top']) ?></span></td><td><?= number_format($d['coins']) ?> coins</td><td class="muted"><?= (int)$d['gifts'] ?> gifts</td>
+        <td><form method="post"><?= hidden($hid ? 'user_unhide' : 'user_hide', 'don', $csrf, ['user' => $u]) ?><button class="btn btn-small<?= $hid ? '' : ' btn-red' ?>"><?= $hid ? 'Show' : 'Hide' ?></button></form></td></tr>
+      <?php endforeach ?></table>
+      <?php if ($CG['unknownGifts']): ?><p class="muted small">⚠️ Gifts without a coin value yet (counted as 1 coin each): <b><?= h(implode(', ', array_keys($CG['unknownGifts']))) ?></b>. Add them to the list below.</p><?php endif ?>
+      <form method="post" onsubmit="return confirm('Reset all automatic gift totals?')"><?= hidden('gifts_reset', 'don', $csrf) ?><button class="btn btn-small btn-red">Reset automatic gift totals</button></form>
+    <?php else: ?>
+      <p class="muted small">No gifts counted yet. They appear here once the live collector runs during a stream.</p>
+    <?php endif ?>
+    <details class="admin-edit"><summary>🪙 Gift coin values</summary>
+      <form method="post"><?= hidden('gift_values', 'don', $csrf) ?>
+        <p class="muted small">How many coins each gift is worth. One per line: <code>gift name | coins</code>. TikTok changes these sometimes; fix any that are wrong.</p>
+        <textarea name="rows" rows="10"><?= h(implode("\n", array_map(fn($k, $v) => $k . ' | ' . $v, array_keys($vals), $vals))) ?></textarea>
+        <button class="btn btn-grass btn-small" style="margin-top:8px">Save gift values</button>
+      </form>
+    </details>
+    <h3>Added by hand</h3>
     <form method="post"><?= hidden('donators', 'don', $csrf) ?>
       <div class="grid-form">
         <label>What are amounts counted in? <input name="donateUnit" value="<?= h($st['donateUnit'] ?? 'coins') ?>" placeholder="coins, €, $, gifts…"></label>
@@ -502,7 +563,7 @@ function clip_icon($c) {
       <textarea name="rows" rows="8" placeholder="Steve | 5000 | Sent a Lion 🦁&#10;Alex | 1200"><?= h(implode("\n", array_map(fn($r) => $r['name'] . ' | ' . (+$r['amount']) . ($r['note'] ? ' | ' . $r['note'] : ''), $s['donators'] ?? []))) ?></textarea></label>
       <button class="btn btn-gold">Save top donators</button>
     </form>
-    <p class="muted small">Tip: after each stream, check the TikTok LIVE top gifters and update the numbers here.</p>
+    <p class="muted small">Only needed for support outside TikTok gifts (or gifts from before the collector ran). TikTok gifts are counted automatically above.</p>
   </section>
 
   <section class="card" id="videos">
