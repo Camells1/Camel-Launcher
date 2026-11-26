@@ -10,29 +10,15 @@ Outputs (all generated from one block model):
 Run:  pip install litemapy && python3 build_regear.py [--test]
       --test builds a fast variant (short clock, tiny kit) used for automated in-game testing.
 
-HOW IT WORKS
-  Three identical STATIONS are stacked vertically (5 blocks apart). Each station has 3 LANES and
-  adds up to 3 x 5 slots of the kit to a shulker box, then hands the box down to the next station.
-
-  Lane = supply chest -> S2 hopper -> S hopper -> M "measuring" hopper -> the shulker box.
-    * The kit amount of a lane = the free slots of its M hopper. Unused slots of M hold an empty
-      shulker box named "Blocker": a hopper can never push a shulker box INTO a shulker box, so
-      blockers stay in M forever while the kit items go through.
-    * FILL phase: M locked, S unlocked -> M fills until its free slots are full stacks.
-    * DUMP phase: S locked, M unlocked -> M empties its kit items into the shulker box.
-  Station cycle (each station has its own hopper clock, no music discs, no shared wiring):
-    DUMP starts : the dispenser above... (dispenser east of the cell) places the next empty /
-                  partly-filled shulker box into the cell; the three M hoppers dump into it.
-    DUMP ends   : falling-edge pulse -> the piston above the cell breaks the box; it drops through
-                  a 1-block air gap into the collector hopper (no lock needed: the collector never
-                  touches a placed box) and is passed to the next station's dispenser.
-  Clock = two hoppers passing CLOCK_ITEMS items back and forth (8 game ticks per item) and two
-  waxed copper bulbs (T flip-flops, started in opposite states) that flip whenever a hopper runs
-  empty. One bulb gives the DUMP signal, the other locks the second clock hopper.
-
-  Changing the kit: put a different item in a lane's chest and change the number of "Blocker"
-  shulker boxes in that lane's M hopper (5 - stacks you want). Keep every lane at <= 200 items
-  (3 stacks of a 64-item, 5 of a 16-item, any 1-stack item) so it fits in one 84 s phase.
+HOW IT WORKS (see README.md)
+  Two towers: Inventory (27 slots, 14 stations) and Hotbar (9 slots, 5 stations), one button each.
+  Every shulker slot has its own named chest ("Inventory slot 7"): the item stocked in that chest is
+  what ends up in that slot. Each station fills 2 slots (north lane first, south lane 0.5 s later),
+  then a piston breaks the box and it drops to the next station's dispenser.
+  Lane = slot chest -> S2 -> S (locked while dumping) -> M (locked while filling) -> the box.
+  M holds 4 empty "Blocker" shulker boxes + 1 free slot = exactly one stack per run (a hopper can
+  never push a shulker box into a shulker box). Each station has its own hopper clock with two
+  waxed copper bulbs as flip-flops (no music discs).
 """
 
 import os
@@ -45,22 +31,25 @@ MC_DATA_VERSION_1_21_4 = 4189
 PACK_FORMAT_1_21_4 = 61
 TEST = "--test" in sys.argv
 
-CLOCK_ITEMS = 30 if TEST else 210          # 210 items x 8 gt = 84 s per phase
+CLOCK_ITEMS = 30 if TEST else 75           # 80 items x 8 gt = 32 s per phase (1 stack + margin)
 STATION_DY = -5
 
-# Kit: per station, lanes N / S / W: (item id, stacks or items-slots, custom name or None)
-# "slots" = number of M slots used by that item; blockers fill the rest (5 - slots).
-DEFAULT_KIT = [
-    {"N": ("end_crystal", 3), "S": ("obsidian", 3), "W": ("totem_of_undying", 5)},
-    {"N": ("enchanted_golden_apple", 3), "S": ("ender_pearl", 3), "W": ("experience_bottle", 3)},
-    {"N": ("totem_of_undying", 4), "S": ("respawn_anchor", 2), "W": ("glowstone", 1)},
+C, O, T, G, P_, X, A_, GL = ("end_crystal", "obsidian", "totem_of_undying", "enchanted_golden_apple",
+                             "ender_pearl", "experience_bottle", "respawn_anchor", "glowstone")
+# Default layouts: one entry per shulker slot (slot 1 first). Change them in-game via the slot chests.
+FULL_LAYOUT = [C, C, C, O, O, O, T, T, T,
+               G, G, P_, P_, X, X, X, A_, A_,
+               GL, GL, T, T, T, C, O, G, P_]
+HOTBAR_LAYOUT = [C, O, G, P_, X, A_, GL, T, T]
+if TEST:
+    pe, sn, eg = "ender_pearl", "snowball", "egg"
+    FULL_LAYOUT = [pe, sn, pe, T, eg, eg, sn, T, pe, eg, pe, sn, T, T, eg, sn, sn, pe,
+                   eg, T, pe, sn, eg, pe, T, sn, eg]
+    HOTBAR_LAYOUT = [eg, pe, T, sn, pe, eg, T, sn, pe]
+TOWERS = [  # name, layout, z offset, output chest name, input chest name
+    ("inv", FULL_LAYOUT, 0, "Inventory kits", "Empty shulkers (Inventory)"),
+    ("hot", HOTBAR_LAYOUT, 12, "Hotbar kits", "Empty shulkers (Hotbar)"),
 ]
-TEST_KIT = [
-    {"N": ("ender_pearl", 1), "S": ("totem_of_undying", 2), "W": ("snowball", 1)},
-    {"N": ("egg", 1), "S": ("totem_of_undying", 1), "W": ("ender_pearl", 1)},
-    {"N": ("snowball", 1), "S": ("egg", 1), "W": ("totem_of_undying", 1)},
-]
-KIT = TEST_KIT if TEST else DEFAULT_KIT
 STACK = {"end_crystal": 64, "obsidian": 64, "totem_of_undying": 1, "enchanted_golden_apple": 64,
          "ender_pearl": 16, "experience_bottle": 64, "respawn_anchor": 64, "glowstone": 64,
          "snowball": 16, "egg": 16}
@@ -129,11 +118,17 @@ def blocker(slot):
 
 
 # ---------------------------------------------------------------------------------------------
-def station(k, kit, first, last):
-    """Station k; cell at local (0,0,0) = global (0, k*STATION_DY, 0)."""
+def named(pos, block, name, items=(), **props):
+    container(pos, block, items, **props)
+    TILES[tuple(pos)]["CustomName"] = String('"%s"' % name)
+
+
+def station(tw, k, kit, first, last, oz, out_name, in_name, label):
+    """Station k of tower tw; cell at local (0,0,0) = global (0, k*STATION_DY, oz).
+    kit = (north, south) items = shulker slots 2k+1, 2k+2 (north lane starts first)."""
     oy = k * STATION_DY
-    P = lambda x, y, z: (x, y + oy, z)
-    n = f"s{k}_"
+    P = lambda x, y, z: (x, y + oy, z + oz)
+    n = f"{tw}{k}_"
 
     # --- cell, dispenser, piston, drop shaft, collector -------------------------------------
     container(P(1, 0, 0), "dispenser", [], facing="west", triggered=False)
@@ -143,29 +138,43 @@ def station(k, kit, first, last):
     if last:
         hopper(P(0, -2, 0), "east")
         hopper(P(1, -2, 0), "down")
-        container(P(1, -3, 0), "chest", [], facing="south", type="single", waterlogged=False)
+        named(P(1, -3, 0), "chest", out_name, facing="south", type="single", waterlogged=False)
     else:
         hopper(P(0, -2, 0), "east")
         hopper(P(1, -2, 0), "down")
         hopper(P(1, -3, 0), "down")
         hopper(P(1, -4, 0), "down")        # = next station's (1,1,0), feeds its dispenser
-    if first:
+    if first:   # input: chest -> hopper -> dropper (button = release ONE shulker) -> hoppers -> dispenser
+        # nothing may sit directly under the dropper (a hopper there would pull boxes out of it)
         hopper(P(1, 1, 0), "down")
-        container(P(1, 2, 0), "chest", [], facing="west", type="single", waterlogged=False)
+        hopper(P(1, 2, 0), "down")
+        hopper(P(2, 2, 0), "west")
+        hopper(P(2, 3, 0), "down")
+        hopper(P(2, 4, 0), "down")
+        container(P(1, 4, 0), "dropper", [], facing="east", triggered=False)
+        put(P(0, 4, 0), "stone_button", COMPONENT, face="wall", facing="west", powered=False)
+        hopper(P(1, 5, 0), "down")
+        named(P(1, 6, 0), "chest", in_name, facing="east", type="single", waterlogged=False)
 
-    # --- lanes --------------------------------------------------------------------------------
-    lanes = {  # M, S, S2, chest, facing
+    # --- lanes (2 per station: N = first slot, S = next slot, started 0.5 s later) ------------
+    # Two lanes are always exact: same item -> both fill the same slots; different items ->
+    # the second lane's first item claims the next slot. (A 3rd parallel lane can be wrong.)
+    lanes = {  # M, S, S2, chest
         "N": ((0, 0, -1), (0, 0, -2), (0, 0, -3), (0, 1, -3), "south"),
         "S": ((0, 0, 1), (0, 0, 2), (0, 0, 3), (0, 1, 3), "north"),
-        "W": ((-1, 0, 0), (-2, 0, 0), (-3, 0, 0), (-3, 1, 0), "east"),
     }
-    for lane, (m, s, s2, ch, f) in lanes.items():
-        iid, slots = kit[lane]
-        hopper(P(*m), f, enabled=False, items=[blocker(i) for i in range(slots, 5)])
+    for idx, lane in enumerate("NS"[:len(kit)]):
+        m, s, s2, ch, f = lanes[lane]
+        iid = kit[idx]
+        slot_no = 2 * k + idx + 1
+        hopper(P(*m), f, enabled=False, items=[blocker(i) for i in range(1, 5)])   # 1 free slot = 1 stack
         hopper(P(*s), f, enabled=True)
         hopper(P(*s2), f, enabled=True)
-        container(P(*ch), "chest", [item(i, iid, STACK[iid]) for i in range(27)],
-                  facing="north" if lane != "W" else "east", type="single", waterlogged=False)
+        named(P(*ch), "chest", f"{label} slot {slot_no}", [item(i, iid, STACK[iid]) for i in range(27)],
+              facing="north", type="single", waterlogged=False)
+    if len(kit) == 1:
+        put(P(0, 0, 1), "glass")
+    put(P(-1, 0, 0), "glass")                       # closes the cell's west side
     support(P(0, 1, -1))
     support(P(0, 1, -2))
 
@@ -173,41 +182,24 @@ def station(k, kit, first, last):
     repeater(P(1, 0, -1), "east", powered=True)
     torch(P(2, 0, -1), lit=True)
     put(P(2, -1, -1), "stone")                      # QMn
-    repeater(P(3, -1, -1), "east", delay=2)         # M unlocks 4 rt after DUMP starts
-    repeater(P(1, 0, 1), "east", powered=True)
-    torch(P(2, 0, 1), lit=True)
-    put(P(2, -1, 1), "stone")                       # QMs
-    repeater(P(3, -1, 1), "east", delay=2)
-    for z in (-1, -2, -3):
-        repeater(P(-1, 0, z), "north", powered=True)
-    torch(P(-1, 0, -4), lit=True)
-    put(P(-1, -1, -4), "stone")                     # QMw
-    repeater(P(-1, -1, -5), "north")
-    put(P(-1, -1, -6), "stone")                     # under A dust: feeds the QMw repeater
-
-    # --- S locks + dispenser (A) ----------------------------------------------------------
+    repeater(P(3, -1, -1), "east", delay=2)         # N unlocks 4 rt after DUMP starts
+    put(P(4, -1, -1), "stone")
     repeater(P(1, 0, -2), "east")
-    repeater(P(2, 0, -2), "east", delay=2)          # S locks/unlocks 3 rt after A changes
-    repeater(P(1, 0, 2), "east")
-    repeater(P(2, 0, 2), "east", delay=2)
-    repeater(P(-2, 0, 1), "south")
+    repeater(P(2, 0, -2), "east", delay=2)          # S hoppers lock/unlock 3 rt after A changes
+    if len(kit) == 2:
+        repeater(P(1, 0, 1), "east", delay=4, powered=True)  # S lane starts 0.5 s after N
+        torch(P(2, 0, 1), lit=True)
+        put(P(2, -1, 1), "stone")                   # QMs
+        repeater(P(3, -1, 1), "east", delay=4)
+        put(P(4, -1, 1), "stone")
+        repeater(P(1, 0, 2), "east")
+        repeater(P(2, 0, 2), "east", delay=2)
     repeater(P(2, 0, 0), "east")                    # fires the dispenser
 
     # --- A network ----------------------------------------------------------------------------
-    put(P(4, -1, -1), "stone")
-    put(P(4, -1, 1), "stone")
     a = n + "A"
-    dust_list = [(3, 0, -2), (3, 0, 0), (3, 0, 2)] + [(4, 0, z) for z in range(-6, 3)]
-    dust_list += [(3, 0, -6), (2, 0, -6)]
-    for p in dust_list:
+    for p in [(3, 0, -2), (3, 0, 0), (3, 0, 2)] + [(4, 0, z) for z in range(-5, 3)]:
         dust(P(*p), a)
-    repeater(P(1, 0, -6), "east")
-    dust_list2 = [(x, 0, -6) for x in range(0, -6, -1)] + [(-5, 0, -5), (-5, 0, -4), (-5, 0, -3)]
-    for p in dust_list2:
-        dust(P(*p), n + "A2")
-    repeater(P(-5, 0, -2), "north")
-    for p in [(-5, 0, -1), (-5, 0, 0), (-5, 0, 1), (-5, 0, 2), (-4, 0, 2), (-3, 0, 2), (-2, 0, 2)]:
-        dust(P(*p), n + "A3")
     # risers to the pulse detector
     dust(P(5, 1, -3), a)
     dust(P(5, 2, -2), a)
@@ -253,8 +245,11 @@ def station(k, kit, first, last):
     repeater(P(5, 0, 0), "east")
 
 
-for k in range(3):
-    station(k, KIT[k], first=k == 0, last=k == 2)
+for tw, layout, oz, out_name, in_name in TOWERS:
+    ns = (len(layout) + 1) // 2
+    label = "Inventory" if tw == "inv" else "Hotbar"
+    for k in range(ns):
+        station(tw, k, layout[2 * k:2 * k + 2], k == 0, k == ns - 1, oz, out_name, in_name, label)
 
 # ---------------------------------------------------------------------------------------------
 NON_CONDUCTORS = {"air", "glass", "hopper", "repeater", "comparator", "redstone_wire",
@@ -381,16 +376,19 @@ def main():
     w, h, l = size
     lines = ["# Auto Regear Shulker Maker - Minecraft Java 1.21.4",
              "# Run where the machine's min corner should go; it builds toward +x +y +z.",
-             f"fill ~ ~ ~ ~{w - 1} ~{h - 1} ~{l - 1} minecraft:air"]
+             ]
+    for y0 in range(0, h, 40):
+        lines.append(f"fill ~ ~{y0} ~ ~{w - 1} ~{min(h, y0 + 40) - 1} ~{l - 1} minecraft:air")
     for p in sorted(BLOCKS, key=lambda p: (PHASE[p], p[1], p[2], p[0])):
         x, y, z = rel(p, off)
         lines.append(f"setblock ~{x} ~{y} ~{z} {state_string(p)}")
-    ix, iy, iz = rel((1, 2, 0), off)
-    lines.append('tellraw @s {"text":"Regear maker built. Put empty shulker boxes in the top '
-                 f'input chest at ~{ix} ~{iy} ~{iz}.","color":"green"}}')
-    fill = ["# Puts 9 empty shulker boxes into the input chest (run from the build position)."]
-    fill.append(f"data merge block ~{ix} ~{iy} ~{iz} " + Compound({"Items": List[Compound](
-        [item(i, "white_shulker_box") for i in range(9)])}).snbt(compact=True))
+    lines.append('tellraw @s {"text":"Regear maker built. Fill the top chests with empty shulker boxes, '
+                 'then press the button on a tower to make one kit.","color":"green"}')
+    fill = ["# Puts 9 empty shulker boxes into each tower's input chest (run from the build position)."]
+    for tw, layout, oz, *_ in TOWERS:
+        ix, iy, iz = rel((1, 6, oz), off)
+        fill.append(f"data merge block ~{ix} ~{iy} ~{iz} " + Compound({"Items": List[Compound](
+            [item(i, "white_shulker_box") for i in range(9)])}).snbt(compact=True))
     with open(os.path.join(out, f"auto_regear_maker{tag}.mcfunction"), "w") as f:
         f.write("\n".join(lines) + "\n")
     fn = os.path.join(out, "datapack", "regear_maker", "data", "regear", "function")
@@ -402,8 +400,7 @@ def main():
     with open(os.path.join(out, "datapack", "regear_maker", "pack.mcmeta"), "w") as f:
         f.write('{"pack": {"pack_format": %d, "description": "Auto Regear Shulker Maker"}}\n'
                 % PACK_FORMAT_1_21_4)
-    oc = rel((1, -3 + 2 * STATION_DY, 0), off)
-    print(f"blocks {len(BLOCKS)}  size {size}  offset {off}  input chest {(ix, iy, iz)}  output chest {oc}")
+    print(f"blocks {len(BLOCKS)}  size {size}  offset {off}")
 
 
 if __name__ == "__main__":

@@ -1,45 +1,38 @@
 # Auto Regear Shulker Maker (Minecraft Java 1.21.4, no music discs)
 
-The machine fills empty shulker boxes with a crystal PvP regear kit, with no music discs. Each station runs on its own hopper clock with copper-bulb flip-flops.
+Two towers, each with its own button. Every shulker slot has its own chest, so **you decide exactly what goes in each slot**:
+
+| Tower | Button makes | Slot chests |
+|---|---|---|
+| **Inventory** (z = 0, 14 stations) | a full 27-slot kit | "Inventory slot 1" … "Inventory slot 27" |
+| **Hotbar** (z = +12, 5 stations) | a 9-slot kit (one third of a shulker, the rest left empty) | "Hotbar slot 1" … "Hotbar slot 9" |
 
 | File | Use |
 |---|---|
-| `auto_regear_maker.litematic` | Load with Litematica (21 x 16 x 10) |
+| `auto_regear_maker.litematic` | Load with Litematica (17 x 75 x 21) |
 | `auto_regear_maker.mcfunction` | Stand-alone `/fill` + `/setblock` script |
 | `datapack/regear_maker/` | `/function regear:build`, `/function regear:load_test_shulkers` |
-| `build_regear.py` | Generator (`pip install litemapy`, then `python3 build_regear.py`) |
+| `build_regear.py` | Generator: edit `FULL_LAYOUT` / `HOTBAR_LAYOUT`, then `python3 build_regear.py` |
 
 ## Using it
-1. Put empty shulker boxes in the **input chest** on top of the machine.
-2. Filled kits arrive in the **output chest** at the bottom. The first kit takes about 8.5 minutes, because it passes through all 3 stations. After that, one kit arrives about every 2.8 minutes.
-3. Keep the 9 **lane chests** stocked. These are the chests on the north, south and west sides of each of the 3 stations.
+1. Put empty shulker boxes in the chest at the top of a tower ("Empty shulkers (Inventory)" or "(Hotbar)").
+2. Press that tower's **button**. Each press releases exactly one box.
+3. The finished box drops into "Inventory kits" or "Hotbar kits" at the bottom of the tower. You can press the button again straight away: a new kit comes out about once a minute. A single kit needs about 14 minutes (inventory) or 5 minutes (hotbar) to pass through the whole tower.
 
-## Default kit (27 slots)
-| Station | North lane | South lane | West lane |
-|---|---|---|---|
-| 1 (top) | End Crystal x3 stacks | Obsidian x3 | Totem x5 |
-| 2 | Enchanted Golden Apple x3 | Ender Pearl x3 | XP Bottle x3 |
-| 3 (bottom) | Totem x4 | Respawn Anchor x2 | Glowstone x1 |
+## Choosing the layout
+Each slot chest's name tells you its slot. Opening a slot chest shows "Inventory slot 7", for example. **Put the item you want in that slot into that chest.**
+* Each run takes **one full stack** from each slot chest, or one item if it doesn't stack, like a totem.
+* Stock each chest with one item type only.
+* Every slot chest of a tower must hold something. An empty chest leaves no gap; the slots after it shift up by one.
+* Two slots can use the same item; each slot still gets its own full stack.
 
-## Changing the kit
-Each lane has a **measuring hopper**, the hopper touching the shulker cell. It holds 5 slots.
-* **Item:** put the new item in that lane's chest. Empty any old items out of its two feeder hoppers and the measuring hopper.
-* **Amount:** put an empty shulker box named **"Blocker"** in each slot you *don't* want filled. The lane adds as many full stacks as the hopper has free slots, so 0 blockers = 5 stacks and 4 blockers = 1 stack. A hopper can never push a shulker box into a shulker box, so the blockers stay put.
-* **Time limit:** a lane must hold **200 items or fewer**, or it won't finish within one 84-second phase. That's 3 stacks of a 64-item, 5 stacks of a 16-item, or 5 unstackables.
-* The total across all 9 lanes must be 27 slots or fewer.
-* For a faster machine with smaller kits, put fewer "Clock" sticks in each station's clock hopper. Each stick is 0.4 s per phase.
-
-## How a station works
-Supply chest → hopper → hopper (locked while dumping) → measuring hopper (locked while filling) → shulker cell.
-The station alternates two phases:
-* **FILL phase:** the measuring hoppers fill up.
-* **DUMP phase:** the dispenser places the box from the station above into the cell, and the measuring hoppers empty into it.
-
-When DUMP ends, the piston above the cell breaks the box. It falls through an air gap into a hopper that passes it to the next station's dispenser.
+## How it works
+Every station fills two shulker slots, then passes the box down to the next station.
+* **Lanes:** each slot has a lane: slot chest → 2 feeder hoppers → measuring hopper next to the box.
+* **Measuring:** the measuring hopper holds 4 empty shulker boxes named "Blocker" plus one free slot, so it measures exactly one stack. A hopper can't push a shulker box into a shulker box, so the blockers never leave.
+* **Ordering:** the first lane of a station starts 0.5 s before the second, so the first item of each slot arrives in slot order. With two lanes this is always exact: if both slots hold the same item, both lanes fill the same stacks anyway.
+* **Station clock:** each station runs on its own hopper clock with copper-bulb flip-flops. It fills for 30 s, then dumps for 30 s.
+* **Moving the box:** at the end of the dump, a piston breaks the box. It falls through an air gap into a hopper that carries it to the next station's dispenser.
 
 ## Notes
-* Items land in the shulker in the order they arrive, so the kit's contents are exact but the slot order is mixed.
-* If a lane chest runs dry, that kit comes out short. Nothing jams.
-* When pasting with Litematica in Creative, the lane chests, Blockers and clock sticks come pre-filled. When building in Survival, add the 210 "Clock" sticks to each station's clock hopper and the Blockers yourself (rename them on an anvil).
-EOF
-echo ok
+* In Creative with Litematica, the slot chests, Blockers and clock sticks come pre-filled. In Survival, also add 75 sticks to the first hopper of each station's clock, and 4 Blocker shulker boxes (renamed on an anvil) to each measuring hopper.
