@@ -1,0 +1,2 @@
+# Puts 9 empty shulker boxes into the input chest (run from the build position).
+data merge block ~6 ~15 ~6 {Items:[{Slot:0b,id:"minecraft:white_shulker_box",count:1},{Slot:1b,id:"minecraft:white_shulker_box",count:1},{Slot:2b,id:"minecraft:white_shulker_box",count:1},{Slot:3b,id:"minecraft:white_shulker_box",count:1},{Slot:4b,id:"minecraft:white_shulker_box",count:1},{Slot:5b,id:"minecraft:white_shulker_box",count:1},{Slot:6b,id:"minecraft:white_shulker_box",count:1},{Slot:7b,id:"minecraft:white_shulker_box",count:1},{Slot:8b,id:"minecraft:white_shulker_box",count:1}]}
