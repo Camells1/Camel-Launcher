@@ -68,3 +68,31 @@
   $('#topDonHead').src = `https://mc-heads.net/avatar/${encodeURIComponent(/^\w{3,16}$/.test(d.name) ? d.name : 'MHF_Steve')}/72`;
   if (dons.length > 1) $('#topDonRunners').textContent = 'Runners-up: ' + dons.slice(1, 3).map(r => `${r.name} (${money(r.amount)})`).join(' · ');
 })();
+
+
+// "Right now": live status, top donator, #1 in chat, open poll — all automatic
+(async () => {
+  const { $, esc, fmt } = Site;
+  const [s, L] = await Promise.all([Site.ready, Site.live()]);
+  if (L && L.profile && L.profile.followers != null) $('#ttFollowers').textContent = fmt(L.profile.followers);
+  else $('#ttFollowers').textContent = 'Daily';
+
+  const items = [];
+  const ago = t => { const d = Date.now() / 1000 - t; return d < 3600 ? Math.max(1, Math.round(d / 60)) + ' min ago' : d < 86400 * 1.5 ? Math.round(d / 3600) + ' hours ago' : Math.round(d / 86400) + ' days ago'; };
+  if (L && L.autoLive && L.now) {
+    items.push(['live', 'now-live', '🔴 LIVE NOW', `${fmt(L.now.viewers)} watching`, esc(L.now.title || 'Watch on TikTok')]);
+  } else if (L && L.last) {
+    items.push(['live', '', '📺 Last stream', ago(L.last.end || L.last.start), L.last.total ? `${fmt(L.last.total)} viewers` : 'See the stats']);
+  }
+  if (L && L.peak) items.push(['live', '', '🏆 Top viewer count', fmt(L.peak.viewers), 'all-time record']);
+  const d = (s.donators || [])[0];
+  if (d) items.push(['donators', '', '👑 Top donator', esc(d.name), `${fmt(d.amount)} ${esc(Site.settings(s).donateUnit || 'coins')}`]);
+  const c = s.chat && (s.chat.top || [])[0];
+  if (c) items.push(['live', '', '💬 #1 in chat', `“${esc(c.msg)}”`, `said ${fmt(c.count)} times`]);
+  const poll = (s.polls || []).find(p => p.open);
+  if (poll) items.push(['vote', '', '🗳 Vote now', esc(poll.question), `${fmt(poll.options.reduce((a, o) => a + o.votes, 0))} votes so far`]);
+  if (!items.length) return;
+  $('#nowGrid').innerHTML = items.slice(0, 4).map(([href, cls, label, big, small]) =>
+    `<a class="now-item ${cls}" href="${href}"><span class="now-label">${label}</span><b>${big}</b><span class="muted small">${small}</span></a>`).join('');
+  $('#nowCard').hidden = false;
+})();

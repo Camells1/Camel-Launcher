@@ -182,3 +182,25 @@
   if (document.fonts) document.fonts.ready.then(draw);
   draw();
 })();
+
+
+// Latest clips under the wheel: click one to watch it straight away
+(async () => {
+  const { $, esc } = Site;
+  const s = await Site.ready;
+  const clips = (s.clips || []).slice().sort((a, b) => (b.created || 0) - (a.created || 0)).slice(0, 8);
+  if (!clips.length) return;
+  const icon = c => c.type === 'file' ? '🎬' : c.type === 'tiktok' ? '🎵' : ({ youtube: '▶️', 'twitch-clip': '💜', 'twitch-vod': '💜', instagram: '📸', streamable: '🎞', medal: '🏅', kick: '🟩', x: '✖️' }[c.provider] || '🔗');
+  $('#latestClips').innerHTML = clips.map((c, i) => `<button class="latest-clip" data-i="${i}"><span class="latest-icon">${icon(c)}</span>
+    <span><b>${esc(c.title)}</b><span class="muted small">by ${esc(c.by || 'anonymous')}</span></span></button>`).join('');
+  $('#latestCard').hidden = false;
+  $('#latestClips').addEventListener('click', e => {
+    const b = e.target.closest('.latest-clip'); if (!b) return;
+    const c = clips[+b.dataset.i];
+    $('#mTitle').textContent = c.title;
+    $('#mBy').textContent = 'uploaded by ' + (c.by || 'anonymous');
+    $('#mMedia').innerHTML = Site.clipHtml(c, { autoplay: true });
+    document.querySelector('.modal-box').classList.remove('golden');
+    $('#modal').classList.add('open');
+  });
+})();

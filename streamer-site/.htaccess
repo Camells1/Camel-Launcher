@@ -13,6 +13,9 @@ Options -Indexes
   RewriteRule ^fun(\.html)?$ /games [R=301,L]
   RewriteRule ^pedia(\.html)?$ /yokii-pedia [R=301,L]
   RewriteRule ^index(\.html)?$ / [R=301,L]
+  # search engines
+  RewriteRule ^sitemap\.xml$ sitemap.php [L]
+  RewriteRule ^robots\.txt$ robots.php [L]
   # anything typed with .html: drop the .html
   RewriteCond %{THE_REQUEST} \s/+([a-z0-9-]+)\.html[\s?]
   RewriteRule ^ /%1 [R=301,L,NE]
@@ -42,7 +45,7 @@ Options -Indexes
     Deny from all
   </IfModule>
 </FilesMatch>
-<FilesMatch "\.(txt|md|zip)$">
+<FilesMatch "^(HOW-TO-UPLOAD\.txt|.*\.(md|zip))$">
   <IfModule mod_authz_core.c>
     Require all denied
   </IfModule>

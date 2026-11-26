@@ -83,6 +83,15 @@ LIVE COLLECTOR: CHAT, TOP VIEWERS AND GIFTS, ALL AUTOMATIC
    - Badge says "waiting for chat…" on a real stream? Click the badge: it
      copies a report. Send that report so the script can be fixed.
 
+BACKUPS
+   Admin > "Download a backup" (top of the admin page) saves everything the
+   site remembers (settings, polls, donators, stream stats, chat counts) in
+   one file. Do it now and then, and before big updates.
+
+SEARCH ENGINES
+   yoursite.com/sitemap.xml and /robots.txt are made automatically, so
+   Google can find every page (never the admin or the Vault).
+
 WHAT TO DO IN ADMIN
    - Live tracker: see stats, add past streams, force the banner if needed
    - Chat top 5: counted automatically by the chat collector (see below)

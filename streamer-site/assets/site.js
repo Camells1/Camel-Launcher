@@ -79,7 +79,7 @@ const Site = (() => {
     const page = (location.pathname.split('/').pop() || 'index').replace(/\.html$/, '');
     $$('.nav-links a').forEach(a => {
       const h = (a.getAttribute('href') || '').replace(/^\.\//, '').replace(/\.html$/, '') || 'index';
-      if (h === page) a.classList.add('active');
+      if (h === page) { a.classList.add('active'); a.setAttribute('aria-current', 'page'); }
     });
 
     const s = await state();

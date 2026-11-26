@@ -85,6 +85,17 @@ if (isset($_POST['login'])) {
 if (isset($_GET['logout'])) { $_SESSION = []; session_destroy(); header('Location: ../'); exit; }
 $authed = !empty($_SESSION['admin']);
 
+// ---------- backup: everything the site saved, in one file ----------
+if ($authed && isset($_GET['backup'])) {
+    $backup = ['made' => date('c'), 'site' => $_SERVER['HTTP_HOST'] ?? '',
+               'state' => load_state(), 'live' => array_merge(live_default(), read_guarded(LIVE_FILE) ?? []), 'chat' => chat_load()];
+    header('Content-Type: application/json; charset=utf-8');
+    header('Content-Disposition: attachment; filename="site-backup-' . date('Y-m-d') . '.json"');
+    header('Cache-Control: no-store');
+    echo json_encode($backup, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // ---------- actions ----------
 if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do'])) {
     if (!hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'] ?? '')) { http_response_code(400); exit('Bad token, reload the page.'); }
@@ -307,7 +318,7 @@ function clip_icon($c) {
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Admin · <?= h($st['siteName']) ?></title>
-<link rel="stylesheet" href="../assets/style.css?v=11">
+<link rel="stylesheet" href="../assets/style.css?v=12">
 <link rel="icon" href="../assets/favicon.svg">
 </head><body class="admin">
 <header class="topbar"><a class="brand" href="../">⛏ <?= h($st['siteName']) ?></a><nav class="nav-links"><a href="../" target="_blank">View site</a><?php if ($authed): ?><a href="?logout=1">Log out</a><?php endif ?></nav></header>
@@ -321,6 +332,20 @@ function clip_icon($c) {
   </section>
 <?php else: ?>
   <h1>Admin panel</h1>
+  <?php
+    $OL = array_merge(live_default(), read_guarded(LIVE_FILE) ?? []);
+    $OC = chat_load();
+    $openPolls = count(array_filter($s['polls'], fn($p) => $p['open'] && (empty($p['closes']) || $p['closes'] > time())));
+    $collectorAge = $OC['updated'] ? time() - $OC['updated'] : null;
+  ?>
+  <div class="overview">
+    <a class="ov <?= !empty($OL['now']['live']) ? 'ov-live' : '' ?>" href="#tracker"><span>Live</span><b><?= !empty($OL['now']['live']) ? '🔴 ' . (int)$OL['now']['viewers'] . ' watching' : 'Offline' ?></b><small><?= $OL['checkedAt'] ? 'checked ' . date('H:i', $OL['checkedAt']) : 'not checked yet' ?></small></a>
+    <a class="ov <?= count($pending) ? 'ov-todo' : '' ?>" href="#clips"><span>Clips to approve</span><b><?= count($pending) ?></b><small><?= count($approved) ?> on the wheel</small></a>
+    <a class="ov" href="#polls"><span>Open polls</span><b><?= $openPolls ?></b><small><?= count($s['polls']) ?> total</small></a>
+    <a class="ov <?= $collectorAge !== null && $collectorAge < 120 ? 'ov-ok' : '' ?>" href="#chat"><span>Live collector</span><b><?= $collectorAge === null ? 'Not set up' : ($collectorAge < 120 ? '📡 Running' : 'Idle') ?></b><small><?= $OC['updated'] ? 'last data ' . date('M j, H:i', $OC['updated']) : 'see Most said in chat' ?></small></a>
+    <a class="ov" href="#tracker"><span>Followers</span><b><?= isset($OL['profile']['followers']) ? number_format($OL['profile']['followers']) : '—' ?></b><small>top viewers ever: <?= h($OL['peak']['viewers'] ?? '—') ?></small></a>
+  </div>
+  <p class="muted small">💾 <a href="?backup=1">Download a backup</a> of everything the site saved (settings, clips list, polls, donators, stats, chat counts). Do this now and then and keep the file safe.</p>
   <p class="muted">Jump to: <a href="#tracker">Live tracker</a> · <a href="#chat">Chat top 5</a> · <a href="#pedia">Yokii-pedia</a> · <a href="#clips">Clips (<?= count($pending) ?> waiting)</a> · <a href="#polls">Polls</a> · <a href="#lb">Leaderboard</a> · <a href="#don">Top donators</a> · <a href="#videos">Clip wall</a> · <a href="#builds">Builds</a> · <a href="#settings">Settings</a></p>
 
   <?php $L = array_merge(live_default(), read_guarded(LIVE_FILE) ?? []); ?>

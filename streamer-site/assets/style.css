@@ -489,3 +489,34 @@ footer.has-gem { position: relative; }
 .gift-icon { font-size: 20px; }
 .gift-text { flex: 1; min-width: 160px; overflow-wrap: anywhere; }
 .gift-coins { font: 12px var(--pixel); color: var(--gold); font-variant-numeric: tabular-nums; }
+
+/* ----- home: right now ----- */
+.now-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.now-item { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 14px; background: #111318; border: 3px solid var(--line); color: var(--text); text-decoration: none; transition: border-color .15s, transform .15s; }
+.now-item:hover { border-color: var(--grass); transform: translateY(-2px); }
+.now-item b { font-size: 18px; overflow-wrap: anywhere; }
+.now-label { font: 10px var(--pixel); color: var(--gold); }
+.now-item.now-live { border-color: var(--tiktok); background: linear-gradient(rgba(254,44,85,.16), #111318); }
+.now-item.now-live .now-label { color: #fff; }
+
+/* ----- spinner: latest clips ----- */
+.latest-clips { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.latest-clip { display: flex; gap: 12px; align-items: center; text-align: left; padding: 12px; background: #111318; border: 3px solid var(--line); color: var(--text); font: 15px var(--body); cursor: pointer; min-width: 0; }
+.latest-clip:hover { border-color: var(--gold); }
+.latest-clip b { display: block; overflow-wrap: anywhere; }
+.latest-icon { font-size: 22px; flex: none; }
+
+/* ----- accessibility ----- */
+.skip-link { position: absolute; left: 12px; top: -60px; z-index: 400; background: var(--gold); color: #111; font-weight: 700; padding: 10px 14px; border: 3px solid var(--line); text-decoration: none; }
+.skip-link:focus { top: 12px; }
+
+/* ----- admin overview ----- */
+.overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 6px 0 12px; }
+.ov { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; background: var(--card); border: 3px solid var(--line); color: var(--text); text-decoration: none; }
+.ov span { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.ov b { font-size: 20px; }
+.ov small { color: var(--muted); }
+.ov:hover { border-color: var(--grass); }
+.ov-live { border-color: var(--tiktok); }
+.ov-todo { border-color: var(--gold); }
+.ov-ok b { color: #80ff20; }
