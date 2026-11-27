@@ -32,7 +32,8 @@ import java.util.Set;
 /**
  * Press K (rebindable in Controls) to flip into a stream-safe vanilla look:
  * resource packs off, shaders off (Iris), particles on All, brightness capped
- * at vanilla's max so no fullbright. Press it again to put back exactly what
+ * at vanilla's max so no fullbright, and night vision ignored (even when a
+ * server keeps re-applying it). Press it again to put back exactly what
  * you had. The saved state lives in config/pavle-vanilla.json, so it
  * survives a game restart while Vanilla Mode is still on.
  */
@@ -52,7 +53,12 @@ public class VanillaToggleClient implements ClientModInitializer {
     }
 
     private static KeyBinding toggleKey;
-    private Saved state = new Saved();
+    private static Saved state = new Saved();
+
+    /** Read by the night-vision mixin every frame. */
+    public static boolean isActive() {
+        return state.active;
+    }
 
     @Override
     public void onInitializeClient() {
@@ -119,7 +125,7 @@ public class VanillaToggleClient implements ClientModInitializer {
             options.write();
         }
         notify(client, Text.literal("Pavle Vanilla ON").formatted(Formatting.GREEN, Formatting.BOLD)
-                .append(Text.literal("  packs off, particles on, no fullbright").formatted(Formatting.GRAY)));
+                .append(Text.literal("  packs off, particles on, no fullbright or night vision").formatted(Formatting.GRAY)));
     }
 
     private void disable(MinecraftClient client) {
