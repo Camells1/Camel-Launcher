@@ -37,6 +37,7 @@ const servers = require('./src/servers');
 const crashReports = require('./src/crashReports');
 const modpack = require('./src/modpack');
 const skins = require('./src/skins');
+const vanillaMode = require('./src/vanillaMode');
 const { initAutoUpdater } = require('./src/updater');
 
 // "Quick add" chips. `loaders` is what each project actually publishes for on
@@ -57,6 +58,9 @@ let instances;
 let gameProcess = null;
 let playingInstanceId = null;
 let launchStartedAt = 0;
+// Whether the running session was launched in Vanilla Mode, so its exit
+// restores options.txt even if the setting was flipped mid-game.
+let playingVanilla = false;
 let lowPowerMode = false;
 // Reserved synchronously (before any await) inside game:play so a second
 // overlapping call can't slip past the `gameProcess` check while the first
@@ -664,21 +668,47 @@ function registerIpc() {
         if (found) server = servers.parseAddress(found.address);
       }
 
-      const resolved = await launcher.ensureInstalled(inst.mcVersion, normalizeLoader(inst.loader), send, {
-        javaPath: settings.javaPath,
-      });
-      send('Launching...');
+      const instanceDir = instances.folder(instanceId);
+      const vanilla = !!stores.settings.get('vanillaMode');
+      // A vanilla session that never got cleaned up (launcher closed or
+      // crashed mid-game) gets its options put back before a normal launch.
+      if (!vanilla) vanillaMode.restore(instanceDir);
+
+      const resolved = vanilla
+        ? await launcher.ensureVanillaInstalled(inst.mcVersion, send)
+        : await launcher.ensureInstalled(inst.mcVersion, normalizeLoader(inst.loader), send, {
+            javaPath: settings.javaPath,
+          });
+      send(vanilla ? 'Launching in Vanilla Mode...' : 'Launching...');
+      if (vanilla) vanillaMode.apply(instanceDir);
       launchStartedAt = Date.now();
-      const child = await launcher.launchGame(resolved, account, settings, server);
+      let child;
+      try {
+        child = await launcher.launchGame(resolved, account, settings, server);
+      } catch (err) {
+        if (vanilla) vanillaMode.restore(instanceDir);
+        throw err;
+      }
       gameProcess = child;
       playingInstanceId = instanceId;
+      playingVanilla = vanilla;
       instances.touch(instanceId);
       if (serverId) servers.touchServer(instances.folder(instanceId), serverId);
       if (settings.minimizeOnPlay) mainWindow.minimize();
 
       child.stdout.on('data', (d) => mainWindow.webContents.send('game:log', { instanceId, line: d.toString() }));
       child.stderr.on('data', (d) => mainWindow.webContents.send('game:log', { instanceId, line: d.toString() }));
+      const restoreIfVanilla = () => {
+        if (!playingVanilla) return;
+        playingVanilla = false;
+        try {
+          vanillaMode.restore(instanceDir);
+        } catch (err) {
+          console.error('Could not restore options after Vanilla Mode:', err);
+        }
+      };
       child.on('exit', (code, signal) => {
+        restoreIfVanilla();
         gameProcess = null;
         playingInstanceId = null;
         setLowPowerMode(false);
@@ -691,6 +721,7 @@ function registerIpc() {
         mainWindow.webContents.send('game:exit', { instanceId, code, signal, crash });
       });
       child.on('error', (err) => {
+        restoreIfVanilla();
         gameProcess = null;
         playingInstanceId = null;
         setLowPowerMode(false);

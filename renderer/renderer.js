@@ -741,6 +741,7 @@ async function init() {
   settingJvmArgs.value = currentSettings.jvmArgs || '';
   applyAppearanceSettings(currentSettings);
   renderSettingsControls(currentSettings);
+  renderVanillaMode();
 
   instances = await window.mc.listInstances();
   renderRailInstances();
@@ -1102,8 +1103,67 @@ function setInstancePlayState(phase) {
   stopGlyph.classList.toggle('hidden', phase !== 'running');
   instancePlayBtn.classList.toggle('danger', phase === 'running');
   instancePlayBtn.classList.toggle('primary', phase !== 'running');
-  playBtnLabel.textContent = phase === 'installing' ? 'Working…' : phase === 'running' ? 'Stop' : 'Play';
+  playBtnLabel.textContent = phase === 'installing' ? 'Working…' : phase === 'running' ? 'Stop' : vanillaModeOn() ? 'Play Vanilla' : 'Play';
 }
+
+/* ---- Vanilla Mode ----
+   One global switch (button in the instance header, badge in the title bar,
+   or K anywhere in the launcher). While it's on, every launch runs plain
+   vanilla Minecraft: no mod loader, no resource packs, particles on, no
+   fullbright. Nothing is deleted - turning it off launches exactly the setup
+   you had before. Takes effect on the next launch, since mods can't be
+   unloaded from a game that's already running. */
+const vanillaToggleBtn = document.getElementById('vanilla-toggle-btn');
+const titlebarVanilla = document.getElementById('titlebar-vanilla');
+
+function vanillaModeOn() {
+  return !!(currentSettings && currentSettings.vanillaMode);
+}
+
+function renderVanillaMode() {
+  const on = vanillaModeOn();
+  vanillaToggleBtn.classList.toggle('on', on);
+  vanillaToggleBtn.setAttribute('aria-checked', String(on));
+  titlebarVanilla.classList.toggle('hidden', !on);
+  if (playingInstanceId !== activeInstanceId && !instancePlayBtn.disabled) playBtnLabel.textContent = on ? 'Play Vanilla' : 'Play';
+}
+
+let vanillaToggleBusy = false;
+async function toggleVanillaMode() {
+  if (!currentSettings || vanillaToggleBusy) return;
+  vanillaToggleBusy = true;
+  try {
+    const on = !vanillaModeOn();
+    currentSettings = { ...currentSettings, ...(await window.mc.setSettings({ vanillaMode: on })) };
+    renderVanillaMode();
+    const nextLaunch = playingInstanceId ? ' Applies the next time you press Play.' : '';
+    toast(
+      on
+        ? `Vanilla Mode on: no mods, no resource packs, particles on, no fullbright.${nextLaunch}`
+        : `Vanilla Mode off: back to your normal mods and packs.${nextLaunch}`,
+      on ? 'success' : 'info',
+      4000
+    );
+  } catch (err) {
+    toast(err.message || String(err), 'error');
+  } finally {
+    vanillaToggleBusy = false;
+  }
+}
+vanillaToggleBtn.addEventListener('click', toggleVanillaMode);
+titlebarVanilla.addEventListener('click', toggleVanillaMode);
+
+// K toggles Vanilla Mode whenever the launcher window has focus - but never
+// while typing (search boxes, instance names...) or with a dialog open.
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'k' && e.key !== 'K') return;
+  if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+  const el = document.activeElement;
+  if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) return;
+  if (!confirmOverlay.classList.contains('hidden') || !modalOverlay.classList.contains('hidden')) return;
+  e.preventDefault();
+  toggleVanillaMode();
+});
 
 // Shared by the header Play button and each server row's "Play & Join".
 async function startPlay(serverId) {

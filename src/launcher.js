@@ -277,6 +277,38 @@ class GameLauncher {
   }
 
   /**
+   * Makes sure plain vanilla `mcVersion` is launchable, for Vanilla Mode.
+   * Deliberately leaves the install marker alone: the instance keeps its real
+   * loader, so switching Vanilla Mode back off doesn't trigger a reinstall.
+   * Modded installs already contain the vanilla version they build on, so
+   * this is usually just a quick local check.
+   */
+  async ensureVanillaInstalled(mcVersion, onProgress = () => {}) {
+    onProgress('Checking vanilla install...');
+    const local = await verifyLocallyInstalled(this.folder, mcVersion);
+    if (local) {
+      onProgress('Ready.');
+      return local;
+    }
+    const list = await getVersionList();
+    const versionMeta = list.versions.find((v) => v.id === mcVersion);
+    if (!versionMeta) throw new Error(`Unknown Minecraft version: ${mcVersion}`);
+    onProgress(`Downloading Minecraft ${mcVersion}...`);
+    try {
+      await withRetry(
+        () => install(versionMeta, this.folder),
+        5,
+        (attempt) => onProgress(`A few files failed to download, retrying (${attempt}/5)...`)
+      );
+    } catch (err) {
+      throw describeInstallError(err, 'Minecraft files');
+    }
+    const resolved = await Version.parse(this.folder, mcVersion);
+    onProgress('Ready.');
+    return resolved;
+  }
+
+  /**
    * Installs one loader's version JSON + libraries over an already-installed
    * vanilla version, and returns the version id to launch. Each loader's xmcl
    * API has a genuinely different shape, hence the branch rather than a table.

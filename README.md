@@ -91,6 +91,22 @@ That's normal for small/indie apps, not a sign anything's wrong.
 Once you've played something, Home shows a **Jump in** strip of your most
 recently played instances and servers for one-click relaunching.
 
+## Vanilla Mode (for streaming)
+
+Flip the **Vanilla Mode** switch in any instance's header — or just press
+**K** anywhere in the launcher — and the next launch is plain, unmodified
+Minecraft: no mod loader (so no mods at all), no resource packs, particles
+set to All, and brightness capped at vanilla's max (no fullbright). A green
+badge in the title bar shows it's on, and Play reads **Play Vanilla**.
+
+Nothing gets deleted or disabled: your mods stay in place, and your
+`options.txt` is snapshotted before the vanilla launch and put back when the
+game closes (anything else you changed in-game, like FOV, is kept). Press K
+again and you're back to exactly how you had it. Because mods can't be
+unloaded from a running game, toggling takes effect on the next Play.
+Heads-up: opening a *modded singleplayer world* in Vanilla Mode can wipe that
+world's modded blocks — servers and vanilla worlds are fine.
+
 ## Requirements
 
 - **Java 21+** must already be installed (get it free from

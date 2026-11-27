@@ -20,6 +20,10 @@
       <span class="titlebar-brand-name">Camel Launcher</span>
       <nav class="titlebar-breadcrumb" id="titlebar-breadcrumb"></nav>
     </div>
+    <button class="titlebar-vanilla hidden" id="titlebar-vanilla" type="button" title="Vanilla Mode is on - click or press K to turn it off">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16"/></svg>
+      Vanilla Mode
+    </button>
     <div class="titlebar-status hidden" id="titlebar-status">
       <span class="status-dot live"></span>
       <span id="titlebar-status-name"></span>
@@ -743,6 +747,13 @@
           </button>
           <button id="delete-instance-btn" class="icon-btn danger" title="Delete instance">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>
+          </button>
+          <button id="vanilla-toggle-btn" class="vanilla-toggle" type="button" role="switch" aria-checked="false" title="Vanilla Mode: launch with no mods, no resource packs, particles on and no fullbright. Shortcut: K">
+            <span class="vanilla-toggle-track"><span class="vanilla-toggle-thumb"></span></span>
+            <span class="vanilla-toggle-text">
+              <span class="vanilla-toggle-label">Vanilla Mode</span>
+              <span class="vanilla-toggle-hint">Press <kbd>K</kbd></span>
+            </span>
           </button>
           <button id="instance-play-btn" class="btn primary large">
             <svg class="btn-icon play-glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>

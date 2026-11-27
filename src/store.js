@@ -16,6 +16,7 @@ const DEFAULT_SETTINGS = {
   autoCheckUpdates: true,
   confirmStopGame: true,
   jvmArgs: '',
+  vanillaMode: false,
 };
 
 class JsonStore {
