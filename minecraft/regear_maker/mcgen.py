@@ -8,8 +8,19 @@ BLOCKS, TILES, NET, SEEDS, PHASE = {}, {}, {}, {}, {}
 SUPPORT, CONTAINER, COMPONENT, DUST = 0, 1, 2, 3
 
 
-def put(pos, block, phase=SUPPORT, **props):
+MIRZ = [None]                   # when set: z -> MIRZ - z, north <-> south (mirrored build)
+MIRF = {"north": "south", "south": "north"}
+
+
+def T(pos):
     pos = tuple(pos)
+    return pos if MIRZ[0] is None else (pos[0], pos[1], MIRZ[0] - pos[2])
+
+
+def put(pos, block, phase=SUPPORT, **props):
+    pos = T(pos)
+    if MIRZ[0] is not None and props.get("facing") in MIRF:
+        props["facing"] = MIRF[props["facing"]]
     if ROT[0] and props.get("facing") in ROT180:
         props["facing"] = ROT180[props["facing"]]
     if pos in BLOCKS:
@@ -19,15 +30,15 @@ def put(pos, block, phase=SUPPORT, **props):
 
 
 def support(pos, block="glass"):
-    if tuple(pos) not in BLOCKS:
+    if T(pos) not in BLOCKS:
         put(pos, block, SUPPORT)
 
 
 def dust(pos, net, seed=None):
     put(pos, "redstone_wire", DUST)
-    NET[tuple(pos)] = net
+    NET[T(pos)] = net
     if seed is not None:
-        SEEDS[tuple(pos)] = seed
+        SEEDS[T(pos)] = seed
     support((pos[0], pos[1] - 1, pos[2]))
 
 
@@ -38,7 +49,7 @@ def repeater(pos, facing, delay=1, powered=False):
 
 def comparator(pos, facing, mode="compare", signal=0):
     put(pos, "comparator", COMPONENT, facing=facing, mode=mode, powered=signal > 0)
-    TILES[tuple(pos)] = Compound({"id": String("minecraft:comparator"), "OutputSignal": Int(signal)})
+    TILES[T(pos)] = Compound({"id": String("minecraft:comparator"), "OutputSignal": Int(signal)})
     support((pos[0], pos[1] - 1, pos[2]))
 
 
@@ -55,13 +66,13 @@ def item(slot, item_id, count=1, name=None):
 
 def container(pos, block, items=(), phase=CONTAINER, **props):
     put(pos, block, phase, **props)
-    TILES[tuple(pos)] = Compound({"id": String("minecraft:" + block.replace("waxed_", "")),
+    TILES[T(pos)] = Compound({"id": String("minecraft:" + block.replace("waxed_", "")),
                                   "Items": List[Compound](list(items))})
 
 
 def hopper(pos, facing, enabled=True, items=()):
     container(pos, "hopper", items, facing=facing, enabled=enabled)
-    TILES[tuple(pos)]["TransferCooldown"] = Int(0)
+    TILES[T(pos)]["TransferCooldown"] = Int(0)
 
 
 NON_CONDUCTORS = {"air", "glass", "decorated_pot", "stone_button", "oak_button", "lever", "oak_wall_sign", "oak_sign", "hopper", "repeater", "comparator", "redstone_wire",
