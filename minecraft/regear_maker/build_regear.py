@@ -180,7 +180,16 @@ def station(tw, k, kit, first, last, ox, out_name, in_name, label):
         for y in range(3, ROOM_Y + 1):
             hopper(P(2, y, 0), "down")
         container(P(1, ROOM_Y, 0), "dropper", [], facing="east", triggered=False)
-        put(P(0, ROOM_Y, 0), "stone_button", COMPONENT, face="wall", facing="west", powered=False)
+        # big obvious button panel: coloured block (powers the dropper) + lamp that lights on press
+        col = "light_blue_concrete" if label == "Hotbar" else "lime_concrete"
+        put(P(0, ROOM_Y, 0), col)
+        put(P(0, ROOM_Y + 1, 0), "redstone_lamp", COMPONENT, lit=False)
+        put(P(0, ROOM_Y + 2, 0), col)
+        for dz in (-1, 1):
+            for dy in (0, 1, 2):
+                put(P(0, ROOM_Y + dy, dz), col)
+        put(P(-1, ROOM_Y - 1, 0), col)                 # coloured floor tile in front of it
+        put(P(-1, ROOM_Y, 0), "stone_button", COMPONENT, face="wall", facing="west", powered=False)
         hopper(P(1, ROOM_Y + 1, 0), "down")
         named(P(1, ROOM_Y + 2, 0), "chest", in_name, facing="east", type="single", waterlogged=False)
 
@@ -495,6 +504,23 @@ for tw, layout, ox, rot, out_name, in_name, label in TOWERS:
                     sign(q, [f"{label.upper()} KITS", "Finished", "shulkers come", "out here"],
                          rotation=0 if dz < 0 else 8)
                     break
+
+# big glowing labels above each button
+def glow_sign(pos, lines, facing, color):
+    sign(pos, lines, facing=facing)
+    for side in ("front_text",):
+        TILES[pos][side]["color"] = String(color)
+        TILES[pos][side]["has_glowing_text"] = Byte(1)
+
+
+for pos, (bid_, pr) in list(BLOCKS.items()):
+    if bid_ == "minecraft:stone_button":
+        hot = pos[0] < -10
+        kit = "HOTBAR" if hot else "INVENTORY"
+        color = "light_blue" if hot else "lime"
+        glow_sign((pos[0], ROOM_Y + 1, 0), [">> PRESS <<", "BUTTON BELOW", f"= 1 {kit} KIT", "(9 slots)" if hot else "(27 slots)"],
+                  pr["facing"], color)
+        glow_sign((pos[0], ROOM_Y + 2, 0), [f"{kit}", "KIT MAKER", "", ""], pr["facing"], color)
 
 # instruction boards on both end walls
 END = {"Inventory": (RX1 - 1, "west", "27-slot shulker", "~15 min first"),

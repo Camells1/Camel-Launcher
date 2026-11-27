@@ -2294,7 +2294,7 @@ setblock ~40 ~75 ~4 minecraft:polished_andesite
 setblock ~12 ~75 ~5 minecraft:polished_andesite
 setblock ~14 ~75 ~5 minecraft:polished_andesite
 setblock ~15 ~75 ~5 minecraft:polished_andesite
-setblock ~16 ~75 ~5 minecraft:polished_andesite
+setblock ~16 ~75 ~5 minecraft:light_blue_concrete
 setblock ~21 ~75 ~5 minecraft:polished_andesite
 setblock ~22 ~75 ~5 minecraft:polished_andesite
 setblock ~23 ~75 ~5 minecraft:polished_andesite
@@ -2306,7 +2306,7 @@ setblock ~28 ~75 ~5 minecraft:polished_andesite
 setblock ~33 ~75 ~5 minecraft:polished_andesite
 setblock ~34 ~75 ~5 minecraft:polished_andesite
 setblock ~35 ~75 ~5 minecraft:polished_andesite
-setblock ~36 ~75 ~5 minecraft:polished_andesite
+setblock ~36 ~75 ~5 minecraft:lime_concrete
 setblock ~37 ~75 ~5 minecraft:polished_andesite
 setblock ~38 ~75 ~5 minecraft:polished_andesite
 setblock ~40 ~75 ~5 minecraft:polished_andesite
@@ -2442,10 +2442,16 @@ setblock ~40 ~76 ~2 minecraft:glass
 setblock ~12 ~76 ~3 minecraft:glass
 setblock ~40 ~76 ~3 minecraft:glass
 setblock ~12 ~76 ~4 minecraft:glass
+setblock ~15 ~76 ~4 minecraft:light_blue_concrete
+setblock ~37 ~76 ~4 minecraft:lime_concrete
 setblock ~40 ~76 ~4 minecraft:glass
 setblock ~12 ~76 ~5 minecraft:glass
+setblock ~15 ~76 ~5 minecraft:light_blue_concrete
+setblock ~37 ~76 ~5 minecraft:lime_concrete
 setblock ~40 ~76 ~5 minecraft:glass
 setblock ~12 ~76 ~6 minecraft:glass
+setblock ~15 ~76 ~6 minecraft:light_blue_concrete
+setblock ~37 ~76 ~6 minecraft:lime_concrete
 setblock ~40 ~76 ~6 minecraft:glass
 setblock ~12 ~76 ~7 minecraft:glass
 setblock ~40 ~76 ~7 minecraft:glass
@@ -2514,10 +2520,14 @@ setblock ~40 ~77 ~2 minecraft:glass
 setblock ~12 ~77 ~3 minecraft:glass
 setblock ~40 ~77 ~3 minecraft:glass
 setblock ~12 ~77 ~4 minecraft:glass
+setblock ~15 ~77 ~4 minecraft:light_blue_concrete
+setblock ~37 ~77 ~4 minecraft:lime_concrete
 setblock ~40 ~77 ~4 minecraft:glass
 setblock ~12 ~77 ~5 minecraft:glass
 setblock ~40 ~77 ~5 minecraft:glass
 setblock ~12 ~77 ~6 minecraft:glass
+setblock ~15 ~77 ~6 minecraft:light_blue_concrete
+setblock ~37 ~77 ~6 minecraft:lime_concrete
 setblock ~40 ~77 ~6 minecraft:glass
 setblock ~12 ~77 ~7 minecraft:glass
 setblock ~40 ~77 ~7 minecraft:glass
@@ -2586,10 +2596,16 @@ setblock ~40 ~78 ~2 minecraft:glass
 setblock ~12 ~78 ~3 minecraft:glass
 setblock ~40 ~78 ~3 minecraft:glass
 setblock ~12 ~78 ~4 minecraft:glass
+setblock ~15 ~78 ~4 minecraft:light_blue_concrete
+setblock ~37 ~78 ~4 minecraft:lime_concrete
 setblock ~40 ~78 ~4 minecraft:glass
 setblock ~12 ~78 ~5 minecraft:glass
+setblock ~15 ~78 ~5 minecraft:light_blue_concrete
+setblock ~37 ~78 ~5 minecraft:lime_concrete
 setblock ~40 ~78 ~5 minecraft:glass
 setblock ~12 ~78 ~6 minecraft:glass
+setblock ~15 ~78 ~6 minecraft:light_blue_concrete
+setblock ~37 ~78 ~6 minecraft:lime_concrete
 setblock ~40 ~78 ~6 minecraft:glass
 setblock ~12 ~78 ~7 minecraft:glass
 setblock ~40 ~78 ~7 minecraft:glass
@@ -5642,8 +5658,8 @@ setblock ~18 ~75 ~5 minecraft:repeater[delay=1,facing=east,locked=false,powered=
 setblock ~19 ~75 ~5 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
 setblock ~30 ~75 ~5 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~31 ~75 ~5 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
-setblock ~15 ~76 ~5 minecraft:stone_button[face=wall,facing=east,powered=false]
-setblock ~37 ~76 ~5 minecraft:stone_button[face=wall,facing=west,powered=false]
+setblock ~16 ~76 ~5 minecraft:stone_button[face=wall,facing=east,powered=false]
+setblock ~36 ~76 ~5 minecraft:stone_button[face=wall,facing=west,powered=false]
 setblock ~20 ~76 ~6 minecraft:oak_sign[rotation=8,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR KITS"','"Finished"','"shulkers come"','"out here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~32 ~76 ~6 minecraft:oak_sign[rotation=8,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY KITS"','"Finished"','"shulkers come"','"out here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~17 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR"','"SLOT 2"','"Put the item for"','"slot 2 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
@@ -5668,6 +5684,10 @@ setblock ~13 ~77 ~3 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_wa
 setblock ~39 ~77 ~3 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['"1. Put EMPTY"','"shulker boxes in"','"the chest above"','"the button"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~13 ~77 ~4 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['"2. Stock every"','"\'Hotbar slot\'"','"chest with the"','"item you want"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~39 ~77 ~4 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['"2. Stock every"','"\'Inventory slot\'"','"chest with the"','"item you want"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~15 ~77 ~5 minecraft:redstone_lamp[lit=false]
+setblock ~16 ~77 ~5 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['">> PRESS <<"','"BUTTON BELOW"','"= 1 HOTBAR KIT"','"(9 slots)"'],color:"light_blue",has_glowing_text:1b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~36 ~77 ~5 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['">> PRESS <<"','"BUTTON BELOW"','"= 1 INVENTORY KIT"','"(27 slots)"'],color:"lime",has_glowing_text:1b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~37 ~77 ~5 minecraft:redstone_lamp[lit=false]
 setblock ~13 ~77 ~6 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['"3. Press button"','"Kit arrives in"','"\'Hotbar kits\'"','"~6 min first, then 1/min"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~39 ~77 ~6 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['"3. Press button"','"Kit arrives in"','"\'Inventory kits\'"','"~15 min first, then 1/min"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~13 ~77 ~7 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['"RULES"','"1 stack per slot"','"(totem = 1)"','"1 item type/chest"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
@@ -5692,6 +5712,8 @@ setblock ~34 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_w
 setblock ~35 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 2"','"Put the item for"','"slot 2 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~13 ~78 ~3 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR KIT"','"9-slot shulker"','"Each button press"','"= 1 kit"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~39 ~78 ~3 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY KIT"','"27-slot shulker"','"Each button press"','"= 1 kit"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~16 ~78 ~5 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR"','"KIT MAKER"','""','""'],color:"light_blue",has_glowing_text:1b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~36 ~78 ~5 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"KIT MAKER"','""','""'],color:"lime",has_glowing_text:1b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~13 ~78 ~7 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Never leave a"','"slot chest empty"','"or slots after"','"it shift up"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~39 ~78 ~7 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Never leave a"','"slot chest empty"','"or slots after"','"it shift up"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~29 ~1 ~3 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
