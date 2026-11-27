@@ -37,10 +37,12 @@ STATION_DY = -5
 C, O, T, G, P_, X, A_, GL = ("end_crystal", "obsidian", "totem_of_undying", "enchanted_golden_apple",
                              "ender_pearl", "experience_bottle", "respawn_anchor", "glowstone")
 # Default layouts: one entry per shulker slot (slot 1 first). Change them in-game via the slot chests.
-FULL_LAYOUT = [C, C, C, O, O, O, T, T, T,
-               G, G, P_, P_, X, X, X, A_, A_,
-               GL, GL, T, T, T, C, O, G, P_]
-HOTBAR_LAYOUT = [C, O, G, P_, X, A_, GL, T, T]
+SW, PK, GA = "netherite_sword", "netherite_pickaxe", "golden_apple"
+# Defaults copied from the player's own setup (slot 1 = top-left of the shulker)
+FULL_LAYOUT = [P_, T, T, T, T, T, T, T, X,
+               P_, T, T, T, T, T, T, T, X,
+               P_, C, O, P_, T, T, T, T, X]
+HOTBAR_LAYOUT = [SW, C, O, P_, T, GL, A_, GA, PK]
 if TEST:
     pe, sn, eg = "ender_pearl", "snowball", "egg"
     FULL_LAYOUT = [pe, sn, pe, T, eg, eg, sn, T, pe, eg, pe, sn, T, T, eg, sn, sn, pe,
@@ -53,7 +55,7 @@ TOWERS = [  # name, layout, x origin, rotated 180 deg, output name, input name, 
 ]
 ROT = [False]
 ROT180 = {"north": "south", "south": "north", "east": "west", "west": "east"}
-STACK = {"end_crystal": 64, "obsidian": 64, "totem_of_undying": 1, "enchanted_golden_apple": 64,
+STACK = {"netherite_sword": 1, "netherite_pickaxe": 1, "golden_apple": 64, "end_crystal": 64, "obsidian": 64, "totem_of_undying": 1, "enchanted_golden_apple": 64,
          "ender_pearl": 16, "experience_bottle": 64, "respawn_anchor": 64, "glowstone": 64,
          "snowball": 16, "egg": 16}
 
