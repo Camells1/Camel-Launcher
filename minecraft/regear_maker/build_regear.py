@@ -5,7 +5,9 @@ build_regear.py - Auto Regear Shulker Maker for Minecraft Java Edition 1.21.4 (n
 Outputs (all generated from one block model):
   auto_regear_maker.litematic
   auto_regear_maker.mcfunction
-  datapack/regear_maker/   ->  /function regear:build   /function regear:load_test_shulkers
+  datapack/regear_maker/   ->  /function regear:build_breeze_8x | build_singleplayer, load_test_shulkers
+Run:  python3 build_regear.py                 (8-items-per-transfer servers, e.g. breezevanilla.eu)
+      python3 build_regear.py --singleplayer  (normal hoppers)
 
 Run:  pip install litemapy && python3 build_regear.py [--test]
       --test builds a fast variant (short clock, tiny kit) used for automated in-game testing.
@@ -30,8 +32,11 @@ from litemapy import BlockState, Region, TileEntity
 MC_DATA_VERSION_1_21_4 = 4189
 PACK_FORMAT_1_21_4 = 61
 TEST = "--test" in sys.argv
+SP = "--singleplayer" in sys.argv     # normal hoppers (1 item per transfer); default = 8-item servers
 
-CLOCK_ITEMS = 30 if TEST else 120          # 120 items: 48 s phases with normal hoppers, 6 s on servers that move 8 items per transfer
+# Singleplayer: 75 items = 30 s phases. Server build: 120 items = 6 s phases with 8-item hoppers
+# (and still safe, just slow, with normal hoppers).
+CLOCK_ITEMS = 30 if TEST else (75 if SP else 120)
 STATION_DY = -5
 
 C, O, T, G, P_, X, A_, GL = ("end_crystal", "obsidian", "totem_of_undying", "enchanted_golden_apple",
@@ -423,7 +428,7 @@ def main():
     out = os.path.dirname(os.path.abspath(__file__))
     solve_dust()
     off, size = normalized()
-    tag = "_test" if TEST else ""
+    tag = "_test" if TEST else ("_singleplayer" if SP else "_breeze_8x")
     reg = Region(0, 0, 0, *size)
     for pos, (name, props) in BLOCKS.items():
         reg[rel(pos, off)] = BlockState(name, **props)
@@ -525,14 +530,14 @@ for pos, (bid_, pr) in list(BLOCKS.items()):
         glow_sign((pos[0], ROOM_Y + 2, 0), [f"{kit}", "KIT MAKER", "", ""], pr["facing"], color)
 
 # instruction boards on both end walls
-END = {"Inventory": (RX1 - 1, "west", "27-slot shulker", "~15 min first"),
-       "Hotbar": (RX0 + 1, "east", "9-slot shulker", "~6 min first")}
+END = {"Inventory": (RX1 - 1, "west", "27-slot shulker", "~15 min first" if SP else "~3 min first"),
+       "Hotbar": (RX0 + 1, "east", "9-slot shulker", "~6 min first" if SP else "~1 min first")}
 for label, (x, face, what, first_t) in END.items():
     boards = [
         [f"{label.upper()} KIT", what, "Each button press", "= 1 kit"],
         ["1. Put EMPTY", "shulker boxes in", "the chest above", "the button"],
         ["2. Stock every", f"'{label} slot'", "chest with the", "item you want"],
-        ["3. Press button", f"Kit arrives in", f"'{label} kits'", f"{first_t}, then 1/min"],
+        ["3. Press button", f"Kit arrives in", f"'{label} kits'", f"{first_t}", ],
         ["RULES", "1 stack per slot", "(totem = 1)", "1 item type/chest"],
         ["Never leave a", "slot chest empty", "or slots after", "it shift up"],
     ]

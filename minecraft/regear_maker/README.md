@@ -9,9 +9,10 @@ Everything is run from **one control room** at the top of the machine. Both kit 
 
 | File | Use |
 |---|---|
-| `auto_regear_maker.litematic` | Load with Litematica (53 x 81 x 11, the room is the top layer) |
-| `auto_regear_maker.mcfunction` | Stand-alone `/fill` + `/setblock` script |
-| `datapack/regear_maker/` | `/function regear:build`, `/function regear:load_test_shulkers` |
+| `auto_regear_maker_breeze_8x.litematic` | For servers whose hoppers move 8 items per transfer (breezevanilla.eu). 53 x 81 x 11, room on top |
+| `auto_regear_maker_singleplayer.litematic` | For singleplayer / normal servers (1 item per transfer) |
+| `*.mcfunction` | Stand-alone `/fill` + `/setblock` scripts of the same two builds |
+| `datapack/regear_maker/` | `/function regear:build_breeze_8x`, `/function regear:build_singleplayer`, `/function regear:load_test_shulkers` |
 | `build_regear.py` | Generator: change `FULL_LAYOUT` / `HOTBAR_LAYOUT`, then `python3 build_regear.py` |
 
 ## The control room
@@ -28,22 +29,22 @@ Everything is run from **one control room** at the top of the machine. Both kit 
 * Each chest refills its slot for up to 27 kits.
 
 ## Timing
-Works on normal servers and on servers whose hoppers move 8 items per transfer (Paper/Spigot `hopper-amount: 8`, like breezevanilla.eu). Both were tested.
+The two builds only differ in the clock: 120 sticks per station for 8-item servers, 75 for singleplayer.
 
-| Hoppers | Station cycle | First Hotbar kit | First Inventory kit | When several are queued |
+| Build | Hoppers | First Hotbar kit | First Inventory kit | When several are queued |
 |---|---|---|---|---|
-| normal (1 item) | 96 s | ~8 min | ~22 min | one every ~1.5 min |
-| 8 items per transfer | 12 s | ~1 min | ~3 min | one every ~12 s |
+| singleplayer | 1 item per transfer | ~5 min | ~15 min | one every ~1 min |
+| breeze_8x | 8 items per transfer | ~1 min | ~3 min | one every ~12 s |
 
 ## How it works
 * **Towers:** each kit type has its own tower of stations: 14 for Inventory, 5 for Hotbar, hidden below the room. Each station fills 2 slots.
 * **Lanes:** a slot's chest feeds a hopper column → feeder hoppers → a measuring hopper next to the box.
 * **Measuring:** the measuring hopper holds 4 empty shulker boxes named "Blocker", so exactly one stack fits. A hopper can't push a shulker box into a shulker box, so the blockers stay.
 * **Ordering:** the first lane of a station starts 0.5 s before the second, so slots fill in order.
-* **Clocks:** every station has its own hopper clock (120 sticks) with copper-bulb flip-flops. No music discs anywhere.
+* **Clocks:** every station has its own hopper clock with copper-bulb flip-flops. No music discs anywhere.
 * **Moving the box:** a piston breaks the box after its dump. It falls into a hopper that feeds the next station's dispenser. The last station sends it into the dropper elevator.
 
 ## Survival notes
 Litematica pastes in Creative come pre-filled. In Survival, also add:
-* 120 sticks in the first clock hopper of every station.
+* Clock sticks in the first clock hopper of every station: 75 (singleplayer) or 120 (breeze_8x).
 * 4 shulker boxes renamed "Blocker" in every measuring hopper.
