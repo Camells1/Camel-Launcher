@@ -3,7 +3,7 @@
   "id": "pavlevanilla",
   "version": "${version}",
   "name": "Pavle Vanilla",
-  "description": "Press K in-game to switch to a stream-safe vanilla look: resource packs and shaders off, particles on All, no fullbright, night vision ignored. Press K again to put everything back.",
+  "description": "Press K in-game to switch to a stream-safe vanilla look: resource packs and shaders off, every particle on (incl. Sodium Extra), no fullbright or night vision (incl. Gamma Utils). Press K again to put everything back.",
   "authors": [
     "Camells"
   ],

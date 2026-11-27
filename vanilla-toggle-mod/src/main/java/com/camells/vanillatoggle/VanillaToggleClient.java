@@ -31,9 +31,10 @@ import java.util.Set;
 
 /**
  * Press K (rebindable in Controls) to flip into a stream-safe vanilla look:
- * resource packs off, shaders off (Iris), particles on All, brightness capped
- * at vanilla's max so no fullbright, and night vision ignored (even when a
- * server keeps re-applying it). Press it again to put back exactly what
+ * resource packs off, shaders off (Iris), particles on All (including every
+ * Sodium Extra particle toggle), brightness capped at vanilla's max so no
+ * fullbright from any gamma mod, and no night vision - neither the potion
+ * effect (even when a server keeps re-applying it) nor Gamma Utils' own. Press it again to put back exactly what
  * you had. The saved state lives in config/pavle-vanilla.json, so it
  * survives a game restart while Vanilla Mode is still on.
  */
@@ -41,21 +42,23 @@ public class VanillaToggleClient implements ClientModInitializer {
     public static final String MOD_ID = "pavlevanilla";
     private static final Logger LOG = LoggerFactory.getLogger("Pavle Vanilla");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final double MAX_VANILLA_GAMMA = 1.0;
+    /** The "Bright" end of vanilla's brightness slider. */
+    public static final double MAX_VANILLA_GAMMA = 1.0;
 
     /** What gets saved on the way in, and put back on the way out. */
     static final class Saved {
         boolean active;
         List<String> resourcePacks = new ArrayList<>();
         String particles;
-        double gamma = 0.5;
         Boolean shadersEnabled; // null = Iris not installed
+        Boolean gammaUtilsNightVision; // null = Gamma Utils not installed
+        SodiumExtraBridge.Snapshot sodiumExtraParticles; // null = Sodium Extra not installed
     }
 
     private static KeyBinding toggleKey;
     private static Saved state = new Saved();
 
-    /** Read by the night-vision mixin every frame. */
+    /** Read by the night-vision and brightness mixins every frame. */
     public static boolean isActive() {
         return state.active;
     }
@@ -70,15 +73,13 @@ public class VanillaToggleClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (toggleKey.wasPressed()) toggle(client);
-            // Fullbright mods push gamma past vanilla's slider; hold it down
-            // for as long as Vanilla Mode is on.
-            if (state.active && client.options != null) {
-                double gamma = client.options.getGamma().getValue();
-                if (gamma > MAX_VANILLA_GAMMA) client.options.getGamma().setValue(MAX_VANILLA_GAMMA);
-            }
         });
         ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-            if (state.active) LOG.info("Vanilla Mode is still on from last session - press K to restore your setup.");
+            if (!state.active) return;
+            LOG.info("Pavle Vanilla is still on from last session - press K to restore your setup.");
+            // Sodium Extra's toggles live in memory only, so after a restart
+            // they're back to normal - force them on again.
+            if (state.sodiumExtraParticles != null) SodiumExtraBridge.enableAll();
         });
     }
 
@@ -100,8 +101,9 @@ public class VanillaToggleClient implements ClientModInitializer {
         saved.active = true;
         saved.resourcePacks = new ArrayList<>(packs.getEnabledIds());
         saved.particles = options.getParticles().getValue().name();
-        saved.gamma = options.getGamma().getValue();
         saved.shadersEnabled = IrisBridge.shadersEnabled();
+        saved.gammaUtilsNightVision = GammaUtilsBridge.nightVisionEnabled();
+        saved.sodiumExtraParticles = SodiumExtraBridge.snapshot();
         state = saved;
         save(state);
 
@@ -115,8 +117,10 @@ public class VanillaToggleClient implements ClientModInitializer {
         boolean packsChanged = keep.size() != saved.resourcePacks.size();
 
         options.getParticles().setValue(ParticlesMode.ALL);
-        if (options.getGamma().getValue() > MAX_VANILLA_GAMMA) options.getGamma().setValue(MAX_VANILLA_GAMMA);
+        if (saved.sodiumExtraParticles != null) SodiumExtraBridge.enableAll();
+        if (Boolean.TRUE.equals(saved.gammaUtilsNightVision)) GammaUtilsBridge.setNightVision(false);
         if (Boolean.TRUE.equals(saved.shadersEnabled)) IrisBridge.setShadersEnabled(false);
+        // Brightness needs nothing here: LightmapMixin caps it while active.
 
         if (packsChanged) {
             packs.setEnabledProfiles(keep);
@@ -125,7 +129,7 @@ public class VanillaToggleClient implements ClientModInitializer {
             options.write();
         }
         notify(client, Text.literal("Pavle Vanilla ON").formatted(Formatting.GREEN, Formatting.BOLD)
-                .append(Text.literal("  packs off, particles on, no fullbright or night vision").formatted(Formatting.GRAY)));
+                .append(Text.literal("  packs off, all particles on, no fullbright or night vision").formatted(Formatting.GRAY)));
     }
 
     private void disable(MinecraftClient client) {
@@ -138,9 +142,8 @@ public class VanillaToggleClient implements ClientModInitializer {
         } catch (Exception ignored) {
             // unknown/missing value - leave particles as they are
         }
-        // setValue() would clamp a fullbright value back to 1.0, so write
-        // the raw saved number back through the option's own codec path.
-        GammaAccess.setRaw(options, saved.gamma);
+        if (saved.sodiumExtraParticles != null) SodiumExtraBridge.restore(saved.sodiumExtraParticles);
+        if (Boolean.TRUE.equals(saved.gammaUtilsNightVision)) GammaUtilsBridge.setNightVision(true);
         if (Boolean.TRUE.equals(saved.shadersEnabled)) IrisBridge.setShadersEnabled(true);
 
         // Re-enable the saved packs that still exist, in their old order.
