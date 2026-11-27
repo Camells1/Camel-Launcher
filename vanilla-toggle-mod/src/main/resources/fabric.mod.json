@@ -3,7 +3,7 @@
   "id": "pavlevanilla",
   "version": "${version}",
   "name": "Pavle Vanilla",
-  "description": "Press K in-game to switch to a stream-safe vanilla look: resource packs and shaders off, every particle on (incl. Sodium Extra), no fullbright or night vision (incl. Gamma Utils). Press K again to put everything back.",
+  "description": "Press K in-game to switch to a stream-safe vanilla look: every particle on (incl. Sodium Extra), no fullbright or night vision (incl. Gamma Utils), shaders off, and optionally resource packs off. Press K again to put everything back.",
   "authors": [
     "Camells"
   ],
@@ -12,6 +12,9 @@
   "entrypoints": {
     "client": [
       "com.camells.vanillatoggle.VanillaToggleClient"
+    ],
+    "modmenu": [
+      "com.camells.vanillatoggle.ModMenuIntegration"
     ]
   },
   "depends": {
@@ -21,5 +24,8 @@
   },
   "mixins": [
     "pavlevanilla.mixins.json"
-  ]
+  ],
+  "suggests": {
+    "modmenu": "*"
+  }
 }

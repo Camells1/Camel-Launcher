@@ -31,7 +31,7 @@ import java.util.Set;
 
 /**
  * Press K (rebindable in Controls) to flip into a stream-safe vanilla look:
- * resource packs off, shaders off (Iris), particles on All (including every
+ * resource packs off (optional - see Settings), shaders off (Iris), particles on All (including every
  * Sodium Extra particle toggle), brightness capped at vanilla's max so no
  * fullbright from any gamma mod, and no night vision - neither the potion
  * effect (even when a server keeps re-applying it) nor Gamma Utils' own. Press it again to put back exactly what
@@ -50,6 +50,9 @@ public class VanillaToggleClient implements ClientModInitializer {
         boolean active;
         List<String> resourcePacks = new ArrayList<>();
         String particles;
+        // Whether this session turned resource packs off. null = saved by
+        // v1.0-1.2, which always turned them off.
+        Boolean packsDisabled;
         Boolean shadersEnabled; // null = Iris not installed
         Boolean gammaUtilsNightVision; // null = Gamma Utils not installed
         SodiumExtraBridge.Snapshot sodiumExtraParticles; // null = Sodium Extra not installed
@@ -70,6 +73,7 @@ public class VanillaToggleClient implements ClientModInitializer {
                 "key.pavlevanilla.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_K, category));
 
         state = load();
+        Settings.get(); // creates config/pavle-vanilla-settings.json on first run
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (toggleKey.wasPressed()) toggle(client);
@@ -110,11 +114,15 @@ public class VanillaToggleClient implements ClientModInitializer {
         // Only the player's own packs (resourcepacks folder) and the optional
         // built-in looks go off; mod-provided and server packs stay so
         // nothing that mods/servers depend on breaks.
+        // Resource packs are left alone unless the "Turn off resource packs"
+        // setting is on (Mod Menu -> Pavle Vanilla, or the settings file).
         Set<String> keep = new LinkedHashSet<>();
         for (String id : saved.resourcePacks) {
-            if (!isTexturePack(id)) keep.add(id);
+            if (!Settings.get().disableResourcePacks || !isTexturePack(id)) keep.add(id);
         }
         boolean packsChanged = keep.size() != saved.resourcePacks.size();
+        saved.packsDisabled = packsChanged;
+        save(saved);
 
         options.getParticles().setValue(ParticlesMode.ALL);
         if (saved.sodiumExtraParticles != null) SodiumExtraBridge.enableAll();
@@ -128,8 +136,11 @@ public class VanillaToggleClient implements ClientModInitializer {
         } else {
             options.write();
         }
+        String detail = packsChanged
+                ? "  packs off, all particles on, no fullbright or night vision"
+                : "  all particles on, no fullbright or night vision";
         notify(client, Text.literal("Pavle Vanilla ON").formatted(Formatting.GREEN, Formatting.BOLD)
-                .append(Text.literal("  packs off, all particles on, no fullbright or night vision").formatted(Formatting.GRAY)));
+                .append(Text.literal(detail).formatted(Formatting.GRAY)));
     }
 
     private void disable(MinecraftClient client) {
@@ -146,24 +157,26 @@ public class VanillaToggleClient implements ClientModInitializer {
         if (Boolean.TRUE.equals(saved.gammaUtilsNightVision)) GammaUtilsBridge.setNightVision(true);
         if (Boolean.TRUE.equals(saved.shadersEnabled)) IrisBridge.setShadersEnabled(true);
 
-        // Re-enable the saved packs that still exist, in their old order.
-        packs.scanPacks();
-        List<String> restore = new ArrayList<>();
-        for (String id : saved.resourcePacks) {
-            if (packs.getIds().contains(id)) restore.add(id);
-        }
-        // Keep anything enabled since that we didn't know about (e.g. a server pack).
-        for (String id : packs.getEnabledIds()) {
-            if (!restore.contains(id)) restore.add(id);
-        }
-        boolean packsChanged = !new ArrayList<>(packs.getEnabledIds()).equals(restore);
-
         state = new Saved();
         save(state);
 
-        if (packsChanged) {
-            packs.setEnabledProfiles(restore);
-            options.refreshResourcePacks(packs);
+        boolean restorePacks = saved.packsDisabled == null || saved.packsDisabled;
+        if (restorePacks) {
+            // Re-enable the saved packs that still exist, in their old order.
+            packs.scanPacks();
+            List<String> restore = new ArrayList<>();
+            for (String id : saved.resourcePacks) {
+                if (packs.getIds().contains(id)) restore.add(id);
+            }
+            // Keep anything enabled since that we didn't know about (e.g. a server pack).
+            for (String id : packs.getEnabledIds()) {
+                if (!restore.contains(id)) restore.add(id);
+            }
+            restorePacks = !new ArrayList<>(packs.getEnabledIds()).equals(restore);
+            if (restorePacks) packs.setEnabledProfiles(restore);
+        }
+        if (restorePacks) {
+            options.refreshResourcePacks(packs); // saves options + reloads
         } else {
             options.write();
         }
