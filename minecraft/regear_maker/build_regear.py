@@ -46,10 +46,13 @@ if TEST:
     FULL_LAYOUT = [pe, sn, pe, T, eg, eg, sn, T, pe, eg, pe, sn, T, T, eg, sn, sn, pe,
                    eg, T, pe, sn, eg, pe, T, sn, eg]
     HOTBAR_LAYOUT = [eg, pe, T, sn, pe, eg, T, sn, pe]
-TOWERS = [  # name, layout, z offset, output chest name, input chest name
-    ("inv", FULL_LAYOUT, 0, "Inventory kits", "Empty shulkers (Inventory)"),
-    ("hot", HOTBAR_LAYOUT, 12, "Hotbar kits", "Empty shulkers (Hotbar)"),
+ROOM_Y = 8          # chests of the control room stand at this y (station 1's cell is at y = 0)
+TOWERS = [  # name, layout, x origin, rotated 180 deg, output name, input name, label
+    ("inv", FULL_LAYOUT, 0, False, "Inventory kits", "Empty shulkers (Inventory)", "Inventory"),
+    ("hot", HOTBAR_LAYOUT, -22, True, "Hotbar kits", "Empty shulkers (Hotbar)", "Hotbar"),
 ]
+ROT = [False]
+ROT180 = {"north": "south", "south": "north", "east": "west", "west": "east"}
 STACK = {"end_crystal": 64, "obsidian": 64, "totem_of_undying": 1, "enchanted_golden_apple": 64,
          "ender_pearl": 16, "experience_bottle": 64, "respawn_anchor": 64, "glowstone": 64,
          "snowball": 16, "egg": 16}
@@ -61,6 +64,8 @@ SUPPORT, CONTAINER, COMPONENT, DUST = 0, 1, 2, 3
 
 def put(pos, block, phase=SUPPORT, **props):
     pos = tuple(pos)
+    if ROT[0] and props.get("facing") in ROT180:
+        props["facing"] = ROT180[props["facing"]]
     if pos in BLOCKS:
         raise ValueError(f"two blocks at {pos}: {BLOCKS[pos][0]} and {block}")
     BLOCKS[pos] = ("minecraft:" + block, {k: str(v).lower() for k, v in props.items()})
@@ -123,11 +128,29 @@ def named(pos, block, name, items=(), **props):
     TILES[tuple(pos)]["CustomName"] = String('"%s"' % name)
 
 
-def station(tw, k, kit, first, last, oz, out_name, in_name, label):
-    """Station k of tower tw; cell at local (0,0,0) = global (0, k*STATION_DY, oz).
+def elevator(P, n, ex, y0, ytop, out_name, label):
+    """Dropper elevator: every dropper's comparator fires it as soon as it holds a box.
+    Wiring alternates sides each level so every level has free blocks underneath."""
+    for y in range(y0, ytop + 1):
+        sd = -1 if (y - y0) % 2 == 0 else 1
+        container(P(ex, y, 0), "dropper", [], facing="up", triggered=False)
+        comparator(P(ex + sd, y, 0), "west" if sd > 0 else "east")
+        # 1 box in a dropper is only comparator signal 2: boost it with a repeater
+        repeater(P(ex + 2 * sd, y, 0), "west" if sd > 0 else "east")
+        for q in [(ex + 3 * sd, y, 0), (ex + 3 * sd, y, sd), (ex + 3 * sd, y, 2 * sd),
+                  (ex + 2 * sd, y, 2 * sd), (ex + sd, y, 2 * sd), (ex, y, 2 * sd)]:
+            dust(P(*q), f"{n}elev{y}")
+        repeater(P(ex, y, sd), "south" if sd > 0 else "north")
+    named(P(ex, ytop + 1, 0), "chest", out_name, facing="east", type="single", waterlogged=False)
+
+
+def station(tw, k, kit, first, last, ox, out_name, in_name, label):
+    """Station k of tower tw; cell at local (0,0,0) = global (ox, k*STATION_DY, 0) (rotated 180
+    degrees around the vertical axis for the Hotbar tower so both towers face the room).
     kit = (north, south) items = shulker slots 2k+1, 2k+2 (north lane starts first)."""
     oy = k * STATION_DY
-    P = lambda x, y, z: (x, y + oy, z + oz)
+    rot = ROT[0]
+    P = lambda x, y, z: (ox + (-x if rot else x), y + oy, -z if rot else z)
     n = f"{tw}{k}_"
 
     # --- cell, dispenser, piston, drop shaft, collector -------------------------------------
@@ -135,26 +158,31 @@ def station(tw, k, kit, first, last, oz, out_name, in_name, label):
     put(P(0, 1, 0), "piston", COMPONENT, facing="down", extended=False)
     for w in ((1, -1, 0), (-1, -1, 0), (0, -1, -1), (0, -1, 1)):
         put(P(*w), "stone")
-    if last:
-        hopper(P(0, -2, 0), "east")
-        hopper(P(1, -2, 0), "down")
-        named(P(1, -3, 0), "chest", out_name, facing="south", type="single", waterlogged=False)
+    if last:    # finished box -> dropper elevator -> output chest in the control room
+        hopper(P(0, -2, 0), "west")
+        hopper(P(-1, -2, 0), "west")
+        hopper(P(-2, -2, 0), "west")
+        hopper(P(-3, -2, 0), "west")
+        hopper(P(-4, -2, 0), "south")
+        hopper(P(-4, -2, 1), "west")
+        hopper(P(-5, -2, 1), "north")
+        elevator(P, n, -5, -2, ROOM_Y - 1 - oy, out_name, label)
     else:
         hopper(P(0, -2, 0), "east")
         hopper(P(1, -2, 0), "down")
         hopper(P(1, -3, 0), "down")
         hopper(P(1, -4, 0), "down")        # = next station's (1,1,0), feeds its dispenser
-    if first:   # input: chest -> hopper -> dropper (button = release ONE shulker) -> hoppers -> dispenser
+    if first:   # input in the room: chest -> hopper -> dropper (button = ONE shulker) -> hoppers -> dispenser
         # nothing may sit directly under the dropper (a hopper there would pull boxes out of it)
         hopper(P(1, 1, 0), "down")
         hopper(P(1, 2, 0), "down")
         hopper(P(2, 2, 0), "west")
-        hopper(P(2, 3, 0), "down")
-        hopper(P(2, 4, 0), "down")
-        container(P(1, 4, 0), "dropper", [], facing="east", triggered=False)
-        put(P(0, 4, 0), "stone_button", COMPONENT, face="wall", facing="west", powered=False)
-        hopper(P(1, 5, 0), "down")
-        named(P(1, 6, 0), "chest", in_name, facing="east", type="single", waterlogged=False)
+        for y in range(3, ROOM_Y + 1):
+            hopper(P(2, y, 0), "down")
+        container(P(1, ROOM_Y, 0), "dropper", [], facing="east", triggered=False)
+        put(P(0, ROOM_Y, 0), "stone_button", COMPONENT, face="wall", facing="west", powered=False)
+        hopper(P(1, ROOM_Y + 1, 0), "down")
+        named(P(1, ROOM_Y + 2, 0), "chest", in_name, facing="east", type="single", waterlogged=False)
 
     # --- lanes (2 per station: N = first slot, S = next slot, started 0.5 s later) ------------
     # Two lanes are always exact: same item -> both fill the same slots; different items ->
@@ -170,8 +198,17 @@ def station(tw, k, kit, first, last, oz, out_name, in_name, label):
         hopper(P(*m), f, enabled=False, items=[blocker(i) for i in range(1, 5)])   # 1 free slot = 1 stack
         hopper(P(*s), f, enabled=True)
         hopper(P(*s2), f, enabled=True)
-        named(P(*ch), "chest", f"{label} slot {slot_no}", [item(i, iid, STACK[iid]) for i in range(27)],
-              facing="north", type="single", waterlogged=False)
+        # supply: room chest -> hopper column (x = -2-k) -> run along y=1 -> top hopper -> S2
+        zs = ch[2]
+        cx = -2 - k
+        named(P(cx, ROOM_Y - oy, zs), "chest", f"{label} slot {slot_no}",
+              [item(i, iid, STACK[iid]) for i in range(27)],
+              facing="south" if zs < 0 else "north", type="single", waterlogged=False)
+        for y in range(ROOM_Y - 1 - oy, 1, -1):
+            hopper(P(cx, y, zs), "down")
+        for x in range(cx, 0):
+            hopper(P(x, 1, zs), "east")
+        hopper(P(0, 1, zs), "down")
     if len(kit) == 1:
         put(P(0, 0, 1), "glass")
     put(P(-1, 0, 0), "glass")                       # closes the cell's west side
@@ -245,11 +282,25 @@ def station(tw, k, kit, first, last, oz, out_name, in_name, label):
     repeater(P(5, 0, 0), "east")
 
 
-for tw, layout, oz, out_name, in_name in TOWERS:
+for tw, layout, ox, rot, out_name, in_name, label in TOWERS:
+    ROT[0] = rot
     ns = (len(layout) + 1) // 2
-    label = "Inventory" if tw == "inv" else "Hotbar"
     for k in range(ns):
-        station(tw, k, layout[2 * k:2 * k + 2], k == 0, k == ns - 1, oz, out_name, in_name, label)
+        station(tw, k, layout[2 * k:2 * k + 2], k == 0, k == ns - 1, ox, out_name, in_name, label)
+ROT[0] = False
+
+# control room shell: floor, glass walls and roof around the chest rows
+_xs = [p[0] for p, b in BLOCKS.items() if p[1] == ROOM_Y and b[0] == "minecraft:chest"]
+RX0, RX1 = min(_xs) - 1, max(_xs) + 1
+for x in range(RX0, RX1 + 1):
+    for z in range(-4, 5):
+        if (x, ROOM_Y - 1, z) not in BLOCKS:
+            put((x, ROOM_Y - 1, z), "polished_andesite")
+        if (x, ROOM_Y + 4, z) not in BLOCKS:
+            put((x, ROOM_Y + 4, z), "glass")
+        for y in range(ROOM_Y, ROOM_Y + 4):
+            if (abs(z) == 4 or x in (RX0, RX1)) and (x, y, z) not in BLOCKS:
+                put((x, y, z), "glass")
 
 # ---------------------------------------------------------------------------------------------
 NON_CONDUCTORS = {"air", "glass", "hopper", "repeater", "comparator", "redstone_wire",
@@ -385,8 +436,8 @@ def main():
     lines.append('tellraw @s {"text":"Regear maker built. Fill the top chests with empty shulker boxes, '
                  'then press the button on a tower to make one kit.","color":"green"}')
     fill = ["# Puts 9 empty shulker boxes into each tower's input chest (run from the build position)."]
-    for tw, layout, oz, *_ in TOWERS:
-        ix, iy, iz = rel((1, 6, oz), off)
+    for tw, layout, ox, rot, *_ in TOWERS:
+        ix, iy, iz = rel((ox - 1 if rot else ox + 1, ROOM_Y + 2, 0), off)
         fill.append(f"data merge block ~{ix} ~{iy} ~{iz} " + Compound({"Items": List[Compound](
             [item(i, "white_shulker_box") for i in range(9)])}).snbt(compact=True))
     with open(os.path.join(out, f"auto_regear_maker{tag}.mcfunction"), "w") as f:
