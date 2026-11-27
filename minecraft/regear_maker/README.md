@@ -28,19 +28,22 @@ Everything is run from **one control room** at the top of the machine. Both kit 
 * Each chest refills its slot for up to 27 kits.
 
 ## Timing
-* Each station runs a 30 s fill / 30 s dump cycle.
-* The first Inventory kit takes about 15 minutes, the first Hotbar kit about 6.
-* If you queue several kits (several presses), a new one comes out about once a minute.
+Works on normal servers and on servers whose hoppers move 8 items per transfer (Paper/Spigot `hopper-amount: 8`, like breezevanilla.eu). Both were tested.
+
+| Hoppers | Station cycle | First Hotbar kit | First Inventory kit | When several are queued |
+|---|---|---|---|---|
+| normal (1 item) | 96 s | ~8 min | ~22 min | one every ~1.5 min |
+| 8 items per transfer | 12 s | ~1 min | ~3 min | one every ~12 s |
 
 ## How it works
 * **Towers:** each kit type has its own tower of stations: 14 for Inventory, 5 for Hotbar, hidden below the room. Each station fills 2 slots.
 * **Lanes:** a slot's chest feeds a hopper column → feeder hoppers → a measuring hopper next to the box.
 * **Measuring:** the measuring hopper holds 4 empty shulker boxes named "Blocker", so exactly one stack fits. A hopper can't push a shulker box into a shulker box, so the blockers stay.
 * **Ordering:** the first lane of a station starts 0.5 s before the second, so slots fill in order.
-* **Clocks:** every station has its own hopper clock with copper-bulb flip-flops. No music discs anywhere.
+* **Clocks:** every station has its own hopper clock (120 sticks) with copper-bulb flip-flops. No music discs anywhere.
 * **Moving the box:** a piston breaks the box after its dump. It falls into a hopper that feeds the next station's dispenser. The last station sends it into the dropper elevator.
 
 ## Survival notes
 Litematica pastes in Creative come pre-filled. In Survival, also add:
-* 75 sticks in the first clock hopper of every station.
+* 120 sticks in the first clock hopper of every station.
 * 4 shulker boxes renamed "Blocker" in every measuring hopper.

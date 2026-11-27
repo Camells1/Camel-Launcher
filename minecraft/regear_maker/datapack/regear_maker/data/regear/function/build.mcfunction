@@ -2983,7 +2983,7 @@ setblock ~32 ~1 ~6 minecraft:hopper[enabled=true,facing=north]{Items:[],Transfer
 setblock ~33 ~1 ~6 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
 setblock ~32 ~2 ~5 minecraft:dropper[facing=up,triggered=false]{Items:[]}
 setblock ~37 ~3 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~3 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~3 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~3 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~37 ~3 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~3 ~4 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
@@ -3018,7 +3018,7 @@ setblock ~22 ~7 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferC
 setblock ~32 ~7 ~5 minecraft:dropper[facing=up,triggered=false]{Items:[]}
 setblock ~22 ~8 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~8 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~8 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~8 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~8 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~37 ~8 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~8 ~4 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
@@ -3078,7 +3078,7 @@ setblock ~23 ~12 ~8 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~22 ~13 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~23 ~13 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~13 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~13 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~13 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~13 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~37 ~13 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~13 ~4 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
@@ -3146,7 +3146,7 @@ setblock ~22 ~18 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~23 ~18 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~24 ~18 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~18 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~18 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~18 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~18 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~37 ~18 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~18 ~4 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
@@ -3222,7 +3222,7 @@ setblock ~23 ~23 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~24 ~23 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~25 ~23 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~23 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~23 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~23 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~23 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~37 ~23 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~23 ~4 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
@@ -3306,7 +3306,7 @@ setblock ~24 ~28 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~25 ~28 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~26 ~28 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~28 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~28 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~28 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~28 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~37 ~28 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~28 ~4 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
@@ -3398,7 +3398,7 @@ setblock ~25 ~33 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~26 ~33 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~27 ~33 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~33 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~33 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~33 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~33 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~37 ~33 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~33 ~4 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
@@ -3498,7 +3498,7 @@ setblock ~26 ~38 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~27 ~38 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~28 ~38 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~38 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~38 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~38 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~38 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~37 ~38 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~38 ~4 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
@@ -3606,7 +3606,7 @@ setblock ~27 ~43 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~28 ~43 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~29 ~43 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~43 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~43 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~43 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~43 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~37 ~43 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~43 ~4 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
@@ -3731,7 +3731,7 @@ setblock ~28 ~48 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~29 ~48 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~30 ~48 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~48 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~48 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~48 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~48 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~37 ~48 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~48 ~4 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
@@ -3744,7 +3744,7 @@ setblock ~37 ~48 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[{Slot:1b
 setblock ~15 ~48 ~7 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~37 ~48 ~7 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~2 ~48 ~8 minecraft:hopper[enabled=false,facing=east]{Items:[],TransferCooldown:0}
-setblock ~3 ~48 ~8 minecraft:hopper[enabled=true,facing=west]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~3 ~48 ~8 minecraft:hopper[enabled=true,facing=west]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~15 ~48 ~8 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~23 ~48 ~8 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~24 ~48 ~8 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -3881,7 +3881,7 @@ setblock ~29 ~53 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~30 ~53 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~31 ~53 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~53 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~53 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~53 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~53 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~15 ~53 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~53 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
@@ -3896,7 +3896,7 @@ setblock ~37 ~53 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[{Slot:1b
 setblock ~15 ~53 ~7 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~37 ~53 ~7 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~2 ~53 ~8 minecraft:hopper[enabled=false,facing=east]{Items:[],TransferCooldown:0}
-setblock ~3 ~53 ~8 minecraft:hopper[enabled=true,facing=west]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~3 ~53 ~8 minecraft:hopper[enabled=true,facing=west]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~15 ~53 ~8 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~21 ~53 ~8 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~23 ~53 ~8 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -4055,7 +4055,7 @@ setblock ~30 ~58 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~31 ~58 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~32 ~58 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~58 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~58 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~58 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~58 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~15 ~58 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~58 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
@@ -4070,7 +4070,7 @@ setblock ~37 ~58 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[{Slot:1b
 setblock ~15 ~58 ~7 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~37 ~58 ~7 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~2 ~58 ~8 minecraft:hopper[enabled=false,facing=east]{Items:[],TransferCooldown:0}
-setblock ~3 ~58 ~8 minecraft:hopper[enabled=true,facing=west]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~3 ~58 ~8 minecraft:hopper[enabled=true,facing=west]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~15 ~58 ~8 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~20 ~58 ~8 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~58 ~8 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -4245,7 +4245,7 @@ setblock ~31 ~63 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~32 ~63 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~33 ~63 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~63 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~63 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~63 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~63 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~15 ~63 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~63 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
@@ -4260,7 +4260,7 @@ setblock ~37 ~63 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[{Slot:1b
 setblock ~15 ~63 ~7 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~37 ~63 ~7 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~2 ~63 ~8 minecraft:hopper[enabled=false,facing=east]{Items:[],TransferCooldown:0}
-setblock ~3 ~63 ~8 minecraft:hopper[enabled=true,facing=west]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~3 ~63 ~8 minecraft:hopper[enabled=true,facing=west]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~15 ~63 ~8 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~19 ~63 ~8 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~20 ~63 ~8 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -4451,7 +4451,7 @@ setblock ~32 ~68 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~33 ~68 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~34 ~68 ~2 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~37 ~68 ~2 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~49 ~68 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~49 ~68 ~2 minecraft:hopper[enabled=true,facing=east]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~50 ~68 ~2 minecraft:hopper[enabled=false,facing=west]{Items:[],TransferCooldown:0}
 setblock ~15 ~68 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~37 ~68 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
@@ -4466,7 +4466,7 @@ setblock ~37 ~68 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[{Slot:1b
 setblock ~15 ~68 ~7 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~37 ~68 ~7 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~2 ~68 ~8 minecraft:hopper[enabled=false,facing=east]{Items:[],TransferCooldown:0}
-setblock ~3 ~68 ~8 minecraft:hopper[enabled=true,facing=west]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:11,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
+setblock ~3 ~68 ~8 minecraft:hopper[enabled=true,facing=west]{Items:[{Slot:0b,id:"minecraft:stick",count:64,components:{"minecraft:custom_name":'"Clock"'}},{Slot:1b,id:"minecraft:stick",count:56,components:{"minecraft:custom_name":'"Clock"'}}],TransferCooldown:0}
 setblock ~15 ~68 ~8 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~18 ~68 ~8 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~19 ~68 ~8 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -4828,7 +4828,7 @@ setblock ~40 ~2 ~4 minecraft:repeater[delay=2,facing=east,locked=false,powered=f
 setblock ~33 ~2 ~5 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~34 ~2 ~5 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~32 ~2 ~6 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
-setblock ~48 ~3 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~3 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~3 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~38 ~3 ~3 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~39 ~3 ~3 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
@@ -4867,7 +4867,7 @@ setblock ~40 ~7 ~4 minecraft:repeater[delay=2,facing=east,locked=false,powered=f
 setblock ~30 ~7 ~5 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~31 ~7 ~5 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
 setblock ~40 ~7 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~8 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~8 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~8 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~38 ~8 ~3 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~39 ~8 ~3 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
@@ -4910,7 +4910,7 @@ setblock ~33 ~12 ~5 minecraft:comparator[facing=west,mode=compare,powered=false]
 setblock ~34 ~12 ~5 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~32 ~12 ~6 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~40 ~12 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~13 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~13 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~13 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~38 ~13 ~3 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~39 ~13 ~3 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
@@ -4953,7 +4953,7 @@ setblock ~40 ~17 ~4 minecraft:repeater[delay=2,facing=east,locked=false,powered=
 setblock ~30 ~17 ~5 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~31 ~17 ~5 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
 setblock ~40 ~17 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~18 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~18 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~18 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~38 ~18 ~3 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~39 ~18 ~3 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
@@ -4996,7 +4996,7 @@ setblock ~33 ~22 ~5 minecraft:comparator[facing=west,mode=compare,powered=false]
 setblock ~34 ~22 ~5 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~32 ~22 ~6 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~40 ~22 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~23 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~23 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~23 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~38 ~23 ~3 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~39 ~23 ~3 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
@@ -5039,7 +5039,7 @@ setblock ~40 ~27 ~4 minecraft:repeater[delay=2,facing=east,locked=false,powered=
 setblock ~30 ~27 ~5 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~31 ~27 ~5 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
 setblock ~40 ~27 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~28 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~28 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~28 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~38 ~28 ~3 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~39 ~28 ~3 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
@@ -5082,7 +5082,7 @@ setblock ~33 ~32 ~5 minecraft:comparator[facing=west,mode=compare,powered=false]
 setblock ~34 ~32 ~5 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~32 ~32 ~6 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~40 ~32 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~33 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~33 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~33 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~38 ~33 ~3 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~39 ~33 ~3 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
@@ -5125,7 +5125,7 @@ setblock ~40 ~37 ~4 minecraft:repeater[delay=2,facing=east,locked=false,powered=
 setblock ~30 ~37 ~5 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~31 ~37 ~5 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
 setblock ~40 ~37 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~38 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~38 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~38 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~38 ~38 ~3 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~39 ~38 ~3 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
@@ -5168,7 +5168,7 @@ setblock ~33 ~42 ~5 minecraft:comparator[facing=west,mode=compare,powered=false]
 setblock ~34 ~42 ~5 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~32 ~42 ~6 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~40 ~42 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~43 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~43 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~43 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~38 ~43 ~3 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~39 ~43 ~3 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
@@ -5218,7 +5218,7 @@ setblock ~30 ~47 ~5 minecraft:repeater[delay=1,facing=east,locked=false,powered=
 setblock ~31 ~47 ~5 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
 setblock ~12 ~47 ~6 minecraft:repeater[delay=2,facing=west,locked=false,powered=false]
 setblock ~40 ~47 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~48 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~48 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~48 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~3 ~48 ~3 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~38 ~48 ~3 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
@@ -5259,7 +5259,7 @@ setblock ~38 ~48 ~7 minecraft:repeater[delay=1,facing=east,locked=false,powered=
 setblock ~39 ~48 ~7 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
 setblock ~49 ~48 ~7 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
 setblock ~1 ~48 ~8 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
-setblock ~4 ~48 ~8 minecraft:comparator[facing=west,mode=compare,powered=true]{OutputSignal:4}
+setblock ~4 ~48 ~8 minecraft:comparator[facing=west,mode=compare,powered=true]{OutputSignal:6}
 setblock ~47 ~49 ~2 minecraft:redstone_torch[lit=false]
 setblock ~52 ~49 ~2 minecraft:redstone_torch[lit=true]
 setblock ~20 ~49 ~4 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
@@ -5300,7 +5300,7 @@ setblock ~12 ~52 ~6 minecraft:repeater[delay=2,facing=west,locked=false,powered=
 setblock ~20 ~52 ~6 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~32 ~52 ~6 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~40 ~52 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~53 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~53 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~53 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~3 ~53 ~3 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~13 ~53 ~3 minecraft:repeater[delay=2,facing=west,locked=false,powered=false]
@@ -5345,7 +5345,7 @@ setblock ~38 ~53 ~7 minecraft:repeater[delay=1,facing=east,locked=false,powered=
 setblock ~39 ~53 ~7 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
 setblock ~49 ~53 ~7 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
 setblock ~1 ~53 ~8 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
-setblock ~4 ~53 ~8 minecraft:comparator[facing=west,mode=compare,powered=true]{OutputSignal:4}
+setblock ~4 ~53 ~8 minecraft:comparator[facing=west,mode=compare,powered=true]{OutputSignal:6}
 setblock ~47 ~54 ~2 minecraft:redstone_torch[lit=false]
 setblock ~52 ~54 ~2 minecraft:redstone_torch[lit=true]
 setblock ~15 ~54 ~5 minecraft:piston[extended=false,facing=down]
@@ -5386,7 +5386,7 @@ setblock ~30 ~57 ~5 minecraft:repeater[delay=1,facing=east,locked=false,powered=
 setblock ~31 ~57 ~5 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
 setblock ~12 ~57 ~6 minecraft:repeater[delay=2,facing=west,locked=false,powered=false]
 setblock ~40 ~57 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~58 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~58 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~58 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~3 ~58 ~3 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~13 ~58 ~3 minecraft:repeater[delay=2,facing=west,locked=false,powered=false]
@@ -5431,7 +5431,7 @@ setblock ~38 ~58 ~7 minecraft:repeater[delay=1,facing=east,locked=false,powered=
 setblock ~39 ~58 ~7 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
 setblock ~49 ~58 ~7 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
 setblock ~1 ~58 ~8 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
-setblock ~4 ~58 ~8 minecraft:comparator[facing=west,mode=compare,powered=true]{OutputSignal:4}
+setblock ~4 ~58 ~8 minecraft:comparator[facing=west,mode=compare,powered=true]{OutputSignal:6}
 setblock ~47 ~59 ~2 minecraft:redstone_torch[lit=false]
 setblock ~52 ~59 ~2 minecraft:redstone_torch[lit=true]
 setblock ~20 ~59 ~4 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
@@ -5472,7 +5472,7 @@ setblock ~12 ~62 ~6 minecraft:repeater[delay=2,facing=west,locked=false,powered=
 setblock ~20 ~62 ~6 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~32 ~62 ~6 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~40 ~62 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~63 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~63 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~63 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~3 ~63 ~3 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~13 ~63 ~3 minecraft:repeater[delay=2,facing=west,locked=false,powered=false]
@@ -5517,7 +5517,7 @@ setblock ~38 ~63 ~7 minecraft:repeater[delay=1,facing=east,locked=false,powered=
 setblock ~39 ~63 ~7 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
 setblock ~49 ~63 ~7 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
 setblock ~1 ~63 ~8 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
-setblock ~4 ~63 ~8 minecraft:comparator[facing=west,mode=compare,powered=true]{OutputSignal:4}
+setblock ~4 ~63 ~8 minecraft:comparator[facing=west,mode=compare,powered=true]{OutputSignal:6}
 setblock ~47 ~64 ~2 minecraft:redstone_torch[lit=false]
 setblock ~52 ~64 ~2 minecraft:redstone_torch[lit=true]
 setblock ~15 ~64 ~5 minecraft:piston[extended=false,facing=down]
@@ -5558,7 +5558,7 @@ setblock ~30 ~67 ~5 minecraft:repeater[delay=1,facing=east,locked=false,powered=
 setblock ~31 ~67 ~5 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
 setblock ~12 ~67 ~6 minecraft:repeater[delay=2,facing=west,locked=false,powered=false]
 setblock ~40 ~67 ~6 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
-setblock ~48 ~68 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:4}
+setblock ~48 ~68 ~2 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:6}
 setblock ~51 ~68 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~3 ~68 ~3 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~13 ~68 ~3 minecraft:repeater[delay=2,facing=west,locked=false,powered=false]
@@ -5603,7 +5603,7 @@ setblock ~38 ~68 ~7 minecraft:repeater[delay=1,facing=east,locked=false,powered=
 setblock ~39 ~68 ~7 minecraft:repeater[delay=2,facing=east,locked=false,powered=false]
 setblock ~49 ~68 ~7 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
 setblock ~1 ~68 ~8 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
-setblock ~4 ~68 ~8 minecraft:comparator[facing=west,mode=compare,powered=true]{OutputSignal:4}
+setblock ~4 ~68 ~8 minecraft:comparator[facing=west,mode=compare,powered=true]{OutputSignal:6}
 setblock ~47 ~69 ~2 minecraft:redstone_torch[lit=false]
 setblock ~52 ~69 ~2 minecraft:redstone_torch[lit=true]
 setblock ~20 ~69 ~4 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]

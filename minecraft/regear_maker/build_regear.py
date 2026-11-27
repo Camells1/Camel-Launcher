@@ -31,7 +31,7 @@ MC_DATA_VERSION_1_21_4 = 4189
 PACK_FORMAT_1_21_4 = 61
 TEST = "--test" in sys.argv
 
-CLOCK_ITEMS = 30 if TEST else 75           # 80 items x 8 gt = 32 s per phase (1 stack + margin)
+CLOCK_ITEMS = 30 if TEST else 120          # 120 items: 48 s phases with normal hoppers, 6 s on servers that move 8 items per transfer
 STATION_DY = -5
 
 C, O, T, G, P_, X, A_, GL = ("end_crystal", "obsidian", "totem_of_undying", "enchanted_golden_apple",
