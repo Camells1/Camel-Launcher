@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "camelvanilla",
+  "version": "${version}",
+  "name": "Camel Vanilla Toggle",
+  "description": "Press K in-game to switch to a stream-safe vanilla look: resource packs and shaders off, particles on All, no fullbright. Press K again to put everything back.",
+  "authors": [
+    "Camells"
+  ],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.camells.vanillatoggle.VanillaToggleClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": "~1.21.11"
+  },
+  "mixins": [
+    "camelvanilla.mixins.json"
+  ]
+}
