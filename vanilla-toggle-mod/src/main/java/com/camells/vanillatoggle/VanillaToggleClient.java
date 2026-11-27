@@ -55,6 +55,7 @@ public class VanillaToggleClient implements ClientModInitializer {
         Boolean packsDisabled;
         Boolean shadersEnabled; // null = Iris not installed
         Boolean gammaUtilsNightVision; // null = Gamma Utils not installed
+        GammaUtilsBridge.GammaSnapshot gammaUtilsGamma; // null = Gamma Utils not installed
         SodiumExtraBridge.Snapshot sodiumExtraParticles; // null = Sodium Extra not installed
     }
 
@@ -127,8 +128,10 @@ public class VanillaToggleClient implements ClientModInitializer {
         options.getParticles().setValue(ParticlesMode.ALL);
         if (saved.sodiumExtraParticles != null) SodiumExtraBridge.enableAll();
         if (Boolean.TRUE.equals(saved.gammaUtilsNightVision)) GammaUtilsBridge.setNightVision(false);
+        saved.gammaUtilsGamma = GammaUtilsBridge.gammaToZero(); // same as "/gamma 0"
+        save(saved);
         if (Boolean.TRUE.equals(saved.shadersEnabled)) IrisBridge.setShadersEnabled(false);
-        // Brightness needs nothing here: LightmapMixin caps it while active.
+        // Other gamma/fullbright mods: LightmapMixin caps brightness while active.
 
         if (packsChanged) {
             packs.setEnabledProfiles(keep);
@@ -155,6 +158,7 @@ public class VanillaToggleClient implements ClientModInitializer {
         }
         if (saved.sodiumExtraParticles != null) SodiumExtraBridge.restore(saved.sodiumExtraParticles);
         if (Boolean.TRUE.equals(saved.gammaUtilsNightVision)) GammaUtilsBridge.setNightVision(true);
+        if (saved.gammaUtilsGamma != null) GammaUtilsBridge.restoreGamma(saved.gammaUtilsGamma);
         if (Boolean.TRUE.equals(saved.shadersEnabled)) IrisBridge.setShadersEnabled(true);
 
         state = new Saved();
