@@ -147,7 +147,7 @@ def stair(p, net):
     dust(p, net)
 
 
-def row(layout, label, Y, kind, side, slot0=1):
+def row(layout, label, Y, kind, side, slot0=1, finish=False):
     """kind: 'hot'  = front bottom row (Hotbar) with the shared shulker station
              'top'  = top row: its item line drops down the stack's hopper column
              'base' = back bottom row: its line end feeds the cross line (built outside); its
@@ -194,7 +194,7 @@ def row(layout, label, Y, kind, side, slot0=1):
     put(P(-2, 3, -2), "stone")                                       # START powers this -> bulb
     path([P(-2, 1, -5), P(-2, 2, -4), P(-2, 3, -3)], f"{side}start")
     if station:
-        control_room(Y, side, label)
+        control_room(Y, side, label, finish)
     else:
         # END: delay line -> stairs -> latch
         for p in [P(-4, 0, -9), P(-4, 1, -8), P(-4, 2, -7)]:
@@ -214,13 +214,14 @@ def row(layout, label, Y, kind, side, slot0=1):
     return xmax
 
 
-def control_room(Y, side, label):
-    """Bottom west end: the shared shulker station and the receivers of the room's token pipes."""
+def control_room(Y, side, label, finish):
+    """West end of a stack's bottom row: its shulker station and the receiver of its button's
+    token pipe. finish: this row's END breaks the box (Hotbar); otherwise it starts the row above."""
     P = lambda x, y, z: (x, y + Y, z)
     # station: dispenser places the empty box into the cell (-1,1,1); the piston breaks it
     container(P(-2, 1, 1), "dispenser", [], facing="east", triggered=False)
     put(P(-1, 2, 1), "piston", COMP, facing="down", extended=False)
-    for p in [(-1, 1, 2), (-2, 0, 1), (0, 0, 1), (-1, 0, 0), (-1, 0, 2)]:   # (-1,1,0): cross hopper
+    for p in [(-1, 1, 0), (-1, 1, 2), (-2, 0, 1), (0, 0, 1), (-1, 0, 0), (-1, 0, 2)]:
         put(P(*p), "stone")
     # finished box: collector -> hopper line west -> dropper into the water elevator
     for x in range(-1, -15, -1):
@@ -230,9 +231,9 @@ def control_room(Y, side, label):
     repeater(P(-14, -1, -1), "south")
     run([P(-14, -1, -2), P(-15, -1, -2), P(-15, -1, -1)], "elev")
     repeater(P(-15, -1, 0), "north", delay=4)                        # ...fires the dropper
-    # Hotbar START: token from the room -> RH; comparator -> K -> repeater -> Hotbar dropper
+    # START: token from the room -> RH; comparator -> K -> repeater -> this row's dropper
     hopper(P(-3, 0, -8), "down")                                     # RH (end of the pipe)
-    named(P(-3, -1, -8), "chest", "Used tokens (Hotbar button)", facing="west", type="single",
+    named(P(-3, -1, -8), "chest", f"Used tokens ({label} button)", facing="west", type="single",
           waterlogged=False)
     comparator(P(-2, 0, -8), "west")
     put(P(-1, 0, -8), "stone")                                       # K
@@ -241,27 +242,21 @@ def control_room(Y, side, label):
     repeater(P(-1, 0, -2), "north")                                  # diode: START -> box wire
     run([P(-1, 0, -1), P(-2, 1, -1)], "box")
     repeater(P(-2, 1, 0), "north")                                   # -> dispenser
-    # Inventory START: token from the room -> RB; comparator -> dispenser, comparator -> riser
-    hopper(P(-4, 1, 1), "west")                                      # RB (end of the pipe)
-    named(P(-5, 1, 1), "chest", "Used tokens (Inventory button)", facing="east", type="single",
-          waterlogged=False)
-    comparator(P(-3, 1, 1), "west")                                  # -> dispenser (places box)
-    comparator(P(-4, 1, 0), "south")
-    repeater(P(-4, 1, -1), "south")
-    put(P(-4, 0, -3), "stone")
-    run([P(-4, 1, -2), P(-4, 1, -3)], "Irise0")
-    U = Y + ROW_DY
-    run([P(-5, 0, -3), (-6, Y, -3, "east", 1), P(-7, 0, -3), P(-8, 0, -3), P(-9, 0, -3)], "Irise0")
-    for p in [P(-9, 1, -4), P(-9, 2, -5), P(-9, 3, -6), P(-8, 4, -6), P(-7, 5, -6), P(-6, 6, -6)]:
-        stair(p, "Irise0")
-    path([(x, U, -6) for x in (-5, -4, -3)], "Irise0")
-    repeater((-2, U, -6), "west")                                    # -> Inventory row 1 dropper
     # Hotbar END: delay line -> stairs up -> latch, and -> the shared finish wire to the piston
     for p in [P(-4, 0, -9), P(-4, 1, -8), P(-4, 2, -7), P(-4, 3, -6), P(-4, 4, -5)]:
         stair(p, f"{side}end")
     path([P(-4, 4, z) for z in (-4, -3, -2)] + [P(-3, 4, -2)], f"{side}end")   # -> bulb
-    path([P(-4, 4, -1), P(-4, 4, 0), P(-3, 4, 0)], f"{side}end")
-    repeater(P(-3, 4, 1), "north")                                   # -> finish wire
+    if finish:
+        path([P(-4, 4, -1), P(-4, 4, 0), P(-3, 4, 0)], f"{side}end")
+        repeater(P(-3, 4, 1), "north")                               # -> finish wire
+    else:
+        # riser: this row's END starts the row above (fires its token dropper)
+        stair(P(-5, 5, -3), f"{side}end")
+        stair(P(-6, 6, -3), f"{side}end")
+        dust(P(-6, 6, -4), f"{side}end")
+        repeater(P(-6, 6, -5), "south")
+        path([P(-6, 6, -6), P(-5, 6, -6), P(-4, 6, -6), P(-3, 6, -6)], f"{side}rise")
+        repeater(P(-2, 6, -6), "west")
     # finish wire (Hotbar END or Inventory row 3 END) -> dust on top of the piston
     put(P(-1, 3, 2), "stone")                                        # step down onto the piston
     repeater(P(-4, 4, 2), "west", delay=4)
@@ -271,8 +266,8 @@ def control_room(Y, side, label):
 
 MZ = -20                        # the back stack is the front stack mirrored: z -> MZ - z
 FLOOR = ROW_DY + 9              # control room floor (barrels are part of it)
-ZPIPE = {"H": 4, "I1": 2, "I2": MZ - 4, "I3": MZ - 2}  # pipes in front of / behind the stacks
-ZMOD = {"H": -1, "I1": -1, "I2": MZ + 1, "I3": MZ + 1}  # z of each row's slot stacks
+ZPIPE = {"I1": 4, "I2": 2, "H": MZ - 4, "I3": MZ - 2}  # pipes in front of / behind the stacks
+ZMOD = {"I1": -1, "I2": -1, "H": MZ + 1, "I3": MZ + 1}  # z of each row's slot stacks
 
 
 def slot_pipe(side, Y, m, itm, label, slot):
@@ -339,65 +334,46 @@ def room_latch(z0, net, start_path, timer_item):
 def room():
     F = FLOOR
     xend = 3 * ROW
-    # ---- lock buses: inventory (z=3,5 between the Inventory pipes), hotbar (z=9) ----
-    for z in (1, MZ - 3):
+    # ---- lock buses: inventory (z=3 between I1/I2 pipes, z=MZ-1 beside I3), hotbar (MZ-5) ----
+    for z in (3, MZ - 1):
         bus(z, F - 1, "IL", xend)
         bus(z, F - 3, "IN", xend)
-    bus(5, F - 1, "HL", xend)
-    bus(5, F - 3, "HN", xend)
-    # latch feeds along x=0 (inventory latch at z=-3: L to both inventory buses)
-    run([(0, F - 1, z) for z in (-2, -1, 0, 1)], "IL")
-    run([(0, F - 1, z) for z in range(-4, MZ - 4, -1) if z != -13] + [(0, F - 1, -13, "south", 1)],
+    bus(MZ - 5, F - 1, "HL", xend)
+    bus(MZ - 5, F - 3, "HN", xend)
+    # latch feeds along x=0 (inventory latch at z=-3, hotbar latch at z=MZ-3)
+    run([(0, F - 1, z) for z in (-2, -1, 0, 1, 2, 3)], "IL")
+    run([(0, F - 1, z) for z in range(-4, MZ - 2, -1) if z != -12] + [(0, F - 1, -12, "south", 1)],
         "IL")
-    run([(0, F - 3, z) for z in (-3, -2, -1, 0, 1)], "IN")
-    run([(0, F - 3, z) for z in range(-5, MZ - 4, -1) if z != -14] + [(0, F - 3, -14, "south", 1)],
+    run([(0, F - 3, z) for z in (-3, -2, -1, 0, 1, 2, 3)], "IN")
+    run([(0, F - 3, z) for z in range(-5, MZ - 2, -1) if z != -13] + [(0, F - 3, -13, "south", 1)],
         "IN")
-    dust((0, F - 1, 5), "HL")
-    path([(0, F - 3, 4), (0, F - 3, 5)], "HN")
-    # ---- token droppers with the two buttons; pipes down to the bottom receivers ----
+    path([(0, F - 1, MZ - 4), (0, F - 1, MZ - 5)], "HL")
+    dust((0, F - 3, MZ - 5), "HN")
+    # ---- token droppers with the two buttons; pipes down to each stack's receiver ----
     # (the dropper sits BESIDE the pipe: a hopper under a dropper would pull the tokens out)
-    for x, z, name, glow in [(-4, -8, "Hotbar", "light_blue"), (-5, 1, "Inventory", "lime")]:
-        container((x, F, z), "dropper", [item(i, "brick", 64, name="Token") for i in range(9)],
+    for z, name, glow, zs in [(-8, "Inventory", "lime", -7), (MZ + 8, "Hotbar", "light_blue", MZ + 7)]:
+        container((-4, F, z), "dropper", [item(i, "brick", 64, name="Token") for i in range(9)],
                   facing="east", triggered=False)
-        put((x, F + 1, z), "oak_button", COMP, face="floor", facing="north", powered=False)
-        floor_sign((x, F + 1, z + 1 if z < 0 else z - 1), 0 if z < 0 else 8,
+        put((-4, F + 1, z), "oak_button", COMP, face="floor", facing="north", powered=False)
+        floor_sign((-4, F + 1, zs), 0 if zs > z else 8,
                    [f">> {name.upper()} <<", "press the", "button: 1 kit"], glow=True, color=glow)
-    for y in range(1, F + 1):
-        hopper((-3, y, -8), "down")
-    for y in range(2, F + 1):
-        hopper((-4, y, 1), "down")
-    # START: the pressed dropper -> repeater set in the floor -> block -> dust under the floor
-    repeater((-5, F, -8), "east")
-    put((-6, F, -8), "polished_blackstone")
-    repeater((-6, F, 1), "east")
-    put((-7, F, 1), "polished_blackstone")
-    hs = [(x, F - 1, -8) for x in range(-6, -12, -1)]
-    hs += [(-11, F - 1, z) for z in range(-7, 0)] + [(-11, F - 1, 0, "north", 1)]
-    hs += [(-11, F - 1, z) for z in range(1, 5)] + [(-10, F - 1, 4), (-9, F - 1, 4, "west", 1),
-                                                    (-8, F - 1, 4)]
-    room_latch(4, "H", hs, "cobblestone")
-    ist = [(-7, F - 1, 1), (-8, F - 1, 1), (-9, F - 1, 1)]
-    ist += [(-9, F - 1, z) for z in range(0, -4, -1)] + [(-8, F - 1, -3)]
+        for y in range(1, F + 1):
+            hopper((-3, y, z), "down")
+        # START: the pressed dropper -> repeater set in the floor -> block -> dust under the floor
+        repeater((-5, F, z), "east")
+        put((-6, F, z), "polished_blackstone")
+    ist = [(x, F - 1, -8) for x in range(-6, -10, -1)] + [(-9, F - 1, z) for z in range(-7, -2)]
+    ist += [(-8, F - 1, -3)]
     room_latch(-3, "I", ist, "cobblestone")
-    # ---- empty shulkers: room chest -> pipe -> dispenser ----
-    named((-2, F, 1), "chest", "Empty shulkers", [item(0, "white_shulker_box", 1)] if TEST else [],
-          facing="south", type="single", waterlogged=False)
-    for y in range(2, F):
-        hopper((-2, y, 1), "down")
-    # ---- water elevator for finished boxes: up into the Kits chest ----
-    put((-16, -2, 1), "soul_sand")
-    for y in range(-1, F + 2):
-        put((-16, y, 1), "water", G.DUST + 1, level=0)
-        for p in [(-17, y, 1), (-16, y, 0), (-16, y, 2)]:
-            support(p, "glass")
-        if y not in (-1, F, F + 1):
-            support((-15, y, 1), "glass")
-    put((-17, F + 2, 1), "water", G.DUST + 1, level=0)                # current over the top
-    hopper((-15, F + 1, 1), "down")
-    named((-15, F, 1), "chest", "Kits", facing="south", type="single", waterlogged=False)
-    for p in [(-18, F + 2, 1), (-17, F + 2, 0), (-17, F + 2, 2), (-16, F + 2, 0), (-16, F + 2, 2),
-              (-15, F + 2, 0), (-15, F + 2, 2), (-14, F + 2, 1)]:
-        support(p, "glass")
+    hs = [(x, F - 1, MZ + 8) for x in range(-6, -10, -1)]
+    hs += [(-9, F - 1, z) for z in range(MZ + 7, MZ - 4, -1) if z != MZ + 2]
+    hs += [(-9, F - 1, MZ + 2, "south", 1), (-8, F - 1, MZ - 3)]
+    room_latch(MZ - 3, "H", hs, "cobblestone")
+    # ---- each station: empty-shulker chest + pipe, water elevator up into its kits chest ----
+    for mz, label in ((None, "Inventory"), (MZ, "Hotbar")):
+        G.MIRZ[0] = mz
+        station_top(label)
+    G.MIRZ[0] = None
     # ---- room shell: floor, walls, roof, light and labels ----
     x0, x1, z0, z1 = -19, xend + 3, MZ - 5, 5
     for y in (F + 1, F + 2):                                         # doorway (south wall)
@@ -416,38 +392,62 @@ def room():
         for side, lab, num in [("I3", "Inv", 2 * ROW + m + 1), ("I2", "Inv", ROW + m + 1),
                                ("I1", "Inv", m + 1), ("H", "Hot", m + 1)]:
             floor_sign((b - 1, F + 1, ZPIPE[side]), 4, [f"{lab} {num}"])
-    for x, z, lines in [(-15, 2, ["KITS", "(both kinds)"]), (-2, 2, ["EMPTY", "SHULKERS"])]:
-        floor_sign((x, F + 1, z), 0, lines, glow=True, color="yellow")
+    for x, z, rot, lines in [(-15, 2, 0, ["INVENTORY", "KITS"]), (-2, 2, 0, ["EMPTY SHULKERS", "(inventory)"]),
+                             (-15, MZ - 2, 8, ["HOTBAR", "KITS"]), (-2, MZ - 2, 8, ["EMPTY SHULKERS", "(hotbar)"])]:
+        floor_sign((x, F + 1, z), rot, lines, glow=True, color="yellow")
 
 
-# Front stack: Hotbar (bottom, with the shulker station) and Inventory slots 1-9 on top.
-# Back stack (mirrored in z): Inventory 10-18 (bottom) and 19-27 (top). All item lines end in
-# the front injector; on top of everything: the control room.
-row(HOTBAR_LAYOUT, "Hotbar", 0, "hot", "H")
-row(FULL_LAYOUT[0:ROW], "Inventory", ROW_DY, "top", "I1", 1)
+def station_top(label):
+    """Empty-shulker chest + pipe down to the dispenser; water elevator from the collector line
+    up into the kits chest (built for the front station, or mirrored for the back one)."""
+    F = FLOOR
+    named((-2, F, 1), "chest", f"Empty shulkers ({label})",
+          [item(0, "white_shulker_box", 1)] if TEST else [], facing="south", type="single",
+          waterlogged=False)
+    for y in range(2, F):
+        hopper((-2, y, 1), "down")
+    put((-16, -2, 1), "soul_sand")
+    for y in range(-1, F + 2):
+        put((-16, y, 1), "water", G.DUST + 1, level=0)
+        for p in [(-17, y, 1), (-16, y, 0), (-16, y, 2)]:
+            support(p, "glass")
+        if y not in (-1, F, F + 1):
+            support((-15, y, 1), "glass")
+    put((-17, F + 2, 1), "water", G.DUST + 1, level=0)                # current over the top
+    hopper((-15, F + 1, 1), "down")
+    named((-15, F, 1), "chest", f"{label} kits", facing="south", type="single", waterlogged=False)
+    for p in [(-18, F + 2, 1), (-17, F + 2, 0), (-17, F + 2, 2), (-16, F + 2, 0), (-16, F + 2, 2),
+              (-15, F + 2, 0), (-15, F + 2, 2), (-14, F + 2, 1)]:
+        support(p, "glass")
+
+
+# Front stack: Inventory 1-9 (bottom, with the Inventory station) and 10-18 on top.
+# Back stack (mirrored in z): Hotbar (bottom, with its own station) and Inventory 19-27 on top.
+# Both kits can run at the same time. On top of everything: the control room.
+row(FULL_LAYOUT[0:ROW], "Inventory", 0, "hot", "I1", 1, finish=False)
+row(FULL_LAYOUT[ROW:2 * ROW], "Inventory", ROW_DY, "top", "I2", ROW + 1)
 G.MIRZ[0] = MZ
-row(FULL_LAYOUT[ROW:2 * ROW], "Inventory", 0, "base", "I2", ROW + 1)
+row(HOTBAR_LAYOUT, "Hotbar", 0, "hot", "H", 1, finish=True)
 row(FULL_LAYOUT[2 * ROW:], "Inventory", ROW_DY, "top", "I3", 2 * ROW + 1)
-for y in range(2, ROW_DY + 1):
-    hopper((0, y, 1), "down")                                        # back stack column
+for y in range(4, ROW_DY + 1):
+    hopper((0, y, 1), "down")                                        # back top row's column...
+hopper((0, 3, 1), "north")                                           # ...not into the Hotbar line
+hopper((0, 3, 0), "down")
+hopper((0, 2, 0), "north")
 G.MIRZ[0] = None
 for y in range(2, ROW_DY + 1):
-    hopper((0, y, 1), "down")                                        # front stack column
-# cross line: back stack's line end -> along z (x=-1, clear of the chain-start hoppers) -> injector
-hopper((0, 1, MZ - 1), "west")
-for z in range(MZ - 1, 0):
-    hopper((-1, 1, z), "south")
-hopper((-1, 1, 0), "east")
-hopper((0, 1, 0), "south")
-# link: Inventory 1-9 END (front top) -> starts Inventory 10-18 (back bottom)
-dust((-5, ROW_DY, -9), "I1end")
-stair((-6, ROW_DY, -9), "I1end")                                     # stone: the stairs go down
-for k in range(1, 7):
-    stair((-6, ROW_DY - k, -9 - k), "I1end")
-put((-3, 1, -15), "stone")                                           # keeps it off that row's START
-run([(-5, 0, -15), (-4, 0, -15), (-3, 0, -15), (-3, 0, -14)], "I1end")
-repeater((-2, 0, -14), "west")
-# finish: Inventory 19-27 END (back top) -> west, down, along z, east -> the piston wire
+    hopper((0, y, 1), "down")                                        # front column -> injector
+for z in range(MZ + 1, 1):
+    hopper((0, 2, z), "south")                                       # cross line (back -> front)
+# link: Inventory 10-18 END (front top) -> starts Inventory 19-27 (back top)
+dust((-5, ROW_DY, -9), "I2end")
+run([(x, ROW_DY, -9, "east", 4) for x in range(-6, -13, -1)], "I2link")
+path([(-13, ROW_DY, -9)] + [(-13, ROW_DY, z) for z in range(-10, -16, -1)], "I2link2")
+run([(x, ROW_DY, -15, "west", 1) for x in range(-12, -3)], "I2link3")
+put((-3, ROW_DY + 1, -15), "stone")                                  # keeps it off that row's START
+path([(-3, ROW_DY, -15), (-3, ROW_DY, -14)], "I2link4")
+repeater((-2, ROW_DY, -14), "west")
+# finish: Inventory 19-27 END (back top) -> west, down, along z, east -> the front piston wire
 run([(x, ROW_DY + 2, -14, "east", 4) for x in range(-5, -11, -1)], "I3fin")
 stair((-11, ROW_DY + 2, -14), "I3fin")
 for k in range(1, 5):
@@ -456,7 +456,7 @@ run([(-11, 4, z, "north", 4) for z in range(-9, 2)] + [(-11, 4, 2)], "I3fin2")
 run([(x, 4, 2, "west", 4) for x in range(-10, -4)], "I3fin2")
 for m in range(ROW):
     slot_pipe("H", 0, m, HOTBAR_LAYOUT[m], "Hotbar", m + 1)
-    for r, Y in ((0, ROW_DY), (1, 0), (2, ROW_DY)):
+    for r, Y in ((0, 0), (1, ROW_DY), (2, ROW_DY)):
         slot_pipe(f"I{r + 1}", Y, m, FULL_LAYOUT[r * ROW + m], "Inventory", r * ROW + m + 1)
 room()
 

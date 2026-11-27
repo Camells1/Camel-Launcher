@@ -1,5 +1,12 @@
 # Compact Auto Regear Shulker Maker - Minecraft Java 1.21.4
 fill ~ ~0 ~ ~49 ~20 ~30 minecraft:air
+setblock ~3 ~0 ~4 minecraft:soul_sand
+setblock ~4 ~0 ~5 minecraft:glass
+setblock ~5 ~0 ~5 minecraft:glass
+setblock ~4 ~0 ~6 minecraft:glass
+setblock ~5 ~0 ~6 minecraft:glass
+setblock ~4 ~0 ~7 minecraft:glass
+setblock ~5 ~0 ~7 minecraft:glass
 setblock ~4 ~0 ~23 minecraft:glass
 setblock ~5 ~0 ~23 minecraft:glass
 setblock ~4 ~0 ~24 minecraft:glass
@@ -7,6 +14,11 @@ setblock ~5 ~0 ~24 minecraft:glass
 setblock ~4 ~0 ~25 minecraft:glass
 setblock ~5 ~0 ~25 minecraft:glass
 setblock ~3 ~0 ~26 minecraft:soul_sand
+setblock ~3 ~1 ~3 minecraft:glass
+setblock ~2 ~1 ~4 minecraft:glass
+setblock ~3 ~1 ~5 minecraft:glass
+setblock ~18 ~1 ~6 minecraft:glass
+setblock ~18 ~1 ~7 minecraft:glass
 setblock ~20 ~1 ~7 minecraft:glass
 setblock ~23 ~1 ~7 minecraft:glass
 setblock ~26 ~1 ~7 minecraft:glass
@@ -16,6 +28,7 @@ setblock ~35 ~1 ~7 minecraft:glass
 setblock ~38 ~1 ~7 minecraft:glass
 setblock ~41 ~1 ~7 minecraft:glass
 setblock ~44 ~1 ~7 minecraft:glass
+setblock ~18 ~1 ~8 minecraft:glass
 setblock ~20 ~1 ~8 minecraft:glass
 setblock ~23 ~1 ~8 minecraft:glass
 setblock ~26 ~1 ~8 minecraft:glass
@@ -25,6 +38,7 @@ setblock ~35 ~1 ~8 minecraft:glass
 setblock ~38 ~1 ~8 minecraft:glass
 setblock ~41 ~1 ~8 minecraft:glass
 setblock ~44 ~1 ~8 minecraft:glass
+setblock ~18 ~1 ~9 minecraft:glass
 setblock ~21 ~1 ~9 minecraft:glass
 setblock ~24 ~1 ~9 minecraft:glass
 setblock ~27 ~1 ~9 minecraft:glass
@@ -34,10 +48,6 @@ setblock ~36 ~1 ~9 minecraft:glass
 setblock ~39 ~1 ~9 minecraft:glass
 setblock ~42 ~1 ~9 minecraft:glass
 setblock ~45 ~1 ~9 minecraft:glass
-setblock ~13 ~1 ~10 minecraft:stone
-setblock ~14 ~1 ~10 minecraft:glass
-setblock ~15 ~1 ~10 minecraft:glass
-setblock ~16 ~1 ~10 minecraft:glass
 setblock ~18 ~1 ~10 minecraft:glass
 setblock ~20 ~1 ~10 minecraft:glass
 setblock ~23 ~1 ~10 minecraft:glass
@@ -48,9 +58,9 @@ setblock ~35 ~1 ~10 minecraft:glass
 setblock ~38 ~1 ~10 minecraft:glass
 setblock ~41 ~1 ~10 minecraft:glass
 setblock ~44 ~1 ~10 minecraft:glass
-setblock ~16 ~1 ~11 minecraft:glass
-setblock ~17 ~1 ~11 minecraft:glass
+setblock ~18 ~1 ~12 minecraft:glass
 setblock ~47 ~1 ~12 minecraft:glass
+setblock ~17 ~1 ~13 minecraft:glass
 setblock ~47 ~1 ~13 minecraft:glass
 setblock ~15 ~1 ~14 minecraft:stone
 setblock ~16 ~1 ~14 minecraft:glass
@@ -142,11 +152,6 @@ setblock ~36 ~1 ~21 minecraft:glass
 setblock ~39 ~1 ~21 minecraft:glass
 setblock ~42 ~1 ~21 minecraft:glass
 setblock ~45 ~1 ~21 minecraft:glass
-setblock ~10 ~1 ~22 minecraft:glass
-setblock ~11 ~1 ~22 minecraft:glass
-setblock ~12 ~1 ~22 minecraft:glass
-setblock ~13 ~1 ~22 minecraft:glass
-setblock ~14 ~1 ~22 minecraft:glass
 setblock ~18 ~1 ~22 minecraft:glass
 setblock ~20 ~1 ~22 minecraft:glass
 setblock ~23 ~1 ~22 minecraft:glass
@@ -171,6 +176,16 @@ setblock ~18 ~1 ~24 minecraft:glass
 setblock ~3 ~1 ~25 minecraft:glass
 setblock ~2 ~1 ~26 minecraft:glass
 setblock ~3 ~1 ~27 minecraft:glass
+setblock ~3 ~2 ~3 minecraft:glass
+setblock ~18 ~2 ~3 minecraft:stone
+setblock ~2 ~2 ~4 minecraft:glass
+setblock ~4 ~2 ~4 minecraft:glass
+setblock ~17 ~2 ~4 minecraft:stone
+setblock ~19 ~2 ~4 minecraft:stone
+setblock ~3 ~2 ~5 minecraft:glass
+setblock ~17 ~2 ~5 minecraft:glass
+setblock ~18 ~2 ~5 minecraft:stone
+setblock ~17 ~2 ~6 minecraft:glass
 setblock ~20 ~2 ~6 minecraft:stone
 setblock ~23 ~2 ~6 minecraft:stone
 setblock ~26 ~2 ~6 minecraft:stone
@@ -199,8 +214,8 @@ setblock ~38 ~2 ~9 minecraft:stone
 setblock ~41 ~2 ~9 minecraft:stone
 setblock ~44 ~2 ~9 minecraft:stone
 setblock ~17 ~2 ~10 minecraft:glass
-setblock ~13 ~2 ~11 minecraft:stone
 setblock ~15 ~2 ~13 minecraft:stone
+setblock ~18 ~2 ~13 minecraft:stone
 setblock ~20 ~2 ~13 minecraft:stone
 setblock ~23 ~2 ~13 minecraft:stone
 setblock ~26 ~2 ~13 minecraft:stone
@@ -222,7 +237,6 @@ setblock ~38 ~2 ~17 minecraft:stone
 setblock ~41 ~2 ~17 minecraft:stone
 setblock ~44 ~2 ~17 minecraft:stone
 setblock ~17 ~2 ~20 minecraft:glass
-setblock ~10 ~2 ~21 minecraft:stone
 setblock ~20 ~2 ~21 minecraft:stone
 setblock ~23 ~2 ~21 minecraft:stone
 setblock ~26 ~2 ~21 minecraft:stone
@@ -232,7 +246,6 @@ setblock ~35 ~2 ~21 minecraft:stone
 setblock ~38 ~2 ~21 minecraft:stone
 setblock ~41 ~2 ~21 minecraft:stone
 setblock ~44 ~2 ~21 minecraft:stone
-setblock ~15 ~2 ~22 minecraft:stone
 setblock ~21 ~2 ~22 minecraft:stone
 setblock ~24 ~2 ~22 minecraft:stone
 setblock ~27 ~2 ~22 minecraft:stone
@@ -242,8 +255,6 @@ setblock ~36 ~2 ~22 minecraft:stone
 setblock ~39 ~2 ~22 minecraft:stone
 setblock ~42 ~2 ~22 minecraft:stone
 setblock ~45 ~2 ~22 minecraft:stone
-setblock ~15 ~2 ~23 minecraft:glass
-setblock ~15 ~2 ~24 minecraft:glass
 setblock ~17 ~2 ~24 minecraft:glass
 setblock ~20 ~2 ~24 minecraft:stone
 setblock ~23 ~2 ~24 minecraft:stone
@@ -255,20 +266,20 @@ setblock ~38 ~2 ~24 minecraft:stone
 setblock ~41 ~2 ~24 minecraft:stone
 setblock ~44 ~2 ~24 minecraft:stone
 setblock ~3 ~2 ~25 minecraft:glass
-setblock ~15 ~2 ~25 minecraft:glass
 setblock ~17 ~2 ~25 minecraft:glass
 setblock ~18 ~2 ~25 minecraft:stone
 setblock ~2 ~2 ~26 minecraft:glass
 setblock ~4 ~2 ~26 minecraft:glass
-setblock ~16 ~2 ~26 minecraft:glass
 setblock ~17 ~2 ~26 minecraft:stone
 setblock ~19 ~2 ~26 minecraft:stone
 setblock ~3 ~2 ~27 minecraft:glass
 setblock ~18 ~2 ~27 minecraft:stone
-setblock ~15 ~3 ~5 minecraft:glass
-setblock ~16 ~3 ~5 minecraft:glass
-setblock ~15 ~3 ~6 minecraft:glass
-setblock ~15 ~3 ~7 minecraft:glass
+setblock ~3 ~3 ~3 minecraft:glass
+setblock ~18 ~3 ~3 minecraft:stone
+setblock ~2 ~3 ~4 minecraft:glass
+setblock ~4 ~3 ~4 minecraft:glass
+setblock ~3 ~3 ~5 minecraft:glass
+setblock ~18 ~3 ~5 minecraft:stone
 setblock ~21 ~3 ~7 minecraft:glass
 setblock ~24 ~3 ~7 minecraft:glass
 setblock ~27 ~3 ~7 minecraft:glass
@@ -278,13 +289,7 @@ setblock ~36 ~3 ~7 minecraft:glass
 setblock ~39 ~3 ~7 minecraft:glass
 setblock ~42 ~3 ~7 minecraft:glass
 setblock ~45 ~3 ~7 minecraft:glass
-setblock ~15 ~3 ~8 minecraft:glass
-setblock ~15 ~3 ~9 minecraft:glass
 setblock ~17 ~3 ~9 minecraft:glass
-setblock ~15 ~3 ~10 minecraft:glass
-setblock ~16 ~3 ~10 minecraft:stone
-setblock ~15 ~3 ~11 minecraft:glass
-setblock ~13 ~3 ~12 minecraft:stone
 setblock ~15 ~3 ~12 minecraft:stone
 setblock ~21 ~3 ~13 minecraft:stone
 setblock ~24 ~3 ~13 minecraft:stone
@@ -305,7 +310,6 @@ setblock ~39 ~3 ~17 minecraft:stone
 setblock ~42 ~3 ~17 minecraft:stone
 setblock ~45 ~3 ~17 minecraft:stone
 setblock ~15 ~3 ~18 minecraft:stone
-setblock ~10 ~3 ~20 minecraft:stone
 setblock ~17 ~3 ~21 minecraft:glass
 setblock ~21 ~3 ~23 minecraft:glass
 setblock ~24 ~3 ~23 minecraft:glass
@@ -317,12 +321,15 @@ setblock ~39 ~3 ~23 minecraft:glass
 setblock ~42 ~3 ~23 minecraft:glass
 setblock ~45 ~3 ~23 minecraft:glass
 setblock ~3 ~3 ~25 minecraft:glass
+setblock ~18 ~3 ~25 minecraft:stone
 setblock ~2 ~3 ~26 minecraft:glass
 setblock ~4 ~3 ~26 minecraft:glass
 setblock ~3 ~3 ~27 minecraft:glass
 setblock ~18 ~3 ~27 minecraft:stone
-setblock ~17 ~4 ~5 minecraft:stone
-setblock ~14 ~4 ~8 minecraft:stone
+setblock ~3 ~4 ~3 minecraft:glass
+setblock ~2 ~4 ~4 minecraft:glass
+setblock ~4 ~4 ~4 minecraft:glass
+setblock ~3 ~4 ~5 minecraft:glass
 setblock ~17 ~4 ~8 minecraft:glass
 setblock ~21 ~4 ~8 minecraft:stone
 setblock ~24 ~4 ~8 minecraft:stone
@@ -351,6 +358,7 @@ setblock ~36 ~4 ~10 minecraft:glass
 setblock ~39 ~4 ~10 minecraft:glass
 setblock ~42 ~4 ~10 minecraft:glass
 setblock ~45 ~4 ~10 minecraft:glass
+setblock ~15 ~4 ~11 minecraft:stone
 setblock ~21 ~4 ~11 minecraft:glass
 setblock ~24 ~4 ~11 minecraft:glass
 setblock ~27 ~4 ~11 minecraft:glass
@@ -369,7 +377,6 @@ setblock ~36 ~4 ~12 minecraft:stone
 setblock ~39 ~4 ~12 minecraft:stone
 setblock ~42 ~4 ~12 minecraft:stone
 setblock ~45 ~4 ~12 minecraft:stone
-setblock ~13 ~4 ~13 minecraft:stone
 setblock ~21 ~4 ~18 minecraft:stone
 setblock ~24 ~4 ~18 minecraft:stone
 setblock ~27 ~4 ~18 minecraft:stone
@@ -379,7 +386,6 @@ setblock ~36 ~4 ~18 minecraft:stone
 setblock ~39 ~4 ~18 minecraft:stone
 setblock ~42 ~4 ~18 minecraft:stone
 setblock ~45 ~4 ~18 minecraft:stone
-setblock ~10 ~4 ~19 minecraft:stone
 setblock ~15 ~4 ~19 minecraft:stone
 setblock ~21 ~4 ~19 minecraft:glass
 setblock ~24 ~4 ~19 minecraft:glass
@@ -422,7 +428,20 @@ setblock ~3 ~4 ~25 minecraft:glass
 setblock ~2 ~4 ~26 minecraft:glass
 setblock ~4 ~4 ~26 minecraft:glass
 setblock ~3 ~4 ~27 minecraft:glass
-setblock ~17 ~5 ~6 minecraft:glass
+setblock ~3 ~5 ~3 minecraft:glass
+setblock ~15 ~5 ~3 minecraft:glass
+setblock ~16 ~5 ~3 minecraft:glass
+setblock ~17 ~5 ~3 minecraft:glass
+setblock ~18 ~5 ~3 minecraft:stone
+setblock ~2 ~5 ~4 minecraft:glass
+setblock ~4 ~5 ~4 minecraft:glass
+setblock ~16 ~5 ~4 minecraft:glass
+setblock ~3 ~5 ~5 minecraft:glass
+setblock ~15 ~5 ~5 minecraft:glass
+setblock ~16 ~5 ~5 minecraft:glass
+setblock ~15 ~5 ~6 minecraft:glass
+setblock ~15 ~5 ~7 minecraft:glass
+setblock ~16 ~5 ~7 minecraft:glass
 setblock ~17 ~5 ~7 minecraft:stone
 setblock ~18 ~5 ~7 minecraft:glass
 setblock ~19 ~5 ~7 minecraft:glass
@@ -453,14 +472,14 @@ setblock ~43 ~5 ~7 minecraft:glass
 setblock ~44 ~5 ~7 minecraft:glass
 setblock ~45 ~5 ~7 minecraft:stone
 setblock ~46 ~5 ~7 minecraft:glass
-setblock ~13 ~5 ~8 minecraft:stone
-setblock ~13 ~5 ~14 minecraft:stone
+setblock ~15 ~5 ~8 minecraft:glass
+setblock ~15 ~5 ~9 minecraft:glass
+setblock ~15 ~5 ~10 minecraft:stone
 setblock ~8 ~5 ~15 minecraft:stone
 setblock ~8 ~5 ~16 minecraft:glass
 setblock ~8 ~5 ~17 minecraft:glass
 setblock ~8 ~5 ~18 minecraft:glass
 setblock ~8 ~5 ~19 minecraft:glass
-setblock ~11 ~5 ~19 minecraft:stone
 setblock ~8 ~5 ~20 minecraft:glass
 setblock ~15 ~5 ~20 minecraft:stone
 setblock ~8 ~5 ~21 minecraft:glass
@@ -501,15 +520,11 @@ setblock ~44 ~5 ~23 minecraft:glass
 setblock ~45 ~5 ~23 minecraft:stone
 setblock ~46 ~5 ~23 minecraft:glass
 setblock ~8 ~5 ~24 minecraft:glass
-setblock ~15 ~5 ~24 minecraft:glass
 setblock ~3 ~5 ~25 minecraft:glass
 setblock ~8 ~5 ~25 minecraft:glass
-setblock ~15 ~5 ~25 minecraft:glass
-setblock ~16 ~5 ~25 minecraft:glass
 setblock ~2 ~5 ~26 minecraft:glass
 setblock ~4 ~5 ~26 minecraft:glass
 setblock ~8 ~5 ~26 minecraft:glass
-setblock ~16 ~5 ~26 minecraft:glass
 setblock ~3 ~5 ~27 minecraft:glass
 setblock ~8 ~5 ~27 minecraft:glass
 setblock ~9 ~5 ~27 minecraft:glass
@@ -522,14 +537,20 @@ setblock ~15 ~5 ~27 minecraft:glass
 setblock ~16 ~5 ~27 minecraft:glass
 setblock ~17 ~5 ~27 minecraft:glass
 setblock ~18 ~5 ~27 minecraft:stone
-setblock ~12 ~6 ~8 minecraft:stone
+setblock ~3 ~6 ~3 minecraft:glass
+setblock ~2 ~6 ~4 minecraft:glass
+setblock ~4 ~6 ~4 minecraft:glass
+setblock ~3 ~6 ~5 minecraft:glass
 setblock ~8 ~6 ~14 minecraft:stone
-setblock ~13 ~6 ~15 minecraft:stone
-setblock ~12 ~6 ~19 minecraft:stone
+setblock ~14 ~6 ~22 minecraft:stone
 setblock ~3 ~6 ~25 minecraft:glass
 setblock ~2 ~6 ~26 minecraft:glass
 setblock ~4 ~6 ~26 minecraft:glass
 setblock ~3 ~6 ~27 minecraft:glass
+setblock ~3 ~7 ~3 minecraft:glass
+setblock ~2 ~7 ~4 minecraft:glass
+setblock ~4 ~7 ~4 minecraft:glass
+setblock ~3 ~7 ~5 minecraft:glass
 setblock ~20 ~7 ~7 minecraft:glass
 setblock ~23 ~7 ~7 minecraft:glass
 setblock ~26 ~7 ~7 minecraft:glass
@@ -539,7 +560,6 @@ setblock ~35 ~7 ~7 minecraft:glass
 setblock ~38 ~7 ~7 minecraft:glass
 setblock ~41 ~7 ~7 minecraft:glass
 setblock ~44 ~7 ~7 minecraft:glass
-setblock ~11 ~7 ~8 minecraft:stone
 setblock ~20 ~7 ~8 minecraft:glass
 setblock ~23 ~7 ~8 minecraft:glass
 setblock ~26 ~7 ~8 minecraft:glass
@@ -549,7 +569,6 @@ setblock ~35 ~7 ~8 minecraft:glass
 setblock ~38 ~7 ~8 minecraft:glass
 setblock ~41 ~7 ~8 minecraft:glass
 setblock ~44 ~7 ~8 minecraft:glass
-setblock ~11 ~7 ~9 minecraft:glass
 setblock ~21 ~7 ~9 minecraft:glass
 setblock ~24 ~7 ~9 minecraft:glass
 setblock ~27 ~7 ~9 minecraft:glass
@@ -559,7 +578,17 @@ setblock ~36 ~7 ~9 minecraft:glass
 setblock ~39 ~7 ~9 minecraft:glass
 setblock ~42 ~7 ~9 minecraft:glass
 setblock ~45 ~7 ~9 minecraft:glass
+setblock ~6 ~7 ~10 minecraft:glass
+setblock ~7 ~7 ~10 minecraft:glass
+setblock ~8 ~7 ~10 minecraft:glass
+setblock ~9 ~7 ~10 minecraft:glass
+setblock ~10 ~7 ~10 minecraft:glass
 setblock ~11 ~7 ~10 minecraft:glass
+setblock ~12 ~7 ~10 minecraft:glass
+setblock ~13 ~7 ~10 minecraft:glass
+setblock ~14 ~7 ~10 minecraft:glass
+setblock ~15 ~7 ~10 minecraft:glass
+setblock ~16 ~7 ~10 minecraft:glass
 setblock ~18 ~7 ~10 minecraft:glass
 setblock ~20 ~7 ~10 minecraft:glass
 setblock ~23 ~7 ~10 minecraft:glass
@@ -570,16 +599,15 @@ setblock ~35 ~7 ~10 minecraft:glass
 setblock ~38 ~7 ~10 minecraft:glass
 setblock ~41 ~7 ~10 minecraft:glass
 setblock ~44 ~7 ~10 minecraft:glass
-setblock ~11 ~7 ~11 minecraft:glass
-setblock ~12 ~7 ~11 minecraft:glass
-setblock ~13 ~7 ~11 minecraft:glass
-setblock ~14 ~7 ~11 minecraft:glass
-setblock ~15 ~7 ~11 minecraft:glass
+setblock ~6 ~7 ~11 minecraft:glass
 setblock ~16 ~7 ~11 minecraft:glass
 setblock ~17 ~7 ~11 minecraft:glass
+setblock ~6 ~7 ~12 minecraft:glass
 setblock ~47 ~7 ~12 minecraft:glass
+setblock ~6 ~7 ~13 minecraft:glass
 setblock ~8 ~7 ~13 minecraft:stone
 setblock ~47 ~7 ~13 minecraft:glass
+setblock ~6 ~7 ~14 minecraft:glass
 setblock ~15 ~7 ~14 minecraft:stone
 setblock ~16 ~7 ~14 minecraft:glass
 setblock ~17 ~7 ~14 minecraft:glass
@@ -613,7 +641,15 @@ setblock ~44 ~7 ~14 minecraft:glass
 setblock ~45 ~7 ~14 minecraft:glass
 setblock ~46 ~7 ~14 minecraft:glass
 setblock ~47 ~7 ~14 minecraft:glass
-setblock ~13 ~7 ~16 minecraft:stone
+setblock ~6 ~7 ~15 minecraft:glass
+setblock ~6 ~7 ~16 minecraft:glass
+setblock ~7 ~7 ~16 minecraft:glass
+setblock ~8 ~7 ~16 minecraft:glass
+setblock ~9 ~7 ~16 minecraft:glass
+setblock ~10 ~7 ~16 minecraft:glass
+setblock ~11 ~7 ~16 minecraft:glass
+setblock ~12 ~7 ~16 minecraft:glass
+setblock ~13 ~7 ~16 minecraft:glass
 setblock ~14 ~7 ~16 minecraft:glass
 setblock ~15 ~7 ~16 minecraft:stone
 setblock ~16 ~7 ~16 minecraft:glass
@@ -650,11 +686,12 @@ setblock ~46 ~7 ~16 minecraft:glass
 setblock ~47 ~7 ~16 minecraft:glass
 setblock ~47 ~7 ~17 minecraft:glass
 setblock ~47 ~7 ~18 minecraft:glass
-setblock ~13 ~7 ~19 minecraft:stone
+setblock ~13 ~7 ~19 minecraft:glass
 setblock ~14 ~7 ~19 minecraft:glass
 setblock ~15 ~7 ~19 minecraft:glass
 setblock ~16 ~7 ~19 minecraft:glass
 setblock ~17 ~7 ~19 minecraft:glass
+setblock ~13 ~7 ~20 minecraft:glass
 setblock ~18 ~7 ~20 minecraft:glass
 setblock ~20 ~7 ~20 minecraft:glass
 setblock ~23 ~7 ~20 minecraft:glass
@@ -665,6 +702,7 @@ setblock ~35 ~7 ~20 minecraft:glass
 setblock ~38 ~7 ~20 minecraft:glass
 setblock ~41 ~7 ~20 minecraft:glass
 setblock ~44 ~7 ~20 minecraft:glass
+setblock ~13 ~7 ~21 minecraft:glass
 setblock ~21 ~7 ~21 minecraft:glass
 setblock ~24 ~7 ~21 minecraft:glass
 setblock ~27 ~7 ~21 minecraft:glass
@@ -674,6 +712,7 @@ setblock ~36 ~7 ~21 minecraft:glass
 setblock ~39 ~7 ~21 minecraft:glass
 setblock ~42 ~7 ~21 minecraft:glass
 setblock ~45 ~7 ~21 minecraft:glass
+setblock ~13 ~7 ~22 minecraft:stone
 setblock ~20 ~7 ~22 minecraft:glass
 setblock ~23 ~7 ~22 minecraft:glass
 setblock ~26 ~7 ~22 minecraft:glass
@@ -696,6 +735,10 @@ setblock ~3 ~7 ~25 minecraft:glass
 setblock ~2 ~7 ~26 minecraft:glass
 setblock ~4 ~7 ~26 minecraft:glass
 setblock ~3 ~7 ~27 minecraft:glass
+setblock ~3 ~8 ~3 minecraft:glass
+setblock ~2 ~8 ~4 minecraft:glass
+setblock ~4 ~8 ~4 minecraft:glass
+setblock ~3 ~8 ~5 minecraft:glass
 setblock ~20 ~8 ~6 minecraft:stone
 setblock ~23 ~8 ~6 minecraft:stone
 setblock ~26 ~8 ~6 minecraft:stone
@@ -777,6 +820,10 @@ setblock ~3 ~8 ~25 minecraft:glass
 setblock ~2 ~8 ~26 minecraft:glass
 setblock ~4 ~8 ~26 minecraft:glass
 setblock ~3 ~8 ~27 minecraft:glass
+setblock ~3 ~9 ~3 minecraft:glass
+setblock ~2 ~9 ~4 minecraft:glass
+setblock ~4 ~9 ~4 minecraft:glass
+setblock ~3 ~9 ~5 minecraft:glass
 setblock ~15 ~9 ~5 minecraft:glass
 setblock ~16 ~9 ~5 minecraft:glass
 setblock ~15 ~9 ~6 minecraft:glass
@@ -794,6 +841,7 @@ setblock ~15 ~9 ~8 minecraft:glass
 setblock ~15 ~9 ~9 minecraft:glass
 setblock ~17 ~9 ~9 minecraft:glass
 setblock ~15 ~9 ~10 minecraft:glass
+setblock ~16 ~9 ~10 minecraft:stone
 setblock ~8 ~9 ~11 minecraft:stone
 setblock ~9 ~9 ~11 minecraft:glass
 setblock ~10 ~9 ~11 minecraft:glass
@@ -844,6 +892,10 @@ setblock ~16 ~9 ~25 minecraft:glass
 setblock ~2 ~9 ~26 minecraft:glass
 setblock ~4 ~9 ~26 minecraft:glass
 setblock ~3 ~9 ~27 minecraft:glass
+setblock ~3 ~10 ~3 minecraft:glass
+setblock ~2 ~10 ~4 minecraft:glass
+setblock ~4 ~10 ~4 minecraft:glass
+setblock ~3 ~10 ~5 minecraft:glass
 setblock ~17 ~10 ~5 minecraft:stone
 setblock ~17 ~10 ~8 minecraft:glass
 setblock ~21 ~10 ~8 minecraft:stone
@@ -942,6 +994,10 @@ setblock ~17 ~10 ~25 minecraft:stone
 setblock ~2 ~10 ~26 minecraft:glass
 setblock ~4 ~10 ~26 minecraft:glass
 setblock ~3 ~10 ~27 minecraft:glass
+setblock ~3 ~11 ~3 minecraft:glass
+setblock ~2 ~11 ~4 minecraft:glass
+setblock ~4 ~11 ~4 minecraft:glass
+setblock ~3 ~11 ~5 minecraft:glass
 setblock ~17 ~11 ~6 minecraft:glass
 setblock ~17 ~11 ~7 minecraft:stone
 setblock ~18 ~11 ~7 minecraft:glass
@@ -1008,31 +1064,57 @@ setblock ~3 ~11 ~25 minecraft:glass
 setblock ~2 ~11 ~26 minecraft:glass
 setblock ~4 ~11 ~26 minecraft:glass
 setblock ~3 ~11 ~27 minecraft:glass
+setblock ~3 ~12 ~3 minecraft:glass
+setblock ~2 ~12 ~4 minecraft:glass
+setblock ~4 ~12 ~4 minecraft:glass
+setblock ~3 ~12 ~5 minecraft:glass
 setblock ~3 ~12 ~25 minecraft:glass
 setblock ~2 ~12 ~26 minecraft:glass
 setblock ~4 ~12 ~26 minecraft:glass
 setblock ~3 ~12 ~27 minecraft:glass
-setblock ~19 ~13 ~2 minecraft:glass
-setblock ~20 ~13 ~2 minecraft:glass
-setblock ~22 ~13 ~2 minecraft:glass
-setblock ~23 ~13 ~2 minecraft:glass
-setblock ~25 ~13 ~2 minecraft:glass
-setblock ~26 ~13 ~2 minecraft:glass
-setblock ~28 ~13 ~2 minecraft:glass
-setblock ~29 ~13 ~2 minecraft:glass
-setblock ~31 ~13 ~2 minecraft:glass
-setblock ~32 ~13 ~2 minecraft:glass
-setblock ~34 ~13 ~2 minecraft:glass
-setblock ~35 ~13 ~2 minecraft:glass
-setblock ~37 ~13 ~2 minecraft:glass
-setblock ~38 ~13 ~2 minecraft:glass
-setblock ~40 ~13 ~2 minecraft:glass
-setblock ~41 ~13 ~2 minecraft:glass
-setblock ~43 ~13 ~2 minecraft:glass
-setblock ~44 ~13 ~2 minecraft:glass
-setblock ~46 ~13 ~2 minecraft:glass
-setblock ~19 ~13 ~3 minecraft:glass
+setblock ~19 ~13 ~0 minecraft:glass
+setblock ~20 ~13 ~0 minecraft:glass
+setblock ~22 ~13 ~0 minecraft:glass
+setblock ~23 ~13 ~0 minecraft:glass
+setblock ~25 ~13 ~0 minecraft:glass
+setblock ~26 ~13 ~0 minecraft:glass
+setblock ~28 ~13 ~0 minecraft:glass
+setblock ~29 ~13 ~0 minecraft:glass
+setblock ~31 ~13 ~0 minecraft:glass
+setblock ~32 ~13 ~0 minecraft:glass
+setblock ~34 ~13 ~0 minecraft:glass
+setblock ~35 ~13 ~0 minecraft:glass
+setblock ~37 ~13 ~0 minecraft:glass
+setblock ~38 ~13 ~0 minecraft:glass
+setblock ~40 ~13 ~0 minecraft:glass
+setblock ~41 ~13 ~0 minecraft:glass
+setblock ~43 ~13 ~0 minecraft:glass
+setblock ~44 ~13 ~0 minecraft:glass
+setblock ~46 ~13 ~0 minecraft:glass
+setblock ~19 ~13 ~1 minecraft:glass
+setblock ~3 ~13 ~3 minecraft:glass
+setblock ~2 ~13 ~4 minecraft:glass
+setblock ~4 ~13 ~4 minecraft:glass
 setblock ~19 ~13 ~4 minecraft:glass
+setblock ~20 ~13 ~4 minecraft:glass
+setblock ~22 ~13 ~4 minecraft:glass
+setblock ~23 ~13 ~4 minecraft:glass
+setblock ~25 ~13 ~4 minecraft:glass
+setblock ~26 ~13 ~4 minecraft:glass
+setblock ~28 ~13 ~4 minecraft:glass
+setblock ~29 ~13 ~4 minecraft:glass
+setblock ~31 ~13 ~4 minecraft:glass
+setblock ~32 ~13 ~4 minecraft:glass
+setblock ~34 ~13 ~4 minecraft:glass
+setblock ~35 ~13 ~4 minecraft:glass
+setblock ~37 ~13 ~4 minecraft:glass
+setblock ~38 ~13 ~4 minecraft:glass
+setblock ~40 ~13 ~4 minecraft:glass
+setblock ~41 ~13 ~4 minecraft:glass
+setblock ~43 ~13 ~4 minecraft:glass
+setblock ~44 ~13 ~4 minecraft:glass
+setblock ~46 ~13 ~4 minecraft:glass
+setblock ~3 ~13 ~5 minecraft:glass
 setblock ~19 ~13 ~5 minecraft:glass
 setblock ~19 ~13 ~6 minecraft:glass
 setblock ~19 ~13 ~7 minecraft:glass
@@ -1058,55 +1140,53 @@ setblock ~19 ~13 ~25 minecraft:glass
 setblock ~2 ~13 ~26 minecraft:glass
 setblock ~4 ~13 ~26 minecraft:glass
 setblock ~19 ~13 ~26 minecraft:glass
-setblock ~20 ~13 ~26 minecraft:glass
-setblock ~22 ~13 ~26 minecraft:glass
-setblock ~23 ~13 ~26 minecraft:glass
-setblock ~25 ~13 ~26 minecraft:glass
-setblock ~26 ~13 ~26 minecraft:glass
-setblock ~28 ~13 ~26 minecraft:glass
-setblock ~29 ~13 ~26 minecraft:glass
-setblock ~31 ~13 ~26 minecraft:glass
-setblock ~32 ~13 ~26 minecraft:glass
-setblock ~34 ~13 ~26 minecraft:glass
-setblock ~35 ~13 ~26 minecraft:glass
-setblock ~37 ~13 ~26 minecraft:glass
-setblock ~38 ~13 ~26 minecraft:glass
-setblock ~40 ~13 ~26 minecraft:glass
-setblock ~41 ~13 ~26 minecraft:glass
-setblock ~43 ~13 ~26 minecraft:glass
-setblock ~44 ~13 ~26 minecraft:glass
-setblock ~46 ~13 ~26 minecraft:glass
 setblock ~3 ~13 ~27 minecraft:glass
+setblock ~19 ~13 ~27 minecraft:glass
 setblock ~19 ~13 ~28 minecraft:glass
-setblock ~19 ~13 ~29 minecraft:glass
-setblock ~19 ~13 ~30 minecraft:glass
-setblock ~20 ~13 ~30 minecraft:glass
-setblock ~22 ~13 ~30 minecraft:glass
-setblock ~23 ~13 ~30 minecraft:glass
-setblock ~25 ~13 ~30 minecraft:glass
-setblock ~26 ~13 ~30 minecraft:glass
-setblock ~28 ~13 ~30 minecraft:glass
-setblock ~29 ~13 ~30 minecraft:glass
-setblock ~31 ~13 ~30 minecraft:glass
-setblock ~32 ~13 ~30 minecraft:glass
-setblock ~34 ~13 ~30 minecraft:glass
-setblock ~35 ~13 ~30 minecraft:glass
-setblock ~37 ~13 ~30 minecraft:glass
-setblock ~38 ~13 ~30 minecraft:glass
-setblock ~40 ~13 ~30 minecraft:glass
-setblock ~41 ~13 ~30 minecraft:glass
-setblock ~43 ~13 ~30 minecraft:glass
-setblock ~44 ~13 ~30 minecraft:glass
-setblock ~46 ~13 ~30 minecraft:glass
-setblock ~21 ~14 ~2 minecraft:stone
-setblock ~24 ~14 ~2 minecraft:stone
-setblock ~27 ~14 ~2 minecraft:stone
-setblock ~30 ~14 ~2 minecraft:stone
-setblock ~33 ~14 ~2 minecraft:stone
-setblock ~36 ~14 ~2 minecraft:stone
-setblock ~39 ~14 ~2 minecraft:stone
-setblock ~42 ~14 ~2 minecraft:stone
-setblock ~45 ~14 ~2 minecraft:stone
+setblock ~20 ~13 ~28 minecraft:glass
+setblock ~22 ~13 ~28 minecraft:glass
+setblock ~23 ~13 ~28 minecraft:glass
+setblock ~25 ~13 ~28 minecraft:glass
+setblock ~26 ~13 ~28 minecraft:glass
+setblock ~28 ~13 ~28 minecraft:glass
+setblock ~29 ~13 ~28 minecraft:glass
+setblock ~31 ~13 ~28 minecraft:glass
+setblock ~32 ~13 ~28 minecraft:glass
+setblock ~34 ~13 ~28 minecraft:glass
+setblock ~35 ~13 ~28 minecraft:glass
+setblock ~37 ~13 ~28 minecraft:glass
+setblock ~38 ~13 ~28 minecraft:glass
+setblock ~40 ~13 ~28 minecraft:glass
+setblock ~41 ~13 ~28 minecraft:glass
+setblock ~43 ~13 ~28 minecraft:glass
+setblock ~44 ~13 ~28 minecraft:glass
+setblock ~46 ~13 ~28 minecraft:glass
+setblock ~21 ~14 ~0 minecraft:stone
+setblock ~24 ~14 ~0 minecraft:stone
+setblock ~27 ~14 ~0 minecraft:stone
+setblock ~30 ~14 ~0 minecraft:stone
+setblock ~33 ~14 ~0 minecraft:stone
+setblock ~36 ~14 ~0 minecraft:stone
+setblock ~39 ~14 ~0 minecraft:stone
+setblock ~42 ~14 ~0 minecraft:stone
+setblock ~45 ~14 ~0 minecraft:stone
+setblock ~13 ~14 ~1 minecraft:glass
+setblock ~14 ~14 ~1 minecraft:glass
+setblock ~15 ~14 ~1 minecraft:glass
+setblock ~18 ~14 ~1 minecraft:stone
+setblock ~3 ~14 ~3 minecraft:glass
+setblock ~2 ~14 ~4 minecraft:glass
+setblock ~4 ~14 ~4 minecraft:glass
+setblock ~21 ~14 ~4 minecraft:stone
+setblock ~24 ~14 ~4 minecraft:stone
+setblock ~27 ~14 ~4 minecraft:stone
+setblock ~30 ~14 ~4 minecraft:stone
+setblock ~33 ~14 ~4 minecraft:stone
+setblock ~36 ~14 ~4 minecraft:stone
+setblock ~39 ~14 ~4 minecraft:stone
+setblock ~42 ~14 ~4 minecraft:stone
+setblock ~45 ~14 ~4 minecraft:stone
+setblock ~3 ~14 ~5 minecraft:glass
 setblock ~13 ~14 ~21 minecraft:glass
 setblock ~14 ~14 ~21 minecraft:glass
 setblock ~15 ~14 ~21 minecraft:glass
@@ -1114,79 +1194,108 @@ setblock ~18 ~14 ~21 minecraft:stone
 setblock ~3 ~14 ~25 minecraft:glass
 setblock ~2 ~14 ~26 minecraft:glass
 setblock ~4 ~14 ~26 minecraft:glass
-setblock ~21 ~14 ~26 minecraft:stone
-setblock ~24 ~14 ~26 minecraft:stone
-setblock ~27 ~14 ~26 minecraft:stone
-setblock ~30 ~14 ~26 minecraft:stone
-setblock ~33 ~14 ~26 minecraft:stone
-setblock ~36 ~14 ~26 minecraft:stone
-setblock ~39 ~14 ~26 minecraft:stone
-setblock ~42 ~14 ~26 minecraft:stone
-setblock ~45 ~14 ~26 minecraft:stone
 setblock ~3 ~14 ~27 minecraft:glass
-setblock ~13 ~14 ~28 minecraft:glass
-setblock ~14 ~14 ~28 minecraft:glass
-setblock ~15 ~14 ~28 minecraft:glass
-setblock ~18 ~14 ~28 minecraft:stone
-setblock ~21 ~14 ~30 minecraft:stone
-setblock ~24 ~14 ~30 minecraft:stone
-setblock ~27 ~14 ~30 minecraft:stone
-setblock ~30 ~14 ~30 minecraft:stone
-setblock ~33 ~14 ~30 minecraft:stone
-setblock ~36 ~14 ~30 minecraft:stone
-setblock ~39 ~14 ~30 minecraft:stone
-setblock ~42 ~14 ~30 minecraft:stone
-setblock ~45 ~14 ~30 minecraft:stone
+setblock ~21 ~14 ~28 minecraft:stone
+setblock ~24 ~14 ~28 minecraft:stone
+setblock ~27 ~14 ~28 minecraft:stone
+setblock ~30 ~14 ~28 minecraft:stone
+setblock ~33 ~14 ~28 minecraft:stone
+setblock ~36 ~14 ~28 minecraft:stone
+setblock ~39 ~14 ~28 minecraft:stone
+setblock ~42 ~14 ~28 minecraft:stone
+setblock ~45 ~14 ~28 minecraft:stone
+setblock ~19 ~15 ~0 minecraft:glass
+setblock ~20 ~15 ~0 minecraft:glass
+setblock ~22 ~15 ~0 minecraft:glass
+setblock ~23 ~15 ~0 minecraft:glass
+setblock ~25 ~15 ~0 minecraft:glass
+setblock ~26 ~15 ~0 minecraft:glass
+setblock ~28 ~15 ~0 minecraft:glass
+setblock ~29 ~15 ~0 minecraft:glass
+setblock ~31 ~15 ~0 minecraft:glass
+setblock ~32 ~15 ~0 minecraft:glass
+setblock ~34 ~15 ~0 minecraft:glass
+setblock ~35 ~15 ~0 minecraft:glass
+setblock ~37 ~15 ~0 minecraft:glass
+setblock ~38 ~15 ~0 minecraft:glass
+setblock ~40 ~15 ~0 minecraft:glass
+setblock ~41 ~15 ~0 minecraft:glass
+setblock ~43 ~15 ~0 minecraft:glass
+setblock ~44 ~15 ~0 minecraft:glass
+setblock ~46 ~15 ~0 minecraft:glass
+setblock ~12 ~15 ~1 minecraft:stone
+setblock ~19 ~15 ~1 minecraft:glass
+setblock ~10 ~15 ~2 minecraft:glass
+setblock ~11 ~15 ~2 minecraft:glass
+setblock ~13 ~15 ~2 minecraft:glass
+setblock ~14 ~15 ~2 minecraft:glass
+setblock ~15 ~15 ~2 minecraft:glass
+setblock ~17 ~15 ~2 minecraft:stone
+setblock ~18 ~15 ~2 minecraft:glass
 setblock ~19 ~15 ~2 minecraft:glass
-setblock ~20 ~15 ~2 minecraft:glass
-setblock ~22 ~15 ~2 minecraft:glass
-setblock ~23 ~15 ~2 minecraft:glass
-setblock ~25 ~15 ~2 minecraft:glass
-setblock ~26 ~15 ~2 minecraft:glass
-setblock ~28 ~15 ~2 minecraft:glass
-setblock ~29 ~15 ~2 minecraft:glass
-setblock ~31 ~15 ~2 minecraft:glass
-setblock ~32 ~15 ~2 minecraft:glass
-setblock ~34 ~15 ~2 minecraft:glass
-setblock ~35 ~15 ~2 minecraft:glass
-setblock ~37 ~15 ~2 minecraft:glass
-setblock ~38 ~15 ~2 minecraft:glass
-setblock ~40 ~15 ~2 minecraft:glass
-setblock ~41 ~15 ~2 minecraft:glass
-setblock ~43 ~15 ~2 minecraft:glass
-setblock ~44 ~15 ~2 minecraft:glass
-setblock ~46 ~15 ~2 minecraft:glass
-setblock ~19 ~15 ~3 minecraft:glass
+setblock ~3 ~15 ~3 minecraft:glass
+setblock ~10 ~15 ~3 minecraft:glass
+setblock ~2 ~15 ~4 minecraft:glass
+setblock ~4 ~15 ~4 minecraft:glass
+setblock ~10 ~15 ~4 minecraft:glass
 setblock ~19 ~15 ~4 minecraft:glass
+setblock ~20 ~15 ~4 minecraft:glass
+setblock ~22 ~15 ~4 minecraft:glass
+setblock ~23 ~15 ~4 minecraft:glass
+setblock ~25 ~15 ~4 minecraft:glass
+setblock ~26 ~15 ~4 minecraft:glass
+setblock ~28 ~15 ~4 minecraft:glass
+setblock ~29 ~15 ~4 minecraft:glass
+setblock ~31 ~15 ~4 minecraft:glass
+setblock ~32 ~15 ~4 minecraft:glass
+setblock ~34 ~15 ~4 minecraft:glass
+setblock ~35 ~15 ~4 minecraft:glass
+setblock ~37 ~15 ~4 minecraft:glass
+setblock ~38 ~15 ~4 minecraft:glass
+setblock ~40 ~15 ~4 minecraft:glass
+setblock ~41 ~15 ~4 minecraft:glass
+setblock ~43 ~15 ~4 minecraft:glass
+setblock ~44 ~15 ~4 minecraft:glass
+setblock ~46 ~15 ~4 minecraft:glass
+setblock ~3 ~15 ~5 minecraft:glass
+setblock ~10 ~15 ~5 minecraft:glass
 setblock ~19 ~15 ~5 minecraft:glass
+setblock ~10 ~15 ~6 minecraft:glass
 setblock ~19 ~15 ~6 minecraft:glass
+setblock ~10 ~15 ~7 minecraft:glass
 setblock ~19 ~15 ~7 minecraft:glass
+setblock ~10 ~15 ~8 minecraft:glass
 setblock ~19 ~15 ~8 minecraft:glass
+setblock ~10 ~15 ~9 minecraft:glass
 setblock ~19 ~15 ~9 minecraft:glass
+setblock ~10 ~15 ~10 minecraft:glass
 setblock ~19 ~15 ~10 minecraft:glass
+setblock ~10 ~15 ~11 minecraft:glass
 setblock ~19 ~15 ~11 minecraft:glass
+setblock ~10 ~15 ~12 minecraft:glass
 setblock ~19 ~15 ~12 minecraft:glass
+setblock ~10 ~15 ~13 minecraft:glass
+setblock ~11 ~15 ~13 minecraft:glass
+setblock ~12 ~15 ~13 minecraft:glass
+setblock ~13 ~15 ~13 minecraft:glass
 setblock ~19 ~15 ~13 minecraft:glass
 setblock ~19 ~15 ~14 minecraft:glass
 setblock ~19 ~15 ~15 minecraft:glass
 setblock ~19 ~15 ~16 minecraft:glass
-setblock ~8 ~15 ~17 minecraft:glass
-setblock ~9 ~15 ~17 minecraft:glass
 setblock ~10 ~15 ~17 minecraft:glass
 setblock ~11 ~15 ~17 minecraft:glass
 setblock ~12 ~15 ~17 minecraft:glass
 setblock ~13 ~15 ~17 minecraft:glass
 setblock ~19 ~15 ~17 minecraft:glass
-setblock ~8 ~15 ~18 minecraft:glass
+setblock ~10 ~15 ~18 minecraft:glass
 setblock ~19 ~15 ~18 minecraft:glass
-setblock ~8 ~15 ~19 minecraft:glass
+setblock ~10 ~15 ~19 minecraft:glass
 setblock ~19 ~15 ~19 minecraft:glass
-setblock ~8 ~15 ~20 minecraft:glass
+setblock ~10 ~15 ~20 minecraft:glass
 setblock ~19 ~15 ~20 minecraft:glass
-setblock ~8 ~15 ~21 minecraft:glass
+setblock ~10 ~15 ~21 minecraft:glass
 setblock ~12 ~15 ~21 minecraft:stone
 setblock ~19 ~15 ~21 minecraft:glass
-setblock ~8 ~15 ~22 minecraft:glass
 setblock ~10 ~15 ~22 minecraft:glass
 setblock ~11 ~15 ~22 minecraft:glass
 setblock ~13 ~15 ~22 minecraft:glass
@@ -1195,109 +1304,73 @@ setblock ~15 ~15 ~22 minecraft:glass
 setblock ~17 ~15 ~22 minecraft:stone
 setblock ~18 ~15 ~22 minecraft:glass
 setblock ~19 ~15 ~22 minecraft:glass
-setblock ~8 ~15 ~23 minecraft:glass
-setblock ~10 ~15 ~23 minecraft:glass
 setblock ~19 ~15 ~23 minecraft:glass
-setblock ~8 ~15 ~24 minecraft:glass
-setblock ~10 ~15 ~24 minecraft:glass
 setblock ~19 ~15 ~24 minecraft:glass
 setblock ~3 ~15 ~25 minecraft:glass
-setblock ~8 ~15 ~25 minecraft:glass
-setblock ~10 ~15 ~25 minecraft:glass
 setblock ~19 ~15 ~25 minecraft:glass
 setblock ~2 ~15 ~26 minecraft:glass
 setblock ~4 ~15 ~26 minecraft:glass
-setblock ~8 ~15 ~26 minecraft:glass
-setblock ~10 ~15 ~26 minecraft:glass
-setblock ~11 ~15 ~26 minecraft:glass
-setblock ~12 ~15 ~26 minecraft:glass
 setblock ~19 ~15 ~26 minecraft:glass
-setblock ~20 ~15 ~26 minecraft:glass
-setblock ~22 ~15 ~26 minecraft:glass
-setblock ~23 ~15 ~26 minecraft:glass
-setblock ~25 ~15 ~26 minecraft:glass
-setblock ~26 ~15 ~26 minecraft:glass
-setblock ~28 ~15 ~26 minecraft:glass
-setblock ~29 ~15 ~26 minecraft:glass
-setblock ~31 ~15 ~26 minecraft:glass
-setblock ~32 ~15 ~26 minecraft:glass
-setblock ~34 ~15 ~26 minecraft:glass
-setblock ~35 ~15 ~26 minecraft:glass
-setblock ~37 ~15 ~26 minecraft:glass
-setblock ~38 ~15 ~26 minecraft:glass
-setblock ~40 ~15 ~26 minecraft:glass
-setblock ~41 ~15 ~26 minecraft:glass
-setblock ~43 ~15 ~26 minecraft:glass
-setblock ~44 ~15 ~26 minecraft:glass
-setblock ~46 ~15 ~26 minecraft:glass
 setblock ~3 ~15 ~27 minecraft:glass
-setblock ~8 ~15 ~27 minecraft:glass
-setblock ~8 ~15 ~28 minecraft:glass
-setblock ~12 ~15 ~28 minecraft:stone
-setblock ~8 ~15 ~29 minecraft:glass
-setblock ~9 ~15 ~29 minecraft:glass
-setblock ~10 ~15 ~29 minecraft:glass
-setblock ~11 ~15 ~29 minecraft:glass
-setblock ~13 ~15 ~29 minecraft:glass
-setblock ~14 ~15 ~29 minecraft:glass
-setblock ~15 ~15 ~29 minecraft:glass
-setblock ~17 ~15 ~29 minecraft:stone
-setblock ~18 ~15 ~29 minecraft:glass
-setblock ~19 ~15 ~29 minecraft:glass
-setblock ~19 ~15 ~30 minecraft:glass
-setblock ~20 ~15 ~30 minecraft:glass
-setblock ~22 ~15 ~30 minecraft:glass
-setblock ~23 ~15 ~30 minecraft:glass
-setblock ~25 ~15 ~30 minecraft:glass
-setblock ~26 ~15 ~30 minecraft:glass
-setblock ~28 ~15 ~30 minecraft:glass
-setblock ~29 ~15 ~30 minecraft:glass
-setblock ~31 ~15 ~30 minecraft:glass
-setblock ~32 ~15 ~30 minecraft:glass
-setblock ~34 ~15 ~30 minecraft:glass
-setblock ~35 ~15 ~30 minecraft:glass
-setblock ~37 ~15 ~30 minecraft:glass
-setblock ~38 ~15 ~30 minecraft:glass
-setblock ~40 ~15 ~30 minecraft:glass
-setblock ~41 ~15 ~30 minecraft:glass
-setblock ~43 ~15 ~30 minecraft:glass
-setblock ~44 ~15 ~30 minecraft:glass
-setblock ~46 ~15 ~30 minecraft:glass
-setblock ~21 ~16 ~2 minecraft:stone
-setblock ~24 ~16 ~2 minecraft:stone
-setblock ~27 ~16 ~2 minecraft:stone
-setblock ~30 ~16 ~2 minecraft:stone
-setblock ~33 ~16 ~2 minecraft:stone
-setblock ~36 ~16 ~2 minecraft:stone
-setblock ~39 ~16 ~2 minecraft:stone
-setblock ~42 ~16 ~2 minecraft:stone
-setblock ~45 ~16 ~2 minecraft:stone
+setblock ~19 ~15 ~27 minecraft:glass
+setblock ~19 ~15 ~28 minecraft:glass
+setblock ~20 ~15 ~28 minecraft:glass
+setblock ~22 ~15 ~28 minecraft:glass
+setblock ~23 ~15 ~28 minecraft:glass
+setblock ~25 ~15 ~28 minecraft:glass
+setblock ~26 ~15 ~28 minecraft:glass
+setblock ~28 ~15 ~28 minecraft:glass
+setblock ~29 ~15 ~28 minecraft:glass
+setblock ~31 ~15 ~28 minecraft:glass
+setblock ~32 ~15 ~28 minecraft:glass
+setblock ~34 ~15 ~28 minecraft:glass
+setblock ~35 ~15 ~28 minecraft:glass
+setblock ~37 ~15 ~28 minecraft:glass
+setblock ~38 ~15 ~28 minecraft:glass
+setblock ~40 ~15 ~28 minecraft:glass
+setblock ~41 ~15 ~28 minecraft:glass
+setblock ~43 ~15 ~28 minecraft:glass
+setblock ~44 ~15 ~28 minecraft:glass
+setblock ~46 ~15 ~28 minecraft:glass
+setblock ~21 ~16 ~0 minecraft:stone
+setblock ~24 ~16 ~0 minecraft:stone
+setblock ~27 ~16 ~0 minecraft:stone
+setblock ~30 ~16 ~0 minecraft:stone
+setblock ~33 ~16 ~0 minecraft:stone
+setblock ~36 ~16 ~0 minecraft:stone
+setblock ~39 ~16 ~0 minecraft:stone
+setblock ~42 ~16 ~0 minecraft:stone
+setblock ~45 ~16 ~0 minecraft:stone
+setblock ~18 ~16 ~1 minecraft:stone
+setblock ~3 ~16 ~3 minecraft:glass
+setblock ~2 ~16 ~4 minecraft:glass
+setblock ~4 ~16 ~4 minecraft:glass
+setblock ~21 ~16 ~4 minecraft:stone
+setblock ~24 ~16 ~4 minecraft:stone
+setblock ~27 ~16 ~4 minecraft:stone
+setblock ~30 ~16 ~4 minecraft:stone
+setblock ~33 ~16 ~4 minecraft:stone
+setblock ~36 ~16 ~4 minecraft:stone
+setblock ~39 ~16 ~4 minecraft:stone
+setblock ~42 ~16 ~4 minecraft:stone
+setblock ~45 ~16 ~4 minecraft:stone
+setblock ~3 ~16 ~5 minecraft:glass
+setblock ~14 ~16 ~13 minecraft:glass
 setblock ~14 ~16 ~17 minecraft:glass
 setblock ~18 ~16 ~21 minecraft:stone
 setblock ~3 ~16 ~25 minecraft:glass
 setblock ~2 ~16 ~26 minecraft:glass
 setblock ~4 ~16 ~26 minecraft:glass
-setblock ~13 ~16 ~26 minecraft:glass
-setblock ~21 ~16 ~26 minecraft:stone
-setblock ~24 ~16 ~26 minecraft:stone
-setblock ~27 ~16 ~26 minecraft:stone
-setblock ~30 ~16 ~26 minecraft:stone
-setblock ~33 ~16 ~26 minecraft:stone
-setblock ~36 ~16 ~26 minecraft:stone
-setblock ~39 ~16 ~26 minecraft:stone
-setblock ~42 ~16 ~26 minecraft:stone
-setblock ~45 ~16 ~26 minecraft:stone
 setblock ~3 ~16 ~27 minecraft:glass
-setblock ~18 ~16 ~28 minecraft:stone
-setblock ~21 ~16 ~30 minecraft:stone
-setblock ~24 ~16 ~30 minecraft:stone
-setblock ~27 ~16 ~30 minecraft:stone
-setblock ~30 ~16 ~30 minecraft:stone
-setblock ~33 ~16 ~30 minecraft:stone
-setblock ~36 ~16 ~30 minecraft:stone
-setblock ~39 ~16 ~30 minecraft:stone
-setblock ~42 ~16 ~30 minecraft:stone
-setblock ~45 ~16 ~30 minecraft:stone
+setblock ~21 ~16 ~28 minecraft:stone
+setblock ~24 ~16 ~28 minecraft:stone
+setblock ~27 ~16 ~28 minecraft:stone
+setblock ~30 ~16 ~28 minecraft:stone
+setblock ~33 ~16 ~28 minecraft:stone
+setblock ~36 ~16 ~28 minecraft:stone
+setblock ~39 ~16 ~28 minecraft:stone
+setblock ~42 ~16 ~28 minecraft:stone
+setblock ~45 ~16 ~28 minecraft:stone
 setblock ~0 ~17 ~0 minecraft:polished_blackstone
 setblock ~1 ~17 ~0 minecraft:polished_deepslate
 setblock ~2 ~17 ~0 minecraft:polished_blackstone
@@ -1442,7 +1515,7 @@ setblock ~49 ~17 ~2 minecraft:polished_deepslate
 setblock ~0 ~17 ~3 minecraft:polished_deepslate
 setblock ~1 ~17 ~3 minecraft:polished_blackstone
 setblock ~2 ~17 ~3 minecraft:polished_deepslate
-setblock ~3 ~17 ~3 minecraft:polished_blackstone
+setblock ~3 ~17 ~3 minecraft:glass
 setblock ~4 ~17 ~3 minecraft:polished_deepslate
 setblock ~5 ~17 ~3 minecraft:polished_blackstone
 setblock ~6 ~17 ~3 minecraft:polished_deepslate
@@ -1482,9 +1555,7 @@ setblock ~48 ~17 ~3 minecraft:polished_deepslate
 setblock ~49 ~17 ~3 minecraft:polished_blackstone
 setblock ~0 ~17 ~4 minecraft:polished_blackstone
 setblock ~1 ~17 ~4 minecraft:polished_deepslate
-setblock ~2 ~17 ~4 minecraft:polished_blackstone
-setblock ~3 ~17 ~4 minecraft:polished_deepslate
-setblock ~4 ~17 ~4 minecraft:polished_blackstone
+setblock ~2 ~17 ~4 minecraft:glass
 setblock ~5 ~17 ~4 minecraft:polished_deepslate
 setblock ~6 ~17 ~4 minecraft:polished_blackstone
 setblock ~7 ~17 ~4 minecraft:polished_deepslate
@@ -1497,7 +1568,6 @@ setblock ~13 ~17 ~4 minecraft:polished_deepslate
 setblock ~14 ~17 ~4 minecraft:polished_blackstone
 setblock ~15 ~17 ~4 minecraft:polished_deepslate
 setblock ~16 ~17 ~4 minecraft:polished_blackstone
-setblock ~17 ~17 ~4 minecraft:polished_deepslate
 setblock ~18 ~17 ~4 minecraft:polished_blackstone
 setblock ~19 ~17 ~4 minecraft:polished_deepslate
 setblock ~20 ~17 ~4 minecraft:polished_blackstone
@@ -1533,7 +1603,7 @@ setblock ~49 ~17 ~4 minecraft:polished_deepslate
 setblock ~0 ~17 ~5 minecraft:polished_deepslate
 setblock ~1 ~17 ~5 minecraft:polished_blackstone
 setblock ~2 ~17 ~5 minecraft:polished_deepslate
-setblock ~3 ~17 ~5 minecraft:polished_blackstone
+setblock ~3 ~17 ~5 minecraft:glass
 setblock ~4 ~17 ~5 minecraft:polished_deepslate
 setblock ~5 ~17 ~5 minecraft:polished_blackstone
 setblock ~6 ~17 ~5 minecraft:polished_deepslate
@@ -1944,9 +2014,6 @@ setblock ~10 ~17 ~13 minecraft:polished_deepslate
 setblock ~11 ~17 ~13 minecraft:polished_blackstone
 setblock ~12 ~17 ~13 minecraft:polished_deepslate
 setblock ~13 ~17 ~13 minecraft:polished_blackstone
-setblock ~14 ~17 ~13 minecraft:polished_deepslate
-setblock ~15 ~17 ~13 minecraft:polished_blackstone
-setblock ~16 ~17 ~13 minecraft:polished_deepslate
 setblock ~17 ~17 ~13 minecraft:polished_blackstone
 setblock ~18 ~17 ~13 minecraft:polished_deepslate
 setblock ~19 ~17 ~13 minecraft:polished_blackstone
@@ -2588,6 +2655,9 @@ setblock ~9 ~17 ~26 minecraft:polished_deepslate
 setblock ~10 ~17 ~26 minecraft:polished_blackstone
 setblock ~11 ~17 ~26 minecraft:polished_deepslate
 setblock ~12 ~17 ~26 minecraft:polished_blackstone
+setblock ~13 ~17 ~26 minecraft:polished_deepslate
+setblock ~14 ~17 ~26 minecraft:polished_blackstone
+setblock ~15 ~17 ~26 minecraft:polished_deepslate
 setblock ~16 ~17 ~26 minecraft:polished_blackstone
 setblock ~18 ~17 ~26 minecraft:polished_blackstone
 setblock ~19 ~17 ~26 minecraft:polished_deepslate
@@ -2858,10 +2928,13 @@ setblock ~49 ~18 ~1 minecraft:deepslate_tiles
 setblock ~0 ~18 ~2 minecraft:deepslate_tiles
 setblock ~49 ~18 ~2 minecraft:deepslate_tiles
 setblock ~0 ~18 ~3 minecraft:deepslate_tiles
+setblock ~3 ~18 ~3 minecraft:glass
 setblock ~49 ~18 ~3 minecraft:deepslate_tiles
 setblock ~0 ~18 ~4 minecraft:deepslate_tiles
+setblock ~2 ~18 ~4 minecraft:glass
 setblock ~49 ~18 ~4 minecraft:deepslate_tiles
 setblock ~0 ~18 ~5 minecraft:deepslate_tiles
+setblock ~3 ~18 ~5 minecraft:glass
 setblock ~49 ~18 ~5 minecraft:deepslate_tiles
 setblock ~0 ~18 ~6 minecraft:deepslate_tiles
 setblock ~49 ~18 ~6 minecraft:deepslate_tiles
@@ -3019,10 +3092,18 @@ setblock ~49 ~19 ~1 minecraft:tinted_glass
 setblock ~0 ~19 ~2 minecraft:tinted_glass
 setblock ~49 ~19 ~2 minecraft:tinted_glass
 setblock ~0 ~19 ~3 minecraft:tinted_glass
+setblock ~2 ~19 ~3 minecraft:glass
+setblock ~3 ~19 ~3 minecraft:glass
+setblock ~4 ~19 ~3 minecraft:glass
 setblock ~49 ~19 ~3 minecraft:deepslate_tiles
 setblock ~0 ~19 ~4 minecraft:deepslate_tiles
+setblock ~1 ~19 ~4 minecraft:glass
+setblock ~5 ~19 ~4 minecraft:glass
 setblock ~49 ~19 ~4 minecraft:tinted_glass
 setblock ~0 ~19 ~5 minecraft:tinted_glass
+setblock ~2 ~19 ~5 minecraft:glass
+setblock ~3 ~19 ~5 minecraft:glass
+setblock ~4 ~19 ~5 minecraft:glass
 setblock ~49 ~19 ~5 minecraft:tinted_glass
 setblock ~0 ~19 ~6 minecraft:tinted_glass
 setblock ~49 ~19 ~6 minecraft:tinted_glass
@@ -4680,7 +4761,23 @@ setblock ~46 ~20 ~30 minecraft:deepslate_tiles
 setblock ~47 ~20 ~30 minecraft:deepslate_tiles
 setblock ~48 ~20 ~30 minecraft:deepslate_tiles
 setblock ~49 ~20 ~30 minecraft:deepslate_tiles
-setblock ~16 ~1 ~17 minecraft:chest[facing=west,type=single,waterlogged=false]{Items:[],CustomName:'"Used tokens (Hotbar button)"'}
+setblock ~4 ~1 ~4 minecraft:dropper[facing=west,triggered=false]{Items:[]}
+setblock ~5 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~6 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~7 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~8 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~9 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~10 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~11 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~12 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~13 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~14 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~15 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~16 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~17 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~18 ~1 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
+setblock ~16 ~1 ~13 minecraft:chest[facing=west,type=single,waterlogged=false]{Items:[],CustomName:'"Used tokens (Hotbar button)"'}
+setblock ~16 ~1 ~17 minecraft:chest[facing=west,type=single,waterlogged=false]{Items:[],CustomName:'"Used tokens (Inventory button)"'}
 setblock ~4 ~1 ~26 minecraft:dropper[facing=west,triggered=false]{Items:[]}
 setblock ~5 ~1 ~26 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
 setblock ~6 ~1 ~26 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
@@ -4726,7 +4823,8 @@ setblock ~44 ~2 ~11 minecraft:hopper[enabled=false,facing=east]{Items:[],Transfe
 setblock ~45 ~2 ~11 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
 setblock ~46 ~2 ~11 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
 setblock ~47 ~2 ~11 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
-setblock ~48 ~2 ~11 minecraft:chest[facing=west,type=single,waterlogged=false]{Items:[],CustomName:'"Used tokens (I2)"'}
+setblock ~48 ~2 ~11 minecraft:chest[facing=west,type=single,waterlogged=false]{Items:[],CustomName:'"Used tokens (H)"'}
+setblock ~16 ~2 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~2 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~18 ~2 ~19 minecraft:dropper[facing=east,triggered=false]{Items:[{Slot:0b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:1b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:2b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:3b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:4b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:5b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:6b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:7b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:8b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}}]}
 setblock ~19 ~2 ~19 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
@@ -4758,8 +4856,8 @@ setblock ~44 ~2 ~19 minecraft:hopper[enabled=false,facing=east]{Items:[],Transfe
 setblock ~45 ~2 ~19 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
 setblock ~46 ~2 ~19 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
 setblock ~47 ~2 ~19 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
-setblock ~48 ~2 ~19 minecraft:chest[facing=west,type=single,waterlogged=false]{Items:[],CustomName:'"Used tokens (H)"'}
-setblock ~18 ~3 ~4 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~48 ~2 ~19 minecraft:chest[facing=west,type=single,waterlogged=false]{Items:[],CustomName:'"Used tokens (I1)"'}
+setblock ~17 ~3 ~4 minecraft:dispenser[facing=east,triggered=false]{Items:[]}
 setblock ~19 ~3 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
 setblock ~20 ~3 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
 setblock ~21 ~3 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
@@ -4788,7 +4886,6 @@ setblock ~43 ~3 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferC
 setblock ~44 ~3 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
 setblock ~45 ~3 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
 setblock ~46 ~3 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~5 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~21 ~3 ~5 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~24 ~3 ~5 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~27 ~3 ~5 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
@@ -4798,7 +4895,6 @@ setblock ~36 ~3 ~5 minecraft:hopper[enabled=true,facing=north]{Items:[],Transfer
 setblock ~39 ~3 ~5 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~42 ~3 ~5 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~45 ~3 ~5 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~6 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~21 ~3 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[],TransferCooldown:0}
 setblock ~24 ~3 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[],TransferCooldown:0}
 setblock ~27 ~3 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[],TransferCooldown:0}
@@ -4808,25 +4904,8 @@ setblock ~36 ~3 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[],Transfe
 setblock ~39 ~3 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[],TransferCooldown:0}
 setblock ~42 ~3 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[],TransferCooldown:0}
 setblock ~45 ~3 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~7 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~8 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~9 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~10 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~11 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~12 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~13 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~14 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~15 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~16 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~16 ~3 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~3 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~17 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~18 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~19 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~20 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~21 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~22 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~23 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~24 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~21 ~3 ~24 minecraft:hopper[enabled=false,facing=south]{Items:[],TransferCooldown:0}
 setblock ~24 ~3 ~24 minecraft:hopper[enabled=false,facing=south]{Items:[],TransferCooldown:0}
 setblock ~27 ~3 ~24 minecraft:hopper[enabled=false,facing=south]{Items:[],TransferCooldown:0}
@@ -4836,8 +4915,6 @@ setblock ~36 ~3 ~24 minecraft:hopper[enabled=false,facing=south]{Items:[],Transf
 setblock ~39 ~3 ~24 minecraft:hopper[enabled=false,facing=south]{Items:[],TransferCooldown:0}
 setblock ~42 ~3 ~24 minecraft:hopper[enabled=false,facing=south]{Items:[],TransferCooldown:0}
 setblock ~45 ~3 ~24 minecraft:hopper[enabled=false,facing=south]{Items:[],TransferCooldown:0}
-setblock ~18 ~3 ~25 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
-setblock ~19 ~3 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~21 ~3 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~24 ~3 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~27 ~3 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
@@ -4847,8 +4924,6 @@ setblock ~36 ~3 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],Transfe
 setblock ~39 ~3 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~42 ~3 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~45 ~3 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~14 ~3 ~26 minecraft:chest[facing=east,type=single,waterlogged=false]{Items:[],CustomName:'"Used tokens (Inventory button)"'}
-setblock ~15 ~3 ~26 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
 setblock ~17 ~3 ~26 minecraft:dispenser[facing=east,triggered=false]{Items:[]}
 setblock ~19 ~3 ~26 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
 setblock ~20 ~3 ~26 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
@@ -4878,30 +4953,53 @@ setblock ~43 ~3 ~26 minecraft:hopper[enabled=true,facing=west]{Items:[],Transfer
 setblock ~44 ~3 ~26 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
 setblock ~45 ~3 ~26 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
 setblock ~46 ~3 ~26 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
-setblock ~19 ~4 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
-setblock ~21 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:ender_pearl",count:16}}
-setblock ~24 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~27 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~30 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
+setblock ~17 ~4 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~5 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~6 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~21 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:netherite_sword",count:1}}
+setblock ~24 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:end_crystal",count:64}}
+setblock ~27 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:obsidian",count:64}}
+setblock ~30 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:ender_pearl",count:16}}
 setblock ~33 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~36 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~39 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~42 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~45 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:experience_bottle",count:64}}
+setblock ~36 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:glowstone",count:64}}
+setblock ~39 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:respawn_anchor",count:64}}
+setblock ~42 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:golden_apple",count:64}}
+setblock ~45 ~4 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:netherite_pickaxe",count:1}}
+setblock ~19 ~4 ~7 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~8 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~9 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~10 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~11 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~12 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~16 ~4 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~13 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~14 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~15 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~16 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~16 ~4 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
-setblock ~21 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:netherite_sword",count:1}}
-setblock ~24 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:end_crystal",count:64}}
-setblock ~27 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:obsidian",count:64}}
-setblock ~30 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:ender_pearl",count:16}}
+setblock ~19 ~4 ~17 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~18 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~19 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~20 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~21 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~22 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~23 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~4 ~24 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~21 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:ender_pearl",count:16}}
+setblock ~24 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
+setblock ~27 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
+setblock ~30 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
 setblock ~33 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~36 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:glowstone",count:64}}
-setblock ~39 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:respawn_anchor",count:64}}
-setblock ~42 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:golden_apple",count:64}}
-setblock ~45 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:netherite_pickaxe",count:1}}
-setblock ~15 ~4 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~36 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
+setblock ~39 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
+setblock ~42 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
+setblock ~45 ~4 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:experience_bottle",count:64}}
+setblock ~19 ~4 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~17 ~4 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~19 ~4 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
-setblock ~19 ~5 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~17 ~5 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~19 ~5 ~4 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~19 ~5 ~5 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~5 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~24 ~5 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~27 ~5 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -4911,6 +5009,7 @@ setblock ~36 ~5 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferC
 setblock ~39 ~5 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~5 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~5 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~16 ~5 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~5 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~5 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~24 ~5 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -4921,7 +5020,6 @@ setblock ~36 ~5 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~39 ~5 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~5 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~5 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
-setblock ~15 ~5 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~17 ~5 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~19 ~5 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~6 ~1 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
@@ -4951,6 +5049,7 @@ setblock ~36 ~6 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],Transfer
 setblock ~39 ~6 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~42 ~6 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~45 ~6 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~17 ~6 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~19 ~6 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~6 ~4 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~24 ~6 ~4 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
@@ -4979,6 +5078,7 @@ setblock ~36 ~6 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferC
 setblock ~39 ~6 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~6 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~6 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~16 ~6 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~6 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~6 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~24 ~6 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -4998,7 +5098,6 @@ setblock ~36 ~6 ~25 minecraft:hopper[enabled=true,facing=north]{Items:[],Transfe
 setblock ~39 ~6 ~25 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~42 ~6 ~25 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~45 ~6 ~25 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
-setblock ~15 ~6 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~17 ~6 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~19 ~6 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~6 ~26 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
@@ -5046,9 +5145,10 @@ setblock ~36 ~7 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferC
 setblock ~39 ~7 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~7 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~7 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~17 ~7 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~19 ~7 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~16 ~7 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~7 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
-setblock ~15 ~7 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~17 ~7 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~19 ~7 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~7 ~29 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -5069,6 +5169,7 @@ setblock ~36 ~8 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferC
 setblock ~39 ~8 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~8 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~8 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~17 ~8 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~19 ~8 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~18 ~8 ~11 minecraft:dropper[facing=east,triggered=false]{Items:[{Slot:0b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:1b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:2b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:3b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:4b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:5b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:6b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:7b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:8b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}}]}
 setblock ~19 ~8 ~11 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
@@ -5101,6 +5202,7 @@ setblock ~45 ~8 ~11 minecraft:hopper[enabled=true,facing=east]{Items:[],Transfer
 setblock ~46 ~8 ~11 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
 setblock ~47 ~8 ~11 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
 setblock ~48 ~8 ~11 minecraft:chest[facing=west,type=single,waterlogged=false]{Items:[],CustomName:'"Used tokens (I3)"'}
+setblock ~16 ~8 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~8 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~18 ~8 ~19 minecraft:dropper[facing=east,triggered=false]{Items:[{Slot:0b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:1b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:2b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:3b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:4b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:5b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:6b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:7b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:8b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}}]}
 setblock ~19 ~8 ~19 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
@@ -5132,8 +5234,7 @@ setblock ~44 ~8 ~19 minecraft:hopper[enabled=false,facing=east]{Items:[],Transfe
 setblock ~45 ~8 ~19 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
 setblock ~46 ~8 ~19 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
 setblock ~47 ~8 ~19 minecraft:hopper[enabled=true,facing=east]{Items:[],TransferCooldown:0}
-setblock ~48 ~8 ~19 minecraft:chest[facing=west,type=single,waterlogged=false]{Items:[],CustomName:'"Used tokens (I1)"'}
-setblock ~15 ~8 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~48 ~8 ~19 minecraft:chest[facing=west,type=single,waterlogged=false]{Items:[],CustomName:'"Used tokens (I2)"'}
 setblock ~17 ~8 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~19 ~8 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~8 ~29 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -5154,6 +5255,7 @@ setblock ~36 ~9 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferC
 setblock ~39 ~9 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~9 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~9 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~17 ~9 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~19 ~9 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~20 ~9 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
 setblock ~21 ~9 ~4 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
@@ -5200,6 +5302,7 @@ setblock ~36 ~9 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[],Transfe
 setblock ~39 ~9 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[],TransferCooldown:0}
 setblock ~42 ~9 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[],TransferCooldown:0}
 setblock ~45 ~9 ~6 minecraft:hopper[enabled=false,facing=north]{Items:[],TransferCooldown:0}
+setblock ~16 ~9 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~9 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~9 ~24 minecraft:hopper[enabled=false,facing=south]{Items:[],TransferCooldown:0}
 setblock ~24 ~9 ~24 minecraft:hopper[enabled=false,facing=south]{Items:[],TransferCooldown:0}
@@ -5219,7 +5322,6 @@ setblock ~36 ~9 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],Transfe
 setblock ~39 ~9 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~42 ~9 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~45 ~9 ~25 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
-setblock ~15 ~9 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~17 ~9 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~19 ~9 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~20 ~9 ~26 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
@@ -5267,6 +5369,7 @@ setblock ~36 ~10 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~39 ~10 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~10 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~10 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~17 ~10 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~10 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:ender_pearl",count:16}}
 setblock ~24 ~10 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:end_crystal",count:64}}
 setblock ~27 ~10 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:obsidian",count:64}}
@@ -5276,6 +5379,7 @@ setblock ~36 ~10 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogg
 setblock ~39 ~10 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
 setblock ~42 ~10 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
 setblock ~45 ~10 ~6 minecraft:decorated_pot[cracked=false,facing=south,waterlogged=false]{item:{id:"minecraft:experience_bottle",count:64}}
+setblock ~16 ~10 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~10 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~10 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:ender_pearl",count:16}}
 setblock ~24 ~10 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
@@ -5286,7 +5390,6 @@ setblock ~36 ~10 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlog
 setblock ~39 ~10 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
 setblock ~42 ~10 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
 setblock ~45 ~10 ~24 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:experience_bottle",count:64}}
-setblock ~15 ~10 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~17 ~10 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~10 ~29 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~24 ~10 ~29 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -5306,6 +5409,7 @@ setblock ~36 ~11 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~39 ~11 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~11 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~11 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~17 ~11 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~11 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~24 ~11 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~27 ~11 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -5315,6 +5419,7 @@ setblock ~36 ~11 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~39 ~11 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~11 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~11 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~16 ~11 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~11 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~11 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~24 ~11 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -5325,7 +5430,6 @@ setblock ~36 ~11 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfe
 setblock ~39 ~11 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~11 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~11 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
-setblock ~15 ~11 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~17 ~11 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~11 ~29 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~24 ~11 ~29 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -5354,6 +5458,7 @@ setblock ~36 ~12 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],Transfe
 setblock ~39 ~12 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~42 ~12 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~45 ~12 ~3 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
+setblock ~17 ~12 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~12 ~4 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~24 ~12 ~4 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~27 ~12 ~4 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
@@ -5381,6 +5486,7 @@ setblock ~36 ~12 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],Transfer
 setblock ~39 ~12 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~12 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~12 ~6 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~16 ~12 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~12 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~12 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~24 ~12 ~24 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
@@ -5400,7 +5506,6 @@ setblock ~36 ~12 ~25 minecraft:hopper[enabled=true,facing=north]{Items:[],Transf
 setblock ~39 ~12 ~25 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~42 ~12 ~25 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~45 ~12 ~25 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
-setblock ~15 ~12 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~17 ~12 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~12 ~26 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~24 ~12 ~26 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
@@ -5447,8 +5552,9 @@ setblock ~36 ~13 ~3 minecraft:white_shulker_box[facing=up]{Items:[]}
 setblock ~39 ~13 ~3 minecraft:white_shulker_box[facing=up]{Items:[]}
 setblock ~42 ~13 ~3 minecraft:white_shulker_box[facing=up]{Items:[]}
 setblock ~45 ~13 ~3 minecraft:white_shulker_box[facing=up]{Items:[]}
+setblock ~17 ~13 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~16 ~13 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~13 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
-setblock ~15 ~13 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~17 ~13 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~13 ~27 minecraft:white_shulker_box[facing=up]{Items:[]}
 setblock ~24 ~13 ~27 minecraft:white_shulker_box[facing=up]{Items:[]}
@@ -5486,8 +5592,9 @@ setblock ~36 ~14 ~3 minecraft:hopper[enabled=false,facing=down]{Items:[],Transfe
 setblock ~39 ~14 ~3 minecraft:hopper[enabled=false,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~14 ~3 minecraft:hopper[enabled=false,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~14 ~3 minecraft:hopper[enabled=false,facing=down]{Items:[],TransferCooldown:0}
+setblock ~17 ~14 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~16 ~14 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~14 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
-setblock ~15 ~14 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~17 ~14 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~14 ~27 minecraft:hopper[enabled=false,facing=down]{Items:[],TransferCooldown:0}
 setblock ~24 ~14 ~27 minecraft:hopper[enabled=false,facing=down]{Items:[],TransferCooldown:0}
@@ -5507,15 +5614,17 @@ setblock ~36 ~14 ~29 minecraft:hopper[enabled=false,facing=down]{Items:[],Transf
 setblock ~39 ~14 ~29 minecraft:hopper[enabled=false,facing=down]{Items:[],TransferCooldown:0}
 setblock ~42 ~14 ~29 minecraft:hopper[enabled=false,facing=down]{Items:[],TransferCooldown:0}
 setblock ~45 ~14 ~29 minecraft:hopper[enabled=false,facing=down]{Items:[],TransferCooldown:0}
-setblock ~21 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:ender_pearl",count:16}}
-setblock ~24 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~27 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~30 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
+setblock ~16 ~15 ~1 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:0b,id:"minecraft:cobblestone",count:64},{Slot:1b,id:"minecraft:cobblestone",count:40}],TransferCooldown:0}
+setblock ~21 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:netherite_sword",count:1}}
+setblock ~24 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:end_crystal",count:64}}
+setblock ~27 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:obsidian",count:64}}
+setblock ~30 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:ender_pearl",count:16}}
 setblock ~33 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~36 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~39 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~42 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~45 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:experience_bottle",count:64}}
+setblock ~36 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:glowstone",count:64}}
+setblock ~39 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:respawn_anchor",count:64}}
+setblock ~42 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:golden_apple",count:64}}
+setblock ~45 ~15 ~1 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:netherite_pickaxe",count:1}}
+setblock ~16 ~15 ~2 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
 setblock ~21 ~15 ~3 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:ender_pearl",count:16}}
 setblock ~24 ~15 ~3 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:end_crystal",count:64}}
 setblock ~27 ~15 ~3 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:obsidian",count:64}}
@@ -5525,10 +5634,11 @@ setblock ~36 ~15 ~3 minecraft:decorated_pot[cracked=false,facing=north,waterlogg
 setblock ~39 ~15 ~3 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
 setblock ~42 ~15 ~3 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
 setblock ~45 ~15 ~3 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:experience_bottle",count:64}}
+setblock ~17 ~15 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~16 ~15 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~15 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~15 ~21 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:0b,id:"minecraft:cobblestone",count:64},{Slot:1b,id:"minecraft:cobblestone",count:40}],TransferCooldown:0}
 setblock ~16 ~15 ~22 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
-setblock ~15 ~15 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~17 ~15 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~15 ~27 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:ender_pearl",count:16}}
 setblock ~24 ~15 ~27 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
@@ -5539,17 +5649,15 @@ setblock ~36 ~15 ~27 minecraft:decorated_pot[cracked=false,facing=north,waterlog
 setblock ~39 ~15 ~27 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
 setblock ~42 ~15 ~27 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
 setblock ~45 ~15 ~27 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:experience_bottle",count:64}}
-setblock ~16 ~15 ~28 minecraft:hopper[enabled=false,facing=south]{Items:[{Slot:0b,id:"minecraft:cobblestone",count:64},{Slot:1b,id:"minecraft:cobblestone",count:40}],TransferCooldown:0}
-setblock ~16 ~15 ~29 minecraft:hopper[enabled=true,facing=north]{Items:[],TransferCooldown:0}
-setblock ~21 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:netherite_sword",count:1}}
-setblock ~24 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:end_crystal",count:64}}
-setblock ~27 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:obsidian",count:64}}
-setblock ~30 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:ender_pearl",count:16}}
+setblock ~21 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:ender_pearl",count:16}}
+setblock ~24 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
+setblock ~27 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
+setblock ~30 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
 setblock ~33 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
-setblock ~36 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:glowstone",count:64}}
-setblock ~39 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:respawn_anchor",count:64}}
-setblock ~42 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:golden_apple",count:64}}
-setblock ~45 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:netherite_pickaxe",count:1}}
+setblock ~36 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
+setblock ~39 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
+setblock ~42 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:totem_of_undying",count:1}}
+setblock ~45 ~15 ~29 minecraft:decorated_pot[cracked=false,facing=north,waterlogged=false]{item:{id:"minecraft:experience_bottle",count:64}}
 setblock ~21 ~16 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
 setblock ~24 ~16 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
 setblock ~27 ~16 ~1 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
@@ -5568,8 +5676,9 @@ setblock ~36 ~16 ~3 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,i
 setblock ~39 ~16 ~3 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
 setblock ~42 ~16 ~3 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
 setblock ~45 ~16 ~3 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
+setblock ~17 ~16 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~16 ~16 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~16 ~16 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
-setblock ~15 ~16 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~17 ~16 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~21 ~16 ~27 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
 setblock ~24 ~16 ~27 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
@@ -5589,15 +5698,15 @@ setblock ~36 ~16 ~29 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,
 setblock ~39 ~16 ~29 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
 setblock ~42 ~16 ~29 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
 setblock ~45 ~16 ~29 minecraft:hopper[enabled=true,facing=down]{Items:[{Slot:1b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:2b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:3b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}},{Slot:4b,id:"minecraft:black_shulker_box",count:1,components:{"minecraft:custom_name":'"Blocker"'}}],TransferCooldown:0}
-setblock ~21 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:ender_pearl",count:16},{Slot:1b,id:"minecraft:ender_pearl",count:16},{Slot:2b,id:"minecraft:ender_pearl",count:16},{Slot:3b,id:"minecraft:ender_pearl",count:16},{Slot:4b,id:"minecraft:ender_pearl",count:16},{Slot:5b,id:"minecraft:ender_pearl",count:16},{Slot:6b,id:"minecraft:ender_pearl",count:16},{Slot:7b,id:"minecraft:ender_pearl",count:16},{Slot:8b,id:"minecraft:ender_pearl",count:16},{Slot:9b,id:"minecraft:ender_pearl",count:16},{Slot:10b,id:"minecraft:ender_pearl",count:16},{Slot:11b,id:"minecraft:ender_pearl",count:16},{Slot:12b,id:"minecraft:ender_pearl",count:16},{Slot:13b,id:"minecraft:ender_pearl",count:16},{Slot:14b,id:"minecraft:ender_pearl",count:16},{Slot:15b,id:"minecraft:ender_pearl",count:16},{Slot:16b,id:"minecraft:ender_pearl",count:16},{Slot:17b,id:"minecraft:ender_pearl",count:16},{Slot:18b,id:"minecraft:ender_pearl",count:16},{Slot:19b,id:"minecraft:ender_pearl",count:16},{Slot:20b,id:"minecraft:ender_pearl",count:16},{Slot:21b,id:"minecraft:ender_pearl",count:16},{Slot:22b,id:"minecraft:ender_pearl",count:16},{Slot:23b,id:"minecraft:ender_pearl",count:16},{Slot:24b,id:"minecraft:ender_pearl",count:16},{Slot:25b,id:"minecraft:ender_pearl",count:16},{Slot:26b,id:"minecraft:ender_pearl",count:16}],CustomName:'"Inventory slot 10"'}
-setblock ~24 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 11"'}
-setblock ~27 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 12"'}
-setblock ~30 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 13"'}
-setblock ~33 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 14"'}
-setblock ~36 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 15"'}
-setblock ~39 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 16"'}
-setblock ~42 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 17"'}
-setblock ~45 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:experience_bottle",count:64},{Slot:1b,id:"minecraft:experience_bottle",count:64},{Slot:2b,id:"minecraft:experience_bottle",count:64},{Slot:3b,id:"minecraft:experience_bottle",count:64},{Slot:4b,id:"minecraft:experience_bottle",count:64},{Slot:5b,id:"minecraft:experience_bottle",count:64},{Slot:6b,id:"minecraft:experience_bottle",count:64},{Slot:7b,id:"minecraft:experience_bottle",count:64},{Slot:8b,id:"minecraft:experience_bottle",count:64},{Slot:9b,id:"minecraft:experience_bottle",count:64},{Slot:10b,id:"minecraft:experience_bottle",count:64},{Slot:11b,id:"minecraft:experience_bottle",count:64},{Slot:12b,id:"minecraft:experience_bottle",count:64},{Slot:13b,id:"minecraft:experience_bottle",count:64},{Slot:14b,id:"minecraft:experience_bottle",count:64},{Slot:15b,id:"minecraft:experience_bottle",count:64},{Slot:16b,id:"minecraft:experience_bottle",count:64},{Slot:17b,id:"minecraft:experience_bottle",count:64},{Slot:18b,id:"minecraft:experience_bottle",count:64},{Slot:19b,id:"minecraft:experience_bottle",count:64},{Slot:20b,id:"minecraft:experience_bottle",count:64},{Slot:21b,id:"minecraft:experience_bottle",count:64},{Slot:22b,id:"minecraft:experience_bottle",count:64},{Slot:23b,id:"minecraft:experience_bottle",count:64},{Slot:24b,id:"minecraft:experience_bottle",count:64},{Slot:25b,id:"minecraft:experience_bottle",count:64},{Slot:26b,id:"minecraft:experience_bottle",count:64}],CustomName:'"Inventory slot 18"'}
+setblock ~21 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:netherite_sword",count:1},{Slot:1b,id:"minecraft:netherite_sword",count:1},{Slot:2b,id:"minecraft:netherite_sword",count:1},{Slot:3b,id:"minecraft:netherite_sword",count:1},{Slot:4b,id:"minecraft:netherite_sword",count:1},{Slot:5b,id:"minecraft:netherite_sword",count:1},{Slot:6b,id:"minecraft:netherite_sword",count:1},{Slot:7b,id:"minecraft:netherite_sword",count:1},{Slot:8b,id:"minecraft:netherite_sword",count:1},{Slot:9b,id:"minecraft:netherite_sword",count:1},{Slot:10b,id:"minecraft:netherite_sword",count:1},{Slot:11b,id:"minecraft:netherite_sword",count:1},{Slot:12b,id:"minecraft:netherite_sword",count:1},{Slot:13b,id:"minecraft:netherite_sword",count:1},{Slot:14b,id:"minecraft:netherite_sword",count:1},{Slot:15b,id:"minecraft:netherite_sword",count:1},{Slot:16b,id:"minecraft:netherite_sword",count:1},{Slot:17b,id:"minecraft:netherite_sword",count:1},{Slot:18b,id:"minecraft:netherite_sword",count:1},{Slot:19b,id:"minecraft:netherite_sword",count:1},{Slot:20b,id:"minecraft:netherite_sword",count:1},{Slot:21b,id:"minecraft:netherite_sword",count:1},{Slot:22b,id:"minecraft:netherite_sword",count:1},{Slot:23b,id:"minecraft:netherite_sword",count:1},{Slot:24b,id:"minecraft:netherite_sword",count:1},{Slot:25b,id:"minecraft:netherite_sword",count:1},{Slot:26b,id:"minecraft:netherite_sword",count:1}],CustomName:'"Hotbar slot 1"'}
+setblock ~24 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:end_crystal",count:64},{Slot:1b,id:"minecraft:end_crystal",count:64},{Slot:2b,id:"minecraft:end_crystal",count:64},{Slot:3b,id:"minecraft:end_crystal",count:64},{Slot:4b,id:"minecraft:end_crystal",count:64},{Slot:5b,id:"minecraft:end_crystal",count:64},{Slot:6b,id:"minecraft:end_crystal",count:64},{Slot:7b,id:"minecraft:end_crystal",count:64},{Slot:8b,id:"minecraft:end_crystal",count:64},{Slot:9b,id:"minecraft:end_crystal",count:64},{Slot:10b,id:"minecraft:end_crystal",count:64},{Slot:11b,id:"minecraft:end_crystal",count:64},{Slot:12b,id:"minecraft:end_crystal",count:64},{Slot:13b,id:"minecraft:end_crystal",count:64},{Slot:14b,id:"minecraft:end_crystal",count:64},{Slot:15b,id:"minecraft:end_crystal",count:64},{Slot:16b,id:"minecraft:end_crystal",count:64},{Slot:17b,id:"minecraft:end_crystal",count:64},{Slot:18b,id:"minecraft:end_crystal",count:64},{Slot:19b,id:"minecraft:end_crystal",count:64},{Slot:20b,id:"minecraft:end_crystal",count:64},{Slot:21b,id:"minecraft:end_crystal",count:64},{Slot:22b,id:"minecraft:end_crystal",count:64},{Slot:23b,id:"minecraft:end_crystal",count:64},{Slot:24b,id:"minecraft:end_crystal",count:64},{Slot:25b,id:"minecraft:end_crystal",count:64},{Slot:26b,id:"minecraft:end_crystal",count:64}],CustomName:'"Hotbar slot 2"'}
+setblock ~27 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:obsidian",count:64},{Slot:1b,id:"minecraft:obsidian",count:64},{Slot:2b,id:"minecraft:obsidian",count:64},{Slot:3b,id:"minecraft:obsidian",count:64},{Slot:4b,id:"minecraft:obsidian",count:64},{Slot:5b,id:"minecraft:obsidian",count:64},{Slot:6b,id:"minecraft:obsidian",count:64},{Slot:7b,id:"minecraft:obsidian",count:64},{Slot:8b,id:"minecraft:obsidian",count:64},{Slot:9b,id:"minecraft:obsidian",count:64},{Slot:10b,id:"minecraft:obsidian",count:64},{Slot:11b,id:"minecraft:obsidian",count:64},{Slot:12b,id:"minecraft:obsidian",count:64},{Slot:13b,id:"minecraft:obsidian",count:64},{Slot:14b,id:"minecraft:obsidian",count:64},{Slot:15b,id:"minecraft:obsidian",count:64},{Slot:16b,id:"minecraft:obsidian",count:64},{Slot:17b,id:"minecraft:obsidian",count:64},{Slot:18b,id:"minecraft:obsidian",count:64},{Slot:19b,id:"minecraft:obsidian",count:64},{Slot:20b,id:"minecraft:obsidian",count:64},{Slot:21b,id:"minecraft:obsidian",count:64},{Slot:22b,id:"minecraft:obsidian",count:64},{Slot:23b,id:"minecraft:obsidian",count:64},{Slot:24b,id:"minecraft:obsidian",count:64},{Slot:25b,id:"minecraft:obsidian",count:64},{Slot:26b,id:"minecraft:obsidian",count:64}],CustomName:'"Hotbar slot 3"'}
+setblock ~30 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:ender_pearl",count:16},{Slot:1b,id:"minecraft:ender_pearl",count:16},{Slot:2b,id:"minecraft:ender_pearl",count:16},{Slot:3b,id:"minecraft:ender_pearl",count:16},{Slot:4b,id:"minecraft:ender_pearl",count:16},{Slot:5b,id:"minecraft:ender_pearl",count:16},{Slot:6b,id:"minecraft:ender_pearl",count:16},{Slot:7b,id:"minecraft:ender_pearl",count:16},{Slot:8b,id:"minecraft:ender_pearl",count:16},{Slot:9b,id:"minecraft:ender_pearl",count:16},{Slot:10b,id:"minecraft:ender_pearl",count:16},{Slot:11b,id:"minecraft:ender_pearl",count:16},{Slot:12b,id:"minecraft:ender_pearl",count:16},{Slot:13b,id:"minecraft:ender_pearl",count:16},{Slot:14b,id:"minecraft:ender_pearl",count:16},{Slot:15b,id:"minecraft:ender_pearl",count:16},{Slot:16b,id:"minecraft:ender_pearl",count:16},{Slot:17b,id:"minecraft:ender_pearl",count:16},{Slot:18b,id:"minecraft:ender_pearl",count:16},{Slot:19b,id:"minecraft:ender_pearl",count:16},{Slot:20b,id:"minecraft:ender_pearl",count:16},{Slot:21b,id:"minecraft:ender_pearl",count:16},{Slot:22b,id:"minecraft:ender_pearl",count:16},{Slot:23b,id:"minecraft:ender_pearl",count:16},{Slot:24b,id:"minecraft:ender_pearl",count:16},{Slot:25b,id:"minecraft:ender_pearl",count:16},{Slot:26b,id:"minecraft:ender_pearl",count:16}],CustomName:'"Hotbar slot 4"'}
+setblock ~33 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Hotbar slot 5"'}
+setblock ~36 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:glowstone",count:64},{Slot:1b,id:"minecraft:glowstone",count:64},{Slot:2b,id:"minecraft:glowstone",count:64},{Slot:3b,id:"minecraft:glowstone",count:64},{Slot:4b,id:"minecraft:glowstone",count:64},{Slot:5b,id:"minecraft:glowstone",count:64},{Slot:6b,id:"minecraft:glowstone",count:64},{Slot:7b,id:"minecraft:glowstone",count:64},{Slot:8b,id:"minecraft:glowstone",count:64},{Slot:9b,id:"minecraft:glowstone",count:64},{Slot:10b,id:"minecraft:glowstone",count:64},{Slot:11b,id:"minecraft:glowstone",count:64},{Slot:12b,id:"minecraft:glowstone",count:64},{Slot:13b,id:"minecraft:glowstone",count:64},{Slot:14b,id:"minecraft:glowstone",count:64},{Slot:15b,id:"minecraft:glowstone",count:64},{Slot:16b,id:"minecraft:glowstone",count:64},{Slot:17b,id:"minecraft:glowstone",count:64},{Slot:18b,id:"minecraft:glowstone",count:64},{Slot:19b,id:"minecraft:glowstone",count:64},{Slot:20b,id:"minecraft:glowstone",count:64},{Slot:21b,id:"minecraft:glowstone",count:64},{Slot:22b,id:"minecraft:glowstone",count:64},{Slot:23b,id:"minecraft:glowstone",count:64},{Slot:24b,id:"minecraft:glowstone",count:64},{Slot:25b,id:"minecraft:glowstone",count:64},{Slot:26b,id:"minecraft:glowstone",count:64}],CustomName:'"Hotbar slot 6"'}
+setblock ~39 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:respawn_anchor",count:64},{Slot:1b,id:"minecraft:respawn_anchor",count:64},{Slot:2b,id:"minecraft:respawn_anchor",count:64},{Slot:3b,id:"minecraft:respawn_anchor",count:64},{Slot:4b,id:"minecraft:respawn_anchor",count:64},{Slot:5b,id:"minecraft:respawn_anchor",count:64},{Slot:6b,id:"minecraft:respawn_anchor",count:64},{Slot:7b,id:"minecraft:respawn_anchor",count:64},{Slot:8b,id:"minecraft:respawn_anchor",count:64},{Slot:9b,id:"minecraft:respawn_anchor",count:64},{Slot:10b,id:"minecraft:respawn_anchor",count:64},{Slot:11b,id:"minecraft:respawn_anchor",count:64},{Slot:12b,id:"minecraft:respawn_anchor",count:64},{Slot:13b,id:"minecraft:respawn_anchor",count:64},{Slot:14b,id:"minecraft:respawn_anchor",count:64},{Slot:15b,id:"minecraft:respawn_anchor",count:64},{Slot:16b,id:"minecraft:respawn_anchor",count:64},{Slot:17b,id:"minecraft:respawn_anchor",count:64},{Slot:18b,id:"minecraft:respawn_anchor",count:64},{Slot:19b,id:"minecraft:respawn_anchor",count:64},{Slot:20b,id:"minecraft:respawn_anchor",count:64},{Slot:21b,id:"minecraft:respawn_anchor",count:64},{Slot:22b,id:"minecraft:respawn_anchor",count:64},{Slot:23b,id:"minecraft:respawn_anchor",count:64},{Slot:24b,id:"minecraft:respawn_anchor",count:64},{Slot:25b,id:"minecraft:respawn_anchor",count:64},{Slot:26b,id:"minecraft:respawn_anchor",count:64}],CustomName:'"Hotbar slot 7"'}
+setblock ~42 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:golden_apple",count:64},{Slot:1b,id:"minecraft:golden_apple",count:64},{Slot:2b,id:"minecraft:golden_apple",count:64},{Slot:3b,id:"minecraft:golden_apple",count:64},{Slot:4b,id:"minecraft:golden_apple",count:64},{Slot:5b,id:"minecraft:golden_apple",count:64},{Slot:6b,id:"minecraft:golden_apple",count:64},{Slot:7b,id:"minecraft:golden_apple",count:64},{Slot:8b,id:"minecraft:golden_apple",count:64},{Slot:9b,id:"minecraft:golden_apple",count:64},{Slot:10b,id:"minecraft:golden_apple",count:64},{Slot:11b,id:"minecraft:golden_apple",count:64},{Slot:12b,id:"minecraft:golden_apple",count:64},{Slot:13b,id:"minecraft:golden_apple",count:64},{Slot:14b,id:"minecraft:golden_apple",count:64},{Slot:15b,id:"minecraft:golden_apple",count:64},{Slot:16b,id:"minecraft:golden_apple",count:64},{Slot:17b,id:"minecraft:golden_apple",count:64},{Slot:18b,id:"minecraft:golden_apple",count:64},{Slot:19b,id:"minecraft:golden_apple",count:64},{Slot:20b,id:"minecraft:golden_apple",count:64},{Slot:21b,id:"minecraft:golden_apple",count:64},{Slot:22b,id:"minecraft:golden_apple",count:64},{Slot:23b,id:"minecraft:golden_apple",count:64},{Slot:24b,id:"minecraft:golden_apple",count:64},{Slot:25b,id:"minecraft:golden_apple",count:64},{Slot:26b,id:"minecraft:golden_apple",count:64}],CustomName:'"Hotbar slot 8"'}
+setblock ~45 ~17 ~1 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:netherite_pickaxe",count:1},{Slot:1b,id:"minecraft:netherite_pickaxe",count:1},{Slot:2b,id:"minecraft:netherite_pickaxe",count:1},{Slot:3b,id:"minecraft:netherite_pickaxe",count:1},{Slot:4b,id:"minecraft:netherite_pickaxe",count:1},{Slot:5b,id:"minecraft:netherite_pickaxe",count:1},{Slot:6b,id:"minecraft:netherite_pickaxe",count:1},{Slot:7b,id:"minecraft:netherite_pickaxe",count:1},{Slot:8b,id:"minecraft:netherite_pickaxe",count:1},{Slot:9b,id:"minecraft:netherite_pickaxe",count:1},{Slot:10b,id:"minecraft:netherite_pickaxe",count:1},{Slot:11b,id:"minecraft:netherite_pickaxe",count:1},{Slot:12b,id:"minecraft:netherite_pickaxe",count:1},{Slot:13b,id:"minecraft:netherite_pickaxe",count:1},{Slot:14b,id:"minecraft:netherite_pickaxe",count:1},{Slot:15b,id:"minecraft:netherite_pickaxe",count:1},{Slot:16b,id:"minecraft:netherite_pickaxe",count:1},{Slot:17b,id:"minecraft:netherite_pickaxe",count:1},{Slot:18b,id:"minecraft:netherite_pickaxe",count:1},{Slot:19b,id:"minecraft:netherite_pickaxe",count:1},{Slot:20b,id:"minecraft:netherite_pickaxe",count:1},{Slot:21b,id:"minecraft:netherite_pickaxe",count:1},{Slot:22b,id:"minecraft:netherite_pickaxe",count:1},{Slot:23b,id:"minecraft:netherite_pickaxe",count:1},{Slot:24b,id:"minecraft:netherite_pickaxe",count:1},{Slot:25b,id:"minecraft:netherite_pickaxe",count:1},{Slot:26b,id:"minecraft:netherite_pickaxe",count:1}],CustomName:'"Hotbar slot 9"'}
 setblock ~21 ~17 ~3 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:ender_pearl",count:16},{Slot:1b,id:"minecraft:ender_pearl",count:16},{Slot:2b,id:"minecraft:ender_pearl",count:16},{Slot:3b,id:"minecraft:ender_pearl",count:16},{Slot:4b,id:"minecraft:ender_pearl",count:16},{Slot:5b,id:"minecraft:ender_pearl",count:16},{Slot:6b,id:"minecraft:ender_pearl",count:16},{Slot:7b,id:"minecraft:ender_pearl",count:16},{Slot:8b,id:"minecraft:ender_pearl",count:16},{Slot:9b,id:"minecraft:ender_pearl",count:16},{Slot:10b,id:"minecraft:ender_pearl",count:16},{Slot:11b,id:"minecraft:ender_pearl",count:16},{Slot:12b,id:"minecraft:ender_pearl",count:16},{Slot:13b,id:"minecraft:ender_pearl",count:16},{Slot:14b,id:"minecraft:ender_pearl",count:16},{Slot:15b,id:"minecraft:ender_pearl",count:16},{Slot:16b,id:"minecraft:ender_pearl",count:16},{Slot:17b,id:"minecraft:ender_pearl",count:16},{Slot:18b,id:"minecraft:ender_pearl",count:16},{Slot:19b,id:"minecraft:ender_pearl",count:16},{Slot:20b,id:"minecraft:ender_pearl",count:16},{Slot:21b,id:"minecraft:ender_pearl",count:16},{Slot:22b,id:"minecraft:ender_pearl",count:16},{Slot:23b,id:"minecraft:ender_pearl",count:16},{Slot:24b,id:"minecraft:ender_pearl",count:16},{Slot:25b,id:"minecraft:ender_pearl",count:16},{Slot:26b,id:"minecraft:ender_pearl",count:16}],CustomName:'"Inventory slot 19"'}
 setblock ~24 ~17 ~3 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:end_crystal",count:64},{Slot:1b,id:"minecraft:end_crystal",count:64},{Slot:2b,id:"minecraft:end_crystal",count:64},{Slot:3b,id:"minecraft:end_crystal",count:64},{Slot:4b,id:"minecraft:end_crystal",count:64},{Slot:5b,id:"minecraft:end_crystal",count:64},{Slot:6b,id:"minecraft:end_crystal",count:64},{Slot:7b,id:"minecraft:end_crystal",count:64},{Slot:8b,id:"minecraft:end_crystal",count:64},{Slot:9b,id:"minecraft:end_crystal",count:64},{Slot:10b,id:"minecraft:end_crystal",count:64},{Slot:11b,id:"minecraft:end_crystal",count:64},{Slot:12b,id:"minecraft:end_crystal",count:64},{Slot:13b,id:"minecraft:end_crystal",count:64},{Slot:14b,id:"minecraft:end_crystal",count:64},{Slot:15b,id:"minecraft:end_crystal",count:64},{Slot:16b,id:"minecraft:end_crystal",count:64},{Slot:17b,id:"minecraft:end_crystal",count:64},{Slot:18b,id:"minecraft:end_crystal",count:64},{Slot:19b,id:"minecraft:end_crystal",count:64},{Slot:20b,id:"minecraft:end_crystal",count:64},{Slot:21b,id:"minecraft:end_crystal",count:64},{Slot:22b,id:"minecraft:end_crystal",count:64},{Slot:23b,id:"minecraft:end_crystal",count:64},{Slot:24b,id:"minecraft:end_crystal",count:64},{Slot:25b,id:"minecraft:end_crystal",count:64},{Slot:26b,id:"minecraft:end_crystal",count:64}],CustomName:'"Inventory slot 20"'}
 setblock ~27 ~17 ~3 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:obsidian",count:64},{Slot:1b,id:"minecraft:obsidian",count:64},{Slot:2b,id:"minecraft:obsidian",count:64},{Slot:3b,id:"minecraft:obsidian",count:64},{Slot:4b,id:"minecraft:obsidian",count:64},{Slot:5b,id:"minecraft:obsidian",count:64},{Slot:6b,id:"minecraft:obsidian",count:64},{Slot:7b,id:"minecraft:obsidian",count:64},{Slot:8b,id:"minecraft:obsidian",count:64},{Slot:9b,id:"minecraft:obsidian",count:64},{Slot:10b,id:"minecraft:obsidian",count:64},{Slot:11b,id:"minecraft:obsidian",count:64},{Slot:12b,id:"minecraft:obsidian",count:64},{Slot:13b,id:"minecraft:obsidian",count:64},{Slot:14b,id:"minecraft:obsidian",count:64},{Slot:15b,id:"minecraft:obsidian",count:64},{Slot:16b,id:"minecraft:obsidian",count:64},{Slot:17b,id:"minecraft:obsidian",count:64},{Slot:18b,id:"minecraft:obsidian",count:64},{Slot:19b,id:"minecraft:obsidian",count:64},{Slot:20b,id:"minecraft:obsidian",count:64},{Slot:21b,id:"minecraft:obsidian",count:64},{Slot:22b,id:"minecraft:obsidian",count:64},{Slot:23b,id:"minecraft:obsidian",count:64},{Slot:24b,id:"minecraft:obsidian",count:64},{Slot:25b,id:"minecraft:obsidian",count:64},{Slot:26b,id:"minecraft:obsidian",count:64}],CustomName:'"Inventory slot 21"'}
@@ -5607,34 +5716,41 @@ setblock ~36 ~17 ~3 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"m
 setblock ~39 ~17 ~3 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 25"'}
 setblock ~42 ~17 ~3 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 26"'}
 setblock ~45 ~17 ~3 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:experience_bottle",count:64},{Slot:1b,id:"minecraft:experience_bottle",count:64},{Slot:2b,id:"minecraft:experience_bottle",count:64},{Slot:3b,id:"minecraft:experience_bottle",count:64},{Slot:4b,id:"minecraft:experience_bottle",count:64},{Slot:5b,id:"minecraft:experience_bottle",count:64},{Slot:6b,id:"minecraft:experience_bottle",count:64},{Slot:7b,id:"minecraft:experience_bottle",count:64},{Slot:8b,id:"minecraft:experience_bottle",count:64},{Slot:9b,id:"minecraft:experience_bottle",count:64},{Slot:10b,id:"minecraft:experience_bottle",count:64},{Slot:11b,id:"minecraft:experience_bottle",count:64},{Slot:12b,id:"minecraft:experience_bottle",count:64},{Slot:13b,id:"minecraft:experience_bottle",count:64},{Slot:14b,id:"minecraft:experience_bottle",count:64},{Slot:15b,id:"minecraft:experience_bottle",count:64},{Slot:16b,id:"minecraft:experience_bottle",count:64},{Slot:17b,id:"minecraft:experience_bottle",count:64},{Slot:18b,id:"minecraft:experience_bottle",count:64},{Slot:19b,id:"minecraft:experience_bottle",count:64},{Slot:20b,id:"minecraft:experience_bottle",count:64},{Slot:21b,id:"minecraft:experience_bottle",count:64},{Slot:22b,id:"minecraft:experience_bottle",count:64},{Slot:23b,id:"minecraft:experience_bottle",count:64},{Slot:24b,id:"minecraft:experience_bottle",count:64},{Slot:25b,id:"minecraft:experience_bottle",count:64},{Slot:26b,id:"minecraft:experience_bottle",count:64}],CustomName:'"Inventory slot 27"'}
+setblock ~4 ~17 ~4 minecraft:chest[facing=north,type=single,waterlogged=false]{Items:[],CustomName:'"Hotbar kits"'}
+setblock ~17 ~17 ~4 minecraft:chest[facing=north,type=single,waterlogged=false]{Items:[],CustomName:'"Empty shulkers (Hotbar)"'}
+setblock ~15 ~17 ~13 minecraft:dropper[facing=east,triggered=false]{Items:[{Slot:0b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:1b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:2b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:3b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:4b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:5b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:6b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:7b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:8b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}}]}
+setblock ~16 ~17 ~13 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~15 ~17 ~17 minecraft:dropper[facing=east,triggered=false]{Items:[{Slot:0b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:1b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:2b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:3b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:4b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:5b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:6b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:7b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:8b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}}]}
 setblock ~16 ~17 ~17 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
-setblock ~4 ~17 ~26 minecraft:chest[facing=south,type=single,waterlogged=false]{Items:[],CustomName:'"Kits"'}
-setblock ~14 ~17 ~26 minecraft:dropper[facing=east,triggered=false]{Items:[{Slot:0b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:1b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:2b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:3b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:4b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:5b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:6b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:7b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}},{Slot:8b,id:"minecraft:brick",count:64,components:{"minecraft:custom_name":'"Token"'}}]}
-setblock ~15 ~17 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
-setblock ~17 ~17 ~26 minecraft:chest[facing=south,type=single,waterlogged=false]{Items:[],CustomName:'"Empty shulkers"'}
-setblock ~21 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:ender_pearl",count:16},{Slot:1b,id:"minecraft:ender_pearl",count:16},{Slot:2b,id:"minecraft:ender_pearl",count:16},{Slot:3b,id:"minecraft:ender_pearl",count:16},{Slot:4b,id:"minecraft:ender_pearl",count:16},{Slot:5b,id:"minecraft:ender_pearl",count:16},{Slot:6b,id:"minecraft:ender_pearl",count:16},{Slot:7b,id:"minecraft:ender_pearl",count:16},{Slot:8b,id:"minecraft:ender_pearl",count:16},{Slot:9b,id:"minecraft:ender_pearl",count:16},{Slot:10b,id:"minecraft:ender_pearl",count:16},{Slot:11b,id:"minecraft:ender_pearl",count:16},{Slot:12b,id:"minecraft:ender_pearl",count:16},{Slot:13b,id:"minecraft:ender_pearl",count:16},{Slot:14b,id:"minecraft:ender_pearl",count:16},{Slot:15b,id:"minecraft:ender_pearl",count:16},{Slot:16b,id:"minecraft:ender_pearl",count:16},{Slot:17b,id:"minecraft:ender_pearl",count:16},{Slot:18b,id:"minecraft:ender_pearl",count:16},{Slot:19b,id:"minecraft:ender_pearl",count:16},{Slot:20b,id:"minecraft:ender_pearl",count:16},{Slot:21b,id:"minecraft:ender_pearl",count:16},{Slot:22b,id:"minecraft:ender_pearl",count:16},{Slot:23b,id:"minecraft:ender_pearl",count:16},{Slot:24b,id:"minecraft:ender_pearl",count:16},{Slot:25b,id:"minecraft:ender_pearl",count:16},{Slot:26b,id:"minecraft:ender_pearl",count:16}],CustomName:'"Inventory slot 1"'}
-setblock ~24 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 2"'}
-setblock ~27 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 3"'}
-setblock ~30 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 4"'}
-setblock ~33 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 5"'}
-setblock ~36 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 6"'}
-setblock ~39 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 7"'}
-setblock ~42 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 8"'}
-setblock ~45 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:experience_bottle",count:64},{Slot:1b,id:"minecraft:experience_bottle",count:64},{Slot:2b,id:"minecraft:experience_bottle",count:64},{Slot:3b,id:"minecraft:experience_bottle",count:64},{Slot:4b,id:"minecraft:experience_bottle",count:64},{Slot:5b,id:"minecraft:experience_bottle",count:64},{Slot:6b,id:"minecraft:experience_bottle",count:64},{Slot:7b,id:"minecraft:experience_bottle",count:64},{Slot:8b,id:"minecraft:experience_bottle",count:64},{Slot:9b,id:"minecraft:experience_bottle",count:64},{Slot:10b,id:"minecraft:experience_bottle",count:64},{Slot:11b,id:"minecraft:experience_bottle",count:64},{Slot:12b,id:"minecraft:experience_bottle",count:64},{Slot:13b,id:"minecraft:experience_bottle",count:64},{Slot:14b,id:"minecraft:experience_bottle",count:64},{Slot:15b,id:"minecraft:experience_bottle",count:64},{Slot:16b,id:"minecraft:experience_bottle",count:64},{Slot:17b,id:"minecraft:experience_bottle",count:64},{Slot:18b,id:"minecraft:experience_bottle",count:64},{Slot:19b,id:"minecraft:experience_bottle",count:64},{Slot:20b,id:"minecraft:experience_bottle",count:64},{Slot:21b,id:"minecraft:experience_bottle",count:64},{Slot:22b,id:"minecraft:experience_bottle",count:64},{Slot:23b,id:"minecraft:experience_bottle",count:64},{Slot:24b,id:"minecraft:experience_bottle",count:64},{Slot:25b,id:"minecraft:experience_bottle",count:64},{Slot:26b,id:"minecraft:experience_bottle",count:64}],CustomName:'"Inventory slot 9"'}
-setblock ~21 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:netherite_sword",count:1},{Slot:1b,id:"minecraft:netherite_sword",count:1},{Slot:2b,id:"minecraft:netherite_sword",count:1},{Slot:3b,id:"minecraft:netherite_sword",count:1},{Slot:4b,id:"minecraft:netherite_sword",count:1},{Slot:5b,id:"minecraft:netherite_sword",count:1},{Slot:6b,id:"minecraft:netherite_sword",count:1},{Slot:7b,id:"minecraft:netherite_sword",count:1},{Slot:8b,id:"minecraft:netherite_sword",count:1},{Slot:9b,id:"minecraft:netherite_sword",count:1},{Slot:10b,id:"minecraft:netherite_sword",count:1},{Slot:11b,id:"minecraft:netherite_sword",count:1},{Slot:12b,id:"minecraft:netherite_sword",count:1},{Slot:13b,id:"minecraft:netherite_sword",count:1},{Slot:14b,id:"minecraft:netherite_sword",count:1},{Slot:15b,id:"minecraft:netherite_sword",count:1},{Slot:16b,id:"minecraft:netherite_sword",count:1},{Slot:17b,id:"minecraft:netherite_sword",count:1},{Slot:18b,id:"minecraft:netherite_sword",count:1},{Slot:19b,id:"minecraft:netherite_sword",count:1},{Slot:20b,id:"minecraft:netherite_sword",count:1},{Slot:21b,id:"minecraft:netherite_sword",count:1},{Slot:22b,id:"minecraft:netherite_sword",count:1},{Slot:23b,id:"minecraft:netherite_sword",count:1},{Slot:24b,id:"minecraft:netherite_sword",count:1},{Slot:25b,id:"minecraft:netherite_sword",count:1},{Slot:26b,id:"minecraft:netherite_sword",count:1}],CustomName:'"Hotbar slot 1"'}
-setblock ~24 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:end_crystal",count:64},{Slot:1b,id:"minecraft:end_crystal",count:64},{Slot:2b,id:"minecraft:end_crystal",count:64},{Slot:3b,id:"minecraft:end_crystal",count:64},{Slot:4b,id:"minecraft:end_crystal",count:64},{Slot:5b,id:"minecraft:end_crystal",count:64},{Slot:6b,id:"minecraft:end_crystal",count:64},{Slot:7b,id:"minecraft:end_crystal",count:64},{Slot:8b,id:"minecraft:end_crystal",count:64},{Slot:9b,id:"minecraft:end_crystal",count:64},{Slot:10b,id:"minecraft:end_crystal",count:64},{Slot:11b,id:"minecraft:end_crystal",count:64},{Slot:12b,id:"minecraft:end_crystal",count:64},{Slot:13b,id:"minecraft:end_crystal",count:64},{Slot:14b,id:"minecraft:end_crystal",count:64},{Slot:15b,id:"minecraft:end_crystal",count:64},{Slot:16b,id:"minecraft:end_crystal",count:64},{Slot:17b,id:"minecraft:end_crystal",count:64},{Slot:18b,id:"minecraft:end_crystal",count:64},{Slot:19b,id:"minecraft:end_crystal",count:64},{Slot:20b,id:"minecraft:end_crystal",count:64},{Slot:21b,id:"minecraft:end_crystal",count:64},{Slot:22b,id:"minecraft:end_crystal",count:64},{Slot:23b,id:"minecraft:end_crystal",count:64},{Slot:24b,id:"minecraft:end_crystal",count:64},{Slot:25b,id:"minecraft:end_crystal",count:64},{Slot:26b,id:"minecraft:end_crystal",count:64}],CustomName:'"Hotbar slot 2"'}
-setblock ~27 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:obsidian",count:64},{Slot:1b,id:"minecraft:obsidian",count:64},{Slot:2b,id:"minecraft:obsidian",count:64},{Slot:3b,id:"minecraft:obsidian",count:64},{Slot:4b,id:"minecraft:obsidian",count:64},{Slot:5b,id:"minecraft:obsidian",count:64},{Slot:6b,id:"minecraft:obsidian",count:64},{Slot:7b,id:"minecraft:obsidian",count:64},{Slot:8b,id:"minecraft:obsidian",count:64},{Slot:9b,id:"minecraft:obsidian",count:64},{Slot:10b,id:"minecraft:obsidian",count:64},{Slot:11b,id:"minecraft:obsidian",count:64},{Slot:12b,id:"minecraft:obsidian",count:64},{Slot:13b,id:"minecraft:obsidian",count:64},{Slot:14b,id:"minecraft:obsidian",count:64},{Slot:15b,id:"minecraft:obsidian",count:64},{Slot:16b,id:"minecraft:obsidian",count:64},{Slot:17b,id:"minecraft:obsidian",count:64},{Slot:18b,id:"minecraft:obsidian",count:64},{Slot:19b,id:"minecraft:obsidian",count:64},{Slot:20b,id:"minecraft:obsidian",count:64},{Slot:21b,id:"minecraft:obsidian",count:64},{Slot:22b,id:"minecraft:obsidian",count:64},{Slot:23b,id:"minecraft:obsidian",count:64},{Slot:24b,id:"minecraft:obsidian",count:64},{Slot:25b,id:"minecraft:obsidian",count:64},{Slot:26b,id:"minecraft:obsidian",count:64}],CustomName:'"Hotbar slot 3"'}
-setblock ~30 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:ender_pearl",count:16},{Slot:1b,id:"minecraft:ender_pearl",count:16},{Slot:2b,id:"minecraft:ender_pearl",count:16},{Slot:3b,id:"minecraft:ender_pearl",count:16},{Slot:4b,id:"minecraft:ender_pearl",count:16},{Slot:5b,id:"minecraft:ender_pearl",count:16},{Slot:6b,id:"minecraft:ender_pearl",count:16},{Slot:7b,id:"minecraft:ender_pearl",count:16},{Slot:8b,id:"minecraft:ender_pearl",count:16},{Slot:9b,id:"minecraft:ender_pearl",count:16},{Slot:10b,id:"minecraft:ender_pearl",count:16},{Slot:11b,id:"minecraft:ender_pearl",count:16},{Slot:12b,id:"minecraft:ender_pearl",count:16},{Slot:13b,id:"minecraft:ender_pearl",count:16},{Slot:14b,id:"minecraft:ender_pearl",count:16},{Slot:15b,id:"minecraft:ender_pearl",count:16},{Slot:16b,id:"minecraft:ender_pearl",count:16},{Slot:17b,id:"minecraft:ender_pearl",count:16},{Slot:18b,id:"minecraft:ender_pearl",count:16},{Slot:19b,id:"minecraft:ender_pearl",count:16},{Slot:20b,id:"minecraft:ender_pearl",count:16},{Slot:21b,id:"minecraft:ender_pearl",count:16},{Slot:22b,id:"minecraft:ender_pearl",count:16},{Slot:23b,id:"minecraft:ender_pearl",count:16},{Slot:24b,id:"minecraft:ender_pearl",count:16},{Slot:25b,id:"minecraft:ender_pearl",count:16},{Slot:26b,id:"minecraft:ender_pearl",count:16}],CustomName:'"Hotbar slot 4"'}
-setblock ~33 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Hotbar slot 5"'}
-setblock ~36 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:glowstone",count:64},{Slot:1b,id:"minecraft:glowstone",count:64},{Slot:2b,id:"minecraft:glowstone",count:64},{Slot:3b,id:"minecraft:glowstone",count:64},{Slot:4b,id:"minecraft:glowstone",count:64},{Slot:5b,id:"minecraft:glowstone",count:64},{Slot:6b,id:"minecraft:glowstone",count:64},{Slot:7b,id:"minecraft:glowstone",count:64},{Slot:8b,id:"minecraft:glowstone",count:64},{Slot:9b,id:"minecraft:glowstone",count:64},{Slot:10b,id:"minecraft:glowstone",count:64},{Slot:11b,id:"minecraft:glowstone",count:64},{Slot:12b,id:"minecraft:glowstone",count:64},{Slot:13b,id:"minecraft:glowstone",count:64},{Slot:14b,id:"minecraft:glowstone",count:64},{Slot:15b,id:"minecraft:glowstone",count:64},{Slot:16b,id:"minecraft:glowstone",count:64},{Slot:17b,id:"minecraft:glowstone",count:64},{Slot:18b,id:"minecraft:glowstone",count:64},{Slot:19b,id:"minecraft:glowstone",count:64},{Slot:20b,id:"minecraft:glowstone",count:64},{Slot:21b,id:"minecraft:glowstone",count:64},{Slot:22b,id:"minecraft:glowstone",count:64},{Slot:23b,id:"minecraft:glowstone",count:64},{Slot:24b,id:"minecraft:glowstone",count:64},{Slot:25b,id:"minecraft:glowstone",count:64},{Slot:26b,id:"minecraft:glowstone",count:64}],CustomName:'"Hotbar slot 6"'}
-setblock ~39 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:respawn_anchor",count:64},{Slot:1b,id:"minecraft:respawn_anchor",count:64},{Slot:2b,id:"minecraft:respawn_anchor",count:64},{Slot:3b,id:"minecraft:respawn_anchor",count:64},{Slot:4b,id:"minecraft:respawn_anchor",count:64},{Slot:5b,id:"minecraft:respawn_anchor",count:64},{Slot:6b,id:"minecraft:respawn_anchor",count:64},{Slot:7b,id:"minecraft:respawn_anchor",count:64},{Slot:8b,id:"minecraft:respawn_anchor",count:64},{Slot:9b,id:"minecraft:respawn_anchor",count:64},{Slot:10b,id:"minecraft:respawn_anchor",count:64},{Slot:11b,id:"minecraft:respawn_anchor",count:64},{Slot:12b,id:"minecraft:respawn_anchor",count:64},{Slot:13b,id:"minecraft:respawn_anchor",count:64},{Slot:14b,id:"minecraft:respawn_anchor",count:64},{Slot:15b,id:"minecraft:respawn_anchor",count:64},{Slot:16b,id:"minecraft:respawn_anchor",count:64},{Slot:17b,id:"minecraft:respawn_anchor",count:64},{Slot:18b,id:"minecraft:respawn_anchor",count:64},{Slot:19b,id:"minecraft:respawn_anchor",count:64},{Slot:20b,id:"minecraft:respawn_anchor",count:64},{Slot:21b,id:"minecraft:respawn_anchor",count:64},{Slot:22b,id:"minecraft:respawn_anchor",count:64},{Slot:23b,id:"minecraft:respawn_anchor",count:64},{Slot:24b,id:"minecraft:respawn_anchor",count:64},{Slot:25b,id:"minecraft:respawn_anchor",count:64},{Slot:26b,id:"minecraft:respawn_anchor",count:64}],CustomName:'"Hotbar slot 7"'}
-setblock ~42 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:golden_apple",count:64},{Slot:1b,id:"minecraft:golden_apple",count:64},{Slot:2b,id:"minecraft:golden_apple",count:64},{Slot:3b,id:"minecraft:golden_apple",count:64},{Slot:4b,id:"minecraft:golden_apple",count:64},{Slot:5b,id:"minecraft:golden_apple",count:64},{Slot:6b,id:"minecraft:golden_apple",count:64},{Slot:7b,id:"minecraft:golden_apple",count:64},{Slot:8b,id:"minecraft:golden_apple",count:64},{Slot:9b,id:"minecraft:golden_apple",count:64},{Slot:10b,id:"minecraft:golden_apple",count:64},{Slot:11b,id:"minecraft:golden_apple",count:64},{Slot:12b,id:"minecraft:golden_apple",count:64},{Slot:13b,id:"minecraft:golden_apple",count:64},{Slot:14b,id:"minecraft:golden_apple",count:64},{Slot:15b,id:"minecraft:golden_apple",count:64},{Slot:16b,id:"minecraft:golden_apple",count:64},{Slot:17b,id:"minecraft:golden_apple",count:64},{Slot:18b,id:"minecraft:golden_apple",count:64},{Slot:19b,id:"minecraft:golden_apple",count:64},{Slot:20b,id:"minecraft:golden_apple",count:64},{Slot:21b,id:"minecraft:golden_apple",count:64},{Slot:22b,id:"minecraft:golden_apple",count:64},{Slot:23b,id:"minecraft:golden_apple",count:64},{Slot:24b,id:"minecraft:golden_apple",count:64},{Slot:25b,id:"minecraft:golden_apple",count:64},{Slot:26b,id:"minecraft:golden_apple",count:64}],CustomName:'"Hotbar slot 8"'}
-setblock ~45 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:netherite_pickaxe",count:1},{Slot:1b,id:"minecraft:netherite_pickaxe",count:1},{Slot:2b,id:"minecraft:netherite_pickaxe",count:1},{Slot:3b,id:"minecraft:netherite_pickaxe",count:1},{Slot:4b,id:"minecraft:netherite_pickaxe",count:1},{Slot:5b,id:"minecraft:netherite_pickaxe",count:1},{Slot:6b,id:"minecraft:netherite_pickaxe",count:1},{Slot:7b,id:"minecraft:netherite_pickaxe",count:1},{Slot:8b,id:"minecraft:netherite_pickaxe",count:1},{Slot:9b,id:"minecraft:netherite_pickaxe",count:1},{Slot:10b,id:"minecraft:netherite_pickaxe",count:1},{Slot:11b,id:"minecraft:netherite_pickaxe",count:1},{Slot:12b,id:"minecraft:netherite_pickaxe",count:1},{Slot:13b,id:"minecraft:netherite_pickaxe",count:1},{Slot:14b,id:"minecraft:netherite_pickaxe",count:1},{Slot:15b,id:"minecraft:netherite_pickaxe",count:1},{Slot:16b,id:"minecraft:netherite_pickaxe",count:1},{Slot:17b,id:"minecraft:netherite_pickaxe",count:1},{Slot:18b,id:"minecraft:netherite_pickaxe",count:1},{Slot:19b,id:"minecraft:netherite_pickaxe",count:1},{Slot:20b,id:"minecraft:netherite_pickaxe",count:1},{Slot:21b,id:"minecraft:netherite_pickaxe",count:1},{Slot:22b,id:"minecraft:netherite_pickaxe",count:1},{Slot:23b,id:"minecraft:netherite_pickaxe",count:1},{Slot:24b,id:"minecraft:netherite_pickaxe",count:1},{Slot:25b,id:"minecraft:netherite_pickaxe",count:1},{Slot:26b,id:"minecraft:netherite_pickaxe",count:1}],CustomName:'"Hotbar slot 9"'}
+setblock ~4 ~17 ~26 minecraft:chest[facing=south,type=single,waterlogged=false]{Items:[],CustomName:'"Inventory kits"'}
+setblock ~17 ~17 ~26 minecraft:chest[facing=south,type=single,waterlogged=false]{Items:[],CustomName:'"Empty shulkers (Inventory)"'}
+setblock ~21 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:ender_pearl",count:16},{Slot:1b,id:"minecraft:ender_pearl",count:16},{Slot:2b,id:"minecraft:ender_pearl",count:16},{Slot:3b,id:"minecraft:ender_pearl",count:16},{Slot:4b,id:"minecraft:ender_pearl",count:16},{Slot:5b,id:"minecraft:ender_pearl",count:16},{Slot:6b,id:"minecraft:ender_pearl",count:16},{Slot:7b,id:"minecraft:ender_pearl",count:16},{Slot:8b,id:"minecraft:ender_pearl",count:16},{Slot:9b,id:"minecraft:ender_pearl",count:16},{Slot:10b,id:"minecraft:ender_pearl",count:16},{Slot:11b,id:"minecraft:ender_pearl",count:16},{Slot:12b,id:"minecraft:ender_pearl",count:16},{Slot:13b,id:"minecraft:ender_pearl",count:16},{Slot:14b,id:"minecraft:ender_pearl",count:16},{Slot:15b,id:"minecraft:ender_pearl",count:16},{Slot:16b,id:"minecraft:ender_pearl",count:16},{Slot:17b,id:"minecraft:ender_pearl",count:16},{Slot:18b,id:"minecraft:ender_pearl",count:16},{Slot:19b,id:"minecraft:ender_pearl",count:16},{Slot:20b,id:"minecraft:ender_pearl",count:16},{Slot:21b,id:"minecraft:ender_pearl",count:16},{Slot:22b,id:"minecraft:ender_pearl",count:16},{Slot:23b,id:"minecraft:ender_pearl",count:16},{Slot:24b,id:"minecraft:ender_pearl",count:16},{Slot:25b,id:"minecraft:ender_pearl",count:16},{Slot:26b,id:"minecraft:ender_pearl",count:16}],CustomName:'"Inventory slot 10"'}
+setblock ~24 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 11"'}
+setblock ~27 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 12"'}
+setblock ~30 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 13"'}
+setblock ~33 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 14"'}
+setblock ~36 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 15"'}
+setblock ~39 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 16"'}
+setblock ~42 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 17"'}
+setblock ~45 ~17 ~27 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:experience_bottle",count:64},{Slot:1b,id:"minecraft:experience_bottle",count:64},{Slot:2b,id:"minecraft:experience_bottle",count:64},{Slot:3b,id:"minecraft:experience_bottle",count:64},{Slot:4b,id:"minecraft:experience_bottle",count:64},{Slot:5b,id:"minecraft:experience_bottle",count:64},{Slot:6b,id:"minecraft:experience_bottle",count:64},{Slot:7b,id:"minecraft:experience_bottle",count:64},{Slot:8b,id:"minecraft:experience_bottle",count:64},{Slot:9b,id:"minecraft:experience_bottle",count:64},{Slot:10b,id:"minecraft:experience_bottle",count:64},{Slot:11b,id:"minecraft:experience_bottle",count:64},{Slot:12b,id:"minecraft:experience_bottle",count:64},{Slot:13b,id:"minecraft:experience_bottle",count:64},{Slot:14b,id:"minecraft:experience_bottle",count:64},{Slot:15b,id:"minecraft:experience_bottle",count:64},{Slot:16b,id:"minecraft:experience_bottle",count:64},{Slot:17b,id:"minecraft:experience_bottle",count:64},{Slot:18b,id:"minecraft:experience_bottle",count:64},{Slot:19b,id:"minecraft:experience_bottle",count:64},{Slot:20b,id:"minecraft:experience_bottle",count:64},{Slot:21b,id:"minecraft:experience_bottle",count:64},{Slot:22b,id:"minecraft:experience_bottle",count:64},{Slot:23b,id:"minecraft:experience_bottle",count:64},{Slot:24b,id:"minecraft:experience_bottle",count:64},{Slot:25b,id:"minecraft:experience_bottle",count:64},{Slot:26b,id:"minecraft:experience_bottle",count:64}],CustomName:'"Inventory slot 18"'}
+setblock ~21 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:ender_pearl",count:16},{Slot:1b,id:"minecraft:ender_pearl",count:16},{Slot:2b,id:"minecraft:ender_pearl",count:16},{Slot:3b,id:"minecraft:ender_pearl",count:16},{Slot:4b,id:"minecraft:ender_pearl",count:16},{Slot:5b,id:"minecraft:ender_pearl",count:16},{Slot:6b,id:"minecraft:ender_pearl",count:16},{Slot:7b,id:"minecraft:ender_pearl",count:16},{Slot:8b,id:"minecraft:ender_pearl",count:16},{Slot:9b,id:"minecraft:ender_pearl",count:16},{Slot:10b,id:"minecraft:ender_pearl",count:16},{Slot:11b,id:"minecraft:ender_pearl",count:16},{Slot:12b,id:"minecraft:ender_pearl",count:16},{Slot:13b,id:"minecraft:ender_pearl",count:16},{Slot:14b,id:"minecraft:ender_pearl",count:16},{Slot:15b,id:"minecraft:ender_pearl",count:16},{Slot:16b,id:"minecraft:ender_pearl",count:16},{Slot:17b,id:"minecraft:ender_pearl",count:16},{Slot:18b,id:"minecraft:ender_pearl",count:16},{Slot:19b,id:"minecraft:ender_pearl",count:16},{Slot:20b,id:"minecraft:ender_pearl",count:16},{Slot:21b,id:"minecraft:ender_pearl",count:16},{Slot:22b,id:"minecraft:ender_pearl",count:16},{Slot:23b,id:"minecraft:ender_pearl",count:16},{Slot:24b,id:"minecraft:ender_pearl",count:16},{Slot:25b,id:"minecraft:ender_pearl",count:16},{Slot:26b,id:"minecraft:ender_pearl",count:16}],CustomName:'"Inventory slot 1"'}
+setblock ~24 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 2"'}
+setblock ~27 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 3"'}
+setblock ~30 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 4"'}
+setblock ~33 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 5"'}
+setblock ~36 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 6"'}
+setblock ~39 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 7"'}
+setblock ~42 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:totem_of_undying",count:1},{Slot:1b,id:"minecraft:totem_of_undying",count:1},{Slot:2b,id:"minecraft:totem_of_undying",count:1},{Slot:3b,id:"minecraft:totem_of_undying",count:1},{Slot:4b,id:"minecraft:totem_of_undying",count:1},{Slot:5b,id:"minecraft:totem_of_undying",count:1},{Slot:6b,id:"minecraft:totem_of_undying",count:1},{Slot:7b,id:"minecraft:totem_of_undying",count:1},{Slot:8b,id:"minecraft:totem_of_undying",count:1},{Slot:9b,id:"minecraft:totem_of_undying",count:1},{Slot:10b,id:"minecraft:totem_of_undying",count:1},{Slot:11b,id:"minecraft:totem_of_undying",count:1},{Slot:12b,id:"minecraft:totem_of_undying",count:1},{Slot:13b,id:"minecraft:totem_of_undying",count:1},{Slot:14b,id:"minecraft:totem_of_undying",count:1},{Slot:15b,id:"minecraft:totem_of_undying",count:1},{Slot:16b,id:"minecraft:totem_of_undying",count:1},{Slot:17b,id:"minecraft:totem_of_undying",count:1},{Slot:18b,id:"minecraft:totem_of_undying",count:1},{Slot:19b,id:"minecraft:totem_of_undying",count:1},{Slot:20b,id:"minecraft:totem_of_undying",count:1},{Slot:21b,id:"minecraft:totem_of_undying",count:1},{Slot:22b,id:"minecraft:totem_of_undying",count:1},{Slot:23b,id:"minecraft:totem_of_undying",count:1},{Slot:24b,id:"minecraft:totem_of_undying",count:1},{Slot:25b,id:"minecraft:totem_of_undying",count:1},{Slot:26b,id:"minecraft:totem_of_undying",count:1}],CustomName:'"Inventory slot 8"'}
+setblock ~45 ~17 ~29 minecraft:barrel[facing=up,open=false]{Items:[{Slot:0b,id:"minecraft:experience_bottle",count:64},{Slot:1b,id:"minecraft:experience_bottle",count:64},{Slot:2b,id:"minecraft:experience_bottle",count:64},{Slot:3b,id:"minecraft:experience_bottle",count:64},{Slot:4b,id:"minecraft:experience_bottle",count:64},{Slot:5b,id:"minecraft:experience_bottle",count:64},{Slot:6b,id:"minecraft:experience_bottle",count:64},{Slot:7b,id:"minecraft:experience_bottle",count:64},{Slot:8b,id:"minecraft:experience_bottle",count:64},{Slot:9b,id:"minecraft:experience_bottle",count:64},{Slot:10b,id:"minecraft:experience_bottle",count:64},{Slot:11b,id:"minecraft:experience_bottle",count:64},{Slot:12b,id:"minecraft:experience_bottle",count:64},{Slot:13b,id:"minecraft:experience_bottle",count:64},{Slot:14b,id:"minecraft:experience_bottle",count:64},{Slot:15b,id:"minecraft:experience_bottle",count:64},{Slot:16b,id:"minecraft:experience_bottle",count:64},{Slot:17b,id:"minecraft:experience_bottle",count:64},{Slot:18b,id:"minecraft:experience_bottle",count:64},{Slot:19b,id:"minecraft:experience_bottle",count:64},{Slot:20b,id:"minecraft:experience_bottle",count:64},{Slot:21b,id:"minecraft:experience_bottle",count:64},{Slot:22b,id:"minecraft:experience_bottle",count:64},{Slot:23b,id:"minecraft:experience_bottle",count:64},{Slot:24b,id:"minecraft:experience_bottle",count:64},{Slot:25b,id:"minecraft:experience_bottle",count:64},{Slot:26b,id:"minecraft:experience_bottle",count:64}],CustomName:'"Inventory slot 9"'}
+setblock ~4 ~18 ~4 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
 setblock ~4 ~18 ~26 minecraft:hopper[enabled=true,facing=down]{Items:[],TransferCooldown:0}
+setblock ~4 ~1 ~5 minecraft:repeater[delay=4,facing=south,locked=false,powered=false]
+setblock ~5 ~1 ~5 minecraft:comparator[facing=north,mode=compare,powered=false]{OutputSignal:0}
+setblock ~5 ~1 ~6 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
 setblock ~5 ~1 ~24 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~4 ~1 ~25 minecraft:repeater[delay=4,facing=north,locked=false,powered=false]
 setblock ~5 ~1 ~25 minecraft:comparator[facing=south,mode=compare,powered=false]{OutputSignal:0}
+setblock ~18 ~2 ~7 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~20 ~2 ~7 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~23 ~2 ~7 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~26 ~2 ~7 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
@@ -5662,7 +5778,7 @@ setblock ~35 ~2 ~10 minecraft:comparator[facing=south,mode=compare,powered=false
 setblock ~38 ~2 ~10 minecraft:comparator[facing=south,mode=compare,powered=false]{OutputSignal:0}
 setblock ~41 ~2 ~10 minecraft:comparator[facing=south,mode=compare,powered=false]{OutputSignal:0}
 setblock ~44 ~2 ~10 minecraft:comparator[facing=south,mode=compare,powered=false]{OutputSignal:0}
-setblock ~17 ~2 ~11 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~18 ~2 ~12 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~20 ~2 ~12 minecraft:redstone_wall_torch[facing=north,lit=true]
 setblock ~23 ~2 ~12 minecraft:redstone_wall_torch[facing=north,lit=true]
 setblock ~26 ~2 ~12 minecraft:redstone_wall_torch[facing=north,lit=true]
@@ -5673,6 +5789,7 @@ setblock ~38 ~2 ~12 minecraft:redstone_wall_torch[facing=north,lit=true]
 setblock ~41 ~2 ~12 minecraft:redstone_wall_torch[facing=north,lit=true]
 setblock ~44 ~2 ~12 minecraft:redstone_wall_torch[facing=north,lit=true]
 setblock ~47 ~2 ~12 minecraft:comparator[facing=north,mode=compare,powered=false]{OutputSignal:0}
+setblock ~17 ~2 ~13 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~47 ~2 ~13 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
 setblock ~16 ~2 ~14 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
 setblock ~17 ~2 ~14 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
@@ -5758,7 +5875,6 @@ setblock ~35 ~2 ~20 minecraft:comparator[facing=north,mode=compare,powered=false
 setblock ~38 ~2 ~20 minecraft:comparator[facing=north,mode=compare,powered=false]{OutputSignal:0}
 setblock ~41 ~2 ~20 minecraft:comparator[facing=north,mode=compare,powered=false]{OutputSignal:0}
 setblock ~44 ~2 ~20 minecraft:comparator[facing=north,mode=compare,powered=false]{OutputSignal:0}
-setblock ~13 ~2 ~22 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~20 ~2 ~22 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
 setblock ~23 ~2 ~22 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
 setblock ~26 ~2 ~22 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
@@ -5778,6 +5894,7 @@ setblock ~35 ~2 ~23 minecraft:repeater[delay=1,facing=north,locked=false,powered
 setblock ~38 ~2 ~23 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
 setblock ~41 ~2 ~23 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
 setblock ~44 ~2 ~23 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
+setblock ~17 ~3 ~5 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~20 ~3 ~6 minecraft:redstone_torch[lit=true]
 setblock ~23 ~3 ~6 minecraft:redstone_torch[lit=true]
 setblock ~26 ~3 ~6 minecraft:redstone_torch[lit=true]
@@ -5805,7 +5922,6 @@ setblock ~36 ~3 ~22 minecraft:redstone_torch[lit=true]
 setblock ~39 ~3 ~22 minecraft:redstone_torch[lit=true]
 setblock ~42 ~3 ~22 minecraft:redstone_torch[lit=true]
 setblock ~45 ~3 ~22 minecraft:redstone_torch[lit=true]
-setblock ~15 ~3 ~24 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~20 ~3 ~24 minecraft:redstone_torch[lit=true]
 setblock ~23 ~3 ~24 minecraft:redstone_torch[lit=true]
 setblock ~26 ~3 ~24 minecraft:redstone_torch[lit=true]
@@ -5815,9 +5931,8 @@ setblock ~35 ~3 ~24 minecraft:redstone_torch[lit=true]
 setblock ~38 ~3 ~24 minecraft:redstone_torch[lit=true]
 setblock ~41 ~3 ~24 minecraft:redstone_torch[lit=true]
 setblock ~44 ~3 ~24 minecraft:redstone_torch[lit=true]
-setblock ~15 ~3 ~25 minecraft:comparator[facing=south,mode=compare,powered=false]{OutputSignal:0}
 setblock ~17 ~3 ~25 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
-setblock ~16 ~3 ~26 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
+setblock ~18 ~4 ~4 minecraft:piston[extended=false,facing=down]
 setblock ~21 ~4 ~7 minecraft:comparator[facing=north,mode=compare,powered=true]{OutputSignal:15}
 setblock ~24 ~4 ~7 minecraft:comparator[facing=north,mode=compare,powered=true]{OutputSignal:15}
 setblock ~27 ~4 ~7 minecraft:comparator[facing=north,mode=compare,powered=true]{OutputSignal:15}
@@ -5873,6 +5988,9 @@ setblock ~36 ~5 ~22 minecraft:redstone_torch[lit=false]
 setblock ~39 ~5 ~22 minecraft:redstone_torch[lit=false]
 setblock ~42 ~5 ~22 minecraft:redstone_torch[lit=false]
 setblock ~45 ~5 ~22 minecraft:redstone_torch[lit=false]
+setblock ~15 ~6 ~3 minecraft:repeater[delay=4,facing=west,locked=false,powered=false]
+setblock ~17 ~6 ~3 minecraft:repeater[delay=4,facing=west,locked=false,powered=false]
+setblock ~16 ~6 ~4 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~17 ~6 ~7 minecraft:waxed_copper_bulb[lit=false,powered=false]
 setblock ~18 ~6 ~7 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
 setblock ~20 ~6 ~7 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
@@ -5894,7 +6012,6 @@ setblock ~44 ~6 ~23 minecraft:repeater[delay=1,facing=west,locked=false,powered=
 setblock ~8 ~6 ~24 minecraft:repeater[delay=4,facing=north,locked=false,powered=false]
 setblock ~8 ~6 ~25 minecraft:repeater[delay=4,facing=north,locked=false,powered=false]
 setblock ~8 ~6 ~26 minecraft:repeater[delay=4,facing=north,locked=false,powered=false]
-setblock ~16 ~6 ~26 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
 setblock ~9 ~6 ~27 minecraft:repeater[delay=4,facing=west,locked=false,powered=false]
 setblock ~10 ~6 ~27 minecraft:repeater[delay=4,facing=west,locked=false,powered=false]
 setblock ~11 ~6 ~27 minecraft:repeater[delay=4,facing=west,locked=false,powered=false]
@@ -5921,7 +6038,15 @@ setblock ~35 ~8 ~8 minecraft:repeater[delay=1,facing=south,locked=false,powered=
 setblock ~38 ~8 ~8 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~41 ~8 ~8 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~44 ~8 ~8 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
-setblock ~11 ~8 ~10 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
+setblock ~7 ~8 ~10 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~8 ~8 ~10 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~9 ~8 ~10 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~10 ~8 ~10 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~11 ~8 ~10 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~12 ~8 ~10 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~13 ~8 ~10 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~14 ~8 ~10 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~15 ~8 ~10 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~20 ~8 ~10 minecraft:comparator[facing=south,mode=compare,powered=false]{OutputSignal:0}
 setblock ~23 ~8 ~10 minecraft:comparator[facing=south,mode=compare,powered=false]{OutputSignal:0}
 setblock ~26 ~8 ~10 minecraft:comparator[facing=south,mode=compare,powered=false]{OutputSignal:0}
@@ -5974,6 +6099,13 @@ setblock ~43 ~8 ~14 minecraft:repeater[delay=4,facing=east,locked=false,powered=
 setblock ~44 ~8 ~14 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
 setblock ~45 ~8 ~14 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
 setblock ~46 ~8 ~14 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
+setblock ~7 ~8 ~16 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
+setblock ~8 ~8 ~16 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
+setblock ~9 ~8 ~16 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
+setblock ~10 ~8 ~16 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
+setblock ~11 ~8 ~16 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
+setblock ~12 ~8 ~16 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
+setblock ~13 ~8 ~16 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
 setblock ~16 ~8 ~16 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
 setblock ~17 ~8 ~16 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
 setblock ~18 ~8 ~16 minecraft:repeater[delay=4,facing=east,locked=false,powered=false]
@@ -6017,6 +6149,7 @@ setblock ~41 ~8 ~18 minecraft:redstone_wall_torch[facing=south,lit=true]
 setblock ~44 ~8 ~18 minecraft:redstone_wall_torch[facing=south,lit=true]
 setblock ~47 ~8 ~18 minecraft:comparator[facing=south,mode=compare,powered=false]{OutputSignal:0}
 setblock ~17 ~8 ~19 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~13 ~8 ~20 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~20 ~8 ~20 minecraft:comparator[facing=north,mode=compare,powered=false]{OutputSignal:0}
 setblock ~23 ~8 ~20 minecraft:comparator[facing=north,mode=compare,powered=false]{OutputSignal:0}
 setblock ~26 ~8 ~20 minecraft:comparator[facing=north,mode=compare,powered=false]{OutputSignal:0}
@@ -6150,89 +6283,90 @@ setblock ~18 ~12 ~23 minecraft:comparator[facing=west,mode=compare,powered=false
 setblock ~20 ~12 ~23 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~32 ~12 ~23 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~44 ~12 ~23 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~22 ~14 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~25 ~14 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~28 ~14 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~31 ~14 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~34 ~14 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~37 ~14 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~40 ~14 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~43 ~14 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~46 ~14 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~19 ~14 ~11 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
-setblock ~22 ~14 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~25 ~14 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~28 ~14 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~31 ~14 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~34 ~14 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~37 ~14 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~40 ~14 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~43 ~14 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~46 ~14 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~22 ~14 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~25 ~14 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~28 ~14 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~31 ~14 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~34 ~14 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~37 ~14 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~40 ~14 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~43 ~14 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~46 ~14 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~22 ~14 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~25 ~14 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~28 ~14 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~31 ~14 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~34 ~14 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~37 ~14 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~40 ~14 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~43 ~14 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~46 ~14 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~22 ~14 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~25 ~14 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~28 ~14 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~31 ~14 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~34 ~14 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~37 ~14 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~40 ~14 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~43 ~14 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~46 ~14 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~19 ~14 ~12 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+setblock ~22 ~14 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~25 ~14 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~28 ~14 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~31 ~14 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~34 ~14 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~37 ~14 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~40 ~14 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~43 ~14 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~46 ~14 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~13 ~15 ~1 minecraft:repeater[delay=1,facing=east,locked=false,powered=true]
+setblock ~14 ~15 ~1 minecraft:repeater[delay=1,facing=east,locked=false,powered=true]
+setblock ~15 ~15 ~1 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:5}
+setblock ~17 ~15 ~1 minecraft:redstone_wall_torch[facing=north,lit=true]
+setblock ~12 ~15 ~2 minecraft:redstone_wall_torch[facing=south,lit=false]
 setblock ~13 ~15 ~21 minecraft:repeater[delay=1,facing=east,locked=false,powered=true]
 setblock ~14 ~15 ~21 minecraft:repeater[delay=1,facing=east,locked=false,powered=true]
 setblock ~15 ~15 ~21 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:5}
 setblock ~17 ~15 ~21 minecraft:redstone_wall_torch[facing=north,lit=true]
 setblock ~12 ~15 ~22 minecraft:redstone_wall_torch[facing=south,lit=false]
-setblock ~13 ~15 ~28 minecraft:repeater[delay=1,facing=east,locked=false,powered=true]
-setblock ~14 ~15 ~28 minecraft:repeater[delay=1,facing=east,locked=false,powered=true]
-setblock ~15 ~15 ~28 minecraft:comparator[facing=east,mode=compare,powered=true]{OutputSignal:5}
-setblock ~17 ~15 ~28 minecraft:redstone_wall_torch[facing=north,lit=true]
-setblock ~12 ~15 ~29 minecraft:redstone_wall_torch[facing=south,lit=false]
-setblock ~22 ~16 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~25 ~16 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~28 ~16 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~31 ~16 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~34 ~16 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~37 ~16 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~40 ~16 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~43 ~16 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~46 ~16 ~2 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~19 ~16 ~12 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+setblock ~22 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~25 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~28 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~31 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~34 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~37 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~40 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~43 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~46 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~12 ~16 ~2 minecraft:waxed_copper_bulb[lit=false,powered=false]
+setblock ~13 ~16 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
+setblock ~22 ~16 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~25 ~16 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~28 ~16 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~31 ~16 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~34 ~16 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~37 ~16 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~40 ~16 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~43 ~16 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~46 ~16 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~10 ~16 ~7 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+setblock ~19 ~16 ~13 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~12 ~16 ~22 minecraft:waxed_copper_bulb[lit=false,powered=false]
 setblock ~13 ~16 ~22 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
-setblock ~8 ~16 ~25 minecraft:repeater[delay=1,facing=north,locked=false,powered=false]
-setblock ~22 ~16 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~25 ~16 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~28 ~16 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~31 ~16 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~34 ~16 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~37 ~16 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~40 ~16 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~43 ~16 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~46 ~16 ~26 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~10 ~16 ~29 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~12 ~16 ~29 minecraft:waxed_copper_bulb[lit=false,powered=false]
-setblock ~13 ~16 ~29 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
-setblock ~22 ~16 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~25 ~16 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~28 ~16 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~31 ~16 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~34 ~16 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~37 ~16 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~40 ~16 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~43 ~16 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
-setblock ~46 ~16 ~30 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~22 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~25 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~28 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~31 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~34 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~37 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~40 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~43 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~46 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~14 ~17 ~13 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~14 ~17 ~17 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
-setblock ~13 ~17 ~26 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
-setblock ~20 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 10"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 10"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~23 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 11"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 11"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~26 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 12"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 12"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~29 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 13"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 13"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~32 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 14"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 14"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~35 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 15"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 15"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~38 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 16"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 16"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~41 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 17"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 17"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~44 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 18"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 18"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~20 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 1"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 1"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~23 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 2"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 2"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~26 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 3"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 3"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~29 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 4"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 4"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~32 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 5"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 5"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~35 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 6"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 6"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~38 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 7"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 7"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~41 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 8"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 8"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~44 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 9"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 9"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~4 ~18 ~3 minecraft:oak_sign[rotation=8,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR"','"KITS"','""','""'],color:"yellow",has_glowing_text:1b},back_text:{messages:['"HOTBAR"','"KITS"','""','""'],color:"yellow",has_glowing_text:1b}}
+setblock ~17 ~18 ~3 minecraft:oak_sign[rotation=8,waterlogged=false]{is_waxed:1b,front_text:{messages:['"EMPTY SHULKERS"','"(hotbar)"','""','""'],color:"yellow",has_glowing_text:1b},back_text:{messages:['"EMPTY SHULKERS"','"(hotbar)"','""','""'],color:"yellow",has_glowing_text:1b}}
 setblock ~20 ~18 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 19"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 19"','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~23 ~18 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 20"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 20"','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~26 ~18 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 21"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 21"','""','""','""'],color:"black",has_glowing_text:0b}}
@@ -6242,33 +6376,39 @@ setblock ~35 ~18 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b
 setblock ~38 ~18 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 25"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 25"','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~41 ~18 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 26"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 26"','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~44 ~18 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 27"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 27"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~15 ~18 ~12 minecraft:oak_sign[rotation=8,waterlogged=false]{is_waxed:1b,front_text:{messages:['">> HOTBAR <<"','"press the"','"button: 1 kit"','""'],color:"light_blue",has_glowing_text:1b},back_text:{messages:['">> HOTBAR <<"','"press the"','"button: 1 kit"','""'],color:"light_blue",has_glowing_text:1b}}
+setblock ~15 ~18 ~13 minecraft:oak_button[face=floor,facing=north,powered=false]
 setblock ~15 ~18 ~17 minecraft:oak_button[face=floor,facing=north,powered=false]
-setblock ~15 ~18 ~18 minecraft:oak_sign[rotation=0,waterlogged=false]{is_waxed:1b,front_text:{messages:['">> HOTBAR <<"','"press the"','"button: 1 kit"','""'],color:"light_blue",has_glowing_text:1b},back_text:{messages:['">> HOTBAR <<"','"press the"','"button: 1 kit"','""'],color:"light_blue",has_glowing_text:1b}}
-setblock ~14 ~18 ~25 minecraft:oak_sign[rotation=8,waterlogged=false]{is_waxed:1b,front_text:{messages:['">> INVENTORY <<"','"press the"','"button: 1 kit"','""'],color:"lime",has_glowing_text:1b},back_text:{messages:['">> INVENTORY <<"','"press the"','"button: 1 kit"','""'],color:"lime",has_glowing_text:1b}}
-setblock ~14 ~18 ~26 minecraft:oak_button[face=floor,facing=north,powered=false]
-setblock ~4 ~18 ~27 minecraft:oak_sign[rotation=0,waterlogged=false]{is_waxed:1b,front_text:{messages:['"KITS"','"(both kinds)"','""','""'],color:"yellow",has_glowing_text:1b},back_text:{messages:['"KITS"','"(both kinds)"','""','""'],color:"yellow",has_glowing_text:1b}}
-setblock ~17 ~18 ~27 minecraft:oak_sign[rotation=0,waterlogged=false]{is_waxed:1b,front_text:{messages:['"EMPTY"','"SHULKERS"','""','""'],color:"yellow",has_glowing_text:1b},back_text:{messages:['"EMPTY"','"SHULKERS"','""','""'],color:"yellow",has_glowing_text:1b}}
-setblock ~20 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 1"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 1"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~23 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 2"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 2"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~26 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 3"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 3"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~29 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 4"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 4"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~32 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 5"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 5"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~35 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 6"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 6"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~38 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 7"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 7"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~41 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 8"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 8"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~44 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 9"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 9"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~20 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 1"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 1"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~23 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 2"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 2"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~26 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 3"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 3"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~29 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 4"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 4"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~32 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 5"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 5"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~35 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 6"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 6"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~38 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 7"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 7"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~41 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 8"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 8"','""','""','""'],color:"black",has_glowing_text:0b}}
-setblock ~44 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 9"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 9"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~15 ~18 ~18 minecraft:oak_sign[rotation=0,waterlogged=false]{is_waxed:1b,front_text:{messages:['">> INVENTORY <<"','"press the"','"button: 1 kit"','""'],color:"lime",has_glowing_text:1b},back_text:{messages:['">> INVENTORY <<"','"press the"','"button: 1 kit"','""'],color:"lime",has_glowing_text:1b}}
+setblock ~4 ~18 ~27 minecraft:oak_sign[rotation=0,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"KITS"','""','""'],color:"yellow",has_glowing_text:1b},back_text:{messages:['"INVENTORY"','"KITS"','""','""'],color:"yellow",has_glowing_text:1b}}
+setblock ~17 ~18 ~27 minecraft:oak_sign[rotation=0,waterlogged=false]{is_waxed:1b,front_text:{messages:['"EMPTY SHULKERS"','"(inventory)"','""','""'],color:"yellow",has_glowing_text:1b},back_text:{messages:['"EMPTY SHULKERS"','"(inventory)"','""','""'],color:"yellow",has_glowing_text:1b}}
+setblock ~20 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 10"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 10"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~23 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 11"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 11"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~26 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 12"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 12"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~29 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 13"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 13"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~32 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 14"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 14"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~35 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 15"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 15"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~38 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 16"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 16"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~41 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 17"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 17"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~44 ~18 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 18"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 18"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~20 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 1"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 1"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~23 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 2"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 2"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~26 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 3"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 3"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~29 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 4"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 4"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~32 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 5"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 5"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~35 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 6"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 6"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~38 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 7"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 7"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~41 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 8"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 8"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~44 ~18 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Inv 9"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Inv 9"','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~4 ~1 ~6 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~4 ~1 ~7 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+setblock ~5 ~1 ~7 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
 setblock ~4 ~1 ~23 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
 setblock ~5 ~1 ~23 minecraft:redstone_wire[east=none,north=none,power=0,south=side,west=side]
 setblock ~4 ~1 ~24 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~18 ~2 ~6 minecraft:redstone_wire[east=none,north=none,power=0,south=side,west=up]
+setblock ~18 ~2 ~8 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~18 ~2 ~9 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~21 ~2 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~24 ~2 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~27 ~2 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
@@ -6278,12 +6418,7 @@ setblock ~36 ~2 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=si
 setblock ~39 ~2 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~42 ~2 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~45 ~2 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
-setblock ~13 ~2 ~10 minecraft:redstone_wire[east=side,north=none,power=0,south=up,west=none]
-setblock ~14 ~2 ~10 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~15 ~2 ~10 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~16 ~2 ~10 minecraft:redstone_wire[east=none,north=none,power=0,south=side,west=side]
-setblock ~18 ~2 ~10 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=up]
-setblock ~16 ~2 ~11 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+setblock ~18 ~2 ~10 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=up]
 setblock ~15 ~2 ~14 minecraft:redstone_wire[east=side,north=up,power=0,south=none,west=none]
 setblock ~47 ~2 ~14 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
 setblock ~15 ~2 ~16 minecraft:redstone_wire[east=side,north=none,power=0,south=up,west=none]
@@ -6299,14 +6434,10 @@ setblock ~36 ~2 ~21 minecraft:redstone_wire[east=side,north=side,power=0,south=s
 setblock ~39 ~2 ~21 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~42 ~2 ~21 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~45 ~2 ~21 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
-setblock ~10 ~2 ~22 minecraft:redstone_wire[east=side,north=up,power=0,south=none,west=none]
-setblock ~11 ~2 ~22 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~12 ~2 ~22 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~14 ~2 ~22 minecraft:redstone_wire[east=up,north=none,power=0,south=none,west=side]
 setblock ~18 ~2 ~22 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~18 ~2 ~24 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=up]
+setblock ~17 ~3 ~6 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
 setblock ~17 ~3 ~10 minecraft:redstone_wire[east=side,north=up,power=0,south=none,west=none]
-setblock ~13 ~3 ~11 minecraft:redstone_wire[east=none,north=side,power=0,south=up,west=none]
 setblock ~15 ~3 ~13 minecraft:redstone_wire[east=none,north=up,power=0,south=side,west=none]
 setblock ~20 ~3 ~13 minecraft:redstone_wire[east=up,north=none,power=0,south=none,west=side]
 setblock ~23 ~3 ~13 minecraft:redstone_wire[east=up,north=none,power=0,south=none,west=side]
@@ -6328,21 +6459,9 @@ setblock ~38 ~3 ~17 minecraft:redstone_wire[east=up,north=none,power=0,south=non
 setblock ~41 ~3 ~17 minecraft:redstone_wire[east=up,north=none,power=0,south=none,west=side]
 setblock ~44 ~3 ~17 minecraft:redstone_wire[east=up,north=none,power=0,south=none,west=side]
 setblock ~17 ~3 ~20 minecraft:redstone_wire[east=side,north=none,power=0,south=up,west=none]
-setblock ~10 ~3 ~21 minecraft:redstone_wire[east=none,north=up,power=0,south=side,west=none]
-setblock ~15 ~3 ~22 minecraft:redstone_wire[east=none,north=none,power=0,south=side,west=side]
-setblock ~15 ~3 ~23 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~17 ~3 ~24 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
-setblock ~15 ~4 ~5 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
-setblock ~16 ~4 ~5 minecraft:redstone_wire[east=up,north=none,power=0,south=none,west=side]
-setblock ~15 ~4 ~6 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~15 ~4 ~7 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~15 ~4 ~8 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=up]
-setblock ~15 ~4 ~9 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~17 ~4 ~9 minecraft:redstone_wire[east=none,north=up,power=0,south=side,west=none]
-setblock ~15 ~4 ~10 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~15 ~4 ~11 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~13 ~4 ~12 minecraft:redstone_wire[east=none,north=side,power=0,south=up,west=none]
-setblock ~15 ~4 ~12 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~15 ~4 ~12 minecraft:redstone_wire[east=none,north=up,power=0,south=side,west=none]
 setblock ~21 ~4 ~13 minecraft:redstone_wire[east=none,north=up,power=0,south=none,west=side]
 setblock ~24 ~4 ~13 minecraft:redstone_wire[east=none,north=up,power=0,south=none,west=side]
 setblock ~27 ~4 ~13 minecraft:redstone_wire[east=none,north=up,power=0,south=none,west=side]
@@ -6362,10 +6481,8 @@ setblock ~39 ~4 ~17 minecraft:redstone_wire[east=none,north=none,power=0,south=u
 setblock ~42 ~4 ~17 minecraft:redstone_wire[east=none,north=none,power=0,south=up,west=side]
 setblock ~45 ~4 ~17 minecraft:redstone_wire[east=none,north=none,power=0,south=up,west=side]
 setblock ~15 ~4 ~18 minecraft:redstone_wire[east=none,north=side,power=0,south=up,west=none]
-setblock ~10 ~4 ~20 minecraft:redstone_wire[east=none,north=up,power=0,south=side,west=none]
 setblock ~17 ~4 ~21 minecraft:redstone_wire[east=none,north=side,power=0,south=up,west=none]
-setblock ~17 ~5 ~5 minecraft:redstone_wire[east=none,north=none,power=0,south=up,west=side]
-setblock ~14 ~5 ~8 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=up]
+setblock ~18 ~5 ~4 minecraft:redstone_wire[east=none,north=up,power=0,south=side,west=none]
 setblock ~17 ~5 ~8 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~21 ~5 ~10 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~24 ~5 ~10 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
@@ -6376,6 +6493,7 @@ setblock ~36 ~5 ~10 minecraft:redstone_wire[east=none,north=side,power=0,south=s
 setblock ~39 ~5 ~10 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~42 ~5 ~10 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~45 ~5 ~10 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~15 ~5 ~11 minecraft:redstone_wire[east=none,north=up,power=0,south=side,west=none]
 setblock ~21 ~5 ~11 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~24 ~5 ~11 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~27 ~5 ~11 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
@@ -6394,7 +6512,6 @@ setblock ~36 ~5 ~12 minecraft:redstone_wire[east=none,north=side,power=0,south=s
 setblock ~39 ~5 ~12 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~42 ~5 ~12 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~45 ~5 ~12 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~13 ~5 ~13 minecraft:redstone_wire[east=none,north=side,power=0,south=up,west=none]
 setblock ~21 ~5 ~18 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~24 ~5 ~18 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~27 ~5 ~18 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
@@ -6404,7 +6521,6 @@ setblock ~36 ~5 ~18 minecraft:redstone_wire[east=none,north=side,power=0,south=s
 setblock ~39 ~5 ~18 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~42 ~5 ~18 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~45 ~5 ~18 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~10 ~5 ~19 minecraft:redstone_wire[east=up,north=none,power=0,south=side,west=none]
 setblock ~15 ~5 ~19 minecraft:redstone_wire[east=none,north=side,power=0,south=up,west=none]
 setblock ~21 ~5 ~19 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~24 ~5 ~19 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
@@ -6426,7 +6542,13 @@ setblock ~42 ~5 ~20 minecraft:redstone_wire[east=none,north=side,power=0,south=s
 setblock ~45 ~5 ~20 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~17 ~5 ~22 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~18 ~5 ~26 minecraft:redstone_wire[east=none,north=side,power=0,south=up,west=none]
-setblock ~17 ~6 ~6 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~16 ~6 ~3 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=side]
+setblock ~18 ~6 ~3 minecraft:redstone_wire[east=none,north=none,power=0,south=side,west=side]
+setblock ~15 ~6 ~5 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
+setblock ~16 ~6 ~5 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+setblock ~15 ~6 ~6 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~15 ~6 ~7 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=none]
+setblock ~16 ~6 ~7 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~19 ~6 ~7 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~21 ~6 ~7 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~22 ~6 ~7 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
@@ -6452,14 +6574,14 @@ setblock ~42 ~6 ~7 minecraft:redstone_wire[east=side,north=none,power=0,south=no
 setblock ~43 ~6 ~7 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~45 ~6 ~7 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~46 ~6 ~7 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~13 ~6 ~8 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=up]
-setblock ~13 ~6 ~14 minecraft:redstone_wire[east=none,north=side,power=0,south=up,west=none]
+setblock ~15 ~6 ~8 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~15 ~6 ~9 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~15 ~6 ~10 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~8 ~6 ~15 minecraft:redstone_wire[east=none,north=up,power=0,south=side,west=none]
-setblock ~11 ~6 ~19 minecraft:redstone_wire[east=up,north=none,power=0,south=none,west=side]
 setblock ~15 ~6 ~20 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~15 ~6 ~21 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~15 ~6 ~22 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~15 ~6 ~23 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=none]
+setblock ~15 ~6 ~22 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=up]
+setblock ~15 ~6 ~23 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
 setblock ~16 ~6 ~23 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~19 ~6 ~23 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~21 ~6 ~23 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
@@ -6486,18 +6608,11 @@ setblock ~42 ~6 ~23 minecraft:redstone_wire[east=side,north=none,power=0,south=n
 setblock ~43 ~6 ~23 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~45 ~6 ~23 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~46 ~6 ~23 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~15 ~6 ~24 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~15 ~6 ~25 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
-setblock ~16 ~6 ~25 minecraft:redstone_wire[east=none,north=none,power=0,south=side,west=side]
 setblock ~8 ~6 ~27 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
-setblock ~16 ~6 ~27 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=side]
+setblock ~16 ~6 ~27 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~18 ~6 ~27 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
-setblock ~12 ~7 ~8 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=up]
 setblock ~8 ~7 ~14 minecraft:redstone_wire[east=none,north=up,power=0,south=side,west=none]
-setblock ~13 ~7 ~15 minecraft:redstone_wire[east=none,north=side,power=0,south=up,west=none]
-setblock ~12 ~7 ~19 minecraft:redstone_wire[east=up,north=none,power=0,south=none,west=side]
-setblock ~11 ~8 ~8 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
-setblock ~11 ~8 ~9 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~14 ~7 ~22 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=up]
 setblock ~21 ~8 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~24 ~8 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~27 ~8 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
@@ -6507,25 +6622,28 @@ setblock ~36 ~8 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=si
 setblock ~39 ~8 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~42 ~8 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~45 ~8 ~9 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
+setblock ~6 ~8 ~10 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
+setblock ~16 ~8 ~10 minecraft:redstone_wire[east=none,north=none,power=0,south=side,west=side]
 setblock ~18 ~8 ~10 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=up]
-setblock ~11 ~8 ~11 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
-setblock ~12 ~8 ~11 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~13 ~8 ~11 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~14 ~8 ~11 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~15 ~8 ~11 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~16 ~8 ~11 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~6 ~8 ~11 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~16 ~8 ~11 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+setblock ~6 ~8 ~12 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~6 ~8 ~13 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~8 ~8 ~13 minecraft:redstone_wire[east=none,north=up,power=0,south=side,west=none]
+setblock ~6 ~8 ~14 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~15 ~8 ~14 minecraft:redstone_wire[east=side,north=up,power=0,south=none,west=none]
 setblock ~47 ~8 ~14 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
-setblock ~13 ~8 ~16 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+setblock ~6 ~8 ~15 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~6 ~8 ~16 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
 setblock ~14 ~8 ~16 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~15 ~8 ~16 minecraft:redstone_wire[east=side,north=none,power=0,south=up,west=side]
 setblock ~47 ~8 ~16 minecraft:redstone_wire[east=none,north=none,power=0,south=side,west=side]
-setblock ~13 ~8 ~19 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~13 ~8 ~19 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
 setblock ~14 ~8 ~19 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~15 ~8 ~19 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~16 ~8 ~19 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~18 ~8 ~20 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=up]
+setblock ~13 ~8 ~21 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~21 ~8 ~21 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~24 ~8 ~21 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~27 ~8 ~21 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
@@ -6535,6 +6653,7 @@ setblock ~36 ~8 ~21 minecraft:redstone_wire[east=side,north=side,power=0,south=s
 setblock ~39 ~8 ~21 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~42 ~8 ~21 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
 setblock ~45 ~8 ~21 minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
+setblock ~13 ~8 ~22 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
 setblock ~17 ~9 ~10 minecraft:redstone_wire[east=side,north=up,power=0,south=none,west=none]
 setblock ~8 ~9 ~12 minecraft:redstone_wire[east=none,north=up,power=0,south=side,west=none]
 setblock ~15 ~9 ~13 minecraft:redstone_wire[east=none,north=up,power=0,south=side,west=none]
@@ -6707,25 +6826,34 @@ setblock ~43 ~12 ~23 minecraft:redstone_wire[east=side,north=none,power=0,south=
 setblock ~45 ~12 ~23 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~46 ~12 ~23 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~17 ~12 ~24 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~19 ~14 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
-setblock ~20 ~14 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~23 ~14 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~26 ~14 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~29 ~14 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~32 ~14 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~35 ~14 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~38 ~14 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~41 ~14 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~44 ~14 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~19 ~14 ~3 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~19 ~14 ~4 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~19 ~14 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
+setblock ~20 ~14 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~23 ~14 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~26 ~14 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~29 ~14 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~32 ~14 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~35 ~14 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~38 ~14 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~41 ~14 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~44 ~14 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~19 ~14 ~1 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=up]
+setblock ~19 ~14 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
+setblock ~20 ~14 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~23 ~14 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~26 ~14 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~29 ~14 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~32 ~14 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~35 ~14 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~38 ~14 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~41 ~14 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~44 ~14 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~19 ~14 ~5 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~14 ~6 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~14 ~7 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~14 ~8 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~14 ~9 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~14 ~10 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~19 ~14 ~12 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~19 ~14 ~11 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~14 ~13 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~14 ~14 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~14 ~15 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
@@ -6739,70 +6867,87 @@ setblock ~19 ~14 ~22 minecraft:redstone_wire[east=none,north=side,power=0,south=
 setblock ~19 ~14 ~23 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~14 ~24 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~14 ~25 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~19 ~14 ~26 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
-setblock ~20 ~14 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~23 ~14 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~26 ~14 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~29 ~14 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~32 ~14 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~35 ~14 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~38 ~14 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~41 ~14 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~44 ~14 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~19 ~14 ~28 minecraft:redstone_wire[east=none,north=none,power=0,south=side,west=up]
-setblock ~19 ~14 ~29 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~19 ~14 ~30 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
-setblock ~20 ~14 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~23 ~14 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~26 ~14 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~29 ~14 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~32 ~14 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~35 ~14 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~38 ~14 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~41 ~14 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~44 ~14 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~19 ~14 ~26 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~19 ~14 ~27 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~19 ~14 ~28 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+setblock ~20 ~14 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~23 ~14 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~26 ~14 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~29 ~14 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~32 ~14 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~35 ~14 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~38 ~14 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~41 ~14 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~44 ~14 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~18 ~15 ~1 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~18 ~15 ~21 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~18 ~15 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~19 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
-setblock ~20 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~23 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~26 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~29 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~32 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~35 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~38 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~41 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~44 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~19 ~16 ~3 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~19 ~16 ~4 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~19 ~16 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
+setblock ~20 ~16 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~23 ~16 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~26 ~16 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~29 ~16 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~32 ~16 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~35 ~16 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~38 ~16 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~41 ~16 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~44 ~16 ~0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~19 ~16 ~1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
+setblock ~11 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~14 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~15 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~16 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~17 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~18 ~16 ~2 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~19 ~16 ~2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+setblock ~10 ~16 ~3 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~4 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~19 ~16 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
+setblock ~20 ~16 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~23 ~16 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~26 ~16 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~29 ~16 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~32 ~16 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~35 ~16 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~38 ~16 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~41 ~16 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~44 ~16 ~4 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~10 ~16 ~5 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~5 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~6 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~6 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~7 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~8 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~8 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~9 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~9 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~10 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~10 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~11 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~11 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~19 ~16 ~13 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~12 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~19 ~16 ~12 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~13 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+setblock ~11 ~16 ~13 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~12 ~16 ~13 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~13 ~16 ~13 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~19 ~16 ~14 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~15 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~16 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~8 ~16 ~17 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
-setblock ~9 ~16 ~17 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~10 ~16 ~17 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~10 ~16 ~17 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
 setblock ~11 ~16 ~17 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~12 ~16 ~17 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~13 ~16 ~17 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~19 ~16 ~17 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~8 ~16 ~18 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~18 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~18 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~8 ~16 ~19 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~19 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~19 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~8 ~16 ~20 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~20 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~20 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~8 ~16 ~21 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~10 ~16 ~21 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~21 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~8 ~16 ~22 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~10 ~16 ~22 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
+setblock ~10 ~16 ~22 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
 setblock ~11 ~16 ~22 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~14 ~16 ~22 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~15 ~16 ~22 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
@@ -6810,65 +6955,56 @@ setblock ~16 ~16 ~22 minecraft:redstone_wire[east=side,north=none,power=0,south=
 setblock ~17 ~16 ~22 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~18 ~16 ~22 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~19 ~16 ~22 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=side]
-setblock ~8 ~16 ~23 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~10 ~16 ~23 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~23 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~8 ~16 ~24 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~10 ~16 ~24 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~24 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~10 ~16 ~25 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
 setblock ~19 ~16 ~25 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~8 ~16 ~26 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~10 ~16 ~26 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
-setblock ~11 ~16 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~12 ~16 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~19 ~16 ~26 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
-setblock ~20 ~16 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~23 ~16 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~26 ~16 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~29 ~16 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~32 ~16 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~35 ~16 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~38 ~16 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~41 ~16 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~44 ~16 ~26 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~8 ~16 ~27 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~8 ~16 ~28 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
-setblock ~8 ~16 ~29 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
-setblock ~9 ~16 ~29 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~11 ~16 ~29 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~14 ~16 ~29 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~15 ~16 ~29 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~16 ~16 ~29 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~17 ~16 ~29 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~18 ~16 ~29 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~19 ~16 ~29 minecraft:redstone_wire[east=none,north=none,power=0,south=side,west=side]
-setblock ~19 ~16 ~30 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
-setblock ~20 ~16 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~23 ~16 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~26 ~16 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~29 ~16 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~32 ~16 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~35 ~16 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~38 ~16 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~41 ~16 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
-setblock ~44 ~16 ~30 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~19 ~16 ~26 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~19 ~16 ~27 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+setblock ~19 ~16 ~28 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+setblock ~20 ~16 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~23 ~16 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~26 ~16 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~29 ~16 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~32 ~16 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~35 ~16 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~38 ~16 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~41 ~16 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~44 ~16 ~28 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+setblock ~3 ~1 ~4 minecraft:water[level=0]
 setblock ~3 ~1 ~26 minecraft:water[level=0]
+setblock ~3 ~2 ~4 minecraft:water[level=0]
 setblock ~3 ~2 ~26 minecraft:water[level=0]
+setblock ~3 ~3 ~4 minecraft:water[level=0]
 setblock ~3 ~3 ~26 minecraft:water[level=0]
+setblock ~3 ~4 ~4 minecraft:water[level=0]
 setblock ~3 ~4 ~26 minecraft:water[level=0]
+setblock ~3 ~5 ~4 minecraft:water[level=0]
 setblock ~3 ~5 ~26 minecraft:water[level=0]
+setblock ~3 ~6 ~4 minecraft:water[level=0]
 setblock ~3 ~6 ~26 minecraft:water[level=0]
+setblock ~3 ~7 ~4 minecraft:water[level=0]
 setblock ~3 ~7 ~26 minecraft:water[level=0]
+setblock ~3 ~8 ~4 minecraft:water[level=0]
 setblock ~3 ~8 ~26 minecraft:water[level=0]
+setblock ~3 ~9 ~4 minecraft:water[level=0]
 setblock ~3 ~9 ~26 minecraft:water[level=0]
+setblock ~3 ~10 ~4 minecraft:water[level=0]
 setblock ~3 ~10 ~26 minecraft:water[level=0]
+setblock ~3 ~11 ~4 minecraft:water[level=0]
 setblock ~3 ~11 ~26 minecraft:water[level=0]
+setblock ~3 ~12 ~4 minecraft:water[level=0]
 setblock ~3 ~12 ~26 minecraft:water[level=0]
+setblock ~3 ~13 ~4 minecraft:water[level=0]
 setblock ~3 ~13 ~26 minecraft:water[level=0]
+setblock ~3 ~14 ~4 minecraft:water[level=0]
 setblock ~3 ~14 ~26 minecraft:water[level=0]
+setblock ~3 ~15 ~4 minecraft:water[level=0]
 setblock ~3 ~15 ~26 minecraft:water[level=0]
+setblock ~3 ~16 ~4 minecraft:water[level=0]
 setblock ~3 ~16 ~26 minecraft:water[level=0]
+setblock ~3 ~17 ~4 minecraft:water[level=0]
 setblock ~3 ~17 ~26 minecraft:water[level=0]
+setblock ~3 ~18 ~4 minecraft:water[level=0]
 setblock ~3 ~18 ~26 minecraft:water[level=0]
+setblock ~2 ~19 ~4 minecraft:water[level=0]
 setblock ~2 ~19 ~26 minecraft:water[level=0]
