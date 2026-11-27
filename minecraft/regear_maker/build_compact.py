@@ -382,11 +382,11 @@ def room():
         for z in range(z0, z1 + 1):
             wall = x in (x0, x1) or z in (z0, z1)
             support((x, F, z), "polished_deepslate" if (x + z) % 2 else "polished_blackstone")
-            for y in range(F + 1, F + 3):
+            for y in range(F + 1, F + 4):
                 if wall:
                     support((x, y, z), "tinted_glass" if y == F + 2 and (x + z) % 4
                             else "deepslate_tiles")
-            support((x, F + 3, z), "sea_lantern" if x % 4 == 0 and z % 4 == 0 else "deepslate_tiles")
+            support((x, F + 4, z), "sea_lantern" if x % 4 == 0 and z % 4 == 0 else "deepslate_tiles")
     for m in range(ROW):
         b = 3 * m + 2
         for side, lab, num in [("I3", "Inv", 2 * ROW + m + 1), ("I2", "Inv", ROW + m + 1),

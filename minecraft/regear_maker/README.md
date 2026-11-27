@@ -3,7 +3,7 @@
 ## Compact version (recommended): `compact_regear_maker.litematic`
 **One build works everywhere:** singleplayer, normal servers, and servers whose hoppers move 8 items at a time (breezevanilla.eu). Tested on vanilla 1.21.4 and on Paper with 8-item hoppers.
 
-Size **50 long x 31 wide x 21 tall** (fits a 64 x 31 x 21 hole). Two stacks of two rows: the front stack has Inventory slots 1-9 (bottom) and 10-18 (top); the back stack is a mirror image with the Hotbar (bottom) and Inventory 19-27 (top). Each kit type has **its own shulker station**, so **both kits can be made at the same time**. **One control room on top** is where you do everything.
+Size **50 long x 31 wide x 22 tall** (fits a 64 x 33 x 23 hole). Two stacks of two rows: the front stack has Inventory slots 1-9 (bottom) and 10-18 (top); the back stack is a mirror image with the Hotbar (bottom) and Inventory 19-27 (top). Each kit type has **its own shulker station**, so **both kits can be made at the same time**. **One control room on top** is where you do everything.
 
 | Kit | Singleplayer | 8 items/transfer |
 |---|---|---|
@@ -12,7 +12,7 @@ Size **50 long x 31 wide x 21 tall** (fits a 64 x 31 x 21 hole). Two stacks of t
 | Both at once | ~4.5 min | ~2 min |
 
 ### The control room (on top, door in the front wall)
-The room is only 2 blocks tall inside, so it fits under the 21-block ceiling.
+The room is 3 blocks tall inside.
 * **36 barrels in the floor**, one per slot, each with a sign: "Inv 1-18" along the front, "Inv 19-27" and "Hot 1-9" along the back. Fill each barrel with the item for that slot (stackable or not). A full barrel lasts 27 kits.
 * **Two buttons**, each next to a glowing sign: ">> INVENTORY <<" (front half) and ">> HOTBAR <<" (back half). **One press = one kit.** You can press both at the same time.
 * **Empty shulkers:** each kit type has its own chest, "Empty shulkers (Inventory)" at the front and "Empty shulkers (Hotbar)" at the back.
