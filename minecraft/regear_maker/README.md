@@ -3,23 +3,31 @@
 ## Compact version (recommended): `compact_regear_maker.litematic`
 **One build works everywhere:** singleplayer, normal servers, and servers whose hoppers move 8 items at a time (breezevanilla.eu). Tested on vanilla 1.21.4 and on Paper with 8-item hoppers.
 
-Size **88 x 16 x 12** (the old tower was 53 x 81 x 11). Two rows, each with its own button:
+Size **44 x 24 x 12**: four stacked rows of 9 slots, with **one control room** at the bottom.
 
-| Row | Makes | Time per kit (singleplayer) | Time per kit (8 items/transfer) |
-|---|---|---|---|
-| **Inventory** (bottom row) | full 27-slot shulker | ~4 min | ~1.7 min |
-| **Hotbar** (top row, 9 blocks higher) | 9-slot shulker (slots 1-9) | ~2.75 min | ~50 s |
+| Row (bottom to top) | Slots | Made by |
+|---|---|---|
+| 1 (bottom) | Hotbar slots 1-9 | the HOTBAR button |
+| 2 | Inventory slots 1-9 | the INVENTORY button |
+| 3 | Inventory slots 10-18 | (starts by itself after row 2) |
+| 4 (top) | Inventory slots 19-27 | (starts by itself after row 3) |
 
-### Using it
-1. Put **empty shulker boxes** in the chest "Empty shulkers (Inventory)" / "Empty shulkers (Hotbar)" at the west end of each row.
-2. Press the **button** under the glowing ">> INVENTORY <<" or ">> HOTBAR <<" sign. **One press = one kit.**
-3. The copper bulb above the button glows while the kit is being made.
-4. The finished box drops into the "Inventory kits" / "Hotbar kits" chest, 2 blocks below the station.
-5. **Before the next press, wait ~30 s** in singleplayer (~5 s on an 8-item server) so every slot can refill. If you press too early, the kit still comes out, but slots that hadn't refilled are short.
+| Kit | Singleplayer | 8 items/transfer |
+|---|---|---|
+| Hotbar (9 slots) | ~2.75 min | ~50 s |
+| Inventory (27 slots) | ~4.2 min | ~2 min |
 
-### Changing the kit (one barrel per slot)
-Every slot has its own **barrel** with a sign "Inventory slot N" / "Hotbar slot N" on it. Slot 1 is next to the station; the numbers go up along the row.
-* **The item in a slot's barrel is what goes in that slot.** Each kit takes one full stack: 16 pearls, 64 crystals, 1 totem, and so on.
+### The control room (bottom, west end)
+* **Two buttons** on the east wall, each under a glowing sign: ">> HOTBAR <<" and ">> INVENTORY <<". **One press = one kit.**
+* **"Empty shulkers"** chest: put empty shulker boxes in it. Both kits use it.
+* **"Kits"** chest, set into the floor: both kinds of finished boxes come out here.
+* **Make one kit at a time.** Both kits are made in the same box station, so wait until a box comes out before pressing either button again.
+* **After a kit, wait ~30 s** in singleplayer (~5 s on an 8-item server) before making the same kit again, so its slots can refill. If you press too early, the kit still comes out, but slots that hadn't refilled are short.
+* A copper bulb at the west end of each row glows while that row is working.
+
+### Changing the kit (one barrel per slot, 36 barrels)
+Every slot has its own **barrel** with a sign: "Hotbar slot N" or "Inventory slot N". The barrels sit on the front (south) face of each row, and slot 1 of each row is at the west end. Use a ladder or scaffolding to reach the upper rows.
+* **The item in a slot's barrel is what goes in that slot,** stackable or not. Each kit takes one full stack: 16 pearls, 64 crystals, 1 totem, and so on.
 * Keep one item type per barrel. A full barrel lasts 27 kits.
 * **To change a slot:**
   1. Swap the barrel's items.
@@ -35,13 +43,14 @@ Default kits (from your screenshot):
 * **Measuring:** each slot is barrel → hopper → **decorated pot** → drain hopper → item line → box.
   * The pot holds exactly one stack, whatever the hopper speed.
   * The hopper above it holds 4 shulker boxes named "Blocker". A hopper can't push a shulker box into a shulker box, so the Blockers stay put.
-* **Token:** the button drops one "Token" brick into the row's hopper chain.
+* **Token:** each row has a dropper with "Token" bricks. The button (or, for the upper Inventory rows, the row below finishing) drops one token into the row's hopper chain.
   * The first chain hopper of each slot stays locked until that slot's pot is empty. The token waits there while that slot drains into the line, then rolls on to the next slot.
   * Slots fill strictly in order, so every item lands in the right box slot.
-* **Kit latch:** a copper bulb turns on at the press and off when the token reaches the end. While it's on, every refill hopper is locked, so each pot gives exactly one stack.
-* **Finishing:** when the token reaches the end, a delay line fires a piston that breaks the box into the hopper above the kits chest.
-  * The same signal makes the dispenser place the next empty box.
-  * The token ends up in "Used tokens". The dropper starts with 576 tokens; when it runs out, move the used ones back into it.
+* **Kit latch:** each row has a copper bulb that turns on when the row starts and off when its token reaches the end. While it's on, every refill hopper in that row is locked, so each pot gives exactly one stack.
+* **Stacking:** the upper rows' item lines drop down a hopper column into the bottom row's line, right next to the box. A row only starts after the row below has finished and its last items have arrived, so the slots stay in order.
+* **Finishing:** when the last row's token reaches the end, a delay line fires the piston, which breaks the box. The box drops through a hopper into the "Kits" chest.
+  * Each press makes the dispenser place a new empty box.
+  * Tokens end up in each row's "Used tokens" chest at the east end. Every dropper starts with 576 tokens; when one runs out, move the used tokens back into it.
 
 ### Files
 | File | Use |
@@ -54,7 +63,7 @@ Default kits (from your screenshot):
 ### Survival notes
 A Creative paste comes pre-filled. In Survival, also add:
 * 4 shulker boxes renamed "Blocker" in the hopper under every barrel.
-* Token bricks (any item renamed "Token" works) in the droppers next to the buttons.
+* Token bricks (any item renamed "Token" works) in the dropper at the west end of every row.
 * Wait ~30 s after filling the barrels so the pots fill before the first press.
 
 ## Older tower version (bigger, needs a different build per server)
