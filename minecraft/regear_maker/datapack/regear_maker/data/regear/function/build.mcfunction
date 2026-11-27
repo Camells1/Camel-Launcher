@@ -2205,6 +2205,10 @@ setblock ~19 ~74 ~5 minecraft:glass
 setblock ~29 ~74 ~5 minecraft:glass
 setblock ~30 ~74 ~5 minecraft:glass
 setblock ~31 ~74 ~5 minecraft:glass
+setblock ~12 ~75 ~1 minecraft:polished_andesite
+setblock ~13 ~75 ~1 minecraft:polished_andesite
+setblock ~14 ~75 ~1 minecraft:polished_andesite
+setblock ~15 ~75 ~1 minecraft:polished_andesite
 setblock ~16 ~75 ~1 minecraft:polished_andesite
 setblock ~17 ~75 ~1 minecraft:polished_andesite
 setblock ~18 ~75 ~1 minecraft:polished_andesite
@@ -2226,9 +2230,25 @@ setblock ~33 ~75 ~1 minecraft:polished_andesite
 setblock ~34 ~75 ~1 minecraft:polished_andesite
 setblock ~35 ~75 ~1 minecraft:polished_andesite
 setblock ~36 ~75 ~1 minecraft:polished_andesite
+setblock ~37 ~75 ~1 minecraft:polished_andesite
+setblock ~38 ~75 ~1 minecraft:polished_andesite
+setblock ~39 ~75 ~1 minecraft:polished_andesite
+setblock ~40 ~75 ~1 minecraft:polished_andesite
+setblock ~12 ~75 ~2 minecraft:polished_andesite
+setblock ~13 ~75 ~2 minecraft:polished_andesite
+setblock ~14 ~75 ~2 minecraft:polished_andesite
+setblock ~15 ~75 ~2 minecraft:polished_andesite
 setblock ~16 ~75 ~2 minecraft:polished_andesite
 setblock ~21 ~75 ~2 minecraft:polished_andesite
 setblock ~36 ~75 ~2 minecraft:polished_andesite
+setblock ~37 ~75 ~2 minecraft:polished_andesite
+setblock ~38 ~75 ~2 minecraft:polished_andesite
+setblock ~39 ~75 ~2 minecraft:polished_andesite
+setblock ~40 ~75 ~2 minecraft:polished_andesite
+setblock ~12 ~75 ~3 minecraft:polished_andesite
+setblock ~13 ~75 ~3 minecraft:polished_andesite
+setblock ~14 ~75 ~3 minecraft:polished_andesite
+setblock ~15 ~75 ~3 minecraft:polished_andesite
 setblock ~16 ~75 ~3 minecraft:polished_andesite
 setblock ~21 ~75 ~3 minecraft:polished_andesite
 setblock ~22 ~75 ~3 minecraft:polished_andesite
@@ -2242,6 +2262,14 @@ setblock ~33 ~75 ~3 minecraft:polished_andesite
 setblock ~34 ~75 ~3 minecraft:polished_andesite
 setblock ~35 ~75 ~3 minecraft:polished_andesite
 setblock ~36 ~75 ~3 minecraft:polished_andesite
+setblock ~37 ~75 ~3 minecraft:polished_andesite
+setblock ~38 ~75 ~3 minecraft:polished_andesite
+setblock ~39 ~75 ~3 minecraft:polished_andesite
+setblock ~40 ~75 ~3 minecraft:polished_andesite
+setblock ~12 ~75 ~4 minecraft:polished_andesite
+setblock ~13 ~75 ~4 minecraft:polished_andesite
+setblock ~14 ~75 ~4 minecraft:polished_andesite
+setblock ~15 ~75 ~4 minecraft:polished_andesite
 setblock ~16 ~75 ~4 minecraft:polished_andesite
 setblock ~18 ~75 ~4 minecraft:polished_andesite
 setblock ~19 ~75 ~4 minecraft:polished_andesite
@@ -2259,6 +2287,13 @@ setblock ~33 ~75 ~4 minecraft:polished_andesite
 setblock ~34 ~75 ~4 minecraft:polished_andesite
 setblock ~35 ~75 ~4 minecraft:polished_andesite
 setblock ~36 ~75 ~4 minecraft:polished_andesite
+setblock ~37 ~75 ~4 minecraft:polished_andesite
+setblock ~38 ~75 ~4 minecraft:polished_andesite
+setblock ~39 ~75 ~4 minecraft:polished_andesite
+setblock ~40 ~75 ~4 minecraft:polished_andesite
+setblock ~12 ~75 ~5 minecraft:polished_andesite
+setblock ~14 ~75 ~5 minecraft:polished_andesite
+setblock ~15 ~75 ~5 minecraft:polished_andesite
 setblock ~16 ~75 ~5 minecraft:polished_andesite
 setblock ~21 ~75 ~5 minecraft:polished_andesite
 setblock ~22 ~75 ~5 minecraft:polished_andesite
@@ -2272,6 +2307,13 @@ setblock ~33 ~75 ~5 minecraft:polished_andesite
 setblock ~34 ~75 ~5 minecraft:polished_andesite
 setblock ~35 ~75 ~5 minecraft:polished_andesite
 setblock ~36 ~75 ~5 minecraft:polished_andesite
+setblock ~37 ~75 ~5 minecraft:polished_andesite
+setblock ~38 ~75 ~5 minecraft:polished_andesite
+setblock ~40 ~75 ~5 minecraft:polished_andesite
+setblock ~12 ~75 ~6 minecraft:polished_andesite
+setblock ~13 ~75 ~6 minecraft:polished_andesite
+setblock ~14 ~75 ~6 minecraft:polished_andesite
+setblock ~15 ~75 ~6 minecraft:polished_andesite
 setblock ~16 ~75 ~6 minecraft:polished_andesite
 setblock ~17 ~75 ~6 minecraft:polished_andesite
 setblock ~18 ~75 ~6 minecraft:polished_andesite
@@ -2293,6 +2335,14 @@ setblock ~33 ~75 ~6 minecraft:polished_andesite
 setblock ~34 ~75 ~6 minecraft:polished_andesite
 setblock ~35 ~75 ~6 minecraft:polished_andesite
 setblock ~36 ~75 ~6 minecraft:polished_andesite
+setblock ~37 ~75 ~6 minecraft:polished_andesite
+setblock ~38 ~75 ~6 minecraft:polished_andesite
+setblock ~39 ~75 ~6 minecraft:polished_andesite
+setblock ~40 ~75 ~6 minecraft:polished_andesite
+setblock ~12 ~75 ~7 minecraft:polished_andesite
+setblock ~13 ~75 ~7 minecraft:polished_andesite
+setblock ~14 ~75 ~7 minecraft:polished_andesite
+setblock ~15 ~75 ~7 minecraft:polished_andesite
 setblock ~16 ~75 ~7 minecraft:polished_andesite
 setblock ~17 ~75 ~7 minecraft:polished_andesite
 setblock ~18 ~75 ~7 minecraft:polished_andesite
@@ -2314,9 +2364,25 @@ setblock ~33 ~75 ~7 minecraft:polished_andesite
 setblock ~34 ~75 ~7 minecraft:polished_andesite
 setblock ~35 ~75 ~7 minecraft:polished_andesite
 setblock ~36 ~75 ~7 minecraft:polished_andesite
+setblock ~37 ~75 ~7 minecraft:polished_andesite
+setblock ~38 ~75 ~7 minecraft:polished_andesite
+setblock ~39 ~75 ~7 minecraft:polished_andesite
+setblock ~40 ~75 ~7 minecraft:polished_andesite
+setblock ~12 ~75 ~8 minecraft:polished_andesite
+setblock ~13 ~75 ~8 minecraft:polished_andesite
+setblock ~14 ~75 ~8 minecraft:polished_andesite
+setblock ~15 ~75 ~8 minecraft:polished_andesite
 setblock ~16 ~75 ~8 minecraft:polished_andesite
 setblock ~22 ~75 ~8 minecraft:polished_andesite
 setblock ~36 ~75 ~8 minecraft:polished_andesite
+setblock ~37 ~75 ~8 minecraft:polished_andesite
+setblock ~38 ~75 ~8 minecraft:polished_andesite
+setblock ~39 ~75 ~8 minecraft:polished_andesite
+setblock ~40 ~75 ~8 minecraft:polished_andesite
+setblock ~12 ~75 ~9 minecraft:polished_andesite
+setblock ~13 ~75 ~9 minecraft:polished_andesite
+setblock ~14 ~75 ~9 minecraft:polished_andesite
+setblock ~15 ~75 ~9 minecraft:polished_andesite
 setblock ~16 ~75 ~9 minecraft:polished_andesite
 setblock ~17 ~75 ~9 minecraft:polished_andesite
 setblock ~18 ~75 ~9 minecraft:polished_andesite
@@ -2338,6 +2404,14 @@ setblock ~33 ~75 ~9 minecraft:polished_andesite
 setblock ~34 ~75 ~9 minecraft:polished_andesite
 setblock ~35 ~75 ~9 minecraft:polished_andesite
 setblock ~36 ~75 ~9 minecraft:polished_andesite
+setblock ~37 ~75 ~9 minecraft:polished_andesite
+setblock ~38 ~75 ~9 minecraft:polished_andesite
+setblock ~39 ~75 ~9 minecraft:polished_andesite
+setblock ~40 ~75 ~9 minecraft:polished_andesite
+setblock ~12 ~76 ~1 minecraft:glass
+setblock ~13 ~76 ~1 minecraft:glass
+setblock ~14 ~76 ~1 minecraft:glass
+setblock ~15 ~76 ~1 minecraft:glass
 setblock ~16 ~76 ~1 minecraft:glass
 setblock ~17 ~76 ~1 minecraft:glass
 setblock ~18 ~76 ~1 minecraft:glass
@@ -2359,20 +2433,28 @@ setblock ~33 ~76 ~1 minecraft:glass
 setblock ~34 ~76 ~1 minecraft:glass
 setblock ~35 ~76 ~1 minecraft:glass
 setblock ~36 ~76 ~1 minecraft:glass
-setblock ~16 ~76 ~2 minecraft:glass
-setblock ~36 ~76 ~2 minecraft:glass
-setblock ~16 ~76 ~3 minecraft:glass
-setblock ~36 ~76 ~3 minecraft:glass
-setblock ~16 ~76 ~4 minecraft:glass
-setblock ~36 ~76 ~4 minecraft:glass
-setblock ~16 ~76 ~5 minecraft:glass
-setblock ~36 ~76 ~5 minecraft:glass
-setblock ~16 ~76 ~6 minecraft:glass
-setblock ~36 ~76 ~6 minecraft:glass
-setblock ~16 ~76 ~7 minecraft:glass
-setblock ~36 ~76 ~7 minecraft:glass
-setblock ~16 ~76 ~8 minecraft:glass
-setblock ~36 ~76 ~8 minecraft:glass
+setblock ~37 ~76 ~1 minecraft:glass
+setblock ~38 ~76 ~1 minecraft:glass
+setblock ~39 ~76 ~1 minecraft:glass
+setblock ~40 ~76 ~1 minecraft:glass
+setblock ~12 ~76 ~2 minecraft:glass
+setblock ~40 ~76 ~2 minecraft:glass
+setblock ~12 ~76 ~3 minecraft:glass
+setblock ~40 ~76 ~3 minecraft:glass
+setblock ~12 ~76 ~4 minecraft:glass
+setblock ~40 ~76 ~4 minecraft:glass
+setblock ~12 ~76 ~5 minecraft:glass
+setblock ~40 ~76 ~5 minecraft:glass
+setblock ~12 ~76 ~6 minecraft:glass
+setblock ~40 ~76 ~6 minecraft:glass
+setblock ~12 ~76 ~7 minecraft:glass
+setblock ~40 ~76 ~7 minecraft:glass
+setblock ~12 ~76 ~8 minecraft:glass
+setblock ~40 ~76 ~8 minecraft:glass
+setblock ~12 ~76 ~9 minecraft:glass
+setblock ~13 ~76 ~9 minecraft:glass
+setblock ~14 ~76 ~9 minecraft:glass
+setblock ~15 ~76 ~9 minecraft:glass
 setblock ~16 ~76 ~9 minecraft:glass
 setblock ~17 ~76 ~9 minecraft:glass
 setblock ~18 ~76 ~9 minecraft:glass
@@ -2394,6 +2476,14 @@ setblock ~33 ~76 ~9 minecraft:glass
 setblock ~34 ~76 ~9 minecraft:glass
 setblock ~35 ~76 ~9 minecraft:glass
 setblock ~36 ~76 ~9 minecraft:glass
+setblock ~37 ~76 ~9 minecraft:glass
+setblock ~38 ~76 ~9 minecraft:glass
+setblock ~39 ~76 ~9 minecraft:glass
+setblock ~40 ~76 ~9 minecraft:glass
+setblock ~12 ~77 ~1 minecraft:glass
+setblock ~13 ~77 ~1 minecraft:glass
+setblock ~14 ~77 ~1 minecraft:glass
+setblock ~15 ~77 ~1 minecraft:glass
 setblock ~16 ~77 ~1 minecraft:glass
 setblock ~17 ~77 ~1 minecraft:glass
 setblock ~18 ~77 ~1 minecraft:glass
@@ -2415,20 +2505,28 @@ setblock ~33 ~77 ~1 minecraft:glass
 setblock ~34 ~77 ~1 minecraft:glass
 setblock ~35 ~77 ~1 minecraft:glass
 setblock ~36 ~77 ~1 minecraft:glass
-setblock ~16 ~77 ~2 minecraft:glass
-setblock ~36 ~77 ~2 minecraft:glass
-setblock ~16 ~77 ~3 minecraft:glass
-setblock ~36 ~77 ~3 minecraft:glass
-setblock ~16 ~77 ~4 minecraft:glass
-setblock ~36 ~77 ~4 minecraft:glass
-setblock ~16 ~77 ~5 minecraft:glass
-setblock ~36 ~77 ~5 minecraft:glass
-setblock ~16 ~77 ~6 minecraft:glass
-setblock ~36 ~77 ~6 minecraft:glass
-setblock ~16 ~77 ~7 minecraft:glass
-setblock ~36 ~77 ~7 minecraft:glass
-setblock ~16 ~77 ~8 minecraft:glass
-setblock ~36 ~77 ~8 minecraft:glass
+setblock ~37 ~77 ~1 minecraft:glass
+setblock ~38 ~77 ~1 minecraft:glass
+setblock ~39 ~77 ~1 minecraft:glass
+setblock ~40 ~77 ~1 minecraft:glass
+setblock ~12 ~77 ~2 minecraft:glass
+setblock ~40 ~77 ~2 minecraft:glass
+setblock ~12 ~77 ~3 minecraft:glass
+setblock ~40 ~77 ~3 minecraft:glass
+setblock ~12 ~77 ~4 minecraft:glass
+setblock ~40 ~77 ~4 minecraft:glass
+setblock ~12 ~77 ~5 minecraft:glass
+setblock ~40 ~77 ~5 minecraft:glass
+setblock ~12 ~77 ~6 minecraft:glass
+setblock ~40 ~77 ~6 minecraft:glass
+setblock ~12 ~77 ~7 minecraft:glass
+setblock ~40 ~77 ~7 minecraft:glass
+setblock ~12 ~77 ~8 minecraft:glass
+setblock ~40 ~77 ~8 minecraft:glass
+setblock ~12 ~77 ~9 minecraft:glass
+setblock ~13 ~77 ~9 minecraft:glass
+setblock ~14 ~77 ~9 minecraft:glass
+setblock ~15 ~77 ~9 minecraft:glass
 setblock ~16 ~77 ~9 minecraft:glass
 setblock ~17 ~77 ~9 minecraft:glass
 setblock ~18 ~77 ~9 minecraft:glass
@@ -2450,6 +2548,14 @@ setblock ~33 ~77 ~9 minecraft:glass
 setblock ~34 ~77 ~9 minecraft:glass
 setblock ~35 ~77 ~9 minecraft:glass
 setblock ~36 ~77 ~9 minecraft:glass
+setblock ~37 ~77 ~9 minecraft:glass
+setblock ~38 ~77 ~9 minecraft:glass
+setblock ~39 ~77 ~9 minecraft:glass
+setblock ~40 ~77 ~9 minecraft:glass
+setblock ~12 ~78 ~1 minecraft:glass
+setblock ~13 ~78 ~1 minecraft:glass
+setblock ~14 ~78 ~1 minecraft:glass
+setblock ~15 ~78 ~1 minecraft:glass
 setblock ~16 ~78 ~1 minecraft:glass
 setblock ~17 ~78 ~1 minecraft:glass
 setblock ~18 ~78 ~1 minecraft:glass
@@ -2471,20 +2577,28 @@ setblock ~33 ~78 ~1 minecraft:glass
 setblock ~34 ~78 ~1 minecraft:glass
 setblock ~35 ~78 ~1 minecraft:glass
 setblock ~36 ~78 ~1 minecraft:glass
-setblock ~16 ~78 ~2 minecraft:glass
-setblock ~36 ~78 ~2 minecraft:glass
-setblock ~16 ~78 ~3 minecraft:glass
-setblock ~36 ~78 ~3 minecraft:glass
-setblock ~16 ~78 ~4 minecraft:glass
-setblock ~36 ~78 ~4 minecraft:glass
-setblock ~16 ~78 ~5 minecraft:glass
-setblock ~36 ~78 ~5 minecraft:glass
-setblock ~16 ~78 ~6 minecraft:glass
-setblock ~36 ~78 ~6 minecraft:glass
-setblock ~16 ~78 ~7 minecraft:glass
-setblock ~36 ~78 ~7 minecraft:glass
-setblock ~16 ~78 ~8 minecraft:glass
-setblock ~36 ~78 ~8 minecraft:glass
+setblock ~37 ~78 ~1 minecraft:glass
+setblock ~38 ~78 ~1 minecraft:glass
+setblock ~39 ~78 ~1 minecraft:glass
+setblock ~40 ~78 ~1 minecraft:glass
+setblock ~12 ~78 ~2 minecraft:glass
+setblock ~40 ~78 ~2 minecraft:glass
+setblock ~12 ~78 ~3 minecraft:glass
+setblock ~40 ~78 ~3 minecraft:glass
+setblock ~12 ~78 ~4 minecraft:glass
+setblock ~40 ~78 ~4 minecraft:glass
+setblock ~12 ~78 ~5 minecraft:glass
+setblock ~40 ~78 ~5 minecraft:glass
+setblock ~12 ~78 ~6 minecraft:glass
+setblock ~40 ~78 ~6 minecraft:glass
+setblock ~12 ~78 ~7 minecraft:glass
+setblock ~40 ~78 ~7 minecraft:glass
+setblock ~12 ~78 ~8 minecraft:glass
+setblock ~40 ~78 ~8 minecraft:glass
+setblock ~12 ~78 ~9 minecraft:glass
+setblock ~13 ~78 ~9 minecraft:glass
+setblock ~14 ~78 ~9 minecraft:glass
+setblock ~15 ~78 ~9 minecraft:glass
 setblock ~16 ~78 ~9 minecraft:glass
 setblock ~17 ~78 ~9 minecraft:glass
 setblock ~18 ~78 ~9 minecraft:glass
@@ -2506,6 +2620,14 @@ setblock ~33 ~78 ~9 minecraft:glass
 setblock ~34 ~78 ~9 minecraft:glass
 setblock ~35 ~78 ~9 minecraft:glass
 setblock ~36 ~78 ~9 minecraft:glass
+setblock ~37 ~78 ~9 minecraft:glass
+setblock ~38 ~78 ~9 minecraft:glass
+setblock ~39 ~78 ~9 minecraft:glass
+setblock ~40 ~78 ~9 minecraft:glass
+setblock ~12 ~79 ~1 minecraft:glass
+setblock ~13 ~79 ~1 minecraft:glass
+setblock ~14 ~79 ~1 minecraft:glass
+setblock ~15 ~79 ~1 minecraft:glass
 setblock ~16 ~79 ~1 minecraft:glass
 setblock ~17 ~79 ~1 minecraft:glass
 setblock ~18 ~79 ~1 minecraft:glass
@@ -2527,20 +2649,28 @@ setblock ~33 ~79 ~1 minecraft:glass
 setblock ~34 ~79 ~1 minecraft:glass
 setblock ~35 ~79 ~1 minecraft:glass
 setblock ~36 ~79 ~1 minecraft:glass
-setblock ~16 ~79 ~2 minecraft:glass
-setblock ~36 ~79 ~2 minecraft:glass
-setblock ~16 ~79 ~3 minecraft:glass
-setblock ~36 ~79 ~3 minecraft:glass
-setblock ~16 ~79 ~4 minecraft:glass
-setblock ~36 ~79 ~4 minecraft:glass
-setblock ~16 ~79 ~5 minecraft:glass
-setblock ~36 ~79 ~5 minecraft:glass
-setblock ~16 ~79 ~6 minecraft:glass
-setblock ~36 ~79 ~6 minecraft:glass
-setblock ~16 ~79 ~7 minecraft:glass
-setblock ~36 ~79 ~7 minecraft:glass
-setblock ~16 ~79 ~8 minecraft:glass
-setblock ~36 ~79 ~8 minecraft:glass
+setblock ~37 ~79 ~1 minecraft:glass
+setblock ~38 ~79 ~1 minecraft:glass
+setblock ~39 ~79 ~1 minecraft:glass
+setblock ~40 ~79 ~1 minecraft:glass
+setblock ~12 ~79 ~2 minecraft:glass
+setblock ~40 ~79 ~2 minecraft:glass
+setblock ~12 ~79 ~3 minecraft:glass
+setblock ~40 ~79 ~3 minecraft:glass
+setblock ~12 ~79 ~4 minecraft:glass
+setblock ~40 ~79 ~4 minecraft:glass
+setblock ~12 ~79 ~5 minecraft:glass
+setblock ~40 ~79 ~5 minecraft:glass
+setblock ~12 ~79 ~6 minecraft:glass
+setblock ~40 ~79 ~6 minecraft:glass
+setblock ~12 ~79 ~7 minecraft:glass
+setblock ~40 ~79 ~7 minecraft:glass
+setblock ~12 ~79 ~8 minecraft:glass
+setblock ~40 ~79 ~8 minecraft:glass
+setblock ~12 ~79 ~9 minecraft:glass
+setblock ~13 ~79 ~9 minecraft:glass
+setblock ~14 ~79 ~9 minecraft:glass
+setblock ~15 ~79 ~9 minecraft:glass
 setblock ~16 ~79 ~9 minecraft:glass
 setblock ~17 ~79 ~9 minecraft:glass
 setblock ~18 ~79 ~9 minecraft:glass
@@ -2562,6 +2692,14 @@ setblock ~33 ~79 ~9 minecraft:glass
 setblock ~34 ~79 ~9 minecraft:glass
 setblock ~35 ~79 ~9 minecraft:glass
 setblock ~36 ~79 ~9 minecraft:glass
+setblock ~37 ~79 ~9 minecraft:glass
+setblock ~38 ~79 ~9 minecraft:glass
+setblock ~39 ~79 ~9 minecraft:glass
+setblock ~40 ~79 ~9 minecraft:glass
+setblock ~12 ~80 ~1 minecraft:glass
+setblock ~13 ~80 ~1 minecraft:glass
+setblock ~14 ~80 ~1 minecraft:glass
+setblock ~15 ~80 ~1 minecraft:glass
 setblock ~16 ~80 ~1 minecraft:glass
 setblock ~17 ~80 ~1 minecraft:glass
 setblock ~18 ~80 ~1 minecraft:glass
@@ -2583,6 +2721,14 @@ setblock ~33 ~80 ~1 minecraft:glass
 setblock ~34 ~80 ~1 minecraft:glass
 setblock ~35 ~80 ~1 minecraft:glass
 setblock ~36 ~80 ~1 minecraft:glass
+setblock ~37 ~80 ~1 minecraft:glass
+setblock ~38 ~80 ~1 minecraft:glass
+setblock ~39 ~80 ~1 minecraft:glass
+setblock ~40 ~80 ~1 minecraft:glass
+setblock ~12 ~80 ~2 minecraft:glass
+setblock ~13 ~80 ~2 minecraft:glass
+setblock ~14 ~80 ~2 minecraft:glass
+setblock ~15 ~80 ~2 minecraft:glass
 setblock ~16 ~80 ~2 minecraft:glass
 setblock ~17 ~80 ~2 minecraft:glass
 setblock ~18 ~80 ~2 minecraft:glass
@@ -2604,6 +2750,14 @@ setblock ~33 ~80 ~2 minecraft:glass
 setblock ~34 ~80 ~2 minecraft:glass
 setblock ~35 ~80 ~2 minecraft:glass
 setblock ~36 ~80 ~2 minecraft:glass
+setblock ~37 ~80 ~2 minecraft:glass
+setblock ~38 ~80 ~2 minecraft:glass
+setblock ~39 ~80 ~2 minecraft:glass
+setblock ~40 ~80 ~2 minecraft:glass
+setblock ~12 ~80 ~3 minecraft:glass
+setblock ~13 ~80 ~3 minecraft:glass
+setblock ~14 ~80 ~3 minecraft:glass
+setblock ~15 ~80 ~3 minecraft:glass
 setblock ~16 ~80 ~3 minecraft:glass
 setblock ~17 ~80 ~3 minecraft:glass
 setblock ~18 ~80 ~3 minecraft:glass
@@ -2625,6 +2779,14 @@ setblock ~33 ~80 ~3 minecraft:glass
 setblock ~34 ~80 ~3 minecraft:glass
 setblock ~35 ~80 ~3 minecraft:glass
 setblock ~36 ~80 ~3 minecraft:glass
+setblock ~37 ~80 ~3 minecraft:glass
+setblock ~38 ~80 ~3 minecraft:glass
+setblock ~39 ~80 ~3 minecraft:glass
+setblock ~40 ~80 ~3 minecraft:glass
+setblock ~12 ~80 ~4 minecraft:glass
+setblock ~13 ~80 ~4 minecraft:glass
+setblock ~14 ~80 ~4 minecraft:glass
+setblock ~15 ~80 ~4 minecraft:glass
 setblock ~16 ~80 ~4 minecraft:glass
 setblock ~17 ~80 ~4 minecraft:glass
 setblock ~18 ~80 ~4 minecraft:glass
@@ -2646,6 +2808,14 @@ setblock ~33 ~80 ~4 minecraft:glass
 setblock ~34 ~80 ~4 minecraft:glass
 setblock ~35 ~80 ~4 minecraft:glass
 setblock ~36 ~80 ~4 minecraft:glass
+setblock ~37 ~80 ~4 minecraft:glass
+setblock ~38 ~80 ~4 minecraft:glass
+setblock ~39 ~80 ~4 minecraft:glass
+setblock ~40 ~80 ~4 minecraft:glass
+setblock ~12 ~80 ~5 minecraft:glass
+setblock ~13 ~80 ~5 minecraft:glass
+setblock ~14 ~80 ~5 minecraft:glass
+setblock ~15 ~80 ~5 minecraft:glass
 setblock ~16 ~80 ~5 minecraft:glass
 setblock ~17 ~80 ~5 minecraft:glass
 setblock ~18 ~80 ~5 minecraft:glass
@@ -2667,6 +2837,14 @@ setblock ~33 ~80 ~5 minecraft:glass
 setblock ~34 ~80 ~5 minecraft:glass
 setblock ~35 ~80 ~5 minecraft:glass
 setblock ~36 ~80 ~5 minecraft:glass
+setblock ~37 ~80 ~5 minecraft:glass
+setblock ~38 ~80 ~5 minecraft:glass
+setblock ~39 ~80 ~5 minecraft:glass
+setblock ~40 ~80 ~5 minecraft:glass
+setblock ~12 ~80 ~6 minecraft:glass
+setblock ~13 ~80 ~6 minecraft:glass
+setblock ~14 ~80 ~6 minecraft:glass
+setblock ~15 ~80 ~6 minecraft:glass
 setblock ~16 ~80 ~6 minecraft:glass
 setblock ~17 ~80 ~6 minecraft:glass
 setblock ~18 ~80 ~6 minecraft:glass
@@ -2688,6 +2866,14 @@ setblock ~33 ~80 ~6 minecraft:glass
 setblock ~34 ~80 ~6 minecraft:glass
 setblock ~35 ~80 ~6 minecraft:glass
 setblock ~36 ~80 ~6 minecraft:glass
+setblock ~37 ~80 ~6 minecraft:glass
+setblock ~38 ~80 ~6 minecraft:glass
+setblock ~39 ~80 ~6 minecraft:glass
+setblock ~40 ~80 ~6 minecraft:glass
+setblock ~12 ~80 ~7 minecraft:glass
+setblock ~13 ~80 ~7 minecraft:glass
+setblock ~14 ~80 ~7 minecraft:glass
+setblock ~15 ~80 ~7 minecraft:glass
 setblock ~16 ~80 ~7 minecraft:glass
 setblock ~17 ~80 ~7 minecraft:glass
 setblock ~18 ~80 ~7 minecraft:glass
@@ -2709,6 +2895,14 @@ setblock ~33 ~80 ~7 minecraft:glass
 setblock ~34 ~80 ~7 minecraft:glass
 setblock ~35 ~80 ~7 minecraft:glass
 setblock ~36 ~80 ~7 minecraft:glass
+setblock ~37 ~80 ~7 minecraft:glass
+setblock ~38 ~80 ~7 minecraft:glass
+setblock ~39 ~80 ~7 minecraft:glass
+setblock ~40 ~80 ~7 minecraft:glass
+setblock ~12 ~80 ~8 minecraft:glass
+setblock ~13 ~80 ~8 minecraft:glass
+setblock ~14 ~80 ~8 minecraft:glass
+setblock ~15 ~80 ~8 minecraft:glass
 setblock ~16 ~80 ~8 minecraft:glass
 setblock ~17 ~80 ~8 minecraft:glass
 setblock ~18 ~80 ~8 minecraft:glass
@@ -2730,6 +2924,14 @@ setblock ~33 ~80 ~8 minecraft:glass
 setblock ~34 ~80 ~8 minecraft:glass
 setblock ~35 ~80 ~8 minecraft:glass
 setblock ~36 ~80 ~8 minecraft:glass
+setblock ~37 ~80 ~8 minecraft:glass
+setblock ~38 ~80 ~8 minecraft:glass
+setblock ~39 ~80 ~8 minecraft:glass
+setblock ~40 ~80 ~8 minecraft:glass
+setblock ~12 ~80 ~9 minecraft:glass
+setblock ~13 ~80 ~9 minecraft:glass
+setblock ~14 ~80 ~9 minecraft:glass
+setblock ~15 ~80 ~9 minecraft:glass
 setblock ~16 ~80 ~9 minecraft:glass
 setblock ~17 ~80 ~9 minecraft:glass
 setblock ~18 ~80 ~9 minecraft:glass
@@ -2751,6 +2953,10 @@ setblock ~33 ~80 ~9 minecraft:glass
 setblock ~34 ~80 ~9 minecraft:glass
 setblock ~35 ~80 ~9 minecraft:glass
 setblock ~36 ~80 ~9 minecraft:glass
+setblock ~37 ~80 ~9 minecraft:glass
+setblock ~38 ~80 ~9 minecraft:glass
+setblock ~39 ~80 ~9 minecraft:glass
+setblock ~40 ~80 ~9 minecraft:glass
 setblock ~32 ~1 ~5 minecraft:dropper[facing=up,triggered=false]{Items:[]}
 setblock ~33 ~1 ~5 minecraft:hopper[enabled=true,facing=south]{Items:[],TransferCooldown:0}
 setblock ~34 ~1 ~5 minecraft:hopper[enabled=true,facing=west]{Items:[],TransferCooldown:0}
@@ -5438,6 +5644,56 @@ setblock ~30 ~75 ~5 minecraft:repeater[delay=1,facing=east,locked=false,powered=
 setblock ~31 ~75 ~5 minecraft:comparator[facing=east,mode=compare,powered=false]{OutputSignal:0}
 setblock ~15 ~76 ~5 minecraft:stone_button[face=wall,facing=east,powered=false]
 setblock ~37 ~76 ~5 minecraft:stone_button[face=wall,facing=west,powered=false]
+setblock ~20 ~76 ~6 minecraft:oak_sign[rotation=8,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR KITS"','"Finished"','"shulkers come"','"out here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~32 ~76 ~6 minecraft:oak_sign[rotation=8,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY KITS"','"Finished"','"shulkers come"','"out here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~17 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR"','"SLOT 2"','"Put the item for"','"slot 2 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~18 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR"','"SLOT 4"','"Put the item for"','"slot 4 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~19 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR"','"SLOT 6"','"Put the item for"','"slot 6 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~20 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR"','"SLOT 8"','"Put the item for"','"slot 8 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~22 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 27"','"Put the item for"','"slot 27 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~23 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 25"','"Put the item for"','"slot 25 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~24 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 23"','"Put the item for"','"slot 23 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~25 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 21"','"Put the item for"','"slot 21 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~26 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 19"','"Put the item for"','"slot 19 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~27 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 17"','"Put the item for"','"slot 17 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~28 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 15"','"Put the item for"','"slot 15 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~29 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 13"','"Put the item for"','"slot 13 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~30 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 11"','"Put the item for"','"slot 11 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~31 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 9"','"Put the item for"','"slot 9 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~32 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 7"','"Put the item for"','"slot 7 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~33 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 5"','"Put the item for"','"slot 5 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~34 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 3"','"Put the item for"','"slot 3 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~35 ~77 ~2 minecraft:oak_wall_sign[facing=south,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 1"','"Put the item for"','"slot 1 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~13 ~77 ~3 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['"1. Put EMPTY"','"shulker boxes in"','"the chest above"','"the button"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~39 ~77 ~3 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['"1. Put EMPTY"','"shulker boxes in"','"the chest above"','"the button"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~13 ~77 ~4 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['"2. Stock every"','"\'Hotbar slot\'"','"chest with the"','"item you want"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~39 ~77 ~4 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['"2. Stock every"','"\'Inventory slot\'"','"chest with the"','"item you want"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~13 ~77 ~6 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['"3. Press button"','"Kit arrives in"','"\'Hotbar kits\'"','"~6 min first, then 1/min"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~39 ~77 ~6 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['"3. Press button"','"Kit arrives in"','"\'Inventory kits\'"','"~15 min first, then 1/min"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~13 ~77 ~7 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['"RULES"','"1 stack per slot"','"(totem = 1)"','"1 item type/chest"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~39 ~77 ~7 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['"RULES"','"1 stack per slot"','"(totem = 1)"','"1 item type/chest"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~17 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR"','"SLOT 1"','"Put the item for"','"slot 1 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~18 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR"','"SLOT 3"','"Put the item for"','"slot 3 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~19 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR"','"SLOT 5"','"Put the item for"','"slot 5 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~20 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR"','"SLOT 7"','"Put the item for"','"slot 7 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~21 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR"','"SLOT 9"','"Put the item for"','"slot 9 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~23 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 26"','"Put the item for"','"slot 26 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~24 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 24"','"Put the item for"','"slot 24 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~25 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 22"','"Put the item for"','"slot 22 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~26 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 20"','"Put the item for"','"slot 20 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~27 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 18"','"Put the item for"','"slot 18 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~28 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 16"','"Put the item for"','"slot 16 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~29 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 14"','"Put the item for"','"slot 14 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~30 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 12"','"Put the item for"','"slot 12 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~31 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 10"','"Put the item for"','"slot 10 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~32 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 8"','"Put the item for"','"slot 8 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~33 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 6"','"Put the item for"','"slot 6 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~34 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 4"','"Put the item for"','"slot 4 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~35 ~77 ~8 minecraft:oak_wall_sign[facing=north,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY"','"SLOT 2"','"Put the item for"','"slot 2 here"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~13 ~78 ~3 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['"HOTBAR KIT"','"9-slot shulker"','"Each button press"','"= 1 kit"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~39 ~78 ~3 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['"INVENTORY KIT"','"27-slot shulker"','"Each button press"','"= 1 kit"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~13 ~78 ~7 minecraft:oak_wall_sign[facing=east,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Never leave a"','"slot chest empty"','"or slots after"','"it shift up"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
+setblock ~39 ~78 ~7 minecraft:oak_wall_sign[facing=west,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Never leave a"','"slot chest empty"','"or slots after"','"it shift up"'],color:"black",has_glowing_text:0b},back_text:{messages:['""','""','""','""'],color:"black",has_glowing_text:0b}}
 setblock ~29 ~1 ~3 minecraft:redstone_wire[east=side,north=none,power=0,south=side,west=none]
 setblock ~30 ~1 ~3 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
 setblock ~31 ~1 ~3 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]

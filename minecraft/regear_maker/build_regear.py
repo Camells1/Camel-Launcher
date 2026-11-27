@@ -290,7 +290,9 @@ for tw, layout, ox, rot, out_name, in_name, label in TOWERS:
 ROT[0] = False
 
 # control room shell: floor, glass walls and roof around the chest rows
-_xs = [p[0] for p, b in BLOCKS.items() if p[1] == ROOM_Y and b[0] == "minecraft:chest"]
+_xs = [p[0] for p, b in BLOCKS.items() if p[1] == ROOM_Y and b[0] in
+       ("minecraft:chest", "minecraft:stone_button", "minecraft:dropper", "minecraft:hopper")
+       and abs(p[2]) <= 3]
 RX0, RX1 = min(_xs) - 1, max(_xs) + 1
 for x in range(RX0, RX1 + 1):
     for z in range(-4, 5):
@@ -303,7 +305,7 @@ for x in range(RX0, RX1 + 1):
                 put((x, y, z), "glass")
 
 # ---------------------------------------------------------------------------------------------
-NON_CONDUCTORS = {"air", "glass", "hopper", "repeater", "comparator", "redstone_wire",
+NON_CONDUCTORS = {"air", "glass", "oak_wall_sign", "oak_sign", "hopper", "repeater", "comparator", "redstone_wire",
                   "redstone_wall_torch", "redstone_torch", "piston", "chest", "shulker_box"}
 DIRS = {"north": (0, -1), "south": (0, 1), "east": (1, 0), "west": (-1, 0)}
 OPP = {"north": "south", "south": "north", "east": "west", "west": "east"}
@@ -453,6 +455,63 @@ def main():
                 % PACK_FORMAT_1_21_4)
     print(f"blocks {len(BLOCKS)}  size {size}  offset {off}")
 
+
+
+
+# ---------------------------------------------------------------------------------------------
+# Signs (added last; waxed so they can't be edited by accident)
+def sign(pos, lines, facing=None, rotation=None):
+    pos = tuple(pos)
+    if pos in BLOCKS:
+        return
+    lines = (list(lines) + ["", "", "", ""])[:4]
+    if facing:
+        put(pos, "oak_wall_sign", COMPONENT, facing=facing, waterlogged=False)
+    else:
+        put(pos, "oak_sign", COMPONENT, rotation=rotation, waterlogged=False)
+    msg = lambda ls: List[String]([String('"%s"' % t) for t in ls])
+    TILES[pos] = Compound({"id": String("minecraft:sign"), "is_waxed": Byte(1),
+                           "front_text": Compound({"messages": msg(lines), "color": String("black"),
+                                                   "has_glowing_text": Byte(0)}),
+                           "back_text": Compound({"messages": msg(["", "", "", ""]), "color": String("black"),
+                                                  "has_glowing_text": Byte(0)})})
+
+
+# slot label above every slot chest
+for pos, (bid_, _) in list(BLOCKS.items()):
+    if bid_ == "minecraft:chest" and pos[1] == ROOM_Y and abs(pos[2]) == 3:
+        name = str(TILES[pos]["CustomName"]).strip("'\"")
+        kit, _, num = name.rpartition(" slot ")
+        sign((pos[0], ROOM_Y + 1, pos[2]), [kit.upper(), f"SLOT {num}", "Put the item for", f"slot {num} here"],
+             facing="south" if pos[2] < 0 else "north")
+
+# output chest labels (standing signs next to the output chests)
+for tw, layout, ox, rot, out_name, in_name, label in TOWERS:
+    for pos, (bid_, _) in list(BLOCKS.items()):
+        if bid_ == "minecraft:chest" and str(TILES[pos].get("CustomName", "")).strip("'\"") == out_name:
+            for dz in (1, -1):
+                q = (pos[0], ROOM_Y, dz)
+                if q not in BLOCKS and BLOCKS.get((pos[0], ROOM_Y - 1, dz), ("",))[0] == "minecraft:polished_andesite":
+                    sign(q, [f"{label.upper()} KITS", "Finished", "shulkers come", "out here"],
+                         rotation=0 if dz < 0 else 8)
+                    break
+
+# instruction boards on both end walls
+END = {"Inventory": (RX1 - 1, "west", "27-slot shulker", "~15 min first"),
+       "Hotbar": (RX0 + 1, "east", "9-slot shulker", "~6 min first")}
+for label, (x, face, what, first_t) in END.items():
+    boards = [
+        [f"{label.upper()} KIT", what, "Each button press", "= 1 kit"],
+        ["1. Put EMPTY", "shulker boxes in", "the chest above", "the button"],
+        ["2. Stock every", f"'{label} slot'", "chest with the", "item you want"],
+        ["3. Press button", f"Kit arrives in", f"'{label} kits'", f"{first_t}, then 1/min"],
+        ["RULES", "1 stack per slot", "(totem = 1)", "1 item type/chest"],
+        ["Never leave a", "slot chest empty", "or slots after", "it shift up"],
+    ]
+    spots = [(x, ROOM_Y + 2, -2), (x, ROOM_Y + 1, -2), (x, ROOM_Y + 1, -1),
+             (x, ROOM_Y + 1, 1), (x, ROOM_Y + 1, 2), (x, ROOM_Y + 2, 2)]
+    for pos, txt in zip(spots, boards):
+        sign(pos, txt, facing=face)
 
 if __name__ == "__main__":
     main()
