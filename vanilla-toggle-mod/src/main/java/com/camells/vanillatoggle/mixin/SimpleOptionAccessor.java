@@ -7,5 +7,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(SimpleOption.class)
 public interface SimpleOptionAccessor {
     @Accessor("value")
-    void camelvanilla$setRawValue(Object value);
+    void pavlevanilla$setRawValue(Object value);
 }

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "camelvanilla",
+  "id": "pavlevanilla",
   "version": "${version}",
-  "name": "Camel Vanilla Toggle",
+  "name": "Pavle Vanilla",
   "description": "Press K in-game to switch to a stream-safe vanilla look: resource packs and shaders off, particles on All, no fullbright. Press K again to put everything back.",
   "authors": [
     "Camells"
@@ -20,6 +20,6 @@
     "minecraft": "~1.21.11"
   },
   "mixins": [
-    "camelvanilla.mixins.json"
+    "pavlevanilla.mixins.json"
   ]
 }

@@ -15,7 +15,7 @@ final class GammaAccess {
         if (gamma >= 0.0 && gamma <= 1.0) {
             options.getGamma().setValue(gamma);
         } else {
-            ((SimpleOptionAccessor) (Object) options.getGamma()).camelvanilla$setRawValue(gamma);
+            ((SimpleOptionAccessor) (Object) options.getGamma()).pavlevanilla$setRawValue(gamma);
         }
     }
 }

@@ -4,7 +4,7 @@ plugins {
 
 version = project.mod_version
 group = 'com.camells'
-base { archivesName = 'camel-vanilla-toggle' }
+base { archivesName = 'pavle-vanilla' }
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"

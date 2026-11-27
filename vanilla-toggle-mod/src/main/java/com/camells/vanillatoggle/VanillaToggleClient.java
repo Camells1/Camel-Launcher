@@ -33,12 +33,12 @@ import java.util.Set;
  * Press K (rebindable in Controls) to flip into a stream-safe vanilla look:
  * resource packs off, shaders off (Iris), particles on All, brightness capped
  * at vanilla's max so no fullbright. Press it again to put back exactly what
- * you had. The saved state lives in config/camel-vanilla-toggle.json, so it
+ * you had. The saved state lives in config/pavle-vanilla.json, so it
  * survives a game restart while Vanilla Mode is still on.
  */
 public class VanillaToggleClient implements ClientModInitializer {
-    public static final String MOD_ID = "camelvanilla";
-    private static final Logger LOG = LoggerFactory.getLogger("Camel Vanilla Toggle");
+    public static final String MOD_ID = "pavlevanilla";
+    private static final Logger LOG = LoggerFactory.getLogger("Pavle Vanilla");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final double MAX_VANILLA_GAMMA = 1.0;
 
@@ -58,7 +58,7 @@ public class VanillaToggleClient implements ClientModInitializer {
     public void onInitializeClient() {
         KeyBinding.Category category = KeyBinding.Category.create(Identifier.of(MOD_ID, "main"));
         toggleKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.camelvanilla.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_K, category));
+                "key.pavlevanilla.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_K, category));
 
         state = load();
 
@@ -82,7 +82,7 @@ public class VanillaToggleClient implements ClientModInitializer {
             else enable(client);
         } catch (Exception e) {
             LOG.error("Could not toggle Vanilla Mode", e);
-            notify(client, Text.literal("Vanilla Mode failed: " + e.getMessage()).formatted(Formatting.RED));
+            notify(client, Text.literal("Pavle Vanilla failed: " + e.getMessage()).formatted(Formatting.RED));
         }
     }
 
@@ -118,7 +118,7 @@ public class VanillaToggleClient implements ClientModInitializer {
         } else {
             options.write();
         }
-        notify(client, Text.literal("Vanilla Mode ON").formatted(Formatting.GREEN, Formatting.BOLD)
+        notify(client, Text.literal("Pavle Vanilla ON").formatted(Formatting.GREEN, Formatting.BOLD)
                 .append(Text.literal("  packs off, particles on, no fullbright").formatted(Formatting.GRAY)));
     }
 
@@ -158,7 +158,7 @@ public class VanillaToggleClient implements ClientModInitializer {
         } else {
             options.write();
         }
-        notify(client, Text.literal("Vanilla Mode OFF").formatted(Formatting.GOLD, Formatting.BOLD)
+        notify(client, Text.literal("Pavle Vanilla OFF").formatted(Formatting.GOLD, Formatting.BOLD)
                 .append(Text.literal("  your setup is back").formatted(Formatting.GRAY)));
     }
 
@@ -175,7 +175,7 @@ public class VanillaToggleClient implements ClientModInitializer {
 
     // ---- persistence ----
     private static Path configFile() {
-        return FabricLoader.getInstance().getConfigDir().resolve("camel-vanilla-toggle.json");
+        return FabricLoader.getInstance().getConfigDir().resolve("pavle-vanilla.json");
     }
 
     private static Saved load() {
