@@ -289,9 +289,7 @@ def slot_pipe(side, Y, m, itm, label, slot):
     G.TILES[(b, F - 2, z0)] = Compound({"id": String("minecraft:decorated_pot"),
                                          "item": Compound({"id": String("minecraft:" + itm),
                                                            "count": Int(STACK[itm])})})
-    hopper((b, F - 1, z0), "down", items=[blocker(i) for i in range(1, 5)])
-    support((b + 1, F - 2, z0), "glass")                             # label for Survival builders
-    floor_sign((b + 1, F - 1, z0), 4, ["Hopper next to", "this sign needs", "4 shulker boxes", "named Blocker"])
+    hopper((b, F - 1, z0), "down")                                   # barrel -> pot (no Blockers needed)
     named((b, F, z0), "barrel", f"{label} slot {slot}",
           [item(i, itm, STACK[itm]) for i in range(27)], facing="up", open=False)
 

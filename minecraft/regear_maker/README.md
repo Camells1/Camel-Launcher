@@ -20,10 +20,10 @@ The room is 3 blocks tall inside.
 * **Before pressing the same button again**, wait until its box has arrived plus about 45 s in singleplayer (about 10 s on an 8-item server), so every slot is refilled.
 
 ### How refilling works
-* Under each barrel is a hopper and a **pot that holds exactly one stack**. When you press a button, a latch under the floor opens the pots of that kit for a while. Each pot drops its one stack down a hopper pipe to its slot, and then refills from the barrel.
-* So every kit takes exactly one stack per slot from the barrels, and the barrels always show your real stock (minus the one stack in each pot).
-* **To change a slot:** change the barrel's item. The next 2 kits still have the old item in that slot (one stack waits in the pot under the barrel, one in the slot), and every kit after that has the new item.
-* Keep every barrel stocked. If one runs out, that slot is skipped and the slots after it shift up by one.
+* Under each barrel is a hopper (no Blockers needed) and a **pot that holds exactly one stack**. When you press a button, a latch under the floor opens the pots of that kit for a while. Each pot drops its one stack down a hopper pipe to its slot, and then refills from the barrel.
+* So every kit takes exactly one stack per slot. The hopper under a barrel holds up to 5 stacks of it, so a barrel shows a bit less than you really have.
+* **To change a slot:** let that slot run out (or empty its barrel and the hopper under it), then put the new item in. Leftover old items in the pots are used up in the next 2 kits.
+* If a barrel runs out, nothing breaks: that slot is skipped and the slots after it shift up by one. Refill the barrel and the next kits are full again.
 
 Default kits (from your screenshot):
 * Inventory: `[pearl, 7 totems, xp] x2, [pearl, crystal, obsidian, pearl, 4 totems, xp]`
@@ -53,7 +53,6 @@ Default kits (from your screenshot):
 
 ### Survival notes
 A Creative paste comes pre-filled. In Survival, also add:
-* 4 shulker boxes renamed "Blocker" in the hopper under every room barrel (it keeps each hopper to one stack). Each of these 36 hoppers has a sign next to it under the floor.
 * Token bricks (any item renamed "Token" works) in the two droppers under the buttons and in the dropper at the west end of every row.
 * 104 of any one item (for example cobblestone) in each of the two timer hoppers "TA" under the room floor, west of the barrels.
 * The first kit after filling the barrels comes out empty, because the slots get their first stack only when you press. Press each button once, throw that box away, and from then on every kit is full.
