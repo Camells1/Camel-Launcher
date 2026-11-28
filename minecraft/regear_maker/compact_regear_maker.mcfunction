@@ -1225,6 +1225,15 @@ setblock ~44 ~15 ~0 minecraft:glass
 setblock ~46 ~15 ~0 minecraft:glass
 setblock ~12 ~15 ~1 minecraft:stone
 setblock ~19 ~15 ~1 minecraft:glass
+setblock ~22 ~15 ~1 minecraft:glass
+setblock ~25 ~15 ~1 minecraft:glass
+setblock ~28 ~15 ~1 minecraft:glass
+setblock ~31 ~15 ~1 minecraft:glass
+setblock ~34 ~15 ~1 minecraft:glass
+setblock ~37 ~15 ~1 minecraft:glass
+setblock ~40 ~15 ~1 minecraft:glass
+setblock ~43 ~15 ~1 minecraft:glass
+setblock ~46 ~15 ~1 minecraft:glass
 setblock ~10 ~15 ~2 minecraft:glass
 setblock ~11 ~15 ~2 minecraft:glass
 setblock ~13 ~15 ~2 minecraft:glass
@@ -1235,6 +1244,15 @@ setblock ~18 ~15 ~2 minecraft:glass
 setblock ~19 ~15 ~2 minecraft:glass
 setblock ~3 ~15 ~3 minecraft:glass
 setblock ~10 ~15 ~3 minecraft:glass
+setblock ~22 ~15 ~3 minecraft:glass
+setblock ~25 ~15 ~3 minecraft:glass
+setblock ~28 ~15 ~3 minecraft:glass
+setblock ~31 ~15 ~3 minecraft:glass
+setblock ~34 ~15 ~3 minecraft:glass
+setblock ~37 ~15 ~3 minecraft:glass
+setblock ~40 ~15 ~3 minecraft:glass
+setblock ~43 ~15 ~3 minecraft:glass
+setblock ~46 ~15 ~3 minecraft:glass
 setblock ~2 ~15 ~4 minecraft:glass
 setblock ~4 ~15 ~4 minecraft:glass
 setblock ~10 ~15 ~4 minecraft:glass
@@ -1313,6 +1331,15 @@ setblock ~4 ~15 ~26 minecraft:glass
 setblock ~19 ~15 ~26 minecraft:glass
 setblock ~3 ~15 ~27 minecraft:glass
 setblock ~19 ~15 ~27 minecraft:glass
+setblock ~22 ~15 ~27 minecraft:glass
+setblock ~25 ~15 ~27 minecraft:glass
+setblock ~28 ~15 ~27 minecraft:glass
+setblock ~31 ~15 ~27 minecraft:glass
+setblock ~34 ~15 ~27 minecraft:glass
+setblock ~37 ~15 ~27 minecraft:glass
+setblock ~40 ~15 ~27 minecraft:glass
+setblock ~43 ~15 ~27 minecraft:glass
+setblock ~46 ~15 ~27 minecraft:glass
 setblock ~19 ~15 ~28 minecraft:glass
 setblock ~20 ~15 ~28 minecraft:glass
 setblock ~22 ~15 ~28 minecraft:glass
@@ -1332,6 +1359,15 @@ setblock ~41 ~15 ~28 minecraft:glass
 setblock ~43 ~15 ~28 minecraft:glass
 setblock ~44 ~15 ~28 minecraft:glass
 setblock ~46 ~15 ~28 minecraft:glass
+setblock ~22 ~15 ~29 minecraft:glass
+setblock ~25 ~15 ~29 minecraft:glass
+setblock ~28 ~15 ~29 minecraft:glass
+setblock ~31 ~15 ~29 minecraft:glass
+setblock ~34 ~15 ~29 minecraft:glass
+setblock ~37 ~15 ~29 minecraft:glass
+setblock ~40 ~15 ~29 minecraft:glass
+setblock ~43 ~15 ~29 minecraft:glass
+setblock ~46 ~15 ~29 minecraft:glass
 setblock ~21 ~16 ~0 minecraft:stone
 setblock ~24 ~16 ~0 minecraft:stone
 setblock ~27 ~16 ~0 minecraft:stone
@@ -6488,8 +6524,26 @@ setblock ~37 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=
 setblock ~40 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~43 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~46 ~16 ~0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~22 ~16 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~25 ~16 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~28 ~16 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~31 ~16 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~34 ~16 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~37 ~16 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~40 ~16 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~43 ~16 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~46 ~16 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
 setblock ~12 ~16 ~2 minecraft:waxed_copper_bulb[lit=false,powered=false]
 setblock ~13 ~16 ~2 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
+setblock ~22 ~16 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~25 ~16 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~28 ~16 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~31 ~16 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~34 ~16 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~37 ~16 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~40 ~16 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~43 ~16 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~46 ~16 ~3 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
 setblock ~22 ~16 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~25 ~16 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~28 ~16 ~4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
@@ -6503,6 +6557,15 @@ setblock ~10 ~16 ~7 minecraft:repeater[delay=1,facing=south,locked=false,powered
 setblock ~19 ~16 ~13 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
 setblock ~12 ~16 ~22 minecraft:waxed_copper_bulb[lit=false,powered=false]
 setblock ~13 ~16 ~22 minecraft:comparator[facing=west,mode=compare,powered=false]{OutputSignal:0}
+setblock ~22 ~16 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~25 ~16 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~28 ~16 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~31 ~16 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~34 ~16 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~37 ~16 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~40 ~16 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~43 ~16 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~46 ~16 ~27 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
 setblock ~22 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~25 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~28 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
@@ -6512,6 +6575,15 @@ setblock ~37 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered
 setblock ~40 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~43 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 setblock ~46 ~16 ~28 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+setblock ~22 ~16 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~25 ~16 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~28 ~16 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~31 ~16 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~34 ~16 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~37 ~16 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~40 ~16 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~43 ~16 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
+setblock ~46 ~16 ~29 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hopper next to"','"this sign needs"','"4 shulker boxes"','"named Blocker"'],color:"black",has_glowing_text:0b}}
 setblock ~14 ~17 ~13 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~14 ~17 ~17 minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 setblock ~20 ~18 ~1 minecraft:oak_sign[rotation=4,waterlogged=false]{is_waxed:1b,front_text:{messages:['"Hot 1"','""','""','""'],color:"black",has_glowing_text:0b},back_text:{messages:['"Hot 1"','""','""','""'],color:"black",has_glowing_text:0b}}

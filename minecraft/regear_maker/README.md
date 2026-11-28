@@ -53,7 +53,7 @@ Default kits (from your screenshot):
 
 ### Survival notes
 A Creative paste comes pre-filled. In Survival, also add:
-* 4 shulker boxes renamed "Blocker" in the hopper under every room barrel (it keeps each hopper to one stack).
+* 4 shulker boxes renamed "Blocker" in the hopper under every room barrel (it keeps each hopper to one stack). Each of these 36 hoppers has a sign next to it under the floor.
 * Token bricks (any item renamed "Token" works) in the two droppers under the buttons and in the dropper at the west end of every row.
 * 104 of any one item (for example cobblestone) in each of the two timer hoppers "TA" under the room floor, west of the barrels.
 * The first kit after filling the barrels comes out empty, because the slots get their first stack only when you press. Press each button once, throw that box away, and from then on every kit is full.
