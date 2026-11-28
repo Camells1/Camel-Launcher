@@ -32,7 +32,7 @@ Default kits (from your screenshot):
 ### How it works (no clocks, no music discs)
 * **Measuring:** each slot is barrel → hopper → **decorated pot** → drain hopper → item line → box.
   * The pot holds exactly one stack, whatever the hopper speed.
-  * The hopper above it holds 4 shulker boxes named "Blocker". A hopper can't push a shulker box into a shulker box, so the Blockers stay put.
+  * The pot only accepts one stack, so no Blockers are needed.
 * **Buttons:** a button in the room drops a "Token" brick down a hopper pipe to that kit's station. When it arrives, the first row's token dropper starts the kit, and the station's dispenser places an empty box.
 * **Token:** each row has a dropper with "Token" bricks. The row's token runs through the row's hopper chain. The upper Inventory rows are started by the row below finishing.
   * The first chain hopper of each slot stays locked until that slot's pot is empty. The token waits there while that slot drains into the line, then rolls on to the next slot.
